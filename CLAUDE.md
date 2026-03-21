@@ -108,4 +108,4 @@ In `gradle.properties` ist `android.disallowKotlinSourceSets=false` gesetzt — 
 
 Adaptives Icon in `res/drawable/`:
 - `ic_launcher_background.xml` — Verlauf Deep Indigo → Teal mit Radial-Shine
-- `ic_launcher_foreground.xml` — Weißes fettes „M" + dreischichtiger Neon-Cyan-Scanstrahl + Amber-Punkt
+- `ic_launcher_foreground.xml` — Weißes Dokument mit gefaltetem Eck, grauen Inhaltslinien, rotem PDF-Footer mit weißem „PDF"-Schriftzug (P/D/F als Pfade), Neon-Cyan-Scanstrahl + Amber-Ursprungspunkt

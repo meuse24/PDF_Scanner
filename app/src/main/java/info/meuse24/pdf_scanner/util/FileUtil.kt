@@ -62,8 +62,4 @@ class FileUtil @Inject constructor(@ApplicationContext private val context: Cont
         }
     }
 
-    fun getFileProviderUri(file: File): Uri =
-        androidx.core.content.FileProvider.getUriForFile(
-            context, "${context.packageName}.fileprovider", file
-        )
 }

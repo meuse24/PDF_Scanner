@@ -21,6 +21,10 @@
     <string name="error_title">エラー</string>
     <string name="error_no_pdf_viewer">PDFビューアがインストールされていません</string>
     <string name="error_scanner_unavailable">スキャナーが利用できません</string>
+    <string name="error_source_unavailable">PDFソースを開けませんでした</string>
+    <string name="error_pdf_empty">保存されたPDFが空です</string>
+    <string name="error_delete_failed">ファイルを削除できませんでした</string>
+    <string name="error_save_failed">ファイルの保存中にエラーが発生しました</string>
     <string name="share_pdf_title">PDF を共有</string>
     <string name="scan_item_subtitle">%1$s · %2$d ページ · %3$s</string>
     <string name="help_screen_title">使い方</string>

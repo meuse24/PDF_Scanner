@@ -113,8 +113,13 @@ fun AppNavigation() {
                     label    = stringResource(R.string.nav_help),
                     selected = currentRoute == Screen.Help.route
                 ) {
-                    // launchSingleTop prevents stacking identical destinations (#7)
-                    navController.navigate(Screen.Help.route) { launchSingleTop = true }
+                    // popUpTo ensures Help/Info are always directly above Ablage — no cross-
+                    // stacking (e.g. Help→Info→Help). launchSingleTop avoids a duplicate when
+                    // the target is already on top. (#7)
+                    navController.navigate(Screen.Help.route) {
+                        popUpTo(Screen.Ablage.route)
+                        launchSingleTop = true
+                    }
                     closeDrawer()
                 }
 
@@ -123,7 +128,10 @@ fun AppNavigation() {
                     label    = stringResource(R.string.nav_info),
                     selected = currentRoute == Screen.Info.route
                 ) {
-                    navController.navigate(Screen.Info.route) { launchSingleTop = true }
+                    navController.navigate(Screen.Info.route) {
+                        popUpTo(Screen.Ablage.route)
+                        launchSingleTop = true
+                    }
                     closeDrawer()
                 }
             }

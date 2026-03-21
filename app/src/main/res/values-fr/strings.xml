@@ -21,6 +21,10 @@
     <string name="error_title">Erreur</string>
     <string name="error_no_pdf_viewer">Aucun lecteur PDF installé</string>
     <string name="error_scanner_unavailable">Scanner non disponible</string>
+    <string name="error_source_unavailable">Impossible d\'ouvrir la source PDF</string>
+    <string name="error_pdf_empty">Le PDF enregistré est vide</string>
+    <string name="error_delete_failed">Impossible de supprimer le fichier</string>
+    <string name="error_save_failed">Erreur lors de l\'enregistrement</string>
     <string name="share_pdf_title">Partager le PDF</string>
     <string name="scan_item_subtitle">%1$s · %2$d p. · %3$s</string>
     <string name="help_screen_title">Instructions</string>

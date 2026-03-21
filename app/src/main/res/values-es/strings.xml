@@ -21,6 +21,10 @@
     <string name="error_title">Error</string>
     <string name="error_no_pdf_viewer">No hay visor de PDF instalado</string>
     <string name="error_scanner_unavailable">Escáner no disponible</string>
+    <string name="error_source_unavailable">No se pudo abrir el origen del PDF</string>
+    <string name="error_pdf_empty">El PDF guardado está vacío</string>
+    <string name="error_delete_failed">No se pudo eliminar el archivo</string>
+    <string name="error_save_failed">Error al guardar el archivo</string>
     <string name="share_pdf_title">Compartir PDF</string>
     <string name="scan_item_subtitle">%1$s · %2$d p. · %3$s</string>
     <string name="help_screen_title">Instrucciones</string>

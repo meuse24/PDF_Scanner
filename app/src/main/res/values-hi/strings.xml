@@ -21,6 +21,10 @@
     <string name="error_title">त्रुटि</string>
     <string name="error_no_pdf_viewer">कोई PDF व्यूअर इंस्टॉल नहीं है</string>
     <string name="error_scanner_unavailable">स्कैनर उपलब्ध नहीं है</string>
+    <string name="error_source_unavailable">PDF स्रोत नहीं खोला जा सका</string>
+    <string name="error_pdf_empty">सहेजी गई PDF खाली है</string>
+    <string name="error_delete_failed">फ़ाइल हटाई नहीं जा सकी</string>
+    <string name="error_save_failed">फ़ाइल सहेजने में त्रुटि</string>
     <string name="share_pdf_title">PDF साझा करें</string>
     <string name="scan_item_subtitle">%1$s · %2$d पृ. · %3$s</string>
     <string name="help_screen_title">निर्देश</string>

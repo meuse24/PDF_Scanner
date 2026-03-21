@@ -31,6 +31,10 @@
     <string name="error_title">Error</string>
     <string name="error_no_pdf_viewer">No PDF viewer installed</string>
     <string name="error_scanner_unavailable">Scanner not available</string>
+    <string name="error_source_unavailable">Could not open PDF source</string>
+    <string name="error_pdf_empty">Saved PDF is empty</string>
+    <string name="error_delete_failed">File could not be deleted</string>
+    <string name="error_save_failed">Error saving file</string>
 
     <!-- Home: share -->
     <string name="share_pdf_title">Share PDF</string>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Datenschutzerklaerung | PDF Scanner</title>
-    <meta name="description" content="Datenschutzerklaerung fuer die Android-App PDF Scanner von Guenther Meusburger.">
+    <title>Privacy Policy | PDF Scanner</title>
+    <meta name="description" content="Privacy Policy for the Android app PDF Scanner by Guenther Meusburger.">
     <style>
         :root {
             --bg: #f6f7f3;
@@ -51,6 +51,14 @@
             margin-bottom: 18px;
         }
 
+        .hero-top {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
         .eyebrow {
             display: inline-block;
             margin-bottom: 14px;
@@ -61,6 +69,30 @@
             font-size: 0.9rem;
             font-weight: 700;
             letter-spacing: 0.02em;
+        }
+
+        .lang-switcher {
+            display: inline-flex;
+            gap: 8px;
+            padding: 6px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.72);
+        }
+
+        .lang-switcher button {
+            border: 0;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font: inherit;
+            color: var(--muted);
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .lang-switcher button.active {
+            color: #fff;
+            background: var(--accent);
         }
 
         h1,
@@ -80,11 +112,6 @@
         p,
         li {
             font-size: 1rem;
-        }
-
-        .meta {
-            margin-top: 18px;
-            color: var(--muted);
         }
 
         .section {
@@ -134,6 +161,14 @@
             font-size: 0.95em;
         }
 
+        [data-lang-content] {
+            display: none;
+        }
+
+        [data-lang-content].active {
+            display: block;
+        }
+
         footer {
             color: var(--muted);
             font-size: 0.95rem;
@@ -153,188 +188,442 @@
                 padding: 22px 18px;
                 border-radius: 20px;
             }
+
+            .hero-top {
+                flex-direction: column;
+                align-items: stretch;
+            }
         }
     </style>
 </head>
 <body>
 <main>
     <section class="hero">
-        <div class="eyebrow">PDF Scanner</div>
-        <h1>Datenschutzerklaerung</h1>
-        <p>
-            Diese Datenschutzerklaerung gilt fuer die Android-App <strong>PDF Scanner</strong>
-            mit dem Paketnamen <code>info.meuse24.pdf_scanner</code>.
-        </p>
-        <div class="grid">
-            <div class="card">
-                <strong>Anbieter</strong>
-                Guenther Meusburger
+        <div class="hero-top">
+            <div>
+                <div class="eyebrow">PDF Scanner</div>
+                <h1 id="page-title">Privacy Policy</h1>
             </div>
-            <div class="card">
-                <strong>Kontakt</strong>
-                <a href="mailto:guenther.meusburger@gmail.com">guenther.meusburger@gmail.com</a>
+            <div class="lang-switcher" aria-label="Language switcher">
+                <button type="button" data-lang-button="en">English</button>
+                <button type="button" data-lang-button="de">Deutsch</button>
             </div>
-            <div class="card">
-                <strong>Quellcode</strong>
-                <a href="https://github.com/meuse24/PDF_Scanner">github.com/meuse24/PDF_Scanner</a>
+        </div>
+
+        <div data-lang-content="en">
+            <p>
+                This Privacy Policy applies to the Android app <strong>PDF Scanner</strong>
+                with the package name <code>info.meuse24.pdf_scanner</code>.
+            </p>
+            <div class="grid">
+                <div class="card">
+                    <strong>Provider</strong>
+                    Guenther Meusburger
+                </div>
+                <div class="card">
+                    <strong>Contact</strong>
+                    <a href="mailto:guenther.meusburger@gmail.com">guenther.meusburger@gmail.com</a>
+                </div>
+                <div class="card">
+                    <strong>Source code</strong>
+                    <a href="https://github.com/meuse24/PDF_Scanner">github.com/meuse24/PDF_Scanner</a>
+                </div>
+                <div class="card">
+                    <strong>Last updated</strong>
+                    March 22, 2026
+                </div>
             </div>
-            <div class="card">
-                <strong>Stand</strong>
-                21. Maerz 2026
+        </div>
+
+        <div data-lang-content="de">
+            <p>
+                Diese Datenschutzerklaerung gilt fuer die Android-App <strong>PDF Scanner</strong>
+                mit dem Paketnamen <code>info.meuse24.pdf_scanner</code>.
+            </p>
+            <div class="grid">
+                <div class="card">
+                    <strong>Anbieter</strong>
+                    Guenther Meusburger
+                </div>
+                <div class="card">
+                    <strong>Kontakt</strong>
+                    <a href="mailto:guenther.meusburger@gmail.com">guenther.meusburger@gmail.com</a>
+                </div>
+                <div class="card">
+                    <strong>Quellcode</strong>
+                    <a href="https://github.com/meuse24/PDF_Scanner">github.com/meuse24/PDF_Scanner</a>
+                </div>
+                <div class="card">
+                    <strong>Stand</strong>
+                    22. Maerz 2026
+                </div>
             </div>
         </div>
     </section>
 
     <section class="section">
-        <h2>1. Kurzfassung</h2>
-        <p>
-            Die App speichert gescannte Dokumente grundsaetzlich lokal auf dem Geraet.
-            Es gibt kein Benutzerkonto, keine Werbung, kein eigenes Tracking, kein eigenes
-            Backend und keine Uebermittlung von Scans an Server des Entwicklers.
-        </p>
-        <p>
-            Fuer die Scan-Funktion wird der <strong>Google ML Kit Document Scanner</strong> ueber
-            <strong>Google Play Services</strong> verwendet. Laut Google erfolgt die Verarbeitung
-            der Eingabedaten und der Scan-Ergebnisse auf dem Geraet. Google weist jedoch darauf hin,
-            dass ML Kit gelegentlich Server fuer Updates und Kompatibilitaetsinformationen kontaktieren
-            und Leistungs- bzw. Nutzungsmetriken an Google uebermitteln kann.
-        </p>
+        <div data-lang-content="en">
+            <h2>1. Summary</h2>
+            <p>
+                The app stores scanned documents locally on the device. There is no user account,
+                no advertising, no own tracking, no own backend, and no transfer of scans to
+                servers operated by the developer.
+            </p>
+            <p>
+                The scan feature uses <strong>Google ML Kit Document Scanner</strong> via
+                <strong>Google Play Services</strong>. According to Google, input data and scan
+                results are processed on-device. Google also states that ML Kit may occasionally
+                contact Google servers for updates and compatibility information and may send
+                performance and usage metrics to Google.
+            </p>
+        </div>
+        <div data-lang-content="de">
+            <h2>1. Kurzfassung</h2>
+            <p>
+                Die App speichert gescannte Dokumente grundsaetzlich lokal auf dem Geraet.
+                Es gibt kein Benutzerkonto, keine Werbung, kein eigenes Tracking, kein eigenes
+                Backend und keine Uebermittlung von Scans an Server des Entwicklers.
+            </p>
+            <p>
+                Fuer die Scan-Funktion wird der <strong>Google ML Kit Document Scanner</strong> ueber
+                <strong>Google Play Services</strong> verwendet. Laut Google erfolgt die Verarbeitung
+                der Eingabedaten und der Scan-Ergebnisse auf dem Geraet. Google weist jedoch darauf hin,
+                dass ML Kit gelegentlich Server fuer Updates und Kompatibilitaetsinformationen kontaktieren
+                und Leistungs- bzw. Nutzungsmetriken an Google uebermitteln kann.
+            </p>
+        </div>
     </section>
 
     <section class="section">
-        <h2>2. Welche Daten in der App verarbeitet werden</h2>
-        <p>Die App verarbeitet ausschliesslich Daten, die fuer die Dokumentenverwaltung auf dem Geraet erforderlich sind. Dazu gehoeren insbesondere:</p>
-        <ul>
-            <li>gescannte PDF-Dateien</li>
-            <li>optional erzeugte Vorschaubilder der ersten Seite</li>
-            <li>Dateiname</li>
-            <li>lokaler Dateipfad</li>
-            <li>Erstellungszeitpunkt</li>
-            <li>Seitenanzahl</li>
-            <li>Dateigroesse</li>
-        </ul>
-        <p>
-            Diese Informationen werden lokal im App-Speicher und in einer lokalen Datenbank auf dem
-            Geraet abgelegt, damit die Ablage, Vorschau, Freigabe, der Export und das Loeschen von
-            Scans funktionieren.
-        </p>
+        <div data-lang-content="en">
+            <h2>2. Data processed by the app</h2>
+            <p>The app only processes data required to manage documents on the device, in particular:</p>
+            <ul>
+                <li>scanned PDF files</li>
+                <li>optional preview image of the first page</li>
+                <li>file name</li>
+                <li>local file path</li>
+                <li>creation timestamp</li>
+                <li>page count</li>
+                <li>file size</li>
+            </ul>
+            <p>
+                This information is stored locally in app storage and in a local database on the device
+                so that the archive, preview, sharing, export, and deletion functions work.
+            </p>
+        </div>
+        <div data-lang-content="de">
+            <h2>2. Welche Daten in der App verarbeitet werden</h2>
+            <p>Die App verarbeitet ausschliesslich Daten, die fuer die Dokumentenverwaltung auf dem Geraet erforderlich sind. Dazu gehoeren insbesondere:</p>
+            <ul>
+                <li>gescannte PDF-Dateien</li>
+                <li>optional erzeugte Vorschaubilder der ersten Seite</li>
+                <li>Dateiname</li>
+                <li>lokaler Dateipfad</li>
+                <li>Erstellungszeitpunkt</li>
+                <li>Seitenanzahl</li>
+                <li>Dateigroesse</li>
+            </ul>
+            <p>
+                Diese Informationen werden lokal im App-Speicher und in einer lokalen Datenbank auf dem
+                Geraet abgelegt, damit die Ablage, Vorschau, Freigabe, der Export und das Loeschen von
+                Scans funktionieren.
+            </p>
+        </div>
     </section>
 
     <section class="section">
-        <h2>3. Wo die Daten gespeichert werden</h2>
-        <p>
-            Gescannte PDFs und Vorschaubilder werden im app-internen Speicher gespeichert.
-            Zusaetzlich speichert die App Metadaten in einer lokalen Room-Datenbank.
-        </p>
-        <p>
-            Nach der aktuellen Implementierung sind die gescannten PDFs und die lokale Datenbank
-            ausserdem explizit von Android-Cloud-Backups und vom Device-to-Device-Transfer ausgeschlossen.
-        </p>
+        <div data-lang-content="en">
+            <h2>3. Where data is stored</h2>
+            <p>
+                Scanned PDFs and preview images are stored in the app-internal storage.
+                Metadata is additionally stored in a local Room database.
+            </p>
+            <p>
+                In the current implementation, scanned PDFs and the local database are also explicitly
+                excluded from Android cloud backups and device-to-device transfer.
+            </p>
+        </div>
+        <div data-lang-content="de">
+            <h2>3. Wo die Daten gespeichert werden</h2>
+            <p>
+                Gescannte PDFs und Vorschaubilder werden im app-internen Speicher gespeichert.
+                Zusaetzlich speichert die App Metadaten in einer lokalen Room-Datenbank.
+            </p>
+            <p>
+                Nach der aktuellen Implementierung sind die gescannten PDFs und die lokale Datenbank
+                ausserdem explizit von Android-Cloud-Backups und vom Device-to-Device-Transfer ausgeschlossen.
+            </p>
+        </div>
     </section>
 
     <section class="section">
-        <h2>4. Netzwerk, Werbung, Konten und Berechtigungen</h2>
-        <ul>
-            <li>Die App fordert selbst keine Internet-Berechtigung an.</li>
-            <li>Die App enthaelt keine Werbung.</li>
-            <li>Die App verwendet kein eigenes Analytics- oder Crash-Reporting-System.</li>
-            <li>Die App verlangt kein Benutzerkonto und kein Abonnement.</li>
-            <li>Die App fordert keine Kamera-, Kontakt-, Mikrofon- oder Standortberechtigung an.</li>
-        </ul>
-        <p>
-            Der eigentliche Scan-Vorgang wird ueber Google ML Kit Document Scanner gestartet, ohne dass
-            die App selbst eine Kamera-Berechtigung anfordert.
-        </p>
+        <div data-lang-content="en">
+            <h2>4. Network, advertising, accounts, and permissions</h2>
+            <ul>
+                <li>The app itself does not request the internet permission.</li>
+                <li>The app contains no advertising.</li>
+                <li>The app uses no own analytics or crash reporting service.</li>
+                <li>The app requires no user account and no subscription.</li>
+                <li>The app does not request camera, contacts, microphone, or location permissions.</li>
+            </ul>
+            <p>
+                The actual scan flow is started through Google ML Kit Document Scanner without the app
+                requesting a camera permission itself.
+            </p>
+        </div>
+        <div data-lang-content="de">
+            <h2>4. Netzwerk, Werbung, Konten und Berechtigungen</h2>
+            <ul>
+                <li>Die App fordert selbst keine Internet-Berechtigung an.</li>
+                <li>Die App enthaelt keine Werbung.</li>
+                <li>Die App verwendet kein eigenes Analytics- oder Crash-Reporting-System.</li>
+                <li>Die App verlangt kein Benutzerkonto und kein Abonnement.</li>
+                <li>Die App fordert keine Kamera-, Kontakt-, Mikrofon- oder Standortberechtigung an.</li>
+            </ul>
+            <p>
+                Der eigentliche Scan-Vorgang wird ueber Google ML Kit Document Scanner gestartet, ohne dass
+                die App selbst eine Kamera-Berechtigung anfordert.
+            </p>
+        </div>
     </section>
 
     <section class="section">
-        <h2>5. Einsatz von Google ML Kit Document Scanner und Google Play Services</h2>
-        <p>
-            Die App nutzt fuer das Scannen von Dokumenten die von Google bereitgestellte
-            Komponente <strong>ML Kit Document Scanner</strong>, die ueber
-            <strong>Google Play Services</strong> bereitgestellt wird.
-        </p>
-        <p>
-            Nach den offiziellen ML-Kit-Hinweisen von Google findet die Verarbeitung der Eingabedaten
-            wie Bilder und Scan-Ergebnisse vollstaendig auf dem Geraet statt; diese Daten werden nicht
-            an Google-Server gesendet. Google weist jedoch ebenfalls darauf hin, dass ML Kit APIs
-            gelegentlich Google-Server kontaktieren koennen, um Fehlerbehebungen, aktualisierte Modelle
-            oder Hardware-Kompatibilitaetsinformationen zu beziehen. Ausserdem koennen Leistungs- und
-            Nutzungsmetriken der API an Google uebermittelt werden.
-        </p>
-        <p>
-            Daneben kann Google Play Services gemaess den Einstellungen des Geraets und des Google-Kontos
-            weitere Daten verarbeiten. Darauf hat der Entwickler dieser App keinen vollstaendigen Einfluss.
-            Fuer diese Verarbeitung gelten die Datenschutzbestimmungen von Google.
-        </p>
-        <p>
-            Offizielle Informationen:
-            <br>
-            <a href="https://developers.google.com/ml-kit/terms">ML Kit Terms &amp; Privacy</a>
-            <br>
-            <a href="https://support.google.com/android/answer/10546414">Informationen zu Google Play Services</a>
-            <br>
-            <a href="https://policies.google.com/privacy">Google Datenschutzerklaerung</a>
-        </p>
+        <div data-lang-content="en">
+            <h2>5. Use of Google ML Kit Document Scanner and Google Play Services</h2>
+            <p>
+                The app uses <strong>ML Kit Document Scanner</strong> provided by Google via
+                <strong>Google Play Services</strong> to scan documents.
+            </p>
+            <p>
+                According to Google's official ML Kit information, processing of input data such as images
+                and scan results happens fully on-device and is not sent to Google servers. However, Google
+                also states that ML Kit APIs may occasionally contact Google servers to receive bug fixes,
+                updated models, or hardware compatibility information. In addition, performance and usage
+                metrics of the API may be sent to Google.
+            </p>
+            <p>
+                Google Play Services may also process additional data depending on device settings and the
+                user's Google account settings. The developer of this app does not have full control over
+                that processing. Google's privacy terms apply to that part.
+            </p>
+            <p>
+                Official information:
+                <br>
+                <a href="https://developers.google.com/ml-kit/terms">ML Kit Terms &amp; Privacy</a>
+                <br>
+                <a href="https://support.google.com/android/answer/10546414">About Google Play Services</a>
+                <br>
+                <a href="https://policies.google.com/privacy">Google Privacy Policy</a>
+            </p>
+        </div>
+        <div data-lang-content="de">
+            <h2>5. Einsatz von Google ML Kit Document Scanner und Google Play Services</h2>
+            <p>
+                Die App nutzt fuer das Scannen von Dokumenten die von Google bereitgestellte
+                Komponente <strong>ML Kit Document Scanner</strong>, die ueber
+                <strong>Google Play Services</strong> bereitgestellt wird.
+            </p>
+            <p>
+                Nach den offiziellen ML-Kit-Hinweisen von Google findet die Verarbeitung der Eingabedaten
+                wie Bilder und Scan-Ergebnisse vollstaendig auf dem Geraet statt; diese Daten werden nicht
+                an Google-Server gesendet. Google weist jedoch ebenfalls darauf hin, dass ML Kit APIs
+                gelegentlich Google-Server kontaktieren koennen, um Fehlerbehebungen, aktualisierte Modelle
+                oder Hardware-Kompatibilitaetsinformationen zu beziehen. Ausserdem koennen Leistungs- und
+                Nutzungsmetriken der API an Google uebermittelt werden.
+            </p>
+            <p>
+                Daneben kann Google Play Services gemaess den Einstellungen des Geraets und des Google-Kontos
+                weitere Daten verarbeiten. Darauf hat der Entwickler dieser App keinen vollstaendigen Einfluss.
+                Fuer diese Verarbeitung gelten die Datenschutzbestimmungen von Google.
+            </p>
+            <p>
+                Offizielle Informationen:
+                <br>
+                <a href="https://developers.google.com/ml-kit/terms">ML Kit Terms &amp; Privacy</a>
+                <br>
+                <a href="https://support.google.com/android/answer/10546414">Informationen zu Google Play Services</a>
+                <br>
+                <a href="https://policies.google.com/privacy">Google Datenschutzerklaerung</a>
+            </p>
+        </div>
     </section>
 
     <section class="section">
-        <h2>6. Teilen und Exportieren von Dateien</h2>
-        <p>
-            Die App kann Scans auf ausdrueckliche Aktion des Nutzers an andere Apps weitergeben
-            oder in den Download-Bereich des Geraets exportieren.
-        </p>
-        <ul>
-            <li>Beim <strong>Teilen</strong> wird die Datei an die vom Nutzer ausgewaehlte Ziel-App uebergeben.</li>
-            <li>Beim <strong>Export</strong> wird eine Kopie der Datei in den Download-Bereich des Geraets geschrieben.</li>
-        </ul>
-        <p>
-            Ab diesem Zeitpunkt richtet sich die weitere Verarbeitung nach der Datenschutzerklaerung der
-            jeweils genutzten Ziel-App, des Dienstes oder des Geraeteherstellers.
-        </p>
+        <div data-lang-content="en">
+            <h2>6. Sharing and exporting files</h2>
+            <p>
+                The app can pass scans to other apps or export them into the device's Downloads area
+                only when the user explicitly triggers that action.
+            </p>
+            <ul>
+                <li>When <strong>sharing</strong>, the file is passed to the app selected by the user.</li>
+                <li>When <strong>exporting</strong>, a copy of the file is written to the device's Downloads area.</li>
+            </ul>
+            <p>
+                From that point on, further processing depends on the privacy policy of the selected
+                target app, service, or device manufacturer.
+            </p>
+        </div>
+        <div data-lang-content="de">
+            <h2>6. Teilen und Exportieren von Dateien</h2>
+            <p>
+                Die App kann Scans auf ausdrueckliche Aktion des Nutzers an andere Apps weitergeben
+                oder in den Download-Bereich des Geraets exportieren.
+            </p>
+            <ul>
+                <li>Beim <strong>Teilen</strong> wird die Datei an die vom Nutzer ausgewaehlte Ziel-App uebergeben.</li>
+                <li>Beim <strong>Export</strong> wird eine Kopie der Datei in den Download-Bereich des Geraets geschrieben.</li>
+            </ul>
+            <p>
+                Ab diesem Zeitpunkt richtet sich die weitere Verarbeitung nach der Datenschutzerklaerung der
+                jeweils genutzten Ziel-App, des Dienstes oder des Geraeteherstellers.
+            </p>
+        </div>
     </section>
 
     <section class="section">
-        <h2>7. Speicherdauer</h2>
-        <p>
-            Lokal gespeicherte Scans, Vorschaubilder und Metadaten bleiben auf dem Geraet,
-            bis sie durch den Nutzer in der App geloescht oder die App deinstalliert wird.
-            Exportierte oder geteilte Kopien koennen ausserhalb der App weiter bestehen.
-        </p>
+        <div data-lang-content="en">
+            <h2>7. Storage duration</h2>
+            <p>
+                Locally stored scans, preview images, and metadata remain on the device until the user
+                deletes them in the app or uninstalls the app. Exported or shared copies may continue
+                to exist outside the app.
+            </p>
+        </div>
+        <div data-lang-content="de">
+            <h2>7. Speicherdauer</h2>
+            <p>
+                Lokal gespeicherte Scans, Vorschaubilder und Metadaten bleiben auf dem Geraet,
+                bis sie durch den Nutzer in der App geloescht oder die App deinstalliert wird.
+                Exportierte oder geteilte Kopien koennen ausserhalb der App weiter bestehen.
+            </p>
+        </div>
     </section>
 
     <section class="section">
-        <h2>8. Rechtsgrundlagen nach DSGVO</h2>
-        <p>
-            Soweit personenbezogene Daten verarbeitet werden, erfolgt dies zur Bereitstellung der
-            vom Nutzer angeforderten App-Funktionen gemaess Art. 6 Abs. 1 lit. b DSGVO sowie
-            auf Grundlage des berechtigten Interesses an einer stabilen, sicheren und kompatiblen
-            Bereitstellung der App gemaess Art. 6 Abs. 1 lit. f DSGVO.
-        </p>
+        <div data-lang-content="en">
+            <h2>8. Legal basis under GDPR</h2>
+            <p>
+                To the extent personal data is processed, this is done to provide the app functions
+                requested by the user in accordance with Art. 6(1)(b) GDPR and based on the legitimate
+                interest in a stable, secure, and compatible provision of the app in accordance with
+                Art. 6(1)(f) GDPR.
+            </p>
+        </div>
+        <div data-lang-content="de">
+            <h2>8. Rechtsgrundlagen nach DSGVO</h2>
+            <p>
+                Soweit personenbezogene Daten verarbeitet werden, erfolgt dies zur Bereitstellung der
+                vom Nutzer angeforderten App-Funktionen gemaess Art. 6 Abs. 1 lit. b DSGVO sowie
+                auf Grundlage des berechtigten Interesses an einer stabilen, sicheren und kompatiblen
+                Bereitstellung der App gemaess Art. 6 Abs. 1 lit. f DSGVO.
+            </p>
+        </div>
     </section>
 
     <section class="section">
-        <h2>9. Rechte betroffener Personen</h2>
-        <p>
-            Sofern die Voraussetzungen der DSGVO vorliegen, bestehen insbesondere Rechte auf
-            Auskunft, Berichtigung, Loeschung, Einschraenkung der Verarbeitung, Widerspruch
-            sowie Datenuebertragbarkeit. Anfragen koennen an die oben genannte Kontaktadresse
-            gerichtet werden.
-        </p>
+        <div data-lang-content="en">
+            <h2>9. Data subject rights</h2>
+            <p>
+                If the legal requirements under the GDPR are met, data subjects may in particular have
+                rights to access, rectification, erasure, restriction of processing, objection, and data
+                portability. Requests can be sent to the contact address listed above.
+            </p>
+        </div>
+        <div data-lang-content="de">
+            <h2>9. Rechte betroffener Personen</h2>
+            <p>
+                Sofern die Voraussetzungen der DSGVO vorliegen, bestehen insbesondere Rechte auf
+                Auskunft, Berichtigung, Loeschung, Einschraenkung der Verarbeitung, Widerspruch
+                sowie Datenuebertragbarkeit. Anfragen koennen an die oben genannte Kontaktadresse
+                gerichtet werden.
+            </p>
+        </div>
     </section>
 
     <section class="section">
-        <h2>10. Aenderungen dieser Datenschutzerklaerung</h2>
-        <p>
-            Diese Datenschutzerklaerung kann angepasst werden, wenn sich die App, ihre
-            Funktionen oder die rechtlichen Anforderungen aendern. Massgeblich ist die jeweils
-            auf dieser Seite veroeffentlichte Fassung.
-        </p>
+        <div data-lang-content="en">
+            <h2>10. Changes to this Privacy Policy</h2>
+            <p>
+                This Privacy Policy may be updated if the app, its functions, or legal requirements change.
+                The version published on this page is authoritative.
+            </p>
+        </div>
+        <div data-lang-content="de">
+            <h2>10. Aenderungen dieser Datenschutzerklaerung</h2>
+            <p>
+                Diese Datenschutzerklaerung kann angepasst werden, wenn sich die App, ihre
+                Funktionen oder die rechtlichen Anforderungen aendern. Massgeblich ist die jeweils
+                auf dieser Seite veroeffentlichte Fassung.
+            </p>
+        </div>
     </section>
 
     <footer>
-        PDF Scanner Datenschutzerklaerung, Stand 21. Maerz 2026.
+        <span data-lang-content="en">PDF Scanner Privacy Policy, last updated March 22, 2026.</span>
+        <span data-lang-content="de">PDF Scanner Datenschutzerklaerung, Stand 22. Maerz 2026.</span>
     </footer>
 </main>
+
+<script>
+    (function () {
+        const contentBlocks = document.querySelectorAll("[data-lang-content]");
+        const buttons = document.querySelectorAll("[data-lang-button]");
+        const pageTitle = document.getElementById("page-title");
+        const titles = {
+            en: "Privacy Policy",
+            de: "Datenschutzerklaerung"
+        };
+        const descriptions = {
+            en: "Privacy Policy for the Android app PDF Scanner by Guenther Meusburger.",
+            de: "Datenschutzerklaerung fuer die Android-App PDF Scanner von Guenther Meusburger."
+        };
+
+        function setLanguage(lang) {
+            const activeLang = lang === "de" ? "de" : "en";
+            document.documentElement.lang = activeLang;
+            document.title = titles[activeLang] + " | PDF Scanner";
+            const description = document.querySelector('meta[name="description"]');
+            if (description) {
+                description.setAttribute("content", descriptions[activeLang]);
+            }
+            if (pageTitle) {
+                pageTitle.textContent = titles[activeLang];
+            }
+
+            contentBlocks.forEach((block) => {
+                block.classList.toggle("active", block.getAttribute("data-lang-content") === activeLang);
+            });
+            buttons.forEach((button) => {
+                const isActive = button.getAttribute("data-lang-button") === activeLang;
+                button.classList.toggle("active", isActive);
+                button.setAttribute("aria-pressed", isActive ? "true" : "false");
+            });
+
+            try {
+                localStorage.setItem("pdf-scanner-privacy-lang", activeLang);
+            } catch (_) {
+            }
+        }
+
+        let preferredLang = "en";
+        try {
+            preferredLang = localStorage.getItem("pdf-scanner-privacy-lang") || preferredLang;
+        } catch (_) {
+        }
+        if (!preferredLang || (preferredLang !== "de" && preferredLang !== "en")) {
+            preferredLang = navigator.language && navigator.language.toLowerCase().startsWith("de") ? "de" : "en";
+        }
+
+        buttons.forEach((button) => {
+            button.addEventListener("click", function () {
+                setLanguage(button.getAttribute("data-lang-button"));
+            });
+        });
+
+        setLanguage(preferredLang);
+    }());
+</script>
 </body>
 </html>

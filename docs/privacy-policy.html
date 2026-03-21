@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datenschutzerklaerung | PDF Scanner</title>
+    <meta name="description" content="Datenschutzerklaerung fuer die Android-App PDF Scanner von Guenther Meusburger.">
+    <style>
+        :root {
+            --bg: #f6f7f3;
+            --surface: rgba(255, 255, 255, 0.9);
+            --surface-strong: #ffffff;
+            --text: #16211c;
+            --muted: #55635c;
+            --line: #d6ded8;
+            --accent: #0d6b57;
+            --accent-soft: #d7efe7;
+            --shadow: 0 18px 48px rgba(22, 33, 28, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top right, rgba(13, 107, 87, 0.12), transparent 28rem),
+                linear-gradient(180deg, #eef4ef 0%, var(--bg) 45%, #eef1ea 100%);
+            line-height: 1.65;
+        }
+
+        main {
+            width: min(860px, calc(100% - 32px));
+            margin: 40px auto 56px;
+        }
+
+        .hero,
+        .section {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .hero {
+            padding: 32px;
+            margin-bottom: 18px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 14px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        h1,
+        h2 {
+            margin: 0 0 12px;
+            line-height: 1.15;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 3.25rem);
+        }
+
+        h2 {
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
+        }
+
+        p,
+        li {
+            font-size: 1rem;
+        }
+
+        .meta {
+            margin-top: 18px;
+            color: var(--muted);
+        }
+
+        .section {
+            padding: 28px 30px;
+            margin-bottom: 14px;
+        }
+
+        .section p:last-child,
+        .section ul:last-child {
+            margin-bottom: 0;
+        }
+
+        ul {
+            margin: 14px 0 18px;
+            padding-left: 22px;
+        }
+
+        li + li {
+            margin-top: 8px;
+        }
+
+        a {
+            color: var(--accent);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .card {
+            padding: 16px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: var(--surface-strong);
+        }
+
+        .card strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        code {
+            font-family: "IBM Plex Mono", "Cascadia Code", monospace;
+            font-size: 0.95em;
+        }
+
+        footer {
+            color: var(--muted);
+            font-size: 0.95rem;
+            text-align: center;
+            padding: 6px 0 20px;
+        }
+
+        @media (max-width: 640px) {
+            main {
+                width: min(100% - 18px, 860px);
+                margin-top: 18px;
+                margin-bottom: 28px;
+            }
+
+            .hero,
+            .section {
+                padding: 22px 18px;
+                border-radius: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <section class="hero">
+        <div class="eyebrow">PDF Scanner</div>
+        <h1>Datenschutzerklaerung</h1>
+        <p>
+            Diese Datenschutzerklaerung gilt fuer die Android-App <strong>PDF Scanner</strong>
+            mit dem Paketnamen <code>info.meuse24.pdf_scanner</code>.
+        </p>
+        <div class="grid">
+            <div class="card">
+                <strong>Anbieter</strong>
+                Guenther Meusburger
+            </div>
+            <div class="card">
+                <strong>Kontakt</strong>
+                <a href="mailto:guenther.meusburger@gmail.com">guenther.meusburger@gmail.com</a>
+            </div>
+            <div class="card">
+                <strong>Quellcode</strong>
+                <a href="https://github.com/meuse24/PDF_Scanner">github.com/meuse24/PDF_Scanner</a>
+            </div>
+            <div class="card">
+                <strong>Stand</strong>
+                21. Maerz 2026
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>1. Kurzfassung</h2>
+        <p>
+            Die App speichert gescannte Dokumente grundsaetzlich lokal auf dem Geraet.
+            Es gibt kein Benutzerkonto, keine Werbung, kein eigenes Tracking, kein eigenes
+            Backend und keine Uebermittlung von Scans an Server des Entwicklers.
+        </p>
+        <p>
+            Fuer die Scan-Funktion wird der <strong>Google ML Kit Document Scanner</strong> ueber
+            <strong>Google Play Services</strong> verwendet. Laut Google erfolgt die Verarbeitung
+            der Eingabedaten und der Scan-Ergebnisse auf dem Geraet. Google weist jedoch darauf hin,
+            dass ML Kit gelegentlich Server fuer Updates und Kompatibilitaetsinformationen kontaktieren
+            und Leistungs- bzw. Nutzungsmetriken an Google uebermitteln kann.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>2. Welche Daten in der App verarbeitet werden</h2>
+        <p>Die App verarbeitet ausschliesslich Daten, die fuer die Dokumentenverwaltung auf dem Geraet erforderlich sind. Dazu gehoeren insbesondere:</p>
+        <ul>
+            <li>gescannte PDF-Dateien</li>
+            <li>optional erzeugte Vorschaubilder der ersten Seite</li>
+            <li>Dateiname</li>
+            <li>lokaler Dateipfad</li>
+            <li>Erstellungszeitpunkt</li>
+            <li>Seitenanzahl</li>
+            <li>Dateigroesse</li>
+        </ul>
+        <p>
+            Diese Informationen werden lokal im App-Speicher und in einer lokalen Datenbank auf dem
+            Geraet abgelegt, damit die Ablage, Vorschau, Freigabe, der Export und das Loeschen von
+            Scans funktionieren.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>3. Wo die Daten gespeichert werden</h2>
+        <p>
+            Gescannte PDFs und Vorschaubilder werden im app-internen Speicher gespeichert.
+            Zusaetzlich speichert die App Metadaten in einer lokalen Room-Datenbank.
+        </p>
+        <p>
+            Nach der aktuellen Implementierung sind die gescannten PDFs und die lokale Datenbank
+            ausserdem explizit von Android-Cloud-Backups und vom Device-to-Device-Transfer ausgeschlossen.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>4. Netzwerk, Werbung, Konten und Berechtigungen</h2>
+        <ul>
+            <li>Die App fordert selbst keine Internet-Berechtigung an.</li>
+            <li>Die App enthaelt keine Werbung.</li>
+            <li>Die App verwendet kein eigenes Analytics- oder Crash-Reporting-System.</li>
+            <li>Die App verlangt kein Benutzerkonto und kein Abonnement.</li>
+            <li>Die App fordert keine Kamera-, Kontakt-, Mikrofon- oder Standortberechtigung an.</li>
+        </ul>
+        <p>
+            Der eigentliche Scan-Vorgang wird ueber Google ML Kit Document Scanner gestartet, ohne dass
+            die App selbst eine Kamera-Berechtigung anfordert.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>5. Einsatz von Google ML Kit Document Scanner und Google Play Services</h2>
+        <p>
+            Die App nutzt fuer das Scannen von Dokumenten die von Google bereitgestellte
+            Komponente <strong>ML Kit Document Scanner</strong>, die ueber
+            <strong>Google Play Services</strong> bereitgestellt wird.
+        </p>
+        <p>
+            Nach den offiziellen ML-Kit-Hinweisen von Google findet die Verarbeitung der Eingabedaten
+            wie Bilder und Scan-Ergebnisse vollstaendig auf dem Geraet statt; diese Daten werden nicht
+            an Google-Server gesendet. Google weist jedoch ebenfalls darauf hin, dass ML Kit APIs
+            gelegentlich Google-Server kontaktieren koennen, um Fehlerbehebungen, aktualisierte Modelle
+            oder Hardware-Kompatibilitaetsinformationen zu beziehen. Ausserdem koennen Leistungs- und
+            Nutzungsmetriken der API an Google uebermittelt werden.
+        </p>
+        <p>
+            Daneben kann Google Play Services gemaess den Einstellungen des Geraets und des Google-Kontos
+            weitere Daten verarbeiten. Darauf hat der Entwickler dieser App keinen vollstaendigen Einfluss.
+            Fuer diese Verarbeitung gelten die Datenschutzbestimmungen von Google.
+        </p>
+        <p>
+            Offizielle Informationen:
+            <br>
+            <a href="https://developers.google.com/ml-kit/terms">ML Kit Terms &amp; Privacy</a>
+            <br>
+            <a href="https://support.google.com/android/answer/10546414">Informationen zu Google Play Services</a>
+            <br>
+            <a href="https://policies.google.com/privacy">Google Datenschutzerklaerung</a>
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>6. Teilen und Exportieren von Dateien</h2>
+        <p>
+            Die App kann Scans auf ausdrueckliche Aktion des Nutzers an andere Apps weitergeben
+            oder in den Download-Bereich des Geraets exportieren.
+        </p>
+        <ul>
+            <li>Beim <strong>Teilen</strong> wird die Datei an die vom Nutzer ausgewaehlte Ziel-App uebergeben.</li>
+            <li>Beim <strong>Export</strong> wird eine Kopie der Datei in den Download-Bereich des Geraets geschrieben.</li>
+        </ul>
+        <p>
+            Ab diesem Zeitpunkt richtet sich die weitere Verarbeitung nach der Datenschutzerklaerung der
+            jeweils genutzten Ziel-App, des Dienstes oder des Geraeteherstellers.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>7. Speicherdauer</h2>
+        <p>
+            Lokal gespeicherte Scans, Vorschaubilder und Metadaten bleiben auf dem Geraet,
+            bis sie durch den Nutzer in der App geloescht oder die App deinstalliert wird.
+            Exportierte oder geteilte Kopien koennen ausserhalb der App weiter bestehen.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>8. Rechtsgrundlagen nach DSGVO</h2>
+        <p>
+            Soweit personenbezogene Daten verarbeitet werden, erfolgt dies zur Bereitstellung der
+            vom Nutzer angeforderten App-Funktionen gemaess Art. 6 Abs. 1 lit. b DSGVO sowie
+            auf Grundlage des berechtigten Interesses an einer stabilen, sicheren und kompatiblen
+            Bereitstellung der App gemaess Art. 6 Abs. 1 lit. f DSGVO.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>9. Rechte betroffener Personen</h2>
+        <p>
+            Sofern die Voraussetzungen der DSGVO vorliegen, bestehen insbesondere Rechte auf
+            Auskunft, Berichtigung, Loeschung, Einschraenkung der Verarbeitung, Widerspruch
+            sowie Datenuebertragbarkeit. Anfragen koennen an die oben genannte Kontaktadresse
+            gerichtet werden.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>10. Aenderungen dieser Datenschutzerklaerung</h2>
+        <p>
+            Diese Datenschutzerklaerung kann angepasst werden, wenn sich die App, ihre
+            Funktionen oder die rechtlichen Anforderungen aendern. Massgeblich ist die jeweils
+            auf dieser Seite veroeffentlichte Fassung.
+        </p>
+    </section>
+
+    <footer>
+        PDF Scanner Datenschutzerklaerung, Stand 21. Maerz 2026.
+    </footer>
+</main>
+</body>
+</html>

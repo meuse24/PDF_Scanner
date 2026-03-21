@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MEUSE24 PDF Scanner</string>
+    <string name="app_name">PDF Scanner</string>
     <string name="nav_archive">文件库</string>
     <string name="nav_start_scanner">启动扫描仪</string>
     <string name="nav_help">帮助</string>

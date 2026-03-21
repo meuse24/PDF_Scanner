@@ -25,7 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import info.meuse24.pdf_scanner.R
 
 @Composable
 fun HelpScreen() {
@@ -35,80 +37,40 @@ fun HelpScreen() {
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
     ) {
-        Text("Anleitung", style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(R.string.help_screen_title), style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(24.dp))
 
-        SectionTitle("Dokument scannen")
-        HelpStep(
-            icon = { Icon(Icons.Default.Add, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) },
-            step = "1.",
-            text = "Tippe auf den + Button (unten rechts) oder wähle im Hamburger-Menu -> Scanner starten."
-        )
-        HelpStep(
-            icon = { Icon(Icons.Default.PhotoCamera, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) },
-            step = "2.",
-            text = "Der Google Document Scanner öffnet sich. Fotografiere eine oder mehrere Seiten — Ränder und Perspektive werden automatisch korrigiert."
-        )
-        HelpStep(
-            icon = { Icon(Icons.Default.Save, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) },
-            step = "3.",
-            text = "Nach dem Scan öffnet sich ein Dialog. Gib einen Dateinamen ein und tippe Speichern. Das PDF wird lokal auf deinem Geraet gespeichert."
-        )
+        SectionTitle(stringResource(R.string.help_section_scan))
+        HelpStep(icon = { Icon(Icons.Default.Add, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) }, step = "1.", text = stringResource(R.string.help_step1))
+        HelpStep(icon = { Icon(Icons.Default.PhotoCamera, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) }, step = "2.", text = stringResource(R.string.help_step2))
+        HelpStep(icon = { Icon(Icons.Default.Save, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) }, step = "3.", text = stringResource(R.string.help_step3))
 
         Spacer(Modifier.height(20.dp))
         HorizontalDivider()
         Spacer(Modifier.height(20.dp))
 
-        SectionTitle("Ablage verwalten")
-        HelpStep(
-            icon = { Icon(Icons.Default.PictureAsPdf, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) },
-            step = "·",
-            text = "Tippe auf einen Eintrag in der Liste, um das PDF in einem externen Viewer zu öffnen."
-        )
-        HelpStep(
-            icon = { Icon(Icons.Default.Share, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) },
-            step = "·",
-            text = "Tippe auf das Teilen-Icon, um das PDF per E-Mail, Messenger oder anderen Apps zu versenden."
-        )
-        HelpStep(
-            icon = { Icon(Icons.Default.Delete, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.error) },
-            step = "·",
-            text = "Tippe auf das Löschen-Icon, um ein Dokument dauerhaft zu entfernen."
-        )
+        SectionTitle(stringResource(R.string.help_section_archive))
+        HelpStep(icon = { Icon(Icons.Default.PictureAsPdf, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) }, step = "·", text = stringResource(R.string.help_item_open))
+        HelpStep(icon = { Icon(Icons.Default.Share, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) }, step = "·", text = stringResource(R.string.help_item_share))
+        HelpStep(icon = { Icon(Icons.Default.Delete, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.error) }, step = "·", text = stringResource(R.string.help_item_delete))
 
         Spacer(Modifier.height(20.dp))
         HorizontalDivider()
         Spacer(Modifier.height(20.dp))
 
-        SectionTitle("Navigation")
-        HelpStep(
-            icon = { Icon(Icons.Default.FolderOpen, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) },
-            step = "·",
-            text = "Ueber das Hamburger-Menu (oben links) erreichst du die Ablage, den Scanner, die Hilfe und den Info-Screen."
-        )
+        SectionTitle(stringResource(R.string.help_section_navigation))
+        HelpStep(icon = { Icon(Icons.Default.FolderOpen, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.primary) }, step = "·", text = stringResource(R.string.help_nav_text))
 
         Spacer(Modifier.height(20.dp))
         HorizontalDivider()
         Spacer(Modifier.height(20.dp))
 
-        SectionTitle("Hinweise")
-        Text(
-            "• Die App benötigt keinen direkten Kamera-Zugriff — der ML Kit Document Scanner läuft als eigener System-Prozess.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        SectionTitle(stringResource(R.string.help_section_notes))
+        Text("• ${stringResource(R.string.help_note1)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(8.dp))
-        Text(
-            "• Alle PDFs werden lokal im App-Verzeichnis gespeichert und verlassen das Gerät nicht.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Text("• ${stringResource(R.string.help_note2)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(8.dp))
-        Text(
-            "• Für Mehrseitige Dokumente einfach mehrere Seiten hintereinander fotografieren — der Scanner verbindet sie automatisch zu einem PDF.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Text("• ${stringResource(R.string.help_note3)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(32.dp))
     }
 }
@@ -120,18 +82,10 @@ private fun SectionTitle(text: String) {
 }
 
 @Composable
-private fun HelpStep(
-    icon: @Composable () -> Unit,
-    step: String,
-    text: String
-) {
+private fun HelpStep(icon: @Composable () -> Unit, step: String, text: String) {
     Row(verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 6.dp)) {
         icon()
         Spacer(Modifier.width(10.dp))
-        Text(
-            text = "$step  $text",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        Text("$step  $text", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
@@ -34,27 +35,28 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.ui.help.HelpScreen
 import info.meuse24.pdf_scanner.ui.home.HomeScreen
 import info.meuse24.pdf_scanner.ui.info.InfoScreen
 import kotlinx.coroutines.launch
-import androidx.compose.material.icons.filled.Add
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation() {
-    val navController    = rememberNavController()
-    val drawerState      = rememberDrawerState(DrawerValue.Closed)
-    val scope            = rememberCoroutineScope()
-    val currentEntry     by navController.currentBackStackEntryAsState()
-    val currentRoute     = currentEntry?.destination?.route
-    val canNavigateBack  = navController.previousBackStackEntry != null
+    val navController   = rememberNavController()
+    val drawerState     = rememberDrawerState(DrawerValue.Closed)
+    val scope           = rememberCoroutineScope()
+    val currentEntry    by navController.currentBackStackEntryAsState()
+    val currentRoute    = currentEntry?.destination?.route
+    val canNavigateBack = navController.previousBackStackEntry != null
 
     var scanTrigger by remember { mutableStateOf(false) }
 
@@ -67,19 +69,19 @@ fun AppNavigation() {
             ModalDrawerSheet {
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    "MEUSE24 PDF Scanner",
-                    style = MaterialTheme.typography.titleMedium,
+                    stringResource(R.string.app_name),
+                    style     = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.primary
+                    modifier  = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                    color     = MaterialTheme.colorScheme.primary
                 )
                 Spacer(Modifier.height(4.dp))
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(Modifier.height(8.dp))
 
                 DrawerItem(
-                    icon  = Icons.Default.FolderOpen,
-                    label = "Ablage",
+                    icon     = Icons.Default.FolderOpen,
+                    label    = stringResource(R.string.nav_archive),
                     selected = currentRoute == Screen.Ablage.route
                 ) {
                     navController.navigate(Screen.Ablage.route) {
@@ -89,8 +91,8 @@ fun AppNavigation() {
                 }
 
                 DrawerItem(
-                    icon  = Icons.Default.PhotoCamera,
-                    label = "Scanner starten",
+                    icon     = Icons.Default.PhotoCamera,
+                    label    = stringResource(R.string.nav_start_scanner),
                     selected = false
                 ) {
                     if (currentRoute != Screen.Ablage.route) {
@@ -107,8 +109,8 @@ fun AppNavigation() {
                 Spacer(Modifier.height(8.dp))
 
                 DrawerItem(
-                    icon  = Icons.AutoMirrored.Filled.Help,
-                    label = "Hilfe",
+                    icon     = Icons.AutoMirrored.Filled.Help,
+                    label    = stringResource(R.string.nav_help),
                     selected = currentRoute == Screen.Help.route
                 ) {
                     navController.navigate(Screen.Help.route)
@@ -116,8 +118,8 @@ fun AppNavigation() {
                 }
 
                 DrawerItem(
-                    icon  = Icons.Default.Info,
-                    label = "Info",
+                    icon     = Icons.Default.Info,
+                    label    = stringResource(R.string.nav_info),
                     selected = currentRoute == Screen.Info.route
                 ) {
                     navController.navigate(Screen.Info.route)
@@ -132,26 +134,26 @@ fun AppNavigation() {
                     title = {
                         Text(
                             when (currentRoute) {
-                                Screen.Help.route -> "Hilfe"
-                                Screen.Info.route -> "Info"
-                                else              -> "MEUSE24 PDF Scanner"
+                                Screen.Help.route -> stringResource(R.string.nav_help)
+                                Screen.Info.route -> stringResource(R.string.nav_info)
+                                else              -> stringResource(R.string.app_name)
                             }
                         )
                     },
                     navigationIcon = {
                         if (canNavigateBack) {
                             IconButton(onClick = { navController.navigateUp() }) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Zurück")
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cd_navigate_back))
                             }
                         } else {
                             IconButton(onClick = { openDrawer() }) {
-                                Icon(Icons.Default.Menu, contentDescription = "Menü öffnen")
+                                Icon(Icons.Default.Menu, stringResource(R.string.cd_open_menu))
                             }
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        containerColor        = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor     = MaterialTheme.colorScheme.onPrimaryContainer,
                         navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 )
@@ -159,7 +161,7 @@ fun AppNavigation() {
             floatingActionButton = {
                 if (currentRoute == Screen.Ablage.route || currentRoute == null) {
                     FloatingActionButton(onClick = { scanTrigger = true }) {
-                        Icon(Icons.Default.Add, contentDescription = "Neuen Scan starten")
+                        Icon(Icons.Default.Add, stringResource(R.string.cd_new_scan))
                     }
                 }
             }
@@ -171,8 +173,8 @@ fun AppNavigation() {
             ) {
                 composable(Screen.Ablage.route) {
                     HomeScreen(
-                        scanTrigger      = scanTrigger,
-                        onScanTriggered  = { scanTrigger = false }
+                        scanTrigger     = scanTrigger,
+                        onScanTriggered = { scanTrigger = false }
                     )
                 }
                 composable(Screen.Help.route) { HelpScreen() }
@@ -184,10 +186,10 @@ fun AppNavigation() {
 
 @Composable
 private fun DrawerItem(
-    icon: ImageVector,
-    label: String,
+    icon:     ImageVector,
+    label:    String,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick:  () -> Unit
 ) {
     NavigationDrawerItem(
         icon     = { Icon(icon, contentDescription = label) },

@@ -12,11 +12,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import info.meuse24.pdf_scanner.R
 
 @Composable
 fun InfoScreen() {
@@ -26,28 +28,17 @@ fun InfoScreen() {
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
     ) {
-        Text("MEUSE24 PDF Scanner", style = MaterialTheme.typography.headlineMedium)
-        Text("Version 1.0", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
+        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(R.string.info_version), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
         Spacer(Modifier.height(24.dp))
 
-        // Copyright
-        SectionHeader("Copyright & Lizenz")
-        Text(
-            "© 2026 Günther Meusburger",
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
-        )
+        SectionHeader(stringResource(R.string.info_section_copyright))
+        Text(stringResource(R.string.info_copyright), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
         Spacer(Modifier.height(8.dp))
         Text(
             text = buildAnnotatedString {
-                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append("MIT License\n") }
-                append(
-                    "Permission is hereby granted, free of charge, to any person obtaining a copy " +
-                    "of this software and associated documentation files (the \"Software\"), to deal " +
-                    "in the Software without restriction, including without limitation the rights to " +
-                    "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies " +
-                    "of the Software, and to permit persons to whom the Software is furnished to do so."
-                )
+                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append(stringResource(R.string.info_license_title) + "\n") }
+                append(stringResource(R.string.info_license_body))
             },
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -57,20 +48,18 @@ fun InfoScreen() {
         HorizontalDivider()
         Spacer(Modifier.height(20.dp))
 
-        // Tech Stack
-        SectionHeader("Tech Stack")
-        InfoRow("Sprache",        "Kotlin 2.2.10")
-        InfoRow("UI-Framework",   "Jetpack Compose + Material Design 3")
-        InfoRow("Architektur",    "MVVM + Clean Architecture")
-        InfoRow("Asynchronität",  "Kotlin Coroutines & Flow")
-        InfoRow("Plattform",      "Android 10+ (API 29+)")
+        SectionHeader(stringResource(R.string.info_section_techstack))
+        InfoRow(stringResource(R.string.info_label_language),     "Kotlin 2.2.10")
+        InfoRow(stringResource(R.string.info_label_ui),           "Jetpack Compose + Material Design 3")
+        InfoRow(stringResource(R.string.info_label_architecture), "MVVM + Clean Architecture")
+        InfoRow(stringResource(R.string.info_label_async),        "Kotlin Coroutines & Flow")
+        InfoRow(stringResource(R.string.info_label_platform),     "Android 10+ (API 29+)")
 
         Spacer(Modifier.height(24.dp))
         HorizontalDivider()
         Spacer(Modifier.height(20.dp))
 
-        // Libraries
-        SectionHeader("Bibliotheken")
+        SectionHeader(stringResource(R.string.info_section_libraries))
         InfoRow("Google ML Kit Document Scanner", "16.0.0")
         InfoRow("Jetpack Room",                  "2.8.4")
         InfoRow("Hilt (Dagger)",                 "2.59.2")
@@ -83,31 +72,13 @@ fun InfoScreen() {
         HorizontalDivider()
         Spacer(Modifier.height(20.dp))
 
-        // Credits
-        SectionHeader("Credits")
-        Text(
-            "Diese App wurde vollständig mit Unterstützung von",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        SectionHeader(stringResource(R.string.info_section_credits))
+        Text(stringResource(R.string.info_credits_intro), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(6.dp))
-        Text(
-            "Claude Code (claude.ai/code)",
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Text(
-            "by Anthropic",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Text("Claude Code (claude.ai/code)", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+        Text(stringResource(R.string.info_credits_by), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(8.dp))
-        Text(
-            "Planung, Architektur, Implementierung, Icon-Design und Dokumentation wurden im Dialog mit dem KI-Assistenten Claude Code erarbeitet.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Text(stringResource(R.string.info_credits_detail), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(32.dp))
     }
 }

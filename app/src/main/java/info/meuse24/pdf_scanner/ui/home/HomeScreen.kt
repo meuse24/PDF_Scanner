@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -49,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
+import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import java.io.File
 import java.text.SimpleDateFormat
@@ -79,7 +81,6 @@ fun HomeScreen(
         }
     }
 
-    // Externally triggered scan (from FAB in AppNavigation or drawer)
     LaunchedEffect(scanTrigger) {
         if (scanTrigger) {
             val options = GmsDocumentScannerOptions.Builder()
@@ -100,8 +101,8 @@ fun HomeScreen(
         EmptyState()
     } else {
         ScanList(
-            scans       = scans,
-            onItemClick = { record ->
+            scans        = scans,
+            onItemClick  = { record ->
                 val file = File(record.filepath)
                 if (file.exists()) {
                     val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
@@ -124,7 +125,7 @@ fun HomeScreen(
                                 putExtra(Intent.EXTRA_STREAM, uri)
                                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             },
-                            "PDF teilen"
+                            context.getString(R.string.share_pdf_title)
                         )
                     )
                 }
@@ -136,30 +137,28 @@ fun HomeScreen(
     if (showSaveDialog) {
         AlertDialog(
             onDismissRequest = { showSaveDialog = false; pendingScanResult = null },
-            title   = { Text("Dokument speichern") },
+            title   = { Text(stringResource(R.string.dialog_save_title)) },
             text    = {
                 OutlinedTextField(
                     value         = filenameInput,
                     onValueChange = { filenameInput = it },
-                    label         = { Text("Dateiname") },
+                    label         = { Text(stringResource(R.string.dialog_filename_label)) },
                     singleLine    = true
                 )
             },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        val pdf = pendingScanResult?.pdf
-                        if (filenameInput.isNotBlank() && pdf != null) {
-                            viewModel.saveScan(pdf.uri, pdf.pageCount, filenameInput.trim())
-                            showSaveDialog = false
-                            pendingScanResult = null
-                        }
+                TextButton(onClick = {
+                    val pdf = pendingScanResult?.pdf
+                    if (filenameInput.isNotBlank() && pdf != null) {
+                        viewModel.saveScan(pdf.uri, pdf.pageCount, filenameInput.trim())
+                        showSaveDialog = false
+                        pendingScanResult = null
                     }
-                ) { Text("Speichern") }
+                }) { Text(stringResource(R.string.action_save)) }
             },
             dismissButton = {
                 TextButton(onClick = { showSaveDialog = false; pendingScanResult = null }) {
-                    Text("Abbrechen")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -168,9 +167,9 @@ fun HomeScreen(
     if (error != null) {
         AlertDialog(
             onDismissRequest = viewModel::clearError,
-            title   = { Text("Fehler") },
+            title   = { Text(stringResource(R.string.error_title)) },
             text    = { Text(error!!) },
-            confirmButton = { TextButton(onClick = viewModel::clearError) { Text("OK") } }
+            confirmButton = { TextButton(onClick = viewModel::clearError) { Text(stringResource(R.string.action_ok)) } }
         )
     }
 }
@@ -178,9 +177,9 @@ fun HomeScreen(
 @Composable
 private fun EmptyState(modifier: Modifier = Modifier) {
     Column(
-        modifier             = modifier.fillMaxSize(),
-        verticalArrangement  = Arrangement.Center,
-        horizontalAlignment  = Alignment.CenterHorizontally
+        modifier            = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
             Icons.Default.PictureAsPdf,
@@ -189,27 +188,19 @@ private fun EmptyState(modifier: Modifier = Modifier) {
             tint               = MaterialTheme.colorScheme.outline
         )
         Spacer(Modifier.height(16.dp))
-        Text(
-            text  = "Keine Scans vorhanden",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.outline
-        )
+        Text(stringResource(R.string.home_empty_title), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.outline)
         Spacer(Modifier.height(4.dp))
-        Text(
-            text  = "Tippe auf + um zu beginnen",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.outline
-        )
+        Text(stringResource(R.string.home_empty_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
     }
 }
 
 @Composable
 private fun ScanList(
-    scans:        List<ScanRecord>,
-    modifier:     Modifier = Modifier,
-    onItemClick:  (ScanRecord) -> Unit,
-    onShareClick: (ScanRecord) -> Unit,
-    onDeleteClick:(ScanRecord) -> Unit
+    scans:         List<ScanRecord>,
+    modifier:      Modifier = Modifier,
+    onItemClick:   (ScanRecord) -> Unit,
+    onShareClick:  (ScanRecord) -> Unit,
+    onDeleteClick: (ScanRecord) -> Unit
 ) {
     LazyColumn(modifier = modifier, contentPadding = PaddingValues(8.dp)) {
         items(scans, key = { it.id }) { record ->
@@ -237,6 +228,7 @@ private fun ScanItem(
         if (record.fileSize < 1024 * 1024) "${record.fileSize / 1024} KB"
         else "%.1f MB".format(record.fileSize / (1024.0 * 1024.0))
     }
+    val subtitle = stringResource(R.string.scan_item_subtitle, dateStr, record.pageCount, sizeStr)
 
     Card(
         modifier = Modifier
@@ -247,29 +239,20 @@ private fun ScanItem(
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 Icons.Default.PictureAsPdf,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_pdf_document),
                 tint               = MaterialTheme.colorScheme.primary,
                 modifier           = Modifier.size(40.dp)
             )
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text     = record.filename,
-                    style    = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text  = "$dateStr  ·  ${record.pageCount} Seite(n)  ·  $sizeStr",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline
-                )
+                Text(record.filename, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline)
             }
             IconButton(onClick = onShare) {
-                Icon(Icons.Default.Share, contentDescription = "Teilen")
+                Icon(Icons.Default.Share, contentDescription = stringResource(R.string.cd_share))
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Löschen", tint = MaterialTheme.colorScheme.error)
+                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.cd_delete), tint = MaterialTheme.colorScheme.error)
             }
         }
     }

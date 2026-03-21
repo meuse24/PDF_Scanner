@@ -1,3 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MEUSE24 PDF Scanner</string>
+
+    <!-- Navigation drawer -->
+    <string name="nav_archive">Archive</string>
+    <string name="nav_start_scanner">Start Scanner</string>
+    <string name="nav_help">Help</string>
+    <string name="nav_info">Info</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_open_menu">Open menu</string>
+    <string name="cd_navigate_back">Back</string>
+    <string name="cd_new_scan">Start new scan</string>
+    <string name="cd_share">Share</string>
+    <string name="cd_delete">Delete</string>
+    <string name="cd_pdf_document">PDF document</string>
+
+    <!-- Home: empty state -->
+    <string name="home_empty_title">No scans available</string>
+    <string name="home_empty_hint">Tap + to get started</string>
+
+    <!-- Home: save dialog -->
+    <string name="dialog_save_title">Save document</string>
+    <string name="dialog_filename_label">File name</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+
+    <!-- Home: error -->
+    <string name="error_title">Error</string>
+
+    <!-- Home: share -->
+    <string name="share_pdf_title">Share PDF</string>
+
+    <!-- Scan list item — %1$s date, %2$d pages, %3$s size -->
+    <string name="scan_item_subtitle">%1$s · %2$d p. · %3$s</string>
+
+    <!-- Help screen -->
+    <string name="help_screen_title">Instructions</string>
+    <string name="help_section_scan">Scan a document</string>
+    <string name="help_step1">Tap the + button (bottom right) or choose Start Scanner from the menu.</string>
+    <string name="help_step2">The Google Document Scanner opens. Photograph one or more pages — edges and perspective are corrected automatically.</string>
+    <string name="help_step3">After scanning, a dialog appears. Enter a file name and tap Save. The PDF is stored locally on your device.</string>
+    <string name="help_section_archive">Manage Archive</string>
+    <string name="help_item_open">Tap an entry in the list to open the PDF in an external viewer.</string>
+    <string name="help_item_share">Tap the share icon to send the PDF via email, messenger, or other apps.</string>
+    <string name="help_item_delete">Tap the delete icon to permanently remove a document.</string>
+    <string name="help_section_navigation">Navigation</string>
+    <string name="help_nav_text">Use the hamburger menu (top left) to access the Archive, Scanner, Help, and Info screens.</string>
+    <string name="help_section_notes">Notes</string>
+    <string name="help_note1">The app does not require direct camera access — the ML Kit Document Scanner runs as a separate system process.</string>
+    <string name="help_note2">All PDFs are stored locally in the app directory and do not leave the device.</string>
+    <string name="help_note3">For multi-page documents, photograph multiple pages in sequence — the scanner automatically combines them into a single PDF.</string>
+
+    <!-- Info screen -->
+    <string name="info_version">Version 1.0</string>
+    <string name="info_section_copyright">Copyright &amp; License</string>
+    <string name="info_copyright">© 2026 Günther Meusburger</string>
+    <string name="info_license_title">MIT License</string>
+    <string name="info_license_body">Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so.</string>
+    <string name="info_section_techstack">Tech Stack</string>
+    <string name="info_label_language">Language</string>
+    <string name="info_label_ui">UI Framework</string>
+    <string name="info_label_architecture">Architecture</string>
+    <string name="info_label_async">Asynchrony</string>
+    <string name="info_label_platform">Platform</string>
+    <string name="info_section_libraries">Libraries</string>
+    <string name="info_section_credits">Credits</string>
+    <string name="info_credits_intro">This app was developed with the assistance of</string>
+    <string name="info_credits_by">by Anthropic</string>
+    <string name="info_credits_detail">Architecture, planning, implementation, icon design, and documentation were developed in collaboration with the AI assistant Claude Code.</string>
 </resources>

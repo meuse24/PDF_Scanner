@@ -54,6 +54,8 @@
     <string name="info_label_async">असंक्रमण</string>
     <string name="info_label_platform">प्लेटफ़ॉर्म</string>
     <string name="info_section_libraries">लाइब्रेरी</string>
+    <string name="info_section_source">सोर्स कोड</string>
+    <string name="info_repository_label">GitHub रिपॉजिटरी</string>
     <string name="info_section_credits">श्रेय</string>
     <string name="info_credits_intro">यह ऐप निम्नलिखित की सहायता से विकसित किया गया</string>
     <string name="info_credits_by">by Anthropic</string>

@@ -54,6 +54,8 @@
     <string name="info_label_async">المعالجة غير المتزامنة</string>
     <string name="info_label_platform">المنصة</string>
     <string name="info_section_libraries">المكتبات</string>
+    <string name="info_section_source">الكود المصدري</string>
+    <string name="info_repository_label">مستودع GitHub</string>
     <string name="info_section_credits">شكر وتقدير</string>
     <string name="info_credits_intro">تم تطوير هذا التطبيق بمساعدة</string>
     <string name="info_credits_by">by Anthropic</string>

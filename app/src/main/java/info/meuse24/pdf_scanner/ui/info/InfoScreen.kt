@@ -1,5 +1,6 @@
 package info.meuse24.pdf_scanner.ui.info
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,10 +13,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
@@ -72,6 +75,16 @@ fun InfoScreen() {
         HorizontalDivider()
         Spacer(Modifier.height(20.dp))
 
+        SectionHeader(stringResource(R.string.info_section_source))
+        RepositoryLink(
+            label = stringResource(R.string.info_repository_label),
+            url   = "https://github.com/meuse24/PDF_Scanner"
+        )
+
+        Spacer(Modifier.height(24.dp))
+        HorizontalDivider()
+        Spacer(Modifier.height(20.dp))
+
         SectionHeader(stringResource(R.string.info_section_credits))
         Text(stringResource(R.string.info_credits_intro), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(6.dp))
@@ -80,6 +93,20 @@ fun InfoScreen() {
         Spacer(Modifier.height(8.dp))
         Text(stringResource(R.string.info_credits_detail), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(32.dp))
+    }
+}
+
+@Composable
+private fun RepositoryLink(label: String, url: String) {
+    val uriHandler = LocalUriHandler.current
+    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+        Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.outline)
+        Text(
+            text = url,
+            style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline),
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.clickable { uriHandler.openUri(url) }
+        )
     }
 }
 

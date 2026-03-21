@@ -54,6 +54,8 @@
     <string name="info_label_async">非同期処理</string>
     <string name="info_label_platform">プラットフォーム</string>
     <string name="info_section_libraries">ライブラリ</string>
+    <string name="info_section_source">ソースコード</string>
+    <string name="info_repository_label">GitHub リポジトリ</string>
     <string name="info_section_credits">クレジット</string>
     <string name="info_credits_intro">このアプリは以下のサポートを受けて開発されました</string>
     <string name="info_credits_by">by Anthropic</string>

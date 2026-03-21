@@ -54,6 +54,8 @@
     <string name="info_label_async">Assincronismo</string>
     <string name="info_label_platform">Plataforma</string>
     <string name="info_section_libraries">Bibliotecas</string>
+    <string name="info_section_source">Código-fonte</string>
+    <string name="info_repository_label">Repositório GitHub</string>
     <string name="info_section_credits">Créditos</string>
     <string name="info_credits_intro">Este app foi desenvolvido com o auxílio de</string>
     <string name="info_credits_by">by Anthropic</string>

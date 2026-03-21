@@ -26,7 +26,7 @@ ui/
 │   └── AppNavigation.kt     # ModalNavigationDrawer + Scaffold + NavHost
 ├── home/
 │   ├── HomeScreen.kt        # Scan-Liste / Empty State (kein eigenes Scaffold)
-│   └── HomeViewModel.kt     # saveScan, deleteScan, error-State
+│   └── HomeViewModel.kt     # saveScan, deleteScan, error-State; @ApplicationContext für Strings
 ├── help/HelpScreen.kt       # Anleitung
 └── info/InfoScreen.kt       # Copyright, Tech Stack, Bibliotheken, Credits
 
@@ -34,7 +34,7 @@ data/
 ├── local/
 │   ├── ScanRecord.kt        # Room @Entity
 │   ├── ScanDao.kt           # getAllScans() : Flow, insert, delete
-│   └── AppDatabase.kt       # @Database, Version 1
+│   └── AppDatabase.kt       # @Database, Version 1, Name "pdf_scanner_db"
 └── repository/
     └── ScanRepository.kt    # @Singleton, wrapped DAO
 
@@ -55,6 +55,8 @@ MainActivity.kt              # @AndroidEntryPoint → AppNavigation()
 - `Scaffold` mit `TopAppBar` (dynamischer Titel + Hamburger/Back-Icon) und FAB (nur auf Ablage-Screen)
 - `NavHost` mit drei Routes: `ablage`, `help`, `info`
 
+Help und Info navigieren mit `popUpTo(Screen.Ablage.route) + launchSingleTop = true`, sodass sie immer direkt über Ablage liegen und sich nicht mehrfach stapeln können.
+
 Der Scanner-Trigger (`scanTrigger: Boolean`) wird von `AppNavigation` verwaltet und als Parameter an `HomeScreen` übergeben. `HomeScreen` reagiert darauf per `LaunchedEffect` und ruft `GmsDocumentScanning` auf.
 
 ### Scanner-Pattern
@@ -73,6 +75,9 @@ LaunchedEffect(scanTrigger) {
             .addOnSuccessListener { intentSender ->
                 scanLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
             }
+            .addOnFailureListener { e ->
+                viewModel.reportError(e.message ?: context.getString(R.string.error_scanner_unavailable))
+            }
         onScanTriggered() // Flag sofort zurücksetzen
     }
 }
@@ -80,9 +85,22 @@ LaunchedEffect(scanTrigger) {
 
 Ergebnis auslesen: `GmsDocumentScanningResult.fromActivityResultIntent(result.data)?.pdf?.let { pdf -> pdf.uri, pdf.pageCount }`
 
-### FileProvider
+### FileProvider & Dateispeicherung
 
 PDFs werden in `context.filesDir/scans/` gespeichert. FileProvider-Authority: `${applicationId}.fileprovider` (konfiguriert in `res/xml/file_paths.xml`).
+
+Doppelte Dateinamen werden in `FileUtil.savePdfFromUri()` automatisch aufgelöst (`_2`, `_3`, …). `HomeViewModel` speichert `savedFile.nameWithoutExtension` als `ScanRecord.filename`, damit DB und Dateisystem immer übereinstimmen.
+
+### Fehlerbehandlung
+
+Alle Fehlermeldungen sind lokalisiert (kein Literal-String im Kotlin-Code):
+- `FileUtil` verwendet `context.getString(R.string.error_*)` — Context ist per `@ApplicationContext` injiziert
+- `HomeViewModel` erhält ebenfalls `@ApplicationContext context: Context` und nutzt `context.getString()`
+- UI-Fehler (kein PDF-Viewer, Scanner nicht verfügbar) werden über `viewModel.reportError(String)` geleitet
+
+### Backup / Privacy
+
+`res/xml/backup_rules.xml` (API < 31) und `res/xml/data_extraction_rules.xml` (API 31+) schließen `filesDir/scans/` und die Room-DB `pdf_scanner_db` explizit von Cloud-Backup und Device-Transfer aus.
 
 ## Tech Stack & Versionen
 
@@ -108,4 +126,8 @@ In `gradle.properties` ist `android.disallowKotlinSourceSets=false` gesetzt — 
 
 Adaptives Icon in `res/drawable/`:
 - `ic_launcher_background.xml` — Verlauf Deep Indigo → Teal mit Radial-Shine
-- `ic_launcher_foreground.xml` — Weißes Dokument mit gefaltetem Eck, grauen Inhaltslinien, rotem PDF-Footer mit weißem „PDF"-Schriftzug (P/D/F als Pfade), Neon-Cyan-Scanstrahl + Amber-Ursprungspunkt
+- `ic_launcher_foreground.xml` — Rotes Dokument mit weißem Falteck, grauen Inhaltslinien, Neon-Cyan-Scanstrahl + Amber-Ursprungspunkt; alles innerhalb der adaptiven Safe Zone (x/y 18–90 im 108dp-Canvas)
+
+## Internationalisierung
+
+10 Sprachen: `values/` (EN, Default), `values-de/`, `values-es/`, `values-fr/`, `values-pt/`, `values-zh-rCN/`, `values-ar/`, `values-ja/`, `values-ru/`, `values-hi/`. Alle Fehlermeldungen sind ebenfalls in allen Sprachen vorhanden. Neue Strings immer in alle 10 Dateien eintragen.

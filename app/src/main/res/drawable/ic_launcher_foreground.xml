@@ -6,60 +6,61 @@
     android:viewportHeight="108">
 
     <!--
-        Adaptive Icon Safe Zone: 72dp × 72dp, centred in 108dp canvas → x/y: 18–90.
-        All content stays within that range so nothing gets clipped by launcher masks.
+        Adaptive Icon Safe Zone: x/y 18–90 (72dp centred in 108dp canvas).
+        Document placed with ~8dp breathing room inside the safe zone.
+        Top of doc: y=26 (8dp from safe-zone top 18)
+        Bottom of doc: y=82 (8dp from safe-zone bottom 90)
     -->
 
-    <!-- Document shadow for depth -->
+    <!-- Document shadow -->
     <path
         android:fillColor="#50000000"
-        android:pathData="M25,23 L69,23 L87,41 L87,91 L25,91 Z"/>
+        android:pathData="M25,29 L69,29 L87,47 L87,85 L25,85 Z"/>
 
     <!-- Document body — white -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M22,20 L66,20 L84,38 L84,88 L22,88 Z"/>
+        android:pathData="M22,26 L66,26 L84,44 L84,82 L22,82 Z"/>
 
     <!-- Folded corner — subtle shadow -->
     <path
         android:fillColor="#25000000"
-        android:pathData="M66,20 L84,38 L66,38 Z"/>
+        android:pathData="M66,26 L84,44 L66,44 Z"/>
 
-    <!-- Content lines — simulated text rows -->
-    <path android:fillColor="#CCCCCC" android:pathData="M30,46 L76,46 L76,49 L30,49 Z"/>
-    <path android:fillColor="#CCCCCC" android:pathData="M30,53 L70,53 L70,56 L30,56 Z"/>
-    <path android:fillColor="#CCCCCC" android:pathData="M30,60 L73,60 L73,63 L30,63 Z"/>
-    <path android:fillColor="#CCCCCC" android:pathData="M30,67 L64,67 L64,70 L30,70 Z"/>
+    <!-- Content lines -->
+    <path android:fillColor="#CCCCCC" android:pathData="M30,48 L76,48 L76,51 L30,51 Z"/>
+    <path android:fillColor="#CCCCCC" android:pathData="M30,55 L70,55 L70,58 L30,58 Z"/>
+    <path android:fillColor="#CCCCCC" android:pathData="M30,62 L73,62 L73,65 L30,65 Z"/>
 
-    <!-- PDF footer strip — red -->
+    <!-- PDF footer — red -->
     <path
         android:fillColor="#E53935"
-        android:pathData="M22,74 L84,74 L84,88 L22,88 Z"/>
+        android:pathData="M22,68 L84,68 L84,82 L22,82 Z"/>
 
-    <!-- Letter P (white, in footer) — left bar + closed bowl top half -->
-    <path android:fillColor="#FFFFFF" android:pathData="M34,77 L37,77 L37,87 L34,87 Z"/>
-    <path android:fillColor="#FFFFFF" android:pathData="M34,77 L44,77 L44,80 L34,80 Z"/>
-    <path android:fillColor="#FFFFFF" android:pathData="M41,77 L44,77 L44,83 L41,83 Z"/>
-    <path android:fillColor="#FFFFFF" android:pathData="M34,81 L44,81 L44,84 L34,84 Z"/>
+    <!-- Letter P (y=71–80, white) -->
+    <path android:fillColor="#FFFFFF" android:pathData="M34,71 L37,71 L37,80 L34,80 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M34,71 L44,71 L44,74 L34,74 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M41,71 L44,71 L44,77 L41,77 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M34,75 L44,75 L44,78 L34,78 Z"/>
 
-    <!-- Letter D (white) — left bar + elliptic arc forms curved right side -->
+    <!-- Letter D — left bar + elliptic arc for curved right side -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M47,77 L47,87 L50,87 A8,5 0 0 1 50,77 Z"/>
+        android:pathData="M47,71 L47,80 L50,80 A7,4.5 0 0 1 50,71 Z"/>
 
-    <!-- Letter F (white) — left bar + top bar + shorter middle bar -->
-    <path android:fillColor="#FFFFFF" android:pathData="M61,77 L64,77 L64,87 L61,87 Z"/>
-    <path android:fillColor="#FFFFFF" android:pathData="M61,77 L73,77 L73,80 L61,80 Z"/>
-    <path android:fillColor="#FFFFFF" android:pathData="M61,82 L70,82 L70,85 L61,85 Z"/>
+    <!-- Letter F -->
+    <path android:fillColor="#FFFFFF" android:pathData="M60,71 L63,71 L63,80 L60,80 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M60,71 L72,71 L72,74 L60,74 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M60,76 L69,76 L69,79 L60,79 Z"/>
 
-    <!-- Scan beam — outer glow (cyan) -->
+    <!-- Scan beam — outer glow -->
     <path
         android:fillColor="#00000000"
         android:strokeColor="#29B6F6"
         android:strokeWidth="8"
         android:strokeAlpha="0.3"
         android:strokeLineCap="round"
-        android:pathData="M20,84 L86,24"/>
+        android:pathData="M22,78 L84,28"/>
 
     <!-- Scan beam — mid glow -->
     <path
@@ -68,7 +69,7 @@
         android:strokeWidth="4.5"
         android:strokeAlpha="0.55"
         android:strokeLineCap="round"
-        android:pathData="M20,84 L86,24"/>
+        android:pathData="M22,78 L84,28"/>
 
     <!-- Scan beam — bright neon core -->
     <path
@@ -76,7 +77,7 @@
         android:strokeColor="#00E5FF"
         android:strokeWidth="2"
         android:strokeLineCap="round"
-        android:pathData="M20,84 L86,24"/>
+        android:pathData="M22,78 L84,28"/>
 
     <!-- Scan beam — white hot center line -->
     <path
@@ -85,20 +86,20 @@
         android:strokeWidth="0.7"
         android:strokeAlpha="0.9"
         android:strokeLineCap="round"
-        android:pathData="M20,84 L86,24"/>
+        android:pathData="M22,78 L84,28"/>
 
-    <!-- Origin dot — amber (bottom-left, within safe zone) -->
+    <!-- Origin dot — amber -->
     <path
         android:fillColor="#FFD740"
-        android:pathData="M16,80 A4,4 0 1 0 24,80 A4,4 0 1 0 16,80 Z"/>
+        android:pathData="M18.5,74.5 A3.5,3.5 0 1 0 25.5,74.5 A3.5,3.5 0 1 0 18.5,74.5 Z"/>
     <path
         android:fillColor="#FFFFFF"
         android:fillAlpha="0.8"
-        android:pathData="M18.5,80 A1.5,1.5 0 1 0 21.5,80 A1.5,1.5 0 1 0 18.5,80 Z"/>
+        android:pathData="M20.5,74.5 A1.5,1.5 0 1 0 23.5,74.5 A1.5,1.5 0 1 0 20.5,74.5 Z"/>
 
-    <!-- Endpoint dot — cyan (top-right, within safe zone) -->
+    <!-- Endpoint dot — cyan -->
     <path
         android:fillColor="#00E5FF"
-        android:pathData="M82,20 A4,4 0 1 0 90,20 A4,4 0 1 0 82,20 Z"/>
+        android:pathData="M80.5,24.5 A3.5,3.5 0 1 0 87.5,24.5 A3.5,3.5 0 1 0 80.5,24.5 Z"/>
 
 </vector>

@@ -1,0 +1,14 @@
+package info.meuse24.pdf_scanner.data.local
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "scan_records")
+data class ScanRecord(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val filename: String,
+    val filepath: String,
+    val timestamp: Long,
+    val pageCount: Int,
+    val fileSize: Long
+)

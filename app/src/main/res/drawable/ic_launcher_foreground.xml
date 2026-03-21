@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- M letter — subtle cyan shadow for depth -->
+    <path
+        android:fillColor="#4029B6F6"
+        android:pathData="M22,82 L22,32 L34,32 L54,64 L74,32 L86,32 L86,82 L74,82 L74,56 L57,82 L51,82 L34,56 L34,82 Z"/>
+
+    <!-- M letter — solid white body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,80 L20,30 L32,30 L54,62 L76,30 L88,30 L88,80 L76,80 L76,54 L57,80 L51,80 L32,54 L32,80 Z"/>
+
+    <!-- Scan beam — wide outer glow (cyan, low alpha) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#29B6F6"
+        android:strokeWidth="9"
+        android:strokeAlpha="0.3"
+        android:strokeLineCap="round"
+        android:pathData="M10,84 L98,24"/>
+
+    <!-- Scan beam — mid glow -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="5"
+        android:strokeAlpha="0.55"
+        android:strokeLineCap="round"
+        android:pathData="M10,84 L98,24"/>
+
+    <!-- Scan beam — bright neon core -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M10,84 L98,24"/>
+
+    <!-- Scan beam — white hot center line -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="0.8"
+        android:strokeAlpha="0.9"
+        android:strokeLineCap="round"
+        android:pathData="M10,84 L98,24"/>
+
+    <!-- Origin dot — amber/gold (scanner source, bottom-left) -->
+    <path
+        android:fillColor="#FFD740"
+        android:pathData="M6,84 A4,4 0 1 0 14,84 A4,4 0 1 0 6,84 Z"/>
+
+    <!-- Origin dot — white hot core -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.8"
+        android:pathData="M9,84 A1.5,1.5 0 1 0 12,84 A1.5,1.5 0 1 0 9,84 Z"/>
+
+    <!-- Endpoint dot — cyan (top-right) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M94,24 A4,4 0 1 0 102,24 A4,4 0 1 0 94,24 Z"/>
+
+</vector>

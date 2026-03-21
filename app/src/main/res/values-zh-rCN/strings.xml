@@ -19,6 +19,8 @@
     <string name="action_cancel">取消</string>
     <string name="action_ok">确定</string>
     <string name="error_title">错误</string>
+    <string name="error_no_pdf_viewer">未安装PDF查看器</string>
+    <string name="error_scanner_unavailable">扫描仪不可用</string>
     <string name="share_pdf_title">分享 PDF</string>
     <string name="scan_item_subtitle">%1$s · %2$d 页 · %3$s</string>
     <string name="help_screen_title">使用说明</string>

@@ -113,7 +113,8 @@ fun AppNavigation() {
                     label    = stringResource(R.string.nav_help),
                     selected = currentRoute == Screen.Help.route
                 ) {
-                    navController.navigate(Screen.Help.route)
+                    // launchSingleTop prevents stacking identical destinations (#7)
+                    navController.navigate(Screen.Help.route) { launchSingleTop = true }
                     closeDrawer()
                 }
 
@@ -122,7 +123,7 @@ fun AppNavigation() {
                     label    = stringResource(R.string.nav_info),
                     selected = currentRoute == Screen.Info.route
                 ) {
-                    navController.navigate(Screen.Info.route)
+                    navController.navigate(Screen.Info.route) { launchSingleTop = true }
                     closeDrawer()
                 }
             }

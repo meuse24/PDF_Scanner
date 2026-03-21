@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.ui.home
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -93,6 +94,12 @@ fun HomeScreen(
                 .addOnSuccessListener { intentSender ->
                     scanLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
                 }
+                .addOnFailureListener { e ->
+                    // Show error instead of silently doing nothing (#4)
+                    viewModel.reportError(
+                        e.message ?: context.getString(R.string.error_scanner_unavailable)
+                    )
+                }
             onScanTriggered()
         }
     }
@@ -106,12 +113,17 @@ fun HomeScreen(
                 val file = File(record.filepath)
                 if (file.exists()) {
                     val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-                    context.startActivity(
-                        Intent(Intent.ACTION_VIEW).apply {
-                            setDataAndType(uri, "application/pdf")
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        }
-                    )
+                    try {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW).apply {
+                                setDataAndType(uri, "application/pdf")
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                        )
+                    } catch (e: ActivityNotFoundException) {
+                        // No PDF viewer installed — show error instead of crashing (#5)
+                        viewModel.reportError(context.getString(R.string.error_no_pdf_viewer))
+                    }
                 }
             },
             onShareClick = { record ->

@@ -35,11 +35,12 @@ class HomeViewModel @Inject constructor(
                 val savedFile = fileUtil.savePdfFromUri(pdfUri, filename)
                 repository.saveScan(
                     ScanRecord(
-                        filename = filename,
-                        filepath = savedFile.absolutePath,
+                        // Use the actual (possibly suffixed) filename so it matches filepath (#1)
+                        filename  = savedFile.nameWithoutExtension,
+                        filepath  = savedFile.absolutePath,
                         timestamp = System.currentTimeMillis(),
                         pageCount = pageCount,
-                        fileSize = savedFile.length()
+                        fileSize  = savedFile.length()
                     )
                 )
             } catch (e: Exception) {
@@ -50,9 +51,20 @@ class HomeViewModel @Inject constructor(
 
     fun deleteScan(record: ScanRecord) {
         viewModelScope.launch(Dispatchers.IO) {
-            File(record.filepath).delete()
-            repository.deleteScan(record)
+            val file = File(record.filepath)
+            // Only count as deleted if the file is already gone or delete() succeeds (#6)
+            val deleted = !file.exists() || file.delete()
+            if (deleted) {
+                repository.deleteScan(record)
+            } else {
+                _error.value = "Datei konnte nicht gelöscht werden"
+            }
         }
+    }
+
+    /** Exposes error reporting for UI-layer failures (scanner unavailable, no PDF viewer, …). */
+    fun reportError(message: String) {
+        _error.value = message
     }
 
     fun clearError() {

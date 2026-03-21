@@ -19,6 +19,8 @@
     <string name="action_cancel">Cancelar</string>
     <string name="action_ok">OK</string>
     <string name="error_title">Error</string>
+    <string name="error_no_pdf_viewer">No hay visor de PDF instalado</string>
+    <string name="error_scanner_unavailable">Escáner no disponible</string>
     <string name="share_pdf_title">Compartir PDF</string>
     <string name="scan_item_subtitle">%1$s · %2$d p. · %3$s</string>
     <string name="help_screen_title">Instrucciones</string>

@@ -1,19 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample data extraction rules file; uncomment and customize as necessary.
-   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
-   for details.
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Data extraction rules for API 31+.
+    Exclude scanned PDFs and the Room database from both cloud backup and
+    device-to-device transfer so they never leave the device (#2).
 -->
 <data-extraction-rules>
     <cloud-backup>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
+        <exclude domain="file"     path="scans"/>
+        <exclude domain="database" path="pdf_scanner_db"/>
     </cloud-backup>
-    <!--
     <device-transfer>
-        <include .../>
-        <exclude .../>
+        <exclude domain="file"     path="scans"/>
+        <exclude domain="database" path="pdf_scanner_db"/>
     </device-transfer>
-    -->
 </data-extraction-rules>

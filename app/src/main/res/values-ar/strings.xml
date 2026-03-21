@@ -60,8 +60,12 @@
     <string name="info_section_libraries">المكتبات</string>
     <string name="info_section_source">الكود المصدري</string>
     <string name="info_repository_label">مستودع GitHub</string>
+    <string name="info_section_privacy">الخصوصية</string>
+    <string name="info_privacy_body">لا يحتوي هذا التطبيق على إعلانات، ولا يجمع أي بيانات، ولا يتطلب اتصالاً بالإنترنت، وليس له نموذج اشتراك. لا تُطلب أذونات الكاميرا أو جهات الاتصال أو الشبكة. تُخزَّن جميع المستندات الممسوحة حصرياً على جهازك ولا تغادره أبداً.</string>
     <string name="info_section_credits">شكر وتقدير</string>
     <string name="info_credits_intro">تم تطوير هذا التطبيق بمساعدة</string>
     <string name="info_credits_by">by Anthropic</string>
     <string name="info_credits_detail">تم تطوير البنية والتخطيط والتنفيذ وتصميم الأيقونة والتوثيق بالتعاون مع مساعد الذكاء الاصطناعي Claude Code.</string>
+    <string name="info_credits_reviews_intro">مراجعات الكود بواسطة</string>
+    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
 </resources>

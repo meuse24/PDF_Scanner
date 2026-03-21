@@ -131,3 +131,10 @@ Adaptives Icon in `res/drawable/`:
 ## Internationalisierung
 
 10 Sprachen: `values/` (EN, Default), `values-de/`, `values-es/`, `values-fr/`, `values-pt/`, `values-zh-rCN/`, `values-ar/`, `values-ja/`, `values-ru/`, `values-hi/`. Alle Fehlermeldungen sind ebenfalls in allen Sprachen vorhanden. Neue Strings immer in alle 10 Dateien eintragen.
+
+## Info-Screen Abschnitte
+
+Reihenfolge: App-Name/Version → Copyright & License → Tech Stack → Libraries → Source Code → **Privacy** → Credits.
+
+- **Privacy-Abschnitt** (`info_section_privacy`, `info_privacy_body`): Erklärt, dass die App keine Werbung, keine Datenerhebung, keinen Internet-Zugriff, kein Abo und keine Kamera-/Netzwerkberechtigungen benötigt.
+- **Credits**: Claude Code (Architektur, Implementierung), OpenAI Codex und Google Gemini CLI (Code-Reviews) — Strings: `info_credits_reviews_intro`, `info_credits_reviews_tools`.

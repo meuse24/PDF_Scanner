@@ -60,8 +60,12 @@
     <string name="info_section_libraries">ライブラリ</string>
     <string name="info_section_source">ソースコード</string>
     <string name="info_repository_label">GitHub リポジトリ</string>
+    <string name="info_section_privacy">プライバシー</string>
+    <string name="info_privacy_body">このアプリは広告を含まず、データを収集せず、ネットワークアクセスを必要とせず、サブスクリプションモデルもありません。カメラ、連絡先、ネットワークの権限は一切要求しません。すべてのスキャンはデバイス上にのみ保存され、外部に送信されることは一切ありません。</string>
     <string name="info_section_credits">クレジット</string>
     <string name="info_credits_intro">このアプリは以下のサポートを受けて開発されました</string>
     <string name="info_credits_by">by Anthropic</string>
     <string name="info_credits_detail">アーキテクチャ、計画、実装、アイコンデザイン、ドキュメントはすべて AI アシスタント Claude Code との協働で制作されました。</string>
+    <string name="info_credits_reviews_intro">コードレビュー：</string>
+    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
 </resources>

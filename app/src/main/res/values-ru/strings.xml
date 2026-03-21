@@ -60,8 +60,12 @@
     <string name="info_section_libraries">Библиотеки</string>
     <string name="info_section_source">Исходный код</string>
     <string name="info_repository_label">Репозиторий GitHub</string>
+    <string name="info_section_privacy">Конфиденциальность</string>
+    <string name="info_privacy_body">Приложение не содержит рекламы, не собирает никаких данных, не требует доступа к сети и не имеет модели подписки. Разрешения на доступ к камере, контактам или сети не запрашиваются. Все отсканированные документы хранятся исключительно на вашем устройстве и никогда его не покидают.</string>
     <string name="info_section_credits">Благодарности</string>
     <string name="info_credits_intro">Это приложение разработано при помощи</string>
     <string name="info_credits_by">by Anthropic</string>
     <string name="info_credits_detail">Архитектура, планирование, реализация, дизайн иконки и документация созданы в сотрудничестве с ИИ-ассистентом Claude Code.</string>
+    <string name="info_credits_reviews_intro">Проверка кода:</string>
+    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
 </resources>

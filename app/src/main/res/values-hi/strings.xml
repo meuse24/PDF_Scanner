@@ -60,8 +60,12 @@
     <string name="info_section_libraries">लाइब्रेरी</string>
     <string name="info_section_source">सोर्स कोड</string>
     <string name="info_repository_label">GitHub रिपॉजिटरी</string>
+    <string name="info_section_privacy">गोपनीयता</string>
+    <string name="info_privacy_body">इस ऐप में कोई विज्ञापन नहीं है, यह कोई डेटा एकत्र नहीं करता, इसे इंटरनेट एक्सेस की आवश्यकता नहीं है और इसका कोई सदस्यता मॉडल नहीं है। कैमरा, संपर्क या नेटवर्क की कोई अनुमति नहीं मांगी जाती। सभी स्कैन केवल आपके डिवाइस पर संग्रहीत होते हैं और कभी भी डिवाइस नहीं छोड़ते।</string>
     <string name="info_section_credits">श्रेय</string>
     <string name="info_credits_intro">यह ऐप निम्नलिखित की सहायता से विकसित किया गया</string>
     <string name="info_credits_by">by Anthropic</string>
     <string name="info_credits_detail">आर्किटेक्चर, योजना, कार्यान्वयन, आइकन डिज़ाइन और दस्तावेज़ीकरण AI सहायक Claude Code के सहयोग से तैयार किए गए।</string>
+    <string name="info_credits_reviews_intro">कोड समीक्षा:</string>
+    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
 </resources>

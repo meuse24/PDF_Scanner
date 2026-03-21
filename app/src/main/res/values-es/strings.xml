@@ -60,8 +60,12 @@
     <string name="info_section_libraries">Bibliotecas</string>
     <string name="info_section_source">Código fuente</string>
     <string name="info_repository_label">Repositorio GitHub</string>
+    <string name="info_section_privacy">Privacidad</string>
+    <string name="info_privacy_body">Esta app no contiene publicidad, no recopila datos, no requiere acceso a Internet y no tiene modelo de suscripción. No se solicitan permisos de cámara, contactos ni red. Todos los escaneos se almacenan exclusivamente en su dispositivo y nunca lo abandonan.</string>
     <string name="info_section_credits">Créditos</string>
     <string name="info_credits_intro">Esta app fue desarrollada con la ayuda de</string>
     <string name="info_credits_by">by Anthropic</string>
     <string name="info_credits_detail">La arquitectura, planificación, implementación, diseño del icono y documentación fueron desarrollados en colaboración con el asistente de IA Claude Code.</string>
+    <string name="info_credits_reviews_intro">Revisiones de código por</string>
+    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
 </resources>

@@ -85,6 +85,17 @@ fun InfoScreen() {
         HorizontalDivider()
         Spacer(Modifier.height(20.dp))
 
+        SectionHeader(stringResource(R.string.info_section_privacy))
+        Text(
+            stringResource(R.string.info_privacy_body),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(Modifier.height(24.dp))
+        HorizontalDivider()
+        Spacer(Modifier.height(20.dp))
+
         SectionHeader(stringResource(R.string.info_section_credits))
         Text(stringResource(R.string.info_credits_intro), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(6.dp))
@@ -92,6 +103,10 @@ fun InfoScreen() {
         Text(stringResource(R.string.info_credits_by), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(8.dp))
         Text(stringResource(R.string.info_credits_detail), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(16.dp))
+        Text(stringResource(R.string.info_credits_reviews_intro), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(R.string.info_credits_reviews_tools), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.height(32.dp))
     }
 }

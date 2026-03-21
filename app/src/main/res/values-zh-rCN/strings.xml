@@ -60,8 +60,12 @@
     <string name="info_section_libraries">依赖库</string>
     <string name="info_section_source">源代码</string>
     <string name="info_repository_label">GitHub 仓库</string>
+    <string name="info_section_privacy">隐私</string>
+    <string name="info_privacy_body">本应用不含广告、不收集任何数据、不需要网络访问权限，也没有订阅模式。不会请求相机、联系人或网络权限。所有扫描文件仅存储在您的设备本地，永不离开设备。</string>
     <string name="info_section_credits">致谢</string>
     <string name="info_credits_intro">本应用在以下工具的协助下开发完成</string>
     <string name="info_credits_by">by Anthropic</string>
     <string name="info_credits_detail">架构设计、规划、实现、图标设计和文档均与 AI 助手 Claude Code 协作完成。</string>
+    <string name="info_credits_reviews_intro">代码审查：</string>
+    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
 </resources>

@@ -280,7 +280,15 @@ private fun ScanItem(
             val path = record.thumbnailPath ?: return@withContext null
             val file = File(path)
             if (!file.exists()) return@withContext null
-            BitmapFactory.decodeFile(file.absolutePath)?.asImageBitmap()
+            val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            BitmapFactory.decodeFile(file.absolutePath, opts)
+            val targetPx = 160 // ~40dp @ 4x density, safe upper bound
+            var sample = 1
+            while (opts.outWidth / (sample * 2) >= targetPx && opts.outHeight / (sample * 2) >= targetPx) {
+                sample *= 2
+            }
+            BitmapFactory.decodeFile(file.absolutePath, BitmapFactory.Options().apply { inSampleSize = sample })
+                ?.asImageBitmap()
         }
     }
 

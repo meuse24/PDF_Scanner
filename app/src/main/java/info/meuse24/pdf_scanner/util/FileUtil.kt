@@ -43,6 +43,25 @@ class FileUtil @Inject constructor(@ApplicationContext private val context: Cont
         return destFile
     }
 
+    fun saveThumbnailFromUri(sourceUri: Uri, filename: String): File? {
+        return try {
+            val scansDir = File(context.filesDir, "scans").apply { mkdirs() }
+            val destFile = File(scansDir, "$filename.jpg")
+            val inputStream = context.contentResolver.openInputStream(sourceUri) ?: return null
+            inputStream.use { input ->
+                destFile.outputStream().use { output -> input.copyTo(output) }
+            }
+            if (destFile.length() == 0L) {
+                destFile.delete()
+                null
+            } else {
+                destFile
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     fun getFileProviderUri(file: File): Uri =
         androidx.core.content.FileProvider.getUriForFile(
             context, "${context.packageName}.fileprovider", file

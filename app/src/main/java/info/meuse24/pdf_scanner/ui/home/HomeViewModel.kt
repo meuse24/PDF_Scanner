@@ -1,7 +1,10 @@
 package info.meuse24.pdf_scanner.ui.home
 
+import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
@@ -33,17 +37,25 @@ class HomeViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    fun saveScan(pdfUri: Uri, pageCount: Int, filename: String) {
+    private val _success = MutableStateFlow<String?>(null)
+    val success: StateFlow<String?> = _success.asStateFlow()
+
+    fun saveScan(pdfUri: Uri, pageCount: Int, filename: String, thumbnailUri: Uri? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val savedFile = fileUtil.savePdfFromUri(pdfUri, filename)
+                val baseName = savedFile.nameWithoutExtension
+                val thumbnailPath = thumbnailUri?.let {
+                    fileUtil.saveThumbnailFromUri(it, baseName)?.absolutePath
+                }
                 repository.saveScan(
                     ScanRecord(
-                        filename  = savedFile.nameWithoutExtension,
-                        filepath  = savedFile.absolutePath,
-                        timestamp = System.currentTimeMillis(),
-                        pageCount = pageCount,
-                        fileSize  = savedFile.length()
+                        filename      = baseName,
+                        filepath      = savedFile.absolutePath,
+                        timestamp     = System.currentTimeMillis(),
+                        pageCount     = pageCount,
+                        fileSize      = savedFile.length(),
+                        thumbnailPath = thumbnailPath
                     )
                 )
             } catch (e: Exception) {
@@ -57,9 +69,52 @@ class HomeViewModel @Inject constructor(
             val file = File(record.filepath)
             val deleted = !file.exists() || file.delete()
             if (deleted) {
+                record.thumbnailPath?.let { path ->
+                    val thumbFile = File(path)
+                    if (thumbFile.exists()) thumbFile.delete()
+                }
                 repository.deleteScan(record)
             } else {
                 _error.value = context.getString(R.string.error_delete_failed)
+            }
+        }
+    }
+
+    fun exportScan(record: ScanRecord) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val sourceFile = File(record.filepath)
+                if (!sourceFile.exists()) {
+                    _error.value = context.getString(R.string.error_export_failed)
+                    return@launch
+                }
+                val displayName = "${record.filename}.pdf"
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Downloads.DISPLAY_NAME, displayName)
+                    put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
+                    put(MediaStore.Downloads.IS_PENDING, 1)
+                }
+                val resolver = context.contentResolver
+                val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                val itemUri = resolver.insert(collection, contentValues)
+                    ?: run {
+                        _error.value = context.getString(R.string.error_export_failed)
+                        return@launch
+                    }
+                try {
+                    resolver.openOutputStream(itemUri)?.use { output ->
+                        sourceFile.inputStream().use { input -> input.copyTo(output) }
+                    }
+                    contentValues.clear()
+                    contentValues.put(MediaStore.Downloads.IS_PENDING, 0)
+                    resolver.update(itemUri, contentValues, null, null)
+                    _success.value = context.getString(R.string.export_success, displayName)
+                } catch (e: Exception) {
+                    resolver.delete(itemUri, null, null)
+                    _error.value = context.getString(R.string.error_export_failed)
+                }
+            } catch (e: Exception) {
+                _error.value = context.getString(R.string.error_export_failed)
             }
         }
     }
@@ -70,5 +125,9 @@ class HomeViewModel @Inject constructor(
 
     fun clearError() {
         _error.value = null
+    }
+
+    fun clearSuccess() {
+        _success.value = null
     }
 }

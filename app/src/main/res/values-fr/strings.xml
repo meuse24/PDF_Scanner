@@ -25,6 +25,10 @@
     <string name="error_pdf_empty">Le PDF enregistré est vide</string>
     <string name="error_delete_failed">Impossible de supprimer le fichier</string>
     <string name="error_save_failed">Erreur lors de l\'enregistrement</string>
+    <string name="action_export">Exporter</string>
+    <string name="export_success">Enregistré dans Téléchargements : %1$s</string>
+    <string name="error_export_failed">Échec de l\'exportation</string>
+    <string name="error_device_unsupported">Scanner non pris en charge sur cet appareil</string>
     <string name="share_pdf_title">Partager le PDF</string>
     <string name="scan_item_subtitle">%1$s · %2$d p. · %3$s</string>
     <string name="help_screen_title">Instructions</string>

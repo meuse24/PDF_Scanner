@@ -18,7 +18,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, "pdf_scanner_db").build()
+        Room.databaseBuilder(context, AppDatabase::class.java, "pdf_scanner_db")
+            .addMigrations(AppDatabase.MIGRATION_1_2)
+            .build()
 
     @Provides
     fun provideScanDao(db: AppDatabase): ScanDao = db.scanDao()

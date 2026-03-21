@@ -1,5 +1,6 @@
 package info.meuse24.pdf_scanner.data.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -10,5 +11,6 @@ data class ScanRecord(
     val filepath: String,
     val timestamp: Long,
     val pageCount: Int,
-    val fileSize: Long
+    val fileSize: Long,
+    @ColumnInfo(name = "thumbnail_path") val thumbnailPath: String? = null
 )

@@ -25,6 +25,10 @@
     <string name="error_pdf_empty">ملف PDF المحفوظ فارغ</string>
     <string name="error_delete_failed">تعذّر حذف الملف</string>
     <string name="error_save_failed">خطأ في حفظ الملف</string>
+    <string name="action_export">تصدير</string>
+    <string name="export_success">تم الحفظ في التنزيلات: %1$s</string>
+    <string name="error_export_failed">فشل التصدير</string>
+    <string name="error_device_unsupported">الماسح الضوئي غير مدعوم على هذا الجهاز</string>
     <string name="share_pdf_title">مشاركة PDF</string>
     <string name="scan_item_subtitle">%1$s · %2$d ص. · %3$s</string>
     <string name="help_screen_title">التعليمات</string>

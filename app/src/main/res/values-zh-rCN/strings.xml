@@ -25,6 +25,10 @@
     <string name="error_pdf_empty">保存的PDF为空</string>
     <string name="error_delete_failed">无法删除文件</string>
     <string name="error_save_failed">保存文件时出错</string>
+    <string name="action_export">导出</string>
+    <string name="export_success">已保存到下载：%1$s</string>
+    <string name="error_export_failed">导出失败</string>
+    <string name="error_device_unsupported">此设备不支持扫描仪</string>
     <string name="share_pdf_title">分享 PDF</string>
     <string name="scan_item_subtitle">%1$s · %2$d 页 · %3$s</string>
     <string name="help_screen_title">使用说明</string>

@@ -26,23 +26,23 @@ ui/
 │   └── AppNavigation.kt     # ModalNavigationDrawer + Scaffold + NavHost
 ├── home/
 │   ├── HomeScreen.kt        # Scan-Liste / Empty State (kein eigenes Scaffold)
-│   └── HomeViewModel.kt     # saveScan, deleteScan, error-State; @ApplicationContext für Strings
+│   └── HomeViewModel.kt     # saveScan, deleteScan, exportScan, _success-Flow; @ApplicationContext für Strings
 ├── help/HelpScreen.kt       # Anleitung
-└── info/InfoScreen.kt       # Copyright, Tech Stack, Bibliotheken, Credits
+└── info/InfoScreen.kt       # Copyright, Tech Stack, Bibliotheken, Source Code, Privacy, Credits
 
 data/
 ├── local/
-│   ├── ScanRecord.kt        # Room @Entity
+│   ├── ScanRecord.kt        # Room @Entity (inkl. thumbnailPath)
 │   ├── ScanDao.kt           # getAllScans() : Flow, insert, delete
-│   └── AppDatabase.kt       # @Database, Version 1, Name "pdf_scanner_db"
+│   └── AppDatabase.kt       # @Database, Version 2, Name "pdf_scanner_db"
 └── repository/
     └── ScanRepository.kt    # @Singleton, wrapped DAO
 
 di/
-└── DatabaseModule.kt        # Hilt @Module: AppDatabase + ScanDao
+└── DatabaseModule.kt        # Hilt @Module: AppDatabase + ScanDao (inkl. MIGRATION_1_2)
 
 util/
-└── FileUtil.kt              # savePdfFromUri(), getFileProviderUri()
+└── FileUtil.kt              # savePdfFromUri(), saveThumbnailFromUri()
 
 PdfScannerApp.kt             # @HiltAndroidApp
 MainActivity.kt              # @AndroidEntryPoint → AppNavigation()
@@ -67,7 +67,11 @@ LaunchedEffect(scanTrigger) {
     if (scanTrigger) {
         val options = GmsDocumentScannerOptions.Builder()
             .setGalleryImportAllowed(true)
-            .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_PDF)
+            .setResultFormats(
+                GmsDocumentScannerOptions.RESULT_FORMAT_PDF,
+                GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
+            )
+            .setPageLimit(50)
             .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
             .build()
         GmsDocumentScanning.getClient(options)
@@ -76,14 +80,20 @@ LaunchedEffect(scanTrigger) {
                 scanLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
             }
             .addOnFailureListener { e ->
-                viewModel.reportError(e.message ?: context.getString(R.string.error_scanner_unavailable))
+                val msg = if (e is MlKitException && e.errorCode == MlKitException.UNSUPPORTED)
+                    context.getString(R.string.error_device_unsupported)
+                else
+                    context.getString(R.string.error_scanner_unavailable)
+                viewModel.reportError(msg)
             }
         onScanTriggered() // Flag sofort zurücksetzen
     }
 }
 ```
 
-Ergebnis auslesen: `GmsDocumentScanningResult.fromActivityResultIntent(result.data)?.pdf?.let { pdf -> pdf.uri, pdf.pageCount }`
+Ergebnis auslesen: `GmsDocumentScanningResult.fromActivityResultIntent(result.data)` liefert `.pdf` (URI + pageCount) und `.pages` (JPEG-URIs, erstes Element = Thumbnail).
+
+Thumbnail-Anzeige in `ScanItem`: `produceState(Dispatchers.IO)` + zweistufiger `BitmapFactory.decodeFile` mit `inSampleSize` (Ziel 160px), kein externes Image-Loading-Framework.
 
 ### FileProvider & Dateispeicherung
 
@@ -91,12 +101,17 @@ PDFs werden in `context.filesDir/scans/` gespeichert. FileProvider-Authority: `$
 
 Doppelte Dateinamen werden in `FileUtil.savePdfFromUri()` automatisch aufgelöst (`_2`, `_3`, …). `HomeViewModel` speichert `savedFile.nameWithoutExtension` als `ScanRecord.filename`, damit DB und Dateisystem immer übereinstimmen.
 
-### Fehlerbehandlung
+### Fehlerbehandlung & Erfolgs-Feedback
 
 Alle Fehlermeldungen sind lokalisiert (kein Literal-String im Kotlin-Code):
 - `FileUtil` verwendet `context.getString(R.string.error_*)` — Context ist per `@ApplicationContext` injiziert
 - `HomeViewModel` erhält ebenfalls `@ApplicationContext context: Context` und nutzt `context.getString()`
 - UI-Fehler (kein PDF-Viewer, Scanner nicht verfügbar) werden über `viewModel.reportError(String)` geleitet
+- Erfolgsmeldungen (z. B. Export) über `_success: MutableStateFlow<String?>` → `LaunchedEffect` in `HomeScreen` zeigt Toast und ruft `clearSuccess()` auf
+
+### Export in Downloads
+
+`HomeViewModel.exportScan()` nutzt `MediaStore.Downloads` (API 29+, keine `WRITE_EXTERNAL_STORAGE`-Permission nötig). IS_PENDING-Pattern: Eintrag anlegen → kopieren → IS_PENDING auf 0 setzen. Bei Fehler wird der unvollständige Eintrag per `resolver.delete()` bereinigt.
 
 ### Backup / Privacy
 
@@ -109,6 +124,8 @@ Alle Fehlermeldungen sind lokalisiert (kein Literal-String im Kotlin-Code):
 | Kotlin | 2.2.10 |
 | AGP | 9.1.0 |
 | KSP | 2.2.10-2.0.2 |
+| core-ktx | 1.18.0 |
+| activity-compose | 1.13.0 |
 | Hilt | 2.59.2 |
 | Room | 2.8.4 |
 | Navigation Compose | 2.9.7 |

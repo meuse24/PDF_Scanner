@@ -122,6 +122,7 @@
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">Searchable PDF</string>
     <string name="dialog_searchable_hint">Text layer added via OCR (language model downloaded as needed)</string>
+    <string name="dialog_ocr_language">OCR language</string>
     <string name="cd_make_searchable">Make searchable</string>
     <string name="searchable_progress">Page %1$d of %2$d</string>
     <string name="searchable_success">PDF is now searchable: %1$s</string>

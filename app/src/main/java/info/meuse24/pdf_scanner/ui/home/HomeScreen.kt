@@ -59,8 +59,12 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -141,6 +145,8 @@ fun HomeScreen(
     var showSaveDialog     by remember { mutableStateOf(false) }
     var filenameInput      by rememberSaveable { mutableStateOf("") }
     var makeSearchable     by rememberSaveable { mutableStateOf(false) }
+    var selectedLang       by rememberSaveable { mutableStateOf(Locale.getDefault().language) }
+    var langMenuExpanded   by remember { mutableStateOf(false) }
 
     // ── Selection state ────────────────────────────────────────────────────────
     var selectedIds           by remember { mutableStateOf(emptySet<Long>()) }
@@ -485,6 +491,39 @@ fun HomeScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.outline
                         )
+                        Spacer(Modifier.height(10.dp))
+                        val ocrLanguages = listOf(
+                            "de" to "Deutsch", "en" to "English", "es" to "Español",
+                            "fr" to "Français", "pt" to "Português", "ru" to "Русский",
+                            "ar" to "العربية", "zh" to "中文", "ja" to "日本語", "hi" to "हिन्दी"
+                        )
+                        ExposedDropdownMenuBox(
+                            expanded        = langMenuExpanded,
+                            onExpandedChange = { langMenuExpanded = it }
+                        ) {
+                            OutlinedTextField(
+                                value         = ocrLanguages.find { it.first == selectedLang }?.second ?: selectedLang,
+                                onValueChange = {},
+                                readOnly      = true,
+                                label         = { Text(stringResource(R.string.dialog_ocr_language)) },
+                                trailingIcon  = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = langMenuExpanded) },
+                                colors        = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                                modifier      = Modifier
+                                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                                    .fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                expanded        = langMenuExpanded,
+                                onDismissRequest = { langMenuExpanded = false }
+                            ) {
+                                ocrLanguages.forEach { (code, name) ->
+                                    DropdownMenuItem(
+                                        text    = { Text(name) },
+                                        onClick = { selectedLang = code; langMenuExpanded = false }
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -496,11 +535,12 @@ fun HomeScreen(
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         viewModel.saveScan(
                             pdf.uri, pdf.pageCount, filenameInput.trim(),
-                            thumbnailUri, makeSearchable
+                            thumbnailUri, makeSearchable, selectedLang
                         )
                         showSaveDialog    = false
                         pendingScanResult = null
                         makeSearchable    = false
+                        selectedLang      = Locale.getDefault().language
                     }
                 }) { Text(stringResource(R.string.action_save)) }
             },
@@ -509,6 +549,7 @@ fun HomeScreen(
                     showSaveDialog    = false
                     pendingScanResult = null
                     makeSearchable    = false
+                    selectedLang      = Locale.getDefault().language
                 }) {
                     Text(stringResource(R.string.action_cancel))
                 }

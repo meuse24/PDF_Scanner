@@ -106,6 +106,7 @@
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">PDF pesquisável</string>
     <string name="dialog_searchable_hint">Camada de texto adicionada via OCR (modelo de idioma baixado conforme necessário)</string>
+    <string name="dialog_ocr_language">Idioma OCR</string>
     <string name="cd_make_searchable">Tornar pesquisável</string>
     <string name="searchable_progress">Página %1$d de %2$d</string>
     <string name="searchable_success">O PDF agora é pesquisável: %1$s</string>

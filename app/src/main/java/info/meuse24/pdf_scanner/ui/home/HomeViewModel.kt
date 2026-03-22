@@ -65,7 +65,8 @@ class HomeViewModel @Inject constructor(
         pageCount: Int,
         filename: String,
         thumbnailUri: Uri? = null,
-        makeSearchable: Boolean = false
+        makeSearchable: Boolean = false,
+        languageCode: String = Locale.getDefault().language
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -78,7 +79,7 @@ class HomeViewModel @Inject constructor(
                 var isSearchable = false
                 if (makeSearchable) {
                     try {
-                        val lang = Locale.getDefault().language
+                        val lang = languageCode
                         _ocrLoading.value = true
                         searchablePdfBuilder.makeSearchable(savedFile, lang) { cur, tot ->
                             _ocrProgress.value = cur to tot

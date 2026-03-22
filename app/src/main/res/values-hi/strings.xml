@@ -104,6 +104,7 @@
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">खोज योग्य PDF</string>
     <string name="dialog_searchable_hint">OCR के माध्यम से टेक्स्ट परत जोड़ी गई (भाषा मॉडल आवश्यकतानुसार डाउनलोड होता है)</string>
+    <string name="dialog_ocr_language">OCR भाषा</string>
     <string name="cd_make_searchable">खोज योग्य बनाएं</string>
     <string name="searchable_progress">पृष्ठ %1$d / %2$d</string>
     <string name="searchable_success">PDF अब खोज योग्य है: %1$s</string>

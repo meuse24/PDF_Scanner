@@ -106,6 +106,7 @@
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">PDF قابل للبحث</string>
     <string name="dialog_searchable_hint">إضافة طبقة نصية عبر OCR (يتم تنزيل نموذج اللغة عند الحاجة)</string>
+    <string name="dialog_ocr_language">لغة OCR</string>
     <string name="cd_make_searchable">جعله قابلاً للبحث</string>
     <string name="searchable_progress">صفحة %1$d من %2$d</string>
     <string name="searchable_success">أصبح PDF قابلاً للبحث: %1$s</string>

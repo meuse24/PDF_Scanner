@@ -106,6 +106,7 @@
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">PDF consultable</string>
     <string name="dialog_searchable_hint">Couche de texte ajoutée par OCR (modèle de langue téléchargé si nécessaire)</string>
+    <string name="dialog_ocr_language">Langue OCR</string>
     <string name="cd_make_searchable">Rendre consultable</string>
     <string name="searchable_progress">Page %1$d sur %2$d</string>
     <string name="searchable_success">Le PDF est désormais consultable : %1$s</string>

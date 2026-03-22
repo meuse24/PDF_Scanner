@@ -105,6 +105,7 @@
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">検索可能な PDF</string>
     <string name="dialog_searchable_hint">OCR でテキストレイヤーを追加します（言語モデルは必要に応じてダウンロードされます）</string>
+    <string name="dialog_ocr_language">OCR 言語</string>
     <string name="cd_make_searchable">検索可能にする</string>
     <string name="searchable_progress">%2$d ページ中 %1$d ページ目</string>
     <string name="searchable_success">PDF が検索可能になりました：%1$s</string>

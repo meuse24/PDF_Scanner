@@ -99,6 +99,7 @@
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">Durchsuchbares PDF</string>
     <string name="dialog_searchable_hint">Textebene per OCR hinzufügen (Sprachmodell wird bei Bedarf heruntergeladen)</string>
+    <string name="dialog_ocr_language">OCR-Sprache</string>
     <string name="cd_make_searchable">Durchsuchbar machen</string>
     <string name="searchable_progress">Seite %1$d von %2$d</string>
     <string name="searchable_success">PDF ist jetzt durchsuchbar: %1$s</string>

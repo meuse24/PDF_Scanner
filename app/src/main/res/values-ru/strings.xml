@@ -68,7 +68,7 @@
     <string name="info_label_async">Асинхронность</string>
     <string name="info_label_platform">Платформа</string>
     <string name="info_label_ocr_languages">Языки OCR</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (офлайн) + ZH · JA · HI (загр. при 1-м исп.)</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (офлайн) + HI (загр. при 1-м исп.)</string>
     <string name="info_section_libraries">Библиотеки</string>
     <string name="info_section_source">Исходный код</string>
     <string name="info_repository_label">Репозиторий GitHub</string>

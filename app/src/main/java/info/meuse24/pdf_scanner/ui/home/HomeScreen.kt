@@ -145,7 +145,10 @@ fun HomeScreen(
     var showSaveDialog     by remember { mutableStateOf(false) }
     var filenameInput      by rememberSaveable { mutableStateOf("") }
     var makeSearchable     by rememberSaveable { mutableStateOf(false) }
-    var selectedLang       by rememberSaveable { mutableStateOf(Locale.getDefault().language) }
+    val unsupportedLangs = setOf("zh", "ja")
+    var selectedLang       by rememberSaveable { mutableStateOf(
+        Locale.getDefault().language.let { if (it in unsupportedLangs) "en" else it }
+    ) }
     var langMenuExpanded   by remember { mutableStateOf(false) }
 
     // ── Selection state ────────────────────────────────────────────────────────
@@ -495,7 +498,7 @@ fun HomeScreen(
                         val ocrLanguages = listOf(
                             "de" to "Deutsch", "en" to "English", "es" to "Español",
                             "fr" to "Français", "pt" to "Português", "ru" to "Русский",
-                            "ar" to "العربية", "zh" to "中文", "ja" to "日本語", "hi" to "हिन्दी"
+                            "ar" to "العربية", "hi" to "हिन्दी"
                         )
                         ExposedDropdownMenuBox(
                             expanded        = langMenuExpanded,
@@ -540,7 +543,7 @@ fun HomeScreen(
                         showSaveDialog    = false
                         pendingScanResult = null
                         makeSearchable    = false
-                        selectedLang      = Locale.getDefault().language
+                        selectedLang      = Locale.getDefault().language.let { if (it in unsupportedLangs) "en" else it }
                     }
                 }) { Text(stringResource(R.string.action_save)) }
             },
@@ -549,7 +552,7 @@ fun HomeScreen(
                     showSaveDialog    = false
                     pendingScanResult = null
                     makeSearchable    = false
-                    selectedLang      = Locale.getDefault().language
+                    selectedLang      = Locale.getDefault().language.let { if (it in unsupportedLangs) "en" else it }
                 }) {
                     Text(stringResource(R.string.action_cancel))
                 }

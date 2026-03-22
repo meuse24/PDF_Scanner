@@ -68,7 +68,7 @@
     <string name="info_label_async">المعالجة غير المتزامنة</string>
     <string name="info_label_platform">المنصة</string>
     <string name="info_label_ocr_languages">لغات OCR</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (بدون إنترنت) + ZH · JA · HI (تنزيل عند الاستخدام الأول)</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (بدون إنترنت) + HI (تنزيل عند الاستخدام الأول)</string>
     <string name="info_section_libraries">المكتبات</string>
     <string name="info_section_source">الكود المصدري</string>
     <string name="info_repository_label">مستودع GitHub</string>

@@ -68,7 +68,7 @@
     <string name="info_label_async">Asincronía</string>
     <string name="info_label_platform">Plataforma</string>
     <string name="info_label_ocr_languages">Idiomas OCR</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (sin conexión) + ZH · JA · HI (descarga 1.er uso)</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (sin conexión) + HI (descarga 1.er uso)</string>
     <string name="info_section_libraries">Bibliotecas</string>
     <string name="info_section_source">Código fuente</string>
     <string name="info_repository_label">Repositorio GitHub</string>

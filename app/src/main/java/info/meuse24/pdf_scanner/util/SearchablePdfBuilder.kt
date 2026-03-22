@@ -98,19 +98,15 @@ class SearchablePdfBuilder @Inject constructor(
                             }
 
                             // Element-Ebene (Wörter) für präzise Textauswahl im PDF-Viewer
-                            pageResults.add(
-                                PageData(
-                                    widthPts, heightPts, bitmapW, bitmapH,
-                                    ocrText.textBlocks.flatMap { block ->
-                                        block.lines.flatMap { line ->
-                                            line.elements.mapNotNull { element ->
-                                                val bbox = element.boundingBox ?: return@mapNotNull null
-                                                WordData(element.text, Rect(bbox))
-                                            }
-                                        }
+                            val words = ocrText.textBlocks.flatMap { block ->
+                                block.lines.flatMap { line ->
+                                    line.elements.mapNotNull { element ->
+                                        val bbox = element.boundingBox ?: return@mapNotNull null
+                                        WordData(element.text, Rect(bbox))
                                     }
-                                )
-                            )
+                                }
+                            }
+                            pageResults.add(PageData(widthPts, heightPts, bitmapW, bitmapH, words))
                         }
                     }
                 }
@@ -169,9 +165,7 @@ class SearchablePdfBuilder @Inject constructor(
                             // Textmatrix [hScale 0 0 fontSize anchorX pdfY]
                             cs.setTextMatrix(Matrix(hScale, 0f, 0f, fontSize, anchorX, pdfY))
                             cs.showText(safeText)
-                        } catch (_: Exception) {
-                            // Wort überspringen wenn Font Zeichen nicht encodieren kann
-                        }
+                        } catch (_: Exception) { }
                     }
                     cs.endText()
                 }
@@ -199,21 +193,16 @@ class SearchablePdfBuilder @Inject constructor(
     private fun loadFont(document: PDDocument, languageCode: String): PDFont {
         val candidates = buildList {
             when (languageCode) {
-                "zh", "ja" -> {
-                    add("/system/fonts/NotoSansCJK-Regular.ttc")
-                    add("/system/fonts/NotoSansJP-Regular.otf")
-                    add("/system/fonts/DroidSansFallback.ttf")
-                    add("/system/fonts/NotoSansSC-Regular.otf")  // Samsung
-                }
                 "hi" -> {
+                    add("/system/fonts/NotoSansDevanagari-VF.ttf")
                     add("/system/fonts/NotoSansDevanagari-Regular.ttf")
                     add("/system/fonts/NotoSans-Regular.ttf")
                 }
                 "ar" -> {
                     add("/system/fonts/NotoSansArabic-Regular.ttf")
                     add("/system/fonts/NotoNaskhArabic-Regular.ttf")
-                    add("/system/fonts/DroidSansArabic.ttf")         // ältere Geräte
-                    add("/system/fonts/NotoSansArabic-VF.ttf")       // Variable Font (neuere AOSP)
+                    add("/system/fonts/DroidSansArabic.ttf")
+                    add("/system/fonts/NotoSansArabic-VF.ttf")
                 }
                 else -> Unit
             }

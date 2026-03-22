@@ -67,7 +67,7 @@
     <string name="info_label_async">非同期処理</string>
     <string name="info_label_platform">プラットフォーム</string>
     <string name="info_label_ocr_languages">OCR対応言語</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR（オフライン）+ ZH · JA · HI（初回起動時にダウンロード）</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR（オフライン）+ HI（初回起動時にダウンロード）</string>
     <string name="info_section_libraries">ライブラリ</string>
     <string name="info_section_source">ソースコード</string>
     <string name="info_repository_label">GitHub リポジトリ</string>

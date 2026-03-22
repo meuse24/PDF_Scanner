@@ -71,7 +71,7 @@
     <string name="info_section_source">源代码</string>
     <string name="info_repository_label">GitHub 仓库</string>
     <string name="info_section_privacy">隐私</string>
-    <string name="info_privacy_body">本应用不含广告、不收集任何数据、不需要网络访问权限，也没有订阅模式。不会请求相机、联系人或网络权限。所有扫描文件仅存储在您的设备本地，永不离开设备。</string>
+    <string name="info_privacy_body">本应用不含广告、不收集任何数据，也没有订阅模式。不会请求相机、联系人或网络权限。所有扫描文件仅存储在您的设备本地，永不离开设备。</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">本地</string>
     <string name="privacy_keyword_2">离线</string>

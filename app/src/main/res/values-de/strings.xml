@@ -71,7 +71,7 @@
     <string name="info_section_source">Quellcode</string>
     <string name="info_repository_label">GitHub-Repository</string>
     <string name="info_section_privacy">Datenschutz</string>
-    <string name="info_privacy_body">Diese App enthält keine Werbung, erhebt keine Daten, benötigt keinen Internetzugang und hat kein Abo-Modell. Es werden keine Kamera-, Kontakt- oder Netzwerkberechtigungen angefragt. Alle Scans werden ausschließlich auf Ihrem Gerät gespeichert und verlassen es nie.</string>
+    <string name="info_privacy_body">Diese App enthält keine Werbung, erhebt keine Daten und hat kein Abo-Modell. Es werden keine Kamera-, Kontakt- oder Netzwerkberechtigungen angefragt. Alle Scans werden ausschließlich auf Ihrem Gerät gespeichert und verlassen es nie.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Lokal</string>
     <string name="privacy_keyword_2">Offline</string>

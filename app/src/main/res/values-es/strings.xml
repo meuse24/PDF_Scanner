@@ -71,7 +71,7 @@
     <string name="info_section_source">Código fuente</string>
     <string name="info_repository_label">Repositorio GitHub</string>
     <string name="info_section_privacy">Privacidad</string>
-    <string name="info_privacy_body">Esta app no contiene publicidad, no recopila datos, no requiere acceso a Internet y no tiene modelo de suscripción. No se solicitan permisos de cámara, contactos ni red. Todos los escaneos se almacenan exclusivamente en su dispositivo y nunca lo abandonan.</string>
+    <string name="info_privacy_body">Esta app no contiene publicidad, no recopila datos y no tiene modelo de suscripción. No se solicitan permisos de cámara, contactos ni red. Todos los escaneos se almacenan exclusivamente en su dispositivo y nunca lo abandonan.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
     <string name="privacy_keyword_2">Sin conexión</string>

@@ -70,7 +70,7 @@
     <string name="info_section_source">ソースコード</string>
     <string name="info_repository_label">GitHub リポジトリ</string>
     <string name="info_section_privacy">プライバシー</string>
-    <string name="info_privacy_body">このアプリは広告を含まず、データを収集せず、ネットワークアクセスを必要とせず、サブスクリプションモデルもありません。カメラ、連絡先、ネットワークの権限は一切要求しません。すべてのスキャンはデバイス上にのみ保存され、外部に送信されることは一切ありません。</string>
+    <string name="info_privacy_body">このアプリは広告を含まず、データを収集せず、サブスクリプションモデルもありません。カメラ、連絡先、ネットワークの権限は一切要求しません。すべてのスキャンはデバイス上にのみ保存され、外部に送信されることは一切ありません。</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">ローカル</string>
     <string name="privacy_keyword_2">オフライン</string>
@@ -78,7 +78,7 @@
     <string name="privacy_keyword_4">プライベート</string>
     <string name="privacy_point_1">このアプリは広告を含まず、すべてのスキャンはデバイス上にのみ保存されます。</string>
     <string name="privacy_point_2">ドキュメントや内容が外部サーバーに送信されることはありません。</string>
-    <string name="privacy_point_3">スキャン機能は Google Play サービスを使用します。エラー分析などのための技術的な診断データが送信される場合があります。スキャンしたドキュメントの内容は送信されません。</string>
+    <string name="privacy_point_3">スキャンおよび OCR 機能は Google Play サービスを使用します。エラー分析のために技術的な診断データが送信される場合があります。中国語・日本語・ヒンディー語の言語モデルは初回使用時に Play Services 経由で自動ダウンロードされます——ドキュメントの内容は送信されません。</string>
     <string name="privacy_point_4">アプリ自体は個人データを収集せず、独自のネットワーク権限も必要としません。</string>
     <string name="privacy_footer">最終更新：2026年3月</string>
 

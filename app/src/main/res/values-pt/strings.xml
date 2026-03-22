@@ -71,7 +71,7 @@
     <string name="info_section_source">Código-fonte</string>
     <string name="info_repository_label">Repositório GitHub</string>
     <string name="info_section_privacy">Privacidade</string>
-    <string name="info_privacy_body">Este app não contém publicidade, não coleta dados, não requer acesso à internet e não possui modelo de assinatura. Nenhuma permissão de câmera, contatos ou rede é solicitada. Todos os scans são armazenados exclusivamente no seu dispositivo e nunca o deixam.</string>
+    <string name="info_privacy_body">Este app não contém publicidade, não coleta dados e não possui modelo de assinatura. Nenhuma permissão de câmera, contatos ou rede é solicitada. Todos os scans são armazenados exclusivamente no seu dispositivo e nunca o deixam.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
     <string name="privacy_keyword_2">Offline</string>
@@ -79,7 +79,7 @@
     <string name="privacy_keyword_4">Privado</string>
     <string name="privacy_point_1">Este app não contém publicidade e armazena todos os scans exclusivamente no seu dispositivo.</string>
     <string name="privacy_point_2">Nenhum documento ou conteúdo é transmitido ativamente a servidores externos.</string>
-    <string name="privacy_point_3">A função de digitalização utiliza os Google Play Services. Dados de diagnóstico técnicos podem ser transmitidos para análise de erros. O conteúdo dos seus documentos digitalizados não é enviado.</string>
+    <string name="privacy_point_3">As funções de digitalização e OCR utilizam os Google Play Services. Dados de diagnóstico técnicos podem ser transmitidos para análise de erros. Os modelos de idioma para chinês, japonês e hindi são baixados via Play Services na primeira utilização — o conteúdo dos seus documentos não é enviado.</string>
     <string name="privacy_point_4">O app em si não recolhe dados pessoais e não requer permissões de rede próprias.</string>
     <string name="privacy_footer">Atualizado: março de 2026</string>
 

@@ -80,9 +80,9 @@ util/SearchablePdfBuilder.kt # makeSearchable(pdfFile, lang, onProgress) — Pdf
 | Navigation Compose | 2.9.7 |
 | ML Kit Document Scanner | 16.0.0 |
 | ML Kit Text Recognition | 16.0.1 |
-| ML Kit Text (ZH/JA/HI) | 16.0.0 (GMS unbundled) |
+| ML Kit Text (ZH/JA/HI) | 16.0.1 (GMS unbundled) |
 | PdfBox-Android | 2.0.27.0 |
-| Compose BOM | 2024.09.00 |
+| Compose BOM | 2026.03.00 |
 | ui-text-google-fonts | via BOM (1.9.0) |
 
 Versionen zentral in `gradle/libs.versions.toml`. Gradle-Besonderheiten:

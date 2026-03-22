@@ -79,7 +79,7 @@
     <string name="privacy_keyword_4">خاص</string>
     <string name="privacy_point_1">لا يحتوي هذا التطبيق على إعلانات وتُخزَّن جميع المستندات الممسوحة حصرياً على جهازك.</string>
     <string name="privacy_point_2">لا تُنقل أي مستندات أو محتويات إلى خوادم خارجية.</string>
-    <string name="privacy_point_3">تستخدم وظيفة المسح الضوئي خدمات Google Play. قد تُنقل بيانات تشخيصية تقنية لأغراض تحليل الأخطاء. لا تُرسل محتويات مستنداتك الممسوحة.</string>
+    <string name="privacy_point_3">تستخدم وظائف المسح و OCR خدمات Google Play. قد تُنقل بيانات تشخيصية تقنية لتحليل الأخطاء. يتم تنزيل نماذج اللغة للصينية واليابانية والهندية عبر Play Services عند الاستخدام الأول — لا تُرسل محتويات مستنداتك أبداً.</string>
     <string name="privacy_point_4">لا يجمع التطبيق نفسه أي بيانات شخصية ولا يحتاج إلى أذونات شبكة خاصة به.</string>
     <string name="privacy_footer">آخر تحديث: مارس 2026</string>
 

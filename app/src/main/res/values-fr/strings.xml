@@ -71,7 +71,7 @@
     <string name="info_section_source">Code source</string>
     <string name="info_repository_label">Dépôt GitHub</string>
     <string name="info_section_privacy">Confidentialité</string>
-    <string name="info_privacy_body">Cette app ne contient aucune publicité, ne collecte aucune donnée, ne nécessite pas d\'accès à Internet et n\'a pas de modèle d\'abonnement. Aucune autorisation caméra, contacts ou réseau n\'est demandée. Tous les scans sont stockés exclusivement sur votre appareil et ne le quittent jamais.</string>
+    <string name="info_privacy_body">Cette app ne contient aucune publicité, ne collecte aucune donnée et n\'a pas de modèle d\'abonnement. Aucune autorisation caméra, contacts ou réseau n\'est demandée. Tous les scans sont stockés exclusivement sur votre appareil et ne le quittent jamais.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
     <string name="privacy_keyword_2">Hors ligne</string>
@@ -79,7 +79,7 @@
     <string name="privacy_keyword_4">Privé</string>
     <string name="privacy_point_1">Cette app ne contient aucune publicité et stocke tous les scans exclusivement sur votre appareil.</string>
     <string name="privacy_point_2">Aucun document ni contenu n\'est transmis à des serveurs externes.</string>
-    <string name="privacy_point_3">La fonction de numérisation utilise Google Play Services. Des données de diagnostic techniques peuvent être transmises à des fins d\'analyse d\'erreurs. Le contenu de vos documents numérisés n\'est pas envoyé.</string>
+    <string name="privacy_point_3">Les fonctions de numérisation et d\'OCR utilisent Google Play Services. Des données de diagnostic techniques peuvent être transmises pour l\'analyse d\'erreurs. Les modèles de langue pour le chinois, le japonais et l\'hindi sont téléchargés via Play Services lors de la première utilisation — le contenu de vos documents n\'est pas envoyé.</string>
     <string name="privacy_point_4">L\'app elle-même ne collecte aucune donnée personnelle et ne nécessite pas ses propres autorisations réseau.</string>
     <string name="privacy_footer">Mise à jour : mars 2026</string>
 

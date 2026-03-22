@@ -90,6 +90,8 @@
     <string name="info_label_architecture">Architecture</string>
     <string name="info_label_async">Asynchrony</string>
     <string name="info_label_platform">Platform</string>
+    <string name="info_label_ocr_languages">OCR Languages</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (offline) + ZH · JA · HI (download on 1st use)</string>
     <string name="info_section_libraries">Libraries</string>
     <string name="info_section_source">Source Code</string>
     <string name="info_repository_label">GitHub Repository</string>

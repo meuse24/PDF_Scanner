@@ -67,6 +67,8 @@
     <string name="info_label_architecture">Arquitetura</string>
     <string name="info_label_async">Assincronismo</string>
     <string name="info_label_platform">Plataforma</string>
+    <string name="info_label_ocr_languages">Idiomas OCR</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (offline) + ZH · JA · HI (download 1º uso)</string>
     <string name="info_section_libraries">Bibliotecas</string>
     <string name="info_section_source">Código-fonte</string>
     <string name="info_repository_label">Repositório GitHub</string>

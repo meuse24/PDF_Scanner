@@ -67,6 +67,8 @@
     <string name="info_label_architecture">架构模式</string>
     <string name="info_label_async">异步处理</string>
     <string name="info_label_platform">平台</string>
+    <string name="info_label_ocr_languages">OCR 支持语言</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR（离线）+ ZH · JA · HI（首次使用时下载）</string>
     <string name="info_section_libraries">依赖库</string>
     <string name="info_section_source">源代码</string>
     <string name="info_repository_label">GitHub 仓库</string>

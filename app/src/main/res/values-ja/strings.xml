@@ -48,7 +48,7 @@
     <string name="help_section_archive">アーカイブの管理</string>
     <string name="help_item_open">リストの項目をタップすると、外部ビューアで PDF を開けます。</string>
     <string name="help_item_share">チェックボックスをタップして項目を選択します。タイトルバーに件数が表示され、全選択も可能です。</string>
-    <string name="help_item_delete">下部のアクションバーでは、選択したすべての項目に対して共有・エクスポート・テキスト抽出（OCR）・削除が行えます。</string>
+    <string name="help_item_delete">下部のアクションバーでは、選択したすべての項目に対して共有・エクスポート・テキスト抽出（OCR）・検索可能にする・削除が行えます。</string>
     <string name="help_section_navigation">ナビゲーション</string>
     <string name="help_nav_text">左上のハンバーガーメニューからアーカイブ・スキャナー・ヘルプ・情報にアクセスできます。</string>
     <string name="help_section_notes">注意事項</string>
@@ -99,4 +99,14 @@
     <string name="info_credits_detail">アーキテクチャ、計画、実装、アイコンデザイン、ドキュメントはすべて AI アシスタント Claude Code との協働で制作されました。</string>
     <string name="info_credits_reviews_intro">コードレビュー：</string>
     <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
+
+    <!-- Searchable PDF -->
+    <string name="dialog_searchable_pdf">検索可能な PDF</string>
+    <string name="dialog_searchable_hint">OCR でテキストレイヤーを追加します（言語モデルは必要に応じてダウンロードされます）</string>
+    <string name="cd_make_searchable">検索可能にする</string>
+    <string name="searchable_progress">%2$d ページ中 %1$d ページ目</string>
+    <string name="searchable_success">PDF が検索可能になりました：%1$s</string>
+    <string name="searchable_success_multi">%1$d 件の PDF が検索可能になりました</string>
+    <string name="searchable_failed">検索可能な PDF を作成できませんでした</string>
+    <string name="searchable_badge">検索可能</string>
 </resources>

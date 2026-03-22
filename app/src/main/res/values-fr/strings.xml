@@ -48,13 +48,14 @@
     <string name="help_section_archive">Gérer les archives</string>
     <string name="help_item_open">Appuie sur un élément de la liste pour ouvrir le PDF dans un visionneur externe.</string>
     <string name="help_item_share">Appuie sur la case d\'un élément pour le sélectionner. La barre de titre affiche le nombre et permet de tout sélectionner.</string>
-    <string name="help_item_delete">La barre d\'actions en bas propose Partager, Exporter, Extraction de texte (OCR) et Supprimer pour tous les éléments sélectionnés.</string>
+    <string name="help_item_delete">La barre d\'actions en bas propose Partager, Exporter, Extraction de texte (OCR), Rendre consultable et Supprimer pour tous les éléments sélectionnés.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Utilise le menu hamburger (en haut à gauche) pour accéder aux Archives, au Scanner, à l\'Aide et à l\'Info.</string>
     <string name="help_section_notes">Remarques</string>
     <string name="help_note1">L\'app ne nécessite pas d\'accès direct à la caméra : le ML Kit Document Scanner s\'exécute comme un processus système séparé.</string>
     <string name="help_note2">Tous les PDFs sont stockés localement dans le répertoire de l\'app et ne quittent pas l\'appareil.</string>
     <string name="help_note3">Pour les documents multi-pages, photographie les pages en séquence : le scanner les combine automatiquement en un seul PDF.</string>
+    <string name="help_note4">PDFs consultables : une couche de texte est ajoutée par OCR. Les modèles de langue pour le chinois, le japonais et l\'hindi sont téléchargés automatiquement la première fois.</string>
     <string name="info_version">Version 1.1</string>
     <string name="info_section_copyright">Copyright &amp; Licence</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
@@ -99,4 +100,14 @@
     <string name="info_credits_detail">L\'architecture, la planification, l\'implémentation, le design de l\'icône et la documentation ont été élaborés en collaboration avec l\'assistant IA Claude Code.</string>
     <string name="info_credits_reviews_intro">Revues de code par</string>
     <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
+
+    <!-- Searchable PDF -->
+    <string name="dialog_searchable_pdf">PDF consultable</string>
+    <string name="dialog_searchable_hint">Couche de texte ajoutée par OCR (modèle de langue téléchargé si nécessaire)</string>
+    <string name="cd_make_searchable">Rendre consultable</string>
+    <string name="searchable_progress">Page %1$d sur %2$d</string>
+    <string name="searchable_success">Le PDF est désormais consultable : %1$s</string>
+    <string name="searchable_success_multi">%1$d PDFs sont désormais consultables</string>
+    <string name="searchable_failed">Impossible de créer le PDF consultable</string>
+    <string name="searchable_badge">Consultable</string>
 </resources>

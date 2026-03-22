@@ -26,7 +26,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -41,6 +42,10 @@ android {
         compose = true
         buildConfig = true
     }
+}
+
+kotlin {
+    jvmToolchain(11)
 }
 
 dependencies {
@@ -72,6 +77,13 @@ dependencies {
 
     // Google ML Kit Text Recognition (on-device, Latin bundled)
     implementation(libs.mlkit.text.recognition)
+    // ML Kit Text Recognition – GMS unbundled (model downloaded on first use)
+    implementation(libs.mlkit.text.chinese)
+    implementation(libs.mlkit.text.japanese)
+    implementation(libs.mlkit.text.devanagari)
+
+    // PdfBox-Android – searchable PDF generation
+    implementation(libs.pdfbox.android)
 
     // Navigation
     implementation(libs.navigation.compose)

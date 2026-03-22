@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ManageSearch
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.DoneAll
@@ -61,9 +62,9 @@ fun HelpScreen() {
         }
         item {
             SectionCard(Icons.Default.FolderOpen, stringResource(R.string.help_section_archive)) {
-                HelpStep(Icons.Default.PictureAsPdf, "·", stringResource(R.string.help_item_open))
-                HelpStep(Icons.Default.CheckBox,     "·", stringResource(R.string.help_item_share))
-                HelpStep(Icons.Default.DoneAll,      "·", stringResource(R.string.help_item_delete))
+                HelpStep(Icons.Default.PictureAsPdf,                   "·", stringResource(R.string.help_item_open))
+                HelpStep(Icons.Default.CheckBox,                       "·", stringResource(R.string.help_item_share))
+                HelpStep(Icons.AutoMirrored.Filled.ManageSearch,       "·", stringResource(R.string.help_item_delete))
             }
         }
         item {
@@ -78,6 +79,8 @@ fun HelpScreen() {
                 Text("• ${stringResource(R.string.help_note2)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.height(8.dp))
                 Text("• ${stringResource(R.string.help_note3)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(Modifier.height(8.dp))
+                Text("• ${stringResource(R.string.help_note4)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         item { Spacer(Modifier.height(8.dp)) }

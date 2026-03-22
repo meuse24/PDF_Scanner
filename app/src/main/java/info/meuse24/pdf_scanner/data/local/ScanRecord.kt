@@ -12,5 +12,6 @@ data class ScanRecord(
     val timestamp: Long,
     val pageCount: Int,
     val fileSize: Long,
-    @ColumnInfo(name = "thumbnail_path") val thumbnailPath: String? = null
+    @ColumnInfo(name = "thumbnail_path") val thumbnailPath: String? = null,
+    @ColumnInfo(name = "is_searchable", defaultValue = "0") val isSearchable: Boolean = false
 )

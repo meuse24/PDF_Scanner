@@ -17,4 +17,7 @@ interface ScanDao {
 
     @Delete
     suspend fun delete(record: ScanRecord)
+
+    @Query("UPDATE scan_records SET is_searchable = 1, fileSize = :fileSize WHERE id = :id")
+    suspend fun markSearchable(id: Long, fileSize: Long)
 }

@@ -51,9 +51,11 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.automirrored.filled.ManageSearch
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -65,6 +67,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -127,15 +130,17 @@ fun HomeScreen(
     val scans      by viewModel.scans.collectAsState()
     val error      by viewModel.error.collectAsState()
     val success    by viewModel.success.collectAsState()
-    val ocrText    by viewModel.ocrText.collectAsState()
-    val ocrLoading by viewModel.ocrLoading.collectAsState()
+    val ocrText     by viewModel.ocrText.collectAsState()
+    val ocrLoading  by viewModel.ocrLoading.collectAsState()
+    val ocrProgress by viewModel.ocrProgress.collectAsState()
     val context    = LocalContext.current
     val clipboard  = LocalClipboardManager.current
     val haptic     = LocalHapticFeedback.current
 
-    var pendingScanResult by remember { mutableStateOf<GmsDocumentScanningResult?>(null) }
-    var showSaveDialog    by remember { mutableStateOf(false) }
-    var filenameInput     by rememberSaveable { mutableStateOf("") }
+    var pendingScanResult  by remember { mutableStateOf<GmsDocumentScanningResult?>(null) }
+    var showSaveDialog     by remember { mutableStateOf(false) }
+    var filenameInput      by rememberSaveable { mutableStateOf("") }
+    var makeSearchable     by rememberSaveable { mutableStateOf(false) }
 
     // ── Selection state ────────────────────────────────────────────────────────
     var selectedIds           by remember { mutableStateOf(emptySet<Long>()) }
@@ -300,13 +305,18 @@ fun HomeScreen(
                     selectedRecords.forEach { viewModel.exportScan(it) }
                     selectedIds = emptySet()
                 },
-                onExtractTexts = { viewModel.extractTexts(selectedRecords) },
-                extractEnabled = selectedRecords.any { it.thumbnailPath != null },
+                onExtractTexts     = { viewModel.extractTexts(selectedRecords) },
+                extractEnabled     = selectedRecords.any { it.thumbnailPath != null },
+                onMakeSearchable   = {
+                    viewModel.makeSearchableScans(selectedRecords)
+                    selectedIds = emptySet()
+                },
+                makeSearchableEnabled = selectedRecords.any { !it.isSearchable },
                 onDelete = {
                     if (selectedRecords.size == 1) pendingDeleteRecord = selectedRecords.first()
                     else showBulkDeleteConfirm = true
                 },
-                modifier       = Modifier.align(Alignment.BottomCenter)
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }
@@ -360,8 +370,20 @@ fun HomeScreen(
             onDismissRequest = {},
             title = null,
             text  = {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Column(
+                    modifier            = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     ScannerLoadingAnimation()
+                    val progress = ocrProgress
+                    if (progress != null) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            stringResource(R.string.searchable_progress, progress.first, progress.second),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline
+                        )
+                    }
                 }
             },
             confirmButton = {}
@@ -434,12 +456,37 @@ fun HomeScreen(
             onDismissRequest = { showSaveDialog = false; pendingScanResult = null },
             title   = { Text(stringResource(R.string.dialog_save_title)) },
             text    = {
-                OutlinedTextField(
-                    value         = filenameInput,
-                    onValueChange = { filenameInput = it },
-                    label         = { Text(stringResource(R.string.dialog_filename_label)) },
-                    singleLine    = true
-                )
+                Column {
+                    OutlinedTextField(
+                        value         = filenameInput,
+                        onValueChange = { filenameInput = it },
+                        label         = { Text(stringResource(R.string.dialog_filename_label)) },
+                        singleLine    = true,
+                        modifier      = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Row(
+                        modifier          = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            stringResource(R.string.dialog_searchable_pdf),
+                            style    = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Switch(
+                            checked         = makeSearchable,
+                            onCheckedChange = { makeSearchable = it }
+                        )
+                    }
+                    if (makeSearchable) {
+                        Text(
+                            stringResource(R.string.dialog_searchable_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline
+                        )
+                    }
+                }
             },
             confirmButton = {
                 TextButton(onClick = {
@@ -447,14 +494,22 @@ fun HomeScreen(
                     if (filenameInput.isNotBlank() && pdf != null) {
                         val thumbnailUri = pendingScanResult?.pages?.firstOrNull()?.imageUri
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        viewModel.saveScan(pdf.uri, pdf.pageCount, filenameInput.trim(), thumbnailUri)
-                        showSaveDialog = false
+                        viewModel.saveScan(
+                            pdf.uri, pdf.pageCount, filenameInput.trim(),
+                            thumbnailUri, makeSearchable
+                        )
+                        showSaveDialog    = false
                         pendingScanResult = null
+                        makeSearchable    = false
                     }
                 }) { Text(stringResource(R.string.action_save)) }
             },
             dismissButton = {
-                TextButton(onClick = { showSaveDialog = false; pendingScanResult = null }) {
+                TextButton(onClick = {
+                    showSaveDialog    = false
+                    pendingScanResult = null
+                    makeSearchable    = false
+                }) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }
@@ -513,12 +568,14 @@ private fun SelectionTitleBar(
 
 @Composable
 private fun BulkActionBar(
-    onShare:        () -> Unit,
-    onExport:       () -> Unit,
-    onExtractTexts: () -> Unit,
-    onDelete:       () -> Unit,
-    extractEnabled: Boolean = true,
-    modifier:       Modifier = Modifier
+    onShare:           () -> Unit,
+    onExport:          () -> Unit,
+    onExtractTexts:    () -> Unit,
+    onMakeSearchable:      () -> Unit,
+    onDelete:              () -> Unit,
+    extractEnabled:        Boolean  = true,
+    makeSearchableEnabled: Boolean  = true,
+    modifier:              Modifier = Modifier
 ) {
     Surface(
         modifier        = modifier.fillMaxWidth(),
@@ -528,7 +585,7 @@ private fun BulkActionBar(
         Row(
             modifier              = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 8.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment     = Alignment.CenterVertically
         ) {
@@ -542,8 +599,12 @@ private fun BulkActionBar(
                 Icon(Icons.AutoMirrored.Filled.TextSnippet,
                     contentDescription = stringResource(R.string.cd_extract_text))
             }
+            IconButton(onClick = onMakeSearchable, enabled = makeSearchableEnabled) {
+                Icon(Icons.AutoMirrored.Filled.ManageSearch,
+                    contentDescription = stringResource(R.string.cd_make_searchable))
+            }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete,   contentDescription = stringResource(R.string.cd_delete),
+                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.cd_delete),
                     tint = MaterialTheme.colorScheme.error)
             }
         }
@@ -679,6 +740,18 @@ private fun ScanItem(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline
                 )
+                if (record.isSearchable) {
+                    Spacer(Modifier.height(2.dp))
+                    Badge(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor   = MaterialTheme.colorScheme.onSecondaryContainer
+                    ) {
+                        Text(
+                            stringResource(R.string.searchable_badge),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                }
             }
 
             // Checkbox always on the right

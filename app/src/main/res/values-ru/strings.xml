@@ -48,13 +48,14 @@
     <string name="help_section_archive">Управление архивом</string>
     <string name="help_item_open">Нажмите на элемент списка, чтобы открыть PDF во внешней программе просмотра.</string>
     <string name="help_item_share">Нажмите флажок записи, чтобы выбрать её. В заголовке отображается количество и доступно выделение всех записей.</string>
-    <string name="help_item_delete">Панель действий внизу предлагает: поделиться, экспортировать, извлечь текст (OCR) и удалить все выбранные записи.</string>
+    <string name="help_item_delete">Панель действий внизу предлагает: поделиться, экспортировать, извлечь текст (OCR), сделать доступным для поиска и удалить все выбранные записи.</string>
     <string name="help_section_navigation">Навигация</string>
     <string name="help_nav_text">Используйте меню-гамбургер (вверху слева) для доступа к Архиву, Сканеру, Справке и разделу «О приложении».</string>
     <string name="help_section_notes">Примечания</string>
     <string name="help_note1">Приложению не требуется прямой доступ к камере — ML Kit Document Scanner работает как отдельный системный процесс.</string>
     <string name="help_note2">Все PDF-файлы хранятся локально в папке приложения и не покидают устройство.</string>
     <string name="help_note3">Для многостраничных документов просто фотографируйте страницы по порядку — сканер автоматически объединит их в один PDF.</string>
+    <string name="help_note4">PDF с возможностью поиска: текстовый слой добавляется через OCR. Языковые модели для китайского, японского и хинди загружаются автоматически при первом использовании.</string>
     <string name="info_version">Версия 1.1</string>
     <string name="info_section_copyright">Авторские права &amp; Лицензия</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
@@ -99,4 +100,14 @@
     <string name="info_credits_detail">Архитектура, планирование, реализация, дизайн иконки и документация созданы в сотрудничестве с ИИ-ассистентом Claude Code.</string>
     <string name="info_credits_reviews_intro">Проверка кода:</string>
     <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
+
+    <!-- Searchable PDF -->
+    <string name="dialog_searchable_pdf">PDF с поиском</string>
+    <string name="dialog_searchable_hint">Текстовый слой добавлен через OCR (языковая модель загружается по мере необходимости)</string>
+    <string name="cd_make_searchable">Сделать доступным для поиска</string>
+    <string name="searchable_progress">Страница %1$d из %2$d</string>
+    <string name="searchable_success">PDF теперь доступен для поиска: %1$s</string>
+    <string name="searchable_success_multi">%1$d PDF доступны для поиска</string>
+    <string name="searchable_failed">Не удалось создать PDF с поиском</string>
+    <string name="searchable_badge">Поисковый</string>
 </resources>

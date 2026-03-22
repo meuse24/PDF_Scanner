@@ -69,13 +69,14 @@
     <string name="help_section_archive">Manage Archive</string>
     <string name="help_item_open">Tap an entry in the list to open the PDF in an external viewer.</string>
     <string name="help_item_share">Tap the checkbox to select one or more entries. The title bar shows the count and lets you select all.</string>
-    <string name="help_item_delete">The action bar at the bottom offers Share, Export, Text Extraction (OCR), and Delete for all selected entries.</string>
+    <string name="help_item_delete">The action bar at the bottom offers Share, Export, Text Extraction (OCR), Make Searchable, and Delete for all selected entries.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Use the hamburger menu (top left) to access the Archive, Scanner, Help, and Info screens.</string>
     <string name="help_section_notes">Notes</string>
     <string name="help_note1">The app does not require direct camera access — the ML Kit Document Scanner runs as a separate system process.</string>
     <string name="help_note2">All PDFs are stored locally in the app directory and do not leave the device.</string>
     <string name="help_note3">For multi-page documents, photograph multiple pages in sequence — the scanner automatically combines them into a single PDF.</string>
+    <string name="help_note4">Searchable PDFs: a text layer is added via OCR. Language models for Chinese, Japanese, and Hindi are downloaded automatically on first use.</string>
 
     <!-- Info screen -->
     <string name="info_version">Version 1.1</string>
@@ -115,6 +116,16 @@
     <string name="action_copy">Copy</string>
     <string name="action_share_text">Share text</string>
     <string name="ocr_copied">Text copied</string>
+
+    <!-- Searchable PDF -->
+    <string name="dialog_searchable_pdf">Searchable PDF</string>
+    <string name="dialog_searchable_hint">Text layer added via OCR (language model downloaded as needed)</string>
+    <string name="cd_make_searchable">Make searchable</string>
+    <string name="searchable_progress">Page %1$d of %2$d</string>
+    <string name="searchable_success">PDF is now searchable: %1$s</string>
+    <string name="searchable_success_multi">%1$d PDFs are now searchable</string>
+    <string name="searchable_failed">Failed to create searchable PDF</string>
+    <string name="searchable_badge">Searchable</string>
 
     <string name="info_section_credits">Credits</string>
     <string name="info_credits_intro">This app was developed with the assistance of</string>

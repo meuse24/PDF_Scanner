@@ -21,6 +21,11 @@
     <string name="action_save">Guardar</string>
     <string name="action_cancel">Cancelar</string>
     <string name="action_ok">OK</string>
+    <string name="confirm_delete_title">¿Eliminar?</string>
+    <string name="confirm_delete_single">¿Eliminar %1$s?</string>
+    <string name="confirm_delete_multi">¿Eliminar %1$d documentos?</string>
+    <string name="selection_count">%1$d seleccionados</string>
+    <string name="action_select_all">Seleccionar todo</string>
     <string name="error_title">Error</string>
     <string name="error_no_pdf_viewer">No hay visor de PDF instalado</string>
     <string name="error_scanner_unavailable">Escáner no disponible</string>

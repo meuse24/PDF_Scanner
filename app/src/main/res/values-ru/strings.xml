@@ -21,6 +21,11 @@
     <string name="action_save">Сохранить</string>
     <string name="action_cancel">Отмена</string>
     <string name="action_ok">ОК</string>
+    <string name="confirm_delete_title">Удалить?</string>
+    <string name="confirm_delete_single">Удалить %1$s?</string>
+    <string name="confirm_delete_multi">Удалить %1$d документов?</string>
+    <string name="selection_count">Выбрано: %1$d</string>
+    <string name="action_select_all">Выбрать все</string>
     <string name="error_title">Ошибка</string>
     <string name="error_no_pdf_viewer">Просмотрщик PDF не установлен</string>
     <string name="error_scanner_unavailable">Сканер недоступен</string>

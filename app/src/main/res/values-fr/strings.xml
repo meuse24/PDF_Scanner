@@ -21,6 +21,11 @@
     <string name="action_save">Enregistrer</string>
     <string name="action_cancel">Annuler</string>
     <string name="action_ok">OK</string>
+    <string name="confirm_delete_title">Supprimer&#160;?</string>
+    <string name="confirm_delete_single">Supprimer %1$s&#160;?</string>
+    <string name="confirm_delete_multi">Supprimer %1$d documents&#160;?</string>
+    <string name="selection_count">%1$d sélectionné(s)</string>
+    <string name="action_select_all">Tout sélectionner</string>
     <string name="error_title">Erreur</string>
     <string name="error_no_pdf_viewer">Aucun lecteur PDF installé</string>
     <string name="error_scanner_unavailable">Scanner non disponible</string>

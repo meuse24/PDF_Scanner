@@ -30,6 +30,15 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_ok">OK</string>
 
+    <!-- Delete confirmation -->
+    <string name="confirm_delete_title">Delete?</string>
+    <string name="confirm_delete_single">Delete %1$s?</string>
+    <string name="confirm_delete_multi">Delete %1$d documents?</string>
+
+    <!-- Multi-select -->
+    <string name="selection_count">%1$d selected</string>
+    <string name="action_select_all">Select all</string>
+
     <!-- Home: error -->
     <string name="error_title">Error</string>
     <string name="error_no_pdf_viewer">No PDF viewer installed</string>

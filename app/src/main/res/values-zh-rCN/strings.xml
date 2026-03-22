@@ -21,6 +21,11 @@
     <string name="action_save">保存</string>
     <string name="action_cancel">取消</string>
     <string name="action_ok">确定</string>
+    <string name="confirm_delete_title">删除？</string>
+    <string name="confirm_delete_single">删除 %1$s？</string>
+    <string name="confirm_delete_multi">删除 %1$d 个文档？</string>
+    <string name="selection_count">已选 %1$d 个</string>
+    <string name="action_select_all">全选</string>
     <string name="error_title">错误</string>
     <string name="error_no_pdf_viewer">未安装PDF查看器</string>
     <string name="error_scanner_unavailable">扫描仪不可用</string>

@@ -64,7 +64,8 @@ fun AppNavigation() {
     val currentRoute    = currentEntry?.destination?.route
     val canNavigateBack = navController.previousBackStackEntry != null
 
-    var scanTrigger by remember { mutableStateOf(false) }
+    var scanTrigger    by remember { mutableStateOf(false) }
+    var isSelectionMode by remember { mutableStateOf(false) }
 
     fun closeDrawer() = scope.launch { drawerState.close() }
     fun openDrawer()  = scope.launch { drawerState.open() }
@@ -179,7 +180,7 @@ fun AppNavigation() {
                 )
             },
             floatingActionButton = {
-                if (currentRoute == Screen.Ablage.route || currentRoute == null) {
+                if ((currentRoute == Screen.Ablage.route || currentRoute == null) && !isSelectionMode) {
                     FloatingActionButton(onClick = { scanTrigger = true }) {
                         Icon(Icons.Default.Add, stringResource(R.string.cd_new_scan))
                     }
@@ -206,8 +207,9 @@ fun AppNavigation() {
             ) {
                 composable(Screen.Ablage.route) {
                     HomeScreen(
-                        scanTrigger     = scanTrigger,
-                        onScanTriggered = { scanTrigger = false }
+                        scanTrigger           = scanTrigger,
+                        onScanTriggered       = { scanTrigger = false },
+                        onSelectionModeChange = { isSelectionMode = it }
                     )
                 }
                 composable(Screen.Help.route)    { HelpScreen() }

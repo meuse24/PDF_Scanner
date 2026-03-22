@@ -21,6 +21,11 @@
     <string name="action_save">सहेजें</string>
     <string name="action_cancel">रद्द करें</string>
     <string name="action_ok">ठीक है</string>
+    <string name="confirm_delete_title">हटाएं?</string>
+    <string name="confirm_delete_single">%1$s हटाएं?</string>
+    <string name="confirm_delete_multi">%1$d दस्तावेज़ हटाएं?</string>
+    <string name="selection_count">%1$d चुने गए</string>
+    <string name="action_select_all">सभी चुनें</string>
     <string name="error_title">त्रुटि</string>
     <string name="error_no_pdf_viewer">कोई PDF व्यूअर इंस्टॉल नहीं है</string>
     <string name="error_scanner_unavailable">स्कैनर उपलब्ध नहीं है</string>

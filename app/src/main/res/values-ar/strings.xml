@@ -21,6 +21,11 @@
     <string name="action_save">حفظ</string>
     <string name="action_cancel">إلغاء</string>
     <string name="action_ok">موافق</string>
+    <string name="confirm_delete_title">حذف؟</string>
+    <string name="confirm_delete_single">حذف %1$s؟</string>
+    <string name="confirm_delete_multi">حذف %1$d مستند؟</string>
+    <string name="selection_count">تم تحديد %1$d</string>
+    <string name="action_select_all">تحديد الكل</string>
     <string name="error_title">خطأ</string>
     <string name="error_no_pdf_viewer">لا يوجد عارض PDF مثبت</string>
     <string name="error_scanner_unavailable">الماسح الضوئي غير متاح</string>

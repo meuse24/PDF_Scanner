@@ -92,6 +92,26 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun deleteScans(records: List<ScanRecord>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            var anyError = false
+            for (record in records) {
+                val file = File(record.filepath)
+                val deleted = !file.exists() || file.delete()
+                if (deleted) {
+                    record.thumbnailPath?.let { path ->
+                        val thumbFile = File(path)
+                        if (thumbFile.exists()) thumbFile.delete()
+                    }
+                    repository.deleteScan(record)
+                } else {
+                    anyError = true
+                }
+            }
+            if (anyError) _error.value = context.getString(R.string.error_delete_failed)
+        }
+    }
+
     fun exportScan(record: ScanRecord) {
         viewModelScope.launch(Dispatchers.IO) {
             try {

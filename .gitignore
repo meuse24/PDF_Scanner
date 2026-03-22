@@ -13,3 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Keystore & release artifacts — never commit
+*.jks
+*.keystore
+app/release/
+
+# Temporary plan files
+plan-*.txt

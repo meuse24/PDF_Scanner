@@ -57,7 +57,7 @@ class FileUtil @Inject constructor(@ApplicationContext private val context: Cont
             } else {
                 destFile
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

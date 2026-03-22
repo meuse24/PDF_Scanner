@@ -5,6 +5,7 @@
     <string name="nav_start_scanner">Lancer le scanner</string>
     <string name="nav_help">Aide</string>
     <string name="nav_info">Info</string>
+    <string name="nav_privacy">Confidentialité</string>
     <string name="cd_open_menu">Ouvrir le menu</string>
     <string name="cd_navigate_back">Retour</string>
     <string name="cd_new_scan">Nouveau scan</string>
@@ -13,6 +14,8 @@
     <string name="cd_pdf_document">Document PDF</string>
     <string name="home_empty_title">Aucun scan disponible</string>
     <string name="home_empty_hint">Appuie sur + pour commencer</string>
+    <string name="home_stat_doc_count">Documents</string>
+    <string name="home_stat_last_scan">Dernier scan</string>
     <string name="dialog_save_title">Enregistrer le document</string>
     <string name="dialog_filename_label">Nom du fichier</string>
     <string name="action_save">Enregistrer</string>
@@ -46,7 +49,7 @@
     <string name="help_note1">L\'app ne nécessite pas d\'accès direct à la caméra : le ML Kit Document Scanner s\'exécute comme un processus système séparé.</string>
     <string name="help_note2">Tous les PDFs sont stockés localement dans le répertoire de l\'app et ne quittent pas l\'appareil.</string>
     <string name="help_note3">Pour les documents multi-pages, photographie les pages en séquence : le scanner les combine automatiquement en un seul PDF.</string>
-    <string name="info_version">Version 1.0</string>
+    <string name="info_version">Version 1.1</string>
     <string name="info_section_copyright">Copyright &amp; Licence</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>
@@ -62,6 +65,23 @@
     <string name="info_repository_label">Dépôt GitHub</string>
     <string name="info_section_privacy">Confidentialité</string>
     <string name="info_privacy_body">Cette app ne contient aucune publicité, ne collecte aucune donnée, ne nécessite pas d\'accès à Internet et n\'a pas de modèle d\'abonnement. Aucune autorisation caméra, contacts ou réseau n\'est demandée. Tous les scans sont stockés exclusivement sur votre appareil et ne le quittent jamais.</string>
+    <!-- Privacy screen -->
+    <string name="privacy_point_1">Cette app ne contient aucune publicité et stocke tous les scans exclusivement sur votre appareil.</string>
+    <string name="privacy_point_2">Aucun document ni contenu n\'est transmis à des serveurs externes.</string>
+    <string name="privacy_point_3">La fonction de numérisation utilise Google Play Services. Des données de diagnostic techniques peuvent être transmises à des fins d\'analyse d\'erreurs. Le contenu de vos documents numérisés n\'est pas envoyé.</string>
+    <string name="privacy_point_4">L\'app elle-même ne collecte aucune donnée personnelle et ne nécessite pas ses propres autorisations réseau.</string>
+    <string name="privacy_footer">Mise à jour : mars 2026</string>
+
+    <!-- OCR -->
+    <string name="cd_extract_text">Extraire le texte</string>
+    <string name="ocr_result_title">Texte extrait</string>
+    <string name="ocr_no_image">Aucune image disponible pour l\'extraction de texte</string>
+    <string name="ocr_no_text_found">Aucun texte trouvé dans ce document</string>
+    <string name="ocr_failed">Échec de l\'extraction de texte</string>
+    <string name="action_copy">Copier</string>
+    <string name="action_share_text">Partager le texte</string>
+    <string name="ocr_copied">Texte copié</string>
+
     <string name="info_section_credits">Crédits</string>
     <string name="info_credits_intro">Cette app a été développée avec l\'aide de</string>
     <string name="info_credits_by">by Anthropic</string>

@@ -276,6 +276,20 @@
                 contact Google servers for updates and compatibility information and may send
                 performance and usage metrics to Google.
             </p>
+            <p>
+                The optional OCR (text extraction) feature uses <strong>ML Kit Text Recognition</strong>,
+                which runs entirely on-device. No document content or extracted text is transmitted
+                to any server.
+            </p>
+            <p>
+                The app uses the <strong>DM Sans</strong> font via the <strong>Google Fonts API</strong>,
+                which is delivered through Google Play Services. The app itself does not make direct
+                internet requests for fonts.
+            </p>
+            <p>
+                The app includes a dedicated <strong>Privacy screen</strong> summarising these points
+                in-app.
+            </p>
         </div>
         <div data-lang-content="de">
             <h2>1. Kurzfassung</h2>
@@ -290,6 +304,20 @@
                 der Eingabedaten und der Scan-Ergebnisse auf dem Geraet. Google weist jedoch darauf hin,
                 dass ML Kit gelegentlich Server fuer Updates und Kompatibilitaetsinformationen kontaktieren
                 und Leistungs- bzw. Nutzungsmetriken an Google uebermitteln kann.
+            </p>
+            <p>
+                Die optionale OCR-Funktion (Texterkennung) nutzt <strong>ML Kit Text Recognition</strong>,
+                das vollstaendig auf dem Geraet laeuft. Dokumentinhalte oder erkannter Text werden nicht
+                an Server uebertragen.
+            </p>
+            <p>
+                Die App verwendet die Schriftart <strong>DM Sans</strong> ueber die
+                <strong>Google Fonts API</strong>, die ueber Google Play Services bereitgestellt wird.
+                Die App selbst stellt keine direkten Internetanfragen fuer Schriftarten.
+            </p>
+            <p>
+                Die App enthaelt einen eigenen <strong>Datenschutz-Screen</strong>, der diese Punkte
+                zusammenfasst.
             </p>
         </div>
     </section>
@@ -311,6 +339,11 @@
                 This information is stored locally in app storage and in a local database on the device
                 so that the archive, preview, sharing, export, and deletion functions work.
             </p>
+            <p>
+                When the OCR feature is used, the document image is processed locally by ML Kit Text
+                Recognition. The extracted text is displayed on-screen only and is never stored
+                persistently by the app or transmitted to any server.
+            </p>
         </div>
         <div data-lang-content="de">
             <h2>2. Welche Daten in der App verarbeitet werden</h2>
@@ -328,6 +361,11 @@
                 Diese Informationen werden lokal im App-Speicher und in einer lokalen Datenbank auf dem
                 Geraet abgelegt, damit die Ablage, Vorschau, Freigabe, der Export und das Loeschen von
                 Scans funktionieren.
+            </p>
+            <p>
+                Bei Verwendung der OCR-Funktion wird das Dokumentbild lokal durch ML Kit Text Recognition
+                verarbeitet. Der erkannte Text wird nur auf dem Bildschirm angezeigt und von der App
+                weder dauerhaft gespeichert noch an Server uebertragen.
             </p>
         </div>
     </section>
@@ -390,7 +428,8 @@
 
     <section class="section">
         <div data-lang-content="en">
-            <h2>5. Use of Google ML Kit Document Scanner and Google Play Services</h2>
+            <h2>5. Use of Google ML Kit and Google Play Services</h2>
+            <h3 style="font-size:1.05rem;margin:16px 0 6px;">ML Kit Document Scanner</h3>
             <p>
                 The app uses <strong>ML Kit Document Scanner</strong> provided by Google via
                 <strong>Google Play Services</strong> to scan documents.
@@ -401,6 +440,25 @@
                 also states that ML Kit APIs may occasionally contact Google servers to receive bug fixes,
                 updated models, or hardware compatibility information. In addition, performance and usage
                 metrics of the API may be sent to Google.
+            </p>
+            <h3 style="font-size:1.05rem;margin:16px 0 6px;">ML Kit Text Recognition (OCR)</h3>
+            <p>
+                The app includes an optional <strong>text extraction (OCR)</strong> feature powered by
+                <strong>ML Kit Text Recognition</strong>. All text recognition runs entirely on-device
+                using a bundled Latin model. Document images and extracted text are never transmitted
+                to Google servers or any other external service.
+            </p>
+            <p>
+                The same ML Kit update and metrics conditions described above also apply to this component.
+            </p>
+            <h3 style="font-size:1.05rem;margin:16px 0 6px;">Google Fonts (DM Sans)</h3>
+            <p>
+                The app loads the <strong>DM Sans</strong> typeface via the
+                <strong>Google Fonts API</strong>, which is delivered through Google Play Services as
+                a downloadable fonts provider. The app itself does not make direct network requests
+                for fonts; the download is handled by the GMS font provider. Cached fonts reside on
+                the device after the first use. Google Play Services may contact Google servers to
+                fetch or update font files.
             </p>
             <p>
                 Google Play Services may also process additional data depending on device settings and the
@@ -418,7 +476,8 @@
             </p>
         </div>
         <div data-lang-content="de">
-            <h2>5. Einsatz von Google ML Kit Document Scanner und Google Play Services</h2>
+            <h2>5. Einsatz von Google ML Kit und Google Play Services</h2>
+            <h3 style="font-size:1.05rem;margin:16px 0 6px;">ML Kit Document Scanner</h3>
             <p>
                 Die App nutzt fuer das Scannen von Dokumenten die von Google bereitgestellte
                 Komponente <strong>ML Kit Document Scanner</strong>, die ueber
@@ -431,6 +490,28 @@
                 gelegentlich Google-Server kontaktieren koennen, um Fehlerbehebungen, aktualisierte Modelle
                 oder Hardware-Kompatibilitaetsinformationen zu beziehen. Ausserdem koennen Leistungs- und
                 Nutzungsmetriken der API an Google uebermittelt werden.
+            </p>
+            <h3 style="font-size:1.05rem;margin:16px 0 6px;">ML Kit Text Recognition (OCR)</h3>
+            <p>
+                Die App bietet eine optionale <strong>Texterkennungs-Funktion (OCR)</strong> auf Basis
+                von <strong>ML Kit Text Recognition</strong>. Die gesamte Texterkennung laeuft
+                vollstaendig auf dem Geraet unter Verwendung eines mitgelieferten Lateinmodells.
+                Dokumentbilder und erkannter Text werden weder an Google-Server noch an sonstige
+                externe Dienste uebertragen.
+            </p>
+            <p>
+                Die oben beschriebenen ML-Kit-Bedingungen fuer Updates und Metriken gelten gleichermassen
+                fuer diese Komponente.
+            </p>
+            <h3 style="font-size:1.05rem;margin:16px 0 6px;">Google Fonts (DM Sans)</h3>
+            <p>
+                Die App laedt die Schriftart <strong>DM Sans</strong> ueber die
+                <strong>Google Fonts API</strong>, die als Downloadable-Fonts-Anbieter ueber Google
+                Play Services bereitgestellt wird. Die App selbst stellt keine direkten Netzwerkanfragen
+                fuer Schriftarten; der Download wird vom GMS-Schriftartenanbieter uebernommen.
+                Gecachte Schriftarten verbleiben nach der ersten Verwendung auf dem Geraet.
+                Google Play Services kann Google-Server kontaktieren, um Schriftartdateien abzurufen
+                oder zu aktualisieren.
             </p>
             <p>
                 Daneben kann Google Play Services gemaess den Einstellungen des Geraets und des Google-Kontos

@@ -5,6 +5,7 @@
     <string name="nav_start_scanner">Запустить сканер</string>
     <string name="nav_help">Справка</string>
     <string name="nav_info">О приложении</string>
+    <string name="nav_privacy">Конфиденциальность</string>
     <string name="cd_open_menu">Открыть меню</string>
     <string name="cd_navigate_back">Назад</string>
     <string name="cd_new_scan">Новое сканирование</string>
@@ -13,6 +14,8 @@
     <string name="cd_pdf_document">PDF-документ</string>
     <string name="home_empty_title">Нет отсканированных документов</string>
     <string name="home_empty_hint">Нажмите +, чтобы начать</string>
+    <string name="home_stat_doc_count">Документы</string>
+    <string name="home_stat_last_scan">Последний скан</string>
     <string name="dialog_save_title">Сохранить документ</string>
     <string name="dialog_filename_label">Имя файла</string>
     <string name="action_save">Сохранить</string>
@@ -46,7 +49,7 @@
     <string name="help_note1">Приложению не требуется прямой доступ к камере — ML Kit Document Scanner работает как отдельный системный процесс.</string>
     <string name="help_note2">Все PDF-файлы хранятся локально в папке приложения и не покидают устройство.</string>
     <string name="help_note3">Для многостраничных документов просто фотографируйте страницы по порядку — сканер автоматически объединит их в один PDF.</string>
-    <string name="info_version">Версия 1.0</string>
+    <string name="info_version">Версия 1.1</string>
     <string name="info_section_copyright">Авторские права &amp; Лицензия</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>
@@ -62,6 +65,23 @@
     <string name="info_repository_label">Репозиторий GitHub</string>
     <string name="info_section_privacy">Конфиденциальность</string>
     <string name="info_privacy_body">Приложение не содержит рекламы, не собирает никаких данных, не требует доступа к сети и не имеет модели подписки. Разрешения на доступ к камере, контактам или сети не запрашиваются. Все отсканированные документы хранятся исключительно на вашем устройстве и никогда его не покидают.</string>
+    <!-- Privacy screen -->
+    <string name="privacy_point_1">Это приложение не содержит рекламы и хранит все отсканированные документы исключительно на вашем устройстве.</string>
+    <string name="privacy_point_2">Никакие документы или содержимое не передаются на внешние серверы.</string>
+    <string name="privacy_point_3">Функция сканирования использует сервисы Google Play. Для анализа ошибок могут передаваться технические диагностические данные. Содержимое ваших отсканированных документов не отправляется.</string>
+    <string name="privacy_point_4">Само приложение не собирает личные данные и не требует сетевых разрешений.</string>
+    <string name="privacy_footer">Актуально: март 2026 г.</string>
+
+    <!-- OCR -->
+    <string name="cd_extract_text">Извлечь текст</string>
+    <string name="ocr_result_title">Извлечённый текст</string>
+    <string name="ocr_no_image">Нет изображения для извлечения текста</string>
+    <string name="ocr_no_text_found">Текст в документе не найден</string>
+    <string name="ocr_failed">Ошибка извлечения текста</string>
+    <string name="action_copy">Копировать</string>
+    <string name="action_share_text">Поделиться текстом</string>
+    <string name="ocr_copied">Текст скопирован</string>
+
     <string name="info_section_credits">Благодарности</string>
     <string name="info_credits_intro">Это приложение разработано при помощи</string>
     <string name="info_credits_by">by Anthropic</string>

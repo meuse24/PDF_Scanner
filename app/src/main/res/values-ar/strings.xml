@@ -5,6 +5,7 @@
     <string name="nav_start_scanner">بدء المسح الضوئي</string>
     <string name="nav_help">مساعدة</string>
     <string name="nav_info">معلومات</string>
+    <string name="nav_privacy">الخصوصية</string>
     <string name="cd_open_menu">فتح القائمة</string>
     <string name="cd_navigate_back">رجوع</string>
     <string name="cd_new_scan">مسح ضوئي جديد</string>
@@ -13,6 +14,8 @@
     <string name="cd_pdf_document">مستند PDF</string>
     <string name="home_empty_title">لا توجد مستندات ممسوحة</string>
     <string name="home_empty_hint">انقر على + للبدء</string>
+    <string name="home_stat_doc_count">مستندات</string>
+    <string name="home_stat_last_scan">آخر مسح</string>
     <string name="dialog_save_title">حفظ المستند</string>
     <string name="dialog_filename_label">اسم الملف</string>
     <string name="action_save">حفظ</string>
@@ -46,7 +49,7 @@
     <string name="help_note1">لا يتطلب التطبيق وصولاً مباشراً إلى الكاميرا — يعمل ML Kit Document Scanner كعملية نظام مستقلة.</string>
     <string name="help_note2">تُحفظ جميع ملفات PDF محلياً في دليل التطبيق ولا تغادر الجهاز.</string>
     <string name="help_note3">لمسح مستندات متعددة الصفحات، التقط الصفحات بالتسلسل — يجمعها الماسح تلقائياً في PDF واحد.</string>
-    <string name="info_version">الإصدار 1.0</string>
+    <string name="info_version">الإصدار 1.1</string>
     <string name="info_section_copyright">حقوق النشر &amp; الترخيص</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>
@@ -62,6 +65,23 @@
     <string name="info_repository_label">مستودع GitHub</string>
     <string name="info_section_privacy">الخصوصية</string>
     <string name="info_privacy_body">لا يحتوي هذا التطبيق على إعلانات، ولا يجمع أي بيانات، ولا يتطلب اتصالاً بالإنترنت، وليس له نموذج اشتراك. لا تُطلب أذونات الكاميرا أو جهات الاتصال أو الشبكة. تُخزَّن جميع المستندات الممسوحة حصرياً على جهازك ولا تغادره أبداً.</string>
+    <!-- Privacy screen -->
+    <string name="privacy_point_1">لا يحتوي هذا التطبيق على إعلانات وتُخزَّن جميع المستندات الممسوحة حصرياً على جهازك.</string>
+    <string name="privacy_point_2">لا تُنقل أي مستندات أو محتويات إلى خوادم خارجية.</string>
+    <string name="privacy_point_3">تستخدم وظيفة المسح الضوئي خدمات Google Play. قد تُنقل بيانات تشخيصية تقنية لأغراض تحليل الأخطاء. لا تُرسل محتويات مستنداتك الممسوحة.</string>
+    <string name="privacy_point_4">لا يجمع التطبيق نفسه أي بيانات شخصية ولا يحتاج إلى أذونات شبكة خاصة به.</string>
+    <string name="privacy_footer">آخر تحديث: مارس 2026</string>
+
+    <!-- OCR -->
+    <string name="cd_extract_text">استخراج النص</string>
+    <string name="ocr_result_title">النص المستخرج</string>
+    <string name="ocr_no_image">لا توجد صورة متاحة لاستخراج النص</string>
+    <string name="ocr_no_text_found">لم يُعثر على نص في هذا المستند</string>
+    <string name="ocr_failed">فشل استخراج النص</string>
+    <string name="action_copy">نسخ</string>
+    <string name="action_share_text">مشاركة النص</string>
+    <string name="ocr_copied">تم نسخ النص</string>
+
     <string name="info_section_credits">شكر وتقدير</string>
     <string name="info_credits_intro">تم تطوير هذا التطبيق بمساعدة</string>
     <string name="info_credits_by">by Anthropic</string>

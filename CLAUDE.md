@@ -22,13 +22,14 @@ ADB-Pfad (Windows): `C:/Users/guent/AppData/Local/Android/Sdk/platform-tools/adb
 ```
 ui/
 ├── navigation/
-│   ├── Screen.kt            # Route-Definitionen (Ablage, Help, Info)
-│   └── AppNavigation.kt     # ModalNavigationDrawer + Scaffold + NavHost
+│   ├── Screen.kt            # Route-Definitionen (Ablage, Help, Info, Privacy)
+│   └── AppNavigation.kt     # ModalNavigationDrawer + Scaffold + NavHost + Gradient-Hintergrund
 ├── home/
 │   ├── HomeScreen.kt        # Scan-Liste / Empty State (kein eigenes Scaffold)
-│   └── HomeViewModel.kt     # saveScan, deleteScan, exportScan, _success-Flow; @ApplicationContext für Strings
+│   └── HomeViewModel.kt     # saveScan, deleteScan, exportScan, extractText (OCR), _success-Flow; @ApplicationContext für Strings
 ├── help/HelpScreen.kt       # Anleitung
-└── info/InfoScreen.kt       # Copyright, Tech Stack, Bibliotheken, Source Code, Privacy, Credits
+├── info/InfoScreen.kt       # Copyright, Tech Stack, Bibliotheken, Source Code, Credits
+└── privacy/PrivacyScreen.kt # Datenschutz-Karten (PhoneAndroid, CloudOff, Shield, Lock)
 
 data/
 ├── local/
@@ -51,11 +52,12 @@ MainActivity.kt              # @AndroidEntryPoint → AppNavigation()
 ### Navigation-Fluss
 
 `AppNavigation` ist das Root-Composable. Es stellt bereit:
-- `ModalNavigationDrawer` mit Drawer-Items (Ablage, Scanner starten, Hilfe, Info)
+- `ModalNavigationDrawer` mit Drawer-Items (Ablage, Scanner starten, Hilfe, Info, Datenschutz)
 - `Scaffold` mit `TopAppBar` (dynamischer Titel + Hamburger/Back-Icon) und FAB (nur auf Ablage-Screen)
-- `NavHost` mit drei Routes: `ablage`, `help`, `info`
+- `NavHost` mit vier Routes: `ablage`, `help`, `info`, `privacy`
+- Dezenter Gradient-Hintergrund via `Brush.verticalGradient` (primaryContainer → surface → secondaryContainer), gilt für alle Screens
 
-Help und Info navigieren mit `popUpTo(Screen.Ablage.route) + launchSingleTop = true`, sodass sie immer direkt über Ablage liegen und sich nicht mehrfach stapeln können.
+Help, Info und Privacy navigieren mit `popUpTo(Screen.Ablage.route) + launchSingleTop = true`, sodass sie immer direkt über Ablage liegen und sich nicht mehrfach stapeln können.
 
 Der Scanner-Trigger (`scanTrigger: Boolean`) wird von `AppNavigation` verwaltet und als Parameter an `HomeScreen` übergeben. `HomeScreen` reagiert darauf per `LaunchedEffect` und ruft `GmsDocumentScanning` auf.
 
@@ -131,7 +133,9 @@ Alle Fehlermeldungen sind lokalisiert (kein Literal-String im Kotlin-Code):
 | Navigation Compose | 2.9.7 |
 | Hilt Navigation Compose | 1.3.0 |
 | ML Kit Document Scanner | 16.0.0 |
+| ML Kit Text Recognition | 16.0.1 |
 | Compose BOM | 2024.09.00 |
+| ui-text-google-fonts | (via BOM → 1.9.0) |
 
 Alle Versionen zentral in `gradle/libs.versions.toml` (Version Catalog).
 
@@ -145,13 +149,37 @@ Adaptives Icon in `res/drawable/`:
 - `ic_launcher_background.xml` — Verlauf Deep Indigo → Teal mit Radial-Shine
 - `ic_launcher_foreground.xml` — Rotes Dokument mit weißem Falteck, grauen Inhaltslinien, Neon-Cyan-Scanstrahl + Amber-Ursprungspunkt; alles innerhalb der adaptiven Safe Zone (x/y 18–90 im 108dp-Canvas)
 
+## Schrift & Hintergrund
+
+- **DM Sans** via `androidx.compose.ui:ui-text-google-fonts` (Google Fonts API / GMS Downloadable Fonts Provider)
+- Zertifikatsdatei: `res/values/font_certs.xml` — enthält `com_google_android_gms_fonts_certs` (dev + prod)
+- Alle Typography-Stile in `Type.kt` verwenden `DmSans`-FontFamily (Normal, Medium, SemiBold, Bold)
+- Dezenter Gradient-Hintergrund in `AppNavigation.kt`: `primaryContainer(18%) → surface(0%) → secondaryContainer(10%)` — automatisch für alle Screens aktiv
+
+## OCR (Texterkennung)
+
+- `HomeViewModel.extractText(record: ScanRecord)` — on-device via ML Kit Text Recognition (Latein-Modell gebündelt)
+- Voraussetzung: `thumbnailPath` im ScanRecord (Fallback: Fehler-String falls null)
+- `suspendCancellableCoroutine` für Task-Callback; `_ocrLoading: StateFlow<Boolean>` verhindert Doppelaufruf
+- Ergebnis in `_ocrText: StateFlow<String?>`, Reset per `clearOcrText()`
+- UI: `ModalBottomSheet` mit `SelectionContainer` + Share-Button + Copy-Button + Toast `ocr_copied`
+
 ## Internationalisierung
 
 10 Sprachen: `values/` (EN, Default), `values-de/`, `values-es/`, `values-fr/`, `values-pt/`, `values-zh-rCN/`, `values-ar/`, `values-ja/`, `values-ru/`, `values-hi/`. Alle Fehlermeldungen sind ebenfalls in allen Sprachen vorhanden. Neue Strings immer in alle 10 Dateien eintragen.
 
+## Privacy-Screen
+
+Eigenständiger Screen (`ui/privacy/PrivacyScreen.kt`) mit 4 Icon-Karten:
+- `PhoneAndroid` — keine Werbung, lokale Speicherung
+- `CloudOff` — keine Serverübertragung
+- `Shield` — Google Play Services für Scannen (Diagnose-Daten möglich)
+- `Lock` — App sammelt keine Daten, keine Netzwerkberechtigung
+
+Footer mit `privacy_footer`-String (Stand März 2026).
+
 ## Info-Screen Abschnitte
 
-Reihenfolge: App-Name/Version → Copyright & License → Tech Stack → Libraries → Source Code → **Privacy** → Credits.
+Reihenfolge: App-Name/Version → Copyright & License → Tech Stack → Libraries → Source Code → Credits.
 
-- **Privacy-Abschnitt** (`info_section_privacy`, `info_privacy_body`): Erklärt, dass die App keine Werbung, keine Datenerhebung, keinen Internet-Zugriff, kein Abo und keine Kamera-/Netzwerkberechtigungen benötigt.
 - **Credits**: Claude Code (Architektur, Implementierung), OpenAI Codex und Google Gemini CLI (Code-Reviews) — Strings: `info_credits_reviews_intro`, `info_credits_reviews_tools`.

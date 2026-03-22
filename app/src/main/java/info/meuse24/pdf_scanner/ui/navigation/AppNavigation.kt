@@ -1,8 +1,12 @@
 package info.meuse24.pdf_scanner.ui.navigation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
@@ -11,6 +15,7 @@ import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -46,6 +51,7 @@ import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.ui.help.HelpScreen
 import info.meuse24.pdf_scanner.ui.home.HomeScreen
 import info.meuse24.pdf_scanner.ui.info.InfoScreen
+import info.meuse24.pdf_scanner.ui.privacy.PrivacyScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,15 +73,7 @@ fun AppNavigation() {
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    stringResource(R.string.app_name),
-                    style     = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier  = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-                    color     = MaterialTheme.colorScheme.primary
-                )
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(8.dp))
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(Modifier.height(8.dp))
 
@@ -134,6 +132,18 @@ fun AppNavigation() {
                     }
                     closeDrawer()
                 }
+
+                DrawerItem(
+                    icon     = Icons.Default.PrivacyTip,
+                    label    = stringResource(R.string.nav_privacy),
+                    selected = currentRoute == Screen.Privacy.route
+                ) {
+                    navController.navigate(Screen.Privacy.route) {
+                        popUpTo(Screen.Ablage.route)
+                        launchSingleTop = true
+                    }
+                    closeDrawer()
+                }
             }
         }
     ) {
@@ -143,9 +153,10 @@ fun AppNavigation() {
                     title = {
                         Text(
                             when (currentRoute) {
-                                Screen.Help.route -> stringResource(R.string.nav_help)
-                                Screen.Info.route -> stringResource(R.string.nav_info)
-                                else              -> stringResource(R.string.app_name)
+                                Screen.Help.route    -> stringResource(R.string.nav_help)
+                                Screen.Info.route    -> stringResource(R.string.nav_info)
+                                Screen.Privacy.route -> stringResource(R.string.nav_privacy)
+                                else                 -> stringResource(R.string.app_name)
                             }
                         )
                     },
@@ -175,6 +186,19 @@ fun AppNavigation() {
                 }
             }
         ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colorStops = arrayOf(
+                                0.0f to MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.18f),
+                                0.4f to MaterialTheme.colorScheme.surface.copy(alpha = 0.0f),
+                                1.0f to MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.10f)
+                            )
+                        )
+                    )
+            ) {
             NavHost(
                 navController    = navController,
                 startDestination = Screen.Ablage.route,
@@ -186,9 +210,11 @@ fun AppNavigation() {
                         onScanTriggered = { scanTrigger = false }
                     )
                 }
-                composable(Screen.Help.route) { HelpScreen() }
-                composable(Screen.Info.route) { InfoScreen() }
+                composable(Screen.Help.route)    { HelpScreen() }
+                composable(Screen.Info.route)    { InfoScreen() }
+                composable(Screen.Privacy.route) { PrivacyScreen() }
             }
+            } // Box
         }
     }
 }

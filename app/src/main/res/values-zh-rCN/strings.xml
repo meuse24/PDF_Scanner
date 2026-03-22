@@ -5,6 +5,7 @@
     <string name="nav_start_scanner">启动扫描仪</string>
     <string name="nav_help">帮助</string>
     <string name="nav_info">关于</string>
+    <string name="nav_privacy">隐私政策</string>
     <string name="cd_open_menu">打开菜单</string>
     <string name="cd_navigate_back">返回</string>
     <string name="cd_new_scan">新建扫描</string>
@@ -13,6 +14,8 @@
     <string name="cd_pdf_document">PDF 文档</string>
     <string name="home_empty_title">暂无扫描文件</string>
     <string name="home_empty_hint">点击 + 开始扫描</string>
+    <string name="home_stat_doc_count">文档</string>
+    <string name="home_stat_last_scan">最近扫描</string>
     <string name="dialog_save_title">保存文档</string>
     <string name="dialog_filename_label">文件名</string>
     <string name="action_save">保存</string>
@@ -46,7 +49,7 @@
     <string name="help_note1">应用无需直接调用相机权限——ML Kit 文档扫描仪作为独立的系统进程运行。</string>
     <string name="help_note2">所有 PDF 文件均保存在应用本地目录中，不会离开您的设备。</string>
     <string name="help_note3">扫描多页文档时，依次拍摄各页即可——扫描仪会自动合并为单个 PDF。</string>
-    <string name="info_version">版本 1.0</string>
+    <string name="info_version">版本 1.1</string>
     <string name="info_section_copyright">版权 &amp; 许可证</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>
@@ -62,6 +65,23 @@
     <string name="info_repository_label">GitHub 仓库</string>
     <string name="info_section_privacy">隐私</string>
     <string name="info_privacy_body">本应用不含广告、不收集任何数据、不需要网络访问权限，也没有订阅模式。不会请求相机、联系人或网络权限。所有扫描文件仅存储在您的设备本地，永不离开设备。</string>
+    <!-- Privacy screen -->
+    <string name="privacy_point_1">本应用不含广告，所有扫描文件仅存储在您的设备本地。</string>
+    <string name="privacy_point_2">不会将任何文档或内容主动传输至外部服务器。</string>
+    <string name="privacy_point_3">扫描功能使用 Google Play 服务。可能会传输技术诊断数据（例如用于错误分析）。您扫描文档的内容不会被发送。</string>
+    <string name="privacy_point_4">应用本身不收集任何个人数据，也不需要自身的网络权限。</string>
+    <string name="privacy_footer">更新时间：2026年3月</string>
+
+    <!-- OCR -->
+    <string name="cd_extract_text">提取文本</string>
+    <string name="ocr_result_title">提取的文本</string>
+    <string name="ocr_no_image">没有可用于文本提取的图片</string>
+    <string name="ocr_no_text_found">此文档中未找到文本</string>
+    <string name="ocr_failed">文本提取失败</string>
+    <string name="action_copy">复制</string>
+    <string name="action_share_text">分享文本</string>
+    <string name="ocr_copied">文本已复制</string>
+
     <string name="info_section_credits">致谢</string>
     <string name="info_credits_intro">本应用在以下工具的协助下开发完成</string>
     <string name="info_credits_by">by Anthropic</string>

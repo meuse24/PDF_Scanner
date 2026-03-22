@@ -7,6 +7,9 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.R
@@ -20,9 +23,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -39,6 +45,12 @@ class HomeViewModel @Inject constructor(
 
     private val _success = MutableStateFlow<String?>(null)
     val success: StateFlow<String?> = _success.asStateFlow()
+
+    private val _ocrText = MutableStateFlow<String?>(null)
+    val ocrText: StateFlow<String?> = _ocrText.asStateFlow()
+
+    private val _ocrLoading = MutableStateFlow(false)
+    val ocrLoading: StateFlow<Boolean> = _ocrLoading.asStateFlow()
 
     fun saveScan(pdfUri: Uri, pageCount: Int, filename: String, thumbnailUri: Uri? = null) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -117,6 +129,44 @@ class HomeViewModel @Inject constructor(
                 _error.value = context.getString(R.string.error_export_failed)
             }
         }
+    }
+
+    fun extractText(record: ScanRecord) {
+        if (_ocrLoading.value) return
+        val imagePath = record.thumbnailPath
+        if (imagePath == null) {
+            _error.value = context.getString(R.string.ocr_no_image)
+            return
+        }
+        _ocrLoading.value = true
+        viewModelScope.launch {
+            try {
+                val image = withContext(Dispatchers.IO) {
+                    InputImage.fromFilePath(context, Uri.fromFile(File(imagePath)))
+                }
+                val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                val text = suspendCancellableCoroutine { cont ->
+                    recognizer.process(image)
+                        .addOnSuccessListener { result -> cont.resume(result.text) }
+                        .addOnFailureListener { e -> cont.resumeWithException(e) }
+                    cont.invokeOnCancellation { recognizer.close() }
+                }
+                recognizer.close()
+                if (text.isBlank()) {
+                    _error.value = context.getString(R.string.ocr_no_text_found)
+                } else {
+                    _ocrText.value = text
+                }
+            } catch (e: Exception) {
+                _error.value = context.getString(R.string.ocr_failed)
+            } finally {
+                _ocrLoading.value = false
+            }
+        }
+    }
+
+    fun clearOcrText() {
+        _ocrText.value = null
     }
 
     fun reportError(message: String) {

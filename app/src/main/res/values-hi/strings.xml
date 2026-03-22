@@ -5,6 +5,7 @@
     <string name="nav_start_scanner">स्कैनर शुरू करें</string>
     <string name="nav_help">सहायता</string>
     <string name="nav_info">जानकारी</string>
+    <string name="nav_privacy">गोपनीयता</string>
     <string name="cd_open_menu">मेनू खोलें</string>
     <string name="cd_navigate_back">वापस</string>
     <string name="cd_new_scan">नया स्कैन</string>
@@ -13,6 +14,8 @@
     <string name="cd_pdf_document">PDF दस्तावेज़</string>
     <string name="home_empty_title">कोई स्कैन उपलब्ध नहीं</string>
     <string name="home_empty_hint">शुरू करने के लिए + दबाएं</string>
+    <string name="home_stat_doc_count">दस्तावेज़</string>
+    <string name="home_stat_last_scan">अंतिम स्कैन</string>
     <string name="dialog_save_title">दस्तावेज़ सहेजें</string>
     <string name="dialog_filename_label">फ़ाइल नाम</string>
     <string name="action_save">सहेजें</string>
@@ -46,7 +49,7 @@
     <string name="help_note1">ऐप को सीधे कैमरा एक्सेस की ज़रूरत नहीं — ML Kit Document Scanner एक अलग सिस्टम प्रोसेस के रूप में चलता है।</string>
     <string name="help_note2">सभी PDF ऐप की स्थानीय डायरेक्टरी में सहेजी जाती हैं और डिवाइस से बाहर नहीं जातीं।</string>
     <string name="help_note3">बहु-पृष्ठ दस्तावेज़ों के लिए, पृष्ठों को एक-एक करके स्कैन करें — स्कैनर उन्हें स्वचालित रूप से एक PDF में जोड़ देगा।</string>
-    <string name="info_version">संस्करण 1.0</string>
+    <string name="info_version">संस्करण 1.1</string>
     <string name="info_section_copyright">कॉपीराइट &amp; लाइसेंस</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>
@@ -62,6 +65,23 @@
     <string name="info_repository_label">GitHub रिपॉजिटरी</string>
     <string name="info_section_privacy">गोपनीयता</string>
     <string name="info_privacy_body">इस ऐप में कोई विज्ञापन नहीं है, यह कोई डेटा एकत्र नहीं करता, इसे इंटरनेट एक्सेस की आवश्यकता नहीं है और इसका कोई सदस्यता मॉडल नहीं है। कैमरा, संपर्क या नेटवर्क की कोई अनुमति नहीं मांगी जाती। सभी स्कैन केवल आपके डिवाइस पर संग्रहीत होते हैं और कभी भी डिवाइस नहीं छोड़ते।</string>
+    <!-- Privacy screen -->
+    <string name="privacy_point_1">इस ऐप में कोई विज्ञापन नहीं है और सभी स्कैन केवल आपके डिवाइस पर संग्रहीत किए जाते हैं।</string>
+    <string name="privacy_point_2">कोई भी दस्तावेज़ या सामग्री बाहरी सर्वर पर नहीं भेजी जाती।</string>
+    <string name="privacy_point_3">स्कैन फ़ंक्शन Google Play Services का उपयोग करता है। त्रुटि विश्लेषण के लिए तकनीकी डायग्नोस्टिक डेटा भेजा जा सकता है। आपके स्कैन किए गए दस्तावेज़ों की सामग्री नहीं भेजी जाती।</string>
+    <string name="privacy_point_4">ऐप स्वयं कोई व्यक्तिगत डेटा एकत्र नहीं करता और किसी नेटवर्क अनुमति की आवश्यकता नहीं है।</string>
+    <string name="privacy_footer">अपडेट: मार्च 2026</string>
+
+    <!-- OCR -->
+    <string name="cd_extract_text">टेक्स्ट निकालें</string>
+    <string name="ocr_result_title">निकाला गया टेक्स्ट</string>
+    <string name="ocr_no_image">टेक्स्ट निष्कर्षण के लिए कोई छवि उपलब्ध नहीं</string>
+    <string name="ocr_no_text_found">इस दस्तावेज़ में कोई टेक्स्ट नहीं मिला</string>
+    <string name="ocr_failed">टेक्स्ट निष्कर्षण विफल</string>
+    <string name="action_copy">कॉपी करें</string>
+    <string name="action_share_text">टेक्स्ट साझा करें</string>
+    <string name="ocr_copied">टेक्स्ट कॉपी हो गया</string>
+
     <string name="info_section_credits">श्रेय</string>
     <string name="info_credits_intro">यह ऐप निम्नलिखित की सहायता से विकसित किया गया</string>
     <string name="info_credits_by">by Anthropic</string>

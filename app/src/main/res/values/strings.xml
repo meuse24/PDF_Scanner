@@ -7,6 +7,7 @@
     <string name="nav_start_scanner">Start Scanner</string>
     <string name="nav_help">Help</string>
     <string name="nav_info">Info</string>
+    <string name="nav_privacy">Privacy</string>
 
     <!-- Content descriptions -->
     <string name="cd_open_menu">Open menu</string>
@@ -16,9 +17,11 @@
     <string name="cd_delete">Delete</string>
     <string name="cd_pdf_document">PDF document</string>
 
-    <!-- Home: empty state -->
+    <!-- Home: empty state & stats -->
     <string name="home_empty_title">No scans available</string>
     <string name="home_empty_hint">Tap + to get started</string>
+    <string name="home_stat_doc_count">Documents</string>
+    <string name="home_stat_last_scan">Last scanned</string>
 
     <!-- Home: save dialog -->
     <string name="dialog_save_title">Save document</string>
@@ -64,7 +67,7 @@
     <string name="help_note3">For multi-page documents, photograph multiple pages in sequence — the scanner automatically combines them into a single PDF.</string>
 
     <!-- Info screen -->
-    <string name="info_version">Version 1.0</string>
+    <string name="info_version">Version 1.1</string>
     <string name="info_section_copyright">Copyright &amp; License</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>
@@ -80,6 +83,23 @@
     <string name="info_repository_label">GitHub Repository</string>
     <string name="info_section_privacy">Privacy</string>
     <string name="info_privacy_body">This app contains no advertising, collects no data, requires no internet access, and has no subscription model. No permissions for camera, contacts, or network are requested. All scans are stored exclusively on your device and never leave it.</string>
+    <!-- Privacy screen -->
+    <string name="privacy_point_1">This app contains no advertising and stores all created scans exclusively on your device.</string>
+    <string name="privacy_point_2">No documents or content are actively transmitted to external servers.</string>
+    <string name="privacy_point_3">The scan function uses Google Play Services. Technical diagnostic data (e.g. for error analysis) may be transmitted. The contents of your scanned documents are not sent.</string>
+    <string name="privacy_point_4">The app itself does not collect any personal data and does not require its own network permissions.</string>
+    <string name="privacy_footer">Last updated: March 2026</string>
+
+    <!-- OCR -->
+    <string name="cd_extract_text">Extract text</string>
+    <string name="ocr_result_title">Extracted Text</string>
+    <string name="ocr_no_image">No image available for text extraction</string>
+    <string name="ocr_no_text_found">No text found in this document</string>
+    <string name="ocr_failed">Text extraction failed</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_share_text">Share text</string>
+    <string name="ocr_copied">Text copied</string>
+
     <string name="info_section_credits">Credits</string>
     <string name="info_credits_intro">This app was developed with the assistance of</string>
     <string name="info_credits_by">by Anthropic</string>

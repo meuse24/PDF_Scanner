@@ -5,6 +5,7 @@
     <string name="nav_start_scanner">スキャン開始</string>
     <string name="nav_help">ヘルプ</string>
     <string name="nav_info">情報</string>
+    <string name="nav_privacy">プライバシー</string>
     <string name="cd_open_menu">メニューを開く</string>
     <string name="cd_navigate_back">戻る</string>
     <string name="cd_new_scan">新しいスキャン</string>
@@ -13,6 +14,8 @@
     <string name="cd_pdf_document">PDF ドキュメント</string>
     <string name="home_empty_title">スキャンがありません</string>
     <string name="home_empty_hint">+ をタップして開始</string>
+    <string name="home_stat_doc_count">ドキュメント</string>
+    <string name="home_stat_last_scan">最近のスキャン</string>
     <string name="dialog_save_title">ドキュメントを保存</string>
     <string name="dialog_filename_label">ファイル名</string>
     <string name="action_save">保存</string>
@@ -46,7 +49,7 @@
     <string name="help_note1">アプリはカメラへの直接アクセスを必要としません。ML Kit ドキュメントスキャナーは独立したシステムプロセスとして動作します。</string>
     <string name="help_note2">すべての PDF はアプリのローカルディレクトリに保存され、デバイス外に送信されません。</string>
     <string name="help_note3">複数ページの書類は、ページを順番に撮影するだけで、スキャナーが自動的に1つの PDF にまとめます。</string>
-    <string name="info_version">バージョン 1.0</string>
+    <string name="info_version">バージョン 1.1</string>
     <string name="info_section_copyright">著作権 &amp; ライセンス</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>
@@ -62,6 +65,23 @@
     <string name="info_repository_label">GitHub リポジトリ</string>
     <string name="info_section_privacy">プライバシー</string>
     <string name="info_privacy_body">このアプリは広告を含まず、データを収集せず、ネットワークアクセスを必要とせず、サブスクリプションモデルもありません。カメラ、連絡先、ネットワークの権限は一切要求しません。すべてのスキャンはデバイス上にのみ保存され、外部に送信されることは一切ありません。</string>
+    <!-- Privacy screen -->
+    <string name="privacy_point_1">このアプリは広告を含まず、すべてのスキャンはデバイス上にのみ保存されます。</string>
+    <string name="privacy_point_2">ドキュメントや内容が外部サーバーに送信されることはありません。</string>
+    <string name="privacy_point_3">スキャン機能は Google Play サービスを使用します。エラー分析などのための技術的な診断データが送信される場合があります。スキャンしたドキュメントの内容は送信されません。</string>
+    <string name="privacy_point_4">アプリ自体は個人データを収集せず、独自のネットワーク権限も必要としません。</string>
+    <string name="privacy_footer">最終更新：2026年3月</string>
+
+    <!-- OCR -->
+    <string name="cd_extract_text">テキストを抽出</string>
+    <string name="ocr_result_title">抽出されたテキスト</string>
+    <string name="ocr_no_image">テキスト抽出に使用できる画像がありません</string>
+    <string name="ocr_no_text_found">このドキュメントにテキストが見つかりません</string>
+    <string name="ocr_failed">テキスト抽出に失敗しました</string>
+    <string name="action_copy">コピー</string>
+    <string name="action_share_text">テキストを共有</string>
+    <string name="ocr_copied">テキストをコピーしました</string>
+
     <string name="info_section_credits">クレジット</string>
     <string name="info_credits_intro">このアプリは以下のサポートを受けて開発されました</string>
     <string name="info_credits_by">by Anthropic</string>

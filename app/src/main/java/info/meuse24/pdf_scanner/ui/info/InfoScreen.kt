@@ -85,17 +85,6 @@ fun InfoScreen() {
         HorizontalDivider()
         Spacer(Modifier.height(20.dp))
 
-        SectionHeader(stringResource(R.string.info_section_privacy))
-        Text(
-            stringResource(R.string.info_privacy_body),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(Modifier.height(24.dp))
-        HorizontalDivider()
-        Spacer(Modifier.height(20.dp))
-
         SectionHeader(stringResource(R.string.info_section_credits))
         Text(stringResource(R.string.info_credits_intro), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(6.dp))

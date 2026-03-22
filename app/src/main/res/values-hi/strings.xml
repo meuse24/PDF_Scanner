@@ -55,7 +55,7 @@
     <string name="help_note1">ऐप को सीधे कैमरा एक्सेस की ज़रूरत नहीं — ML Kit Document Scanner एक अलग सिस्टम प्रोसेस के रूप में चलता है।</string>
     <string name="help_note2">सभी PDF ऐप की स्थानीय डायरेक्टरी में सहेजी जाती हैं और डिवाइस से बाहर नहीं जातीं।</string>
     <string name="help_note3">बहु-पृष्ठ दस्तावेज़ों के लिए, पृष्ठों को एक-एक करके स्कैन करें — स्कैनर उन्हें स्वचालित रूप से एक PDF में जोड़ देगा।</string>
-    <string name="help_note4">खोजयोग्य PDF: OCR के माध्यम से टेक्स्ट परत जोड़ी जाती है। चीनी, जापानी और हिंदी के भाषा मॉडल पहली बार उपयोग करने पर स्वचालित रूप से डाउनलोड होते हैं।</string>
+    <string name="help_note4">PDF खोजयोग्य बनाना: OCR द्वारा एक टेक्स्ट परत जोड़ी जाती है। हिंदी भाषा मॉडल पहले उपयोग पर Google Play Services से डाउनलोड होता है।</string>
     <string name="info_version">संस्करण 1.1</string>
     <string name="info_section_copyright">कॉपीराइट &amp; लाइसेंस</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>

@@ -39,8 +39,9 @@ data/
 
 di/DatabaseModule.kt         # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3
 util/FileUtil.kt             # savePdfFromUri(), saveThumbnailFromUri()
-util/OcrManager.kt           # getRecognizer(languageCode): TextRecognizer — ZH/JA/HI GMS-unbundled, sonst Latin
+util/OcrManager.kt           # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur für Texterkennung (nicht searchable PDF); sonst Latin
 util/SearchablePdfBuilder.kt # makeSearchable(pdfFile, lang, onProgress) — PdfRenderer+OCR Phase1, PdfBox AppendMode Phase2
+                             # Sprachselektor im Speichern-Dialog; ZH/JA NICHT unterstützt (alle Android-CJK-Fonts sind TTC/OTC — PdfBox kann diese nicht einbetten)
 ```
 
 ## Architektur-Regeln
@@ -80,7 +81,7 @@ util/SearchablePdfBuilder.kt # makeSearchable(pdfFile, lang, onProgress) — Pdf
 | Navigation Compose | 2.9.7 |
 | ML Kit Document Scanner | 16.0.0 |
 | ML Kit Text Recognition | 16.0.1 |
-| ML Kit Text (ZH/JA/HI) | 16.0.1 (GMS unbundled) |
+| ML Kit Text (HI/ZH/JA) | 16.0.1 (GMS unbundled; ZH/JA nur OCR-Text, kein searchable PDF) |
 | PdfBox-Android | 2.0.27.0 |
 | Compose BOM | 2026.03.00 |
 | ui-text-google-fonts | via BOM (1.9.0) |

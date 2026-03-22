@@ -55,7 +55,7 @@
     <string name="help_note1">Приложению не требуется прямой доступ к камере — ML Kit Document Scanner работает как отдельный системный процесс.</string>
     <string name="help_note2">Все PDF-файлы хранятся локально в папке приложения и не покидают устройство.</string>
     <string name="help_note3">Для многостраничных документов просто фотографируйте страницы по порядку — сканер автоматически объединит их в один PDF.</string>
-    <string name="help_note4">PDF с возможностью поиска: текстовый слой добавляется через OCR. Языковые модели для китайского, японского и хинди загружаются автоматически при первом использовании.</string>
+    <string name="help_note4">Поисковые PDF: текстовый слой добавляется через OCR. Языковая модель для хинди загружается при первом запуске через Google Play Services.</string>
     <string name="info_version">Версия 1.1</string>
     <string name="info_section_copyright">Авторские права &amp; Лицензия</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>

@@ -55,6 +55,7 @@
     <string name="help_note1">アプリはカメラへの直接アクセスを必要としません。ML Kit ドキュメントスキャナーは独立したシステムプロセスとして動作します。</string>
     <string name="help_note2">すべての PDF はアプリのローカルディレクトリに保存され、デバイス外に送信されません。</string>
     <string name="help_note3">複数ページの書類は、ページを順番に撮影するだけで、スキャナーが自動的に1つの PDF にまとめます。</string>
+    <string name="help_note4">検索可能なPDF：OCRでテキストレイヤーを追加します。ヒンディー語言語モデルは初回起動時にGoogle Play Services経由でダウンロードされます。</string>
     <string name="info_version">バージョン 1.1</string>
     <string name="info_section_copyright">著作権 &amp; ライセンス</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>

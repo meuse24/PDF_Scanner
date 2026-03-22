@@ -55,7 +55,7 @@
     <string name="help_note1">لا يتطلب التطبيق وصولاً مباشراً إلى الكاميرا — يعمل ML Kit Document Scanner كعملية نظام مستقلة.</string>
     <string name="help_note2">تُحفظ جميع ملفات PDF محلياً في دليل التطبيق ولا تغادر الجهاز.</string>
     <string name="help_note3">لمسح مستندات متعددة الصفحات، التقط الصفحات بالتسلسل — يجمعها الماسح تلقائياً في PDF واحد.</string>
-    <string name="help_note4">ملفات PDF القابلة للبحث: تُضاف طبقة نص عبر OCR. يتم تنزيل نماذج اللغة للصينية واليابانية والهندية تلقائياً عند الاستخدام الأول.</string>
+    <string name="help_note4">ملفات PDF قابلة للبحث: تُضاف طبقة نصية عبر OCR. يتم تنزيل نموذج لغة الهندية عند الاستخدام الأول عبر Google Play Services.</string>
     <string name="info_version">الإصدار 1.1</string>
     <string name="info_section_copyright">حقوق النشر &amp; الترخيص</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>

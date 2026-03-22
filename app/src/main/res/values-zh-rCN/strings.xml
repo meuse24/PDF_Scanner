@@ -55,7 +55,7 @@
     <string name="help_note1">应用无需直接调用相机权限——ML Kit 文档扫描仪作为独立的系统进程运行。</string>
     <string name="help_note2">所有 PDF 文件均保存在应用本地目录中，不会离开您的设备。</string>
     <string name="help_note3">扫描多页文档时，依次拍摄各页即可——扫描仪会自动合并为单个 PDF。</string>
-    <string name="help_note4">可搜索PDF：通过OCR添加文字层。中文、日文和印地语的语言模型将在首次使用时自动下载。</string>
+    <string name="help_note4">可搜索PDF：通过OCR添加文本层。印地语言模型将在首次使用时通过Google Play Services下载。</string>
     <string name="info_version">版本 1.1</string>
     <string name="info_section_copyright">版权 &amp; 许可证</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>

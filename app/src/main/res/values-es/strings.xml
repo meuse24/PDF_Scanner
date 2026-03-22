@@ -55,7 +55,7 @@
     <string name="help_note1">La app no requiere acceso directo a la cámara: el ML Kit Document Scanner funciona como proceso separado del sistema.</string>
     <string name="help_note2">Todos los PDFs se guardan localmente en el directorio de la app y no abandonan el dispositivo.</string>
     <string name="help_note3">Para documentos de varias páginas, fotografía las páginas en secuencia: el escáner las combina automáticamente en un solo PDF.</string>
-    <string name="help_note4">PDFs buscables: se añade una capa de texto mediante OCR. Los modelos de idioma para chino, japonés e hindi se descargan automáticamente la primera vez.</string>
+    <string name="help_note4">PDFs con búsqueda: se añade una capa de texto por OCR. El modelo de idioma para Hindi se descarga en el primer uso a través de Google Play Services.</string>
     <string name="info_version">Versión 1.1</string>
     <string name="info_section_copyright">Copyright &amp; Licencia</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>

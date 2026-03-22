@@ -9,9 +9,20 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +38,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -35,6 +48,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.PictureAsPdf
@@ -43,7 +57,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -64,10 +77,18 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -95,7 +116,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     scanTrigger:           Boolean    = false,
@@ -174,107 +195,118 @@ fun HomeScreen(
         }
     }
 
+    // ── Scroll haptic tick ────────────────────────────────────────────────────
+    val listState = rememberLazyListState()
+    LaunchedEffect(listState) {
+        var initialized = false
+        snapshotFlow { listState.firstVisibleItemIndex }.collect {
+            if (initialized) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            initialized = true
+        }
+    }
+
     // ── Main content ──────────────────────────────────────────────────────────
     Box(modifier = Modifier.fillMaxSize()) {
-        if (scans.isEmpty()) {
-            EmptyStateContent()
-        } else {
-            LazyColumn(contentPadding = PaddingValues(
-                top    = 8.dp,
-                bottom = if (isSelectionMode) 80.dp else 88.dp
-            )) {
-                items(scans, key = { it.id }) { record ->
-                    val isSelected = record.id in selectedIds
-                    ScanItem(
-                        record          = record,
-                        isSelected      = isSelected,
-                        isSelectionMode = isSelectionMode,
-                        modifier        = Modifier
-                            .padding(horizontal = 16.dp, vertical = 4.dp)
-                            .animateItem(),
-                        onClick = {
-                            if (isSelectionMode) {
-                                selectedIds = if (isSelected) selectedIds - record.id
-                                             else            selectedIds + record.id
-                            } else {
-                                val file = File(record.filepath)
-                                if (file.exists()) {
-                                    val uri = FileProvider.getUriForFile(
-                                        context, "${context.packageName}.fileprovider", file)
-                                    try {
-                                        context.startActivity(
-                                            Intent(Intent.ACTION_VIEW).apply {
-                                                setDataAndType(uri, "application/pdf")
-                                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                            }
-                                        )
-                                    } catch (e: ActivityNotFoundException) {
-                                        viewModel.reportError(context.getString(R.string.error_no_pdf_viewer))
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Selection title bar (top)
+            if (isSelectionMode) {
+                SelectionTitleBar(
+                    count            = selectedIds.size,
+                    total            = scans.size,
+                    onClearSelection = { selectedIds = emptySet() },
+                    onSelectAll      = { selectedIds = scans.map { it.id }.toSet() }
+                )
+            }
+
+            if (scans.isEmpty()) {
+                EmptyStateContent(modifier = Modifier.weight(1f))
+            } else {
+                LazyColumn(
+                    state   = listState,
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(
+                        top    = 8.dp,
+                        bottom = if (isSelectionMode) 80.dp else 88.dp
+                    )
+                ) {
+                    items(scans, key = { it.id }) { record ->
+                        val isSelected = record.id in selectedIds
+                        val toggleSelect = {
+                            selectedIds = if (isSelected) selectedIds - record.id
+                                          else            selectedIds + record.id
+                        }
+                        ScanItem(
+                            record   = record,
+                            isSelected = isSelected,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                                .animateItem(),
+                            onClick = {
+                                if (isSelectionMode) toggleSelect()
+                                else {
+                                    val file = File(record.filepath)
+                                    if (file.exists()) {
+                                        val uri = FileProvider.getUriForFile(
+                                            context, "${context.packageName}.fileprovider", file)
+                                        try {
+                                            context.startActivity(
+                                                Intent(Intent.ACTION_VIEW).apply {
+                                                    setDataAndType(uri, "application/pdf")
+                                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                                }
+                                            )
+                                        } catch (e: ActivityNotFoundException) {
+                                            viewModel.reportError(context.getString(R.string.error_no_pdf_viewer))
+                                        }
                                     }
                                 }
-                            }
-                        },
-                        onLongClick = { selectedIds = selectedIds + record.id },
-                        onShare = {
-                            val file = File(record.filepath)
-                            if (file.exists()) {
-                                val uri = FileProvider.getUriForFile(
-                                    context, "${context.packageName}.fileprovider", file)
-                                context.startActivity(
-                                    Intent.createChooser(
-                                        Intent(Intent.ACTION_SEND).apply {
-                                            type = "application/pdf"
-                                            putExtra(Intent.EXTRA_STREAM, uri)
-                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                        },
-                                        context.getString(R.string.share_pdf_title)
-                                    )
-                                )
-                            }
-                        },
-                        onDelete      = { pendingDeleteRecord = record },
-                        onExport      = { viewModel.exportScan(record) },
-                        onExtractText = { viewModel.extractText(record) }
-                    )
+                            },
+                            onCheckboxToggle = toggleSelect,
+                        )
+                    }
                 }
             }
         }
 
-        // Selection action bar
+        // Bulk action bar (bottom)
         if (isSelectionMode) {
-            SelectionBar(
-                count      = selectedIds.size,
-                totalCount = scans.size,
-                onSelectAll      = { selectedIds = scans.map { it.id }.toSet() },
-                onClearSelection = { selectedIds = emptySet() },
-                onDelete         = { showBulkDeleteConfirm = true },
-                onShare          = {
-                    val uris = ArrayList(scans
-                        .filter { it.id in selectedIds }
-                        .mapNotNull { record ->
-                            val file = File(record.filepath)
-                            if (file.exists()) FileProvider.getUriForFile(
-                                context, "${context.packageName}.fileprovider", file)
-                            else null
-                        })
+            val selectedRecords = scans.filter { it.id in selectedIds }
+            BulkActionBar(
+                onShare = {
+                    val uris = ArrayList(selectedRecords.mapNotNull { record ->
+                        val file = File(record.filepath)
+                        if (file.exists()) FileProvider.getUriForFile(
+                            context, "${context.packageName}.fileprovider", file)
+                        else null
+                    })
                     if (uris.isNotEmpty()) {
-                        context.startActivity(
-                            Intent.createChooser(
-                                Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                                    type = "application/pdf"
-                                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
-                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                },
-                                context.getString(R.string.share_pdf_title)
-                            )
-                        )
+                        val intent = if (uris.size == 1) {
+                            Intent(Intent.ACTION_SEND).apply {
+                                type = "application/pdf"
+                                putExtra(Intent.EXTRA_STREAM, uris[0])
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                        } else {
+                            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                                type = "application/pdf"
+                                putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                        }
+                        context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_pdf_title)))
                     }
                 },
                 onExport = {
-                    scans.filter { it.id in selectedIds }.forEach { viewModel.exportScan(it) }
+                    selectedRecords.forEach { viewModel.exportScan(it) }
                     selectedIds = emptySet()
                 },
-                modifier = Modifier.align(Alignment.BottomCenter)
+                onExtractTexts = { viewModel.extractTexts(selectedRecords) },
+                extractEnabled = selectedRecords.any { it.thumbnailPath != null },
+                onDelete = {
+                    if (selectedRecords.size == 1) pendingDeleteRecord = selectedRecords.first()
+                    else showBulkDeleteConfirm = true
+                },
+                modifier       = Modifier.align(Alignment.BottomCenter)
             )
         }
     }
@@ -329,7 +361,7 @@ fun HomeScreen(
             title = null,
             text  = {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    ScannerLoadingAnimation()
                 }
             },
             confirmButton = {}
@@ -441,19 +473,52 @@ fun HomeScreen(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Selection action bar
+// Selection title bar (top) + Bulk action bar (bottom)
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
-private fun SelectionBar(
+private fun SelectionTitleBar(
     count:            Int,
-    totalCount:       Int,
-    onSelectAll:      () -> Unit,
+    total:            Int,
     onClearSelection: () -> Unit,
-    onDelete:         () -> Unit,
-    onShare:          () -> Unit,
-    onExport:         () -> Unit,
-    modifier:         Modifier = Modifier
+    onSelectAll:      () -> Unit
+) {
+    Surface(
+        modifier        = Modifier.fillMaxWidth(),
+        shadowElevation = 4.dp,
+        color           = MaterialTheme.colorScheme.surfaceContainerHigh
+    ) {
+        Row(
+            modifier                = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 4.dp),
+            verticalAlignment       = Alignment.CenterVertically,
+            horizontalArrangement   = Arrangement.SpaceBetween
+        ) {
+            IconButton(onClick = onClearSelection) {
+                Icon(Icons.Default.Close, contentDescription = null)
+            }
+            Text(
+                stringResource(R.string.selection_count_fraction, count, total),
+                style      = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+            IconButton(onClick = onSelectAll) {
+                Icon(Icons.Default.SelectAll,
+                    contentDescription = stringResource(R.string.action_select_all))
+            }
+        }
+    }
+}
+
+@Composable
+private fun BulkActionBar(
+    onShare:        () -> Unit,
+    onExport:       () -> Unit,
+    onExtractTexts: () -> Unit,
+    onDelete:       () -> Unit,
+    extractEnabled: Boolean = true,
+    modifier:       Modifier = Modifier
 ) {
     Surface(
         modifier        = modifier.fillMaxWidth(),
@@ -461,29 +526,21 @@ private fun SelectionBar(
         color           = MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
         Row(
-            modifier          = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier              = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment     = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onClearSelection) {
-                Icon(Icons.Default.Close, contentDescription = null)
-            }
-            Text(
-                stringResource(R.string.selection_count, count),
-                modifier   = Modifier.weight(1f),
-                style      = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Medium
-            )
-            if (count < totalCount) {
-                TextButton(onClick = onSelectAll) {
-                    Text(stringResource(R.string.action_select_all),
-                        style = MaterialTheme.typography.labelLarge)
-                }
-            }
             IconButton(onClick = onShare) {
                 Icon(Icons.Default.Share,    contentDescription = stringResource(R.string.cd_share))
             }
             IconButton(onClick = onExport) {
                 Icon(Icons.Default.Download, contentDescription = stringResource(R.string.action_export))
+            }
+            IconButton(onClick = onExtractTexts, enabled = extractEnabled) {
+                Icon(Icons.AutoMirrored.Filled.TextSnippet,
+                    contentDescription = stringResource(R.string.cd_extract_text))
             }
             IconButton(onClick = onDelete) {
                 Icon(Icons.Default.Delete,   contentDescription = stringResource(R.string.cd_delete),
@@ -526,19 +583,13 @@ private fun EmptyStateContent(modifier: Modifier = Modifier) {
 // Scan item card
 // ─────────────────────────────────────────────────────────────────────────────
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ScanItem(
-    record:          ScanRecord,
-    isSelected:      Boolean,
-    isSelectionMode: Boolean,
-    modifier:        Modifier = Modifier,
-    onClick:         () -> Unit,
-    onLongClick:     () -> Unit,
-    onShare:         () -> Unit,
-    onDelete:        () -> Unit,
-    onExport:        () -> Unit,
-    onExtractText:   () -> Unit
+    record:           ScanRecord,
+    isSelected:       Boolean,
+    modifier:         Modifier = Modifier,
+    onClick:          () -> Unit,
+    onCheckboxToggle: () -> Unit,
 ) {
     val dateStr = remember(record.timestamp) {
         SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(Date(record.timestamp))
@@ -548,6 +599,14 @@ private fun ScanItem(
         else "%.1f MB".format(record.fileSize / (1024.0 * 1024.0))
     }
     val subtitle = stringResource(R.string.scan_item_subtitle, dateStr, record.pageCount, sizeStr)
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val cardScale by animateFloatAsState(
+        targetValue   = if (isPressed) 0.97f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        label         = "cardScale"
+    )
 
     val thumbnail by produceState<ImageBitmap?>(initialValue = null, key1 = record.thumbnailPath) {
         value = withContext(Dispatchers.IO) {
@@ -568,8 +627,13 @@ private fun ScanItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
-        shape   = RoundedCornerShape(16.dp),
+            .scale(cardScale)
+            .clickable(
+                interactionSource = interactionSource,
+                indication        = LocalIndication.current,
+                onClick           = onClick
+            ),
+        shape   = RoundedCornerShape(28.dp),
         colors  = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
                              else            MaterialTheme.colorScheme.surface
@@ -580,36 +644,24 @@ private fun ScanItem(
             modifier          = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Thumbnail with optional checkbox overlay
-            Box(
-                modifier         = Modifier.size(48.dp),
-                contentAlignment = Alignment.TopStart
-            ) {
-                val thumb = thumbnail
-                if (thumb != null) {
-                    Image(
-                        painter            = BitmapPainter(thumb),
-                        contentDescription = stringResource(R.string.cd_pdf_document),
-                        contentScale       = ContentScale.Crop,
-                        modifier           = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(10.dp))
-                    )
-                } else {
-                    Icon(
-                        Icons.Default.PictureAsPdf,
-                        contentDescription = stringResource(R.string.cd_pdf_document),
-                        tint               = MaterialTheme.colorScheme.primary,
-                        modifier           = Modifier.fillMaxSize()
-                    )
-                }
-                if (isSelectionMode) {
-                    Checkbox(
-                        checked         = isSelected,
-                        onCheckedChange = null,
-                        modifier        = Modifier.size(24.dp)
-                    )
-                }
+            // Thumbnail
+            val thumb = thumbnail
+            if (thumb != null) {
+                Image(
+                    painter            = BitmapPainter(thumb),
+                    contentDescription = stringResource(R.string.cd_pdf_document),
+                    contentScale       = ContentScale.Crop,
+                    modifier           = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                )
+            } else {
+                Icon(
+                    Icons.Default.PictureAsPdf,
+                    contentDescription = stringResource(R.string.cd_pdf_document),
+                    tint               = MaterialTheme.colorScheme.primary,
+                    modifier           = Modifier.size(48.dp)
+                )
             }
 
             Spacer(Modifier.width(12.dp))
@@ -627,46 +679,70 @@ private fun ScanItem(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline
                 )
-                if (!isSelectionMode) {
-                    Spacer(Modifier.height(4.dp))
-                    Row(horizontalArrangement = Arrangement.Start) {
-                        SmallIconButton(onClick = onShare) {
-                            Icon(Icons.Default.Share,
-                                contentDescription = stringResource(R.string.cd_share),
-                                modifier           = Modifier.size(18.dp))
-                        }
-                        SmallIconButton(onClick = onExport) {
-                            Icon(Icons.Default.Download,
-                                contentDescription = stringResource(R.string.action_export),
-                                modifier           = Modifier.size(18.dp))
-                        }
-                        SmallIconButton(onClick = onExtractText, enabled = record.thumbnailPath != null) {
-                            Icon(Icons.AutoMirrored.Filled.TextSnippet,
-                                contentDescription = stringResource(R.string.cd_extract_text),
-                                modifier           = Modifier.size(18.dp))
-                        }
-                        SmallIconButton(onClick = onDelete) {
-                            Icon(Icons.Default.Delete,
-                                contentDescription = stringResource(R.string.cd_delete),
-                                modifier           = Modifier.size(18.dp),
-                                tint               = MaterialTheme.colorScheme.error)
-                        }
-                    }
-                }
             }
+
+            // Checkbox always on the right
+            Checkbox(
+                checked         = isSelected,
+                onCheckedChange = { onCheckboxToggle() }
+            )
         }
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Scanner loading animation
+// ─────────────────────────────────────────────────────────────────────────────
+
 @Composable
-private fun SmallIconButton(
-    onClick: () -> Unit,
-    enabled: Boolean = true,
-    content: @Composable () -> Unit
-) {
-    IconButton(
-        onClick  = onClick,
-        enabled  = enabled,
-        modifier = Modifier.size(32.dp)
-    ) { content() }
+private fun ScannerLoadingAnimation() {
+    val infiniteTransition = rememberInfiniteTransition(label = "scanner")
+    val scanProgress by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue  = 1f,
+        animationSpec = infiniteRepeatable(
+            animation  = tween(1200, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scanProgress"
+    )
+    val primary       = MaterialTheme.colorScheme.primary
+    val surfaceVar    = MaterialTheme.colorScheme.surfaceVariant
+    val outlineColor  = MaterialTheme.colorScheme.outline
+
+    Canvas(modifier = Modifier.size(72.dp)) {
+        val pad   = 8.dp.toPx()
+        val left  = pad
+        val top   = pad
+        val right = size.width - pad
+        val bot   = size.height - pad
+        val docW  = right - left
+        val docH  = bot - top
+
+        // Document background
+        drawRoundRect(
+            color       = surfaceVar,
+            topLeft     = Offset(left, top),
+            size        = Size(docW, docH),
+            cornerRadius = CornerRadius(4.dp.toPx())
+        )
+
+        // Three simulated text lines
+        val lx0   = left  + 8.dp.toPx()
+        val lx1   = right - 8.dp.toPx()
+        val lxSh  = right - 20.dp.toPx()
+        val lStroke = 2.dp.toPx()
+        drawLine(outlineColor.copy(0.35f), Offset(lx0, top + docH * 0.28f), Offset(lx1,  top + docH * 0.28f), lStroke, StrokeCap.Round)
+        drawLine(outlineColor.copy(0.35f), Offset(lx0, top + docH * 0.50f), Offset(lx1,  top + docH * 0.50f), lStroke, StrokeCap.Round)
+        drawLine(outlineColor.copy(0.35f), Offset(lx0, top + docH * 0.72f), Offset(lxSh, top + docH * 0.72f), lStroke, StrokeCap.Round)
+
+        // Scanning beam
+        val scanY     = top + 4.dp.toPx() + (docH - 8.dp.toPx()) * scanProgress
+        val glowBrush = Brush.horizontalGradient(
+            colors = listOf(Color.Transparent, primary.copy(0.9f), primary, primary.copy(0.9f), Color.Transparent),
+            startX = left, endX = right
+        )
+        drawLine(glowBrush, Offset(left + 2.dp.toPx(), scanY - 3.dp.toPx()), Offset(right - 2.dp.toPx(), scanY - 3.dp.toPx()), 5.dp.toPx())
+        drawLine(glowBrush, Offset(left + 2.dp.toPx(), scanY),                Offset(right - 2.dp.toPx(), scanY),                2.dp.toPx())
+    }
 }

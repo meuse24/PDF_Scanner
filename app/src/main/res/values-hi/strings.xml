@@ -24,6 +24,7 @@
     <string name="confirm_delete_title">हटाएं?</string>
     <string name="confirm_delete_single">%1$s हटाएं?</string>
     <string name="confirm_delete_multi">%1$d दस्तावेज़ हटाएं?</string>
+    <string name="selection_count_fraction">%1$d/%2$d</string>
     <string name="selection_count">%1$d चुने गए</string>
     <string name="action_select_all">सभी चुनें</string>
     <string name="error_title">त्रुटि</string>
@@ -46,8 +47,8 @@
     <string name="help_step3">स्कैन के बाद एक डायलॉग आएगा। फ़ाइल नाम दर्ज करें और "सहेजें" दबाएं। PDF आपके डिवाइस पर स्थानीय रूप से सहेजा जाएगा।</string>
     <string name="help_section_archive">संग्रह प्रबंधित करें</string>
     <string name="help_item_open">सूची में किसी एंट्री पर टैप करें तो PDF बाहरी व्यूअर में खुल जाएगा।</string>
-    <string name="help_item_share">शेयर आइकन दबाएं तो PDF ईमेल, मैसेंजर या अन्य ऐप से भेज सकते हैं।</string>
-    <string name="help_item_delete">डिलीट आइकन दबाएं तो दस्तावेज़ स्थायी रूप से हट जाएगा।</string>
+    <string name="help_item_share">किसी प्रविष्टि की चेकबॉक्स टैप करके उसे चुनें। शीर्षक पट्टी संख्या दिखाती है और सभी चुनने की सुविधा देती है।</string>
+    <string name="help_item_delete">नीचे की क्रिया पट्टी चुनी गई सभी प्रविष्टियों के लिए साझा करें, निर्यात, पाठ निष्कर्षण (OCR) और हटाएं प्रदान करती है।</string>
     <string name="help_section_navigation">नेविगेशन</string>
     <string name="help_nav_text">ऊपर बाईं ओर हैमबर्गर मेनू से संग्रह, स्कैनर, सहायता और जानकारी तक पहुंचें।</string>
     <string name="help_section_notes">नोट्स</string>
@@ -71,6 +72,10 @@
     <string name="info_section_privacy">गोपनीयता</string>
     <string name="info_privacy_body">इस ऐप में कोई विज्ञापन नहीं है, यह कोई डेटा एकत्र नहीं करता, इसे इंटरनेट एक्सेस की आवश्यकता नहीं है और इसका कोई सदस्यता मॉडल नहीं है। कैमरा, संपर्क या नेटवर्क की कोई अनुमति नहीं मांगी जाती। सभी स्कैन केवल आपके डिवाइस पर संग्रहीत होते हैं और कभी भी डिवाइस नहीं छोड़ते।</string>
     <!-- Privacy screen -->
+    <string name="privacy_keyword_1">स्थानीय</string>
+    <string name="privacy_keyword_2">ऑफ़लाइन</string>
+    <string name="privacy_keyword_3">सुरक्षित</string>
+    <string name="privacy_keyword_4">निजी</string>
     <string name="privacy_point_1">इस ऐप में कोई विज्ञापन नहीं है और सभी स्कैन केवल आपके डिवाइस पर संग्रहीत किए जाते हैं।</string>
     <string name="privacy_point_2">कोई भी दस्तावेज़ या सामग्री बाहरी सर्वर पर नहीं भेजी जाती।</string>
     <string name="privacy_point_3">स्कैन फ़ंक्शन Google Play Services का उपयोग करता है। त्रुटि विश्लेषण के लिए तकनीकी डायग्नोस्टिक डेटा भेजा जा सकता है। आपके स्कैन किए गए दस्तावेज़ों की सामग्री नहीं भेजी जाती।</string>
@@ -80,6 +85,7 @@
     <!-- OCR -->
     <string name="cd_extract_text">टेक्स्ट निकालें</string>
     <string name="ocr_result_title">निकाला गया टेक्स्ट</string>
+    <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">टेक्स्ट निष्कर्षण के लिए कोई छवि उपलब्ध नहीं</string>
     <string name="ocr_no_text_found">इस दस्तावेज़ में कोई टेक्स्ट नहीं मिला</string>
     <string name="ocr_failed">टेक्स्ट निष्कर्षण विफल</string>

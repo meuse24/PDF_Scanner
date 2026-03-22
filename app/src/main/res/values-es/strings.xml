@@ -24,6 +24,7 @@
     <string name="confirm_delete_title">¿Eliminar?</string>
     <string name="confirm_delete_single">¿Eliminar %1$s?</string>
     <string name="confirm_delete_multi">¿Eliminar %1$d documentos?</string>
+    <string name="selection_count_fraction">%1$d/%2$d</string>
     <string name="selection_count">%1$d seleccionados</string>
     <string name="action_select_all">Seleccionar todo</string>
     <string name="error_title">Error</string>
@@ -46,8 +47,8 @@
     <string name="help_step3">Tras el escaneo aparece un diálogo. Introduce un nombre de archivo y toca Guardar. El PDF se almacena localmente en tu dispositivo.</string>
     <string name="help_section_archive">Gestionar archivo</string>
     <string name="help_item_open">Toca un elemento de la lista para abrir el PDF en un visor externo.</string>
-    <string name="help_item_share">Toca el icono de compartir para enviar el PDF por correo, mensajería u otras apps.</string>
-    <string name="help_item_delete">Toca el icono de eliminar para borrar un documento de forma permanente.</string>
+    <string name="help_item_share">Toca la casilla de un elemento para seleccionarlo. La barra de título muestra el recuento y permite seleccionar todo.</string>
+    <string name="help_item_delete">La barra de acciones inferior ofrece Compartir, Exportar, Extracción de texto (OCR) y Eliminar para todos los elementos seleccionados.</string>
     <string name="help_section_navigation">Navegación</string>
     <string name="help_nav_text">Usa el menú hamburguesa (arriba a la izquierda) para acceder al Archivo, Escáner, Ayuda e Info.</string>
     <string name="help_section_notes">Notas</string>
@@ -71,6 +72,10 @@
     <string name="info_section_privacy">Privacidad</string>
     <string name="info_privacy_body">Esta app no contiene publicidad, no recopila datos, no requiere acceso a Internet y no tiene modelo de suscripción. No se solicitan permisos de cámara, contactos ni red. Todos los escaneos se almacenan exclusivamente en su dispositivo y nunca lo abandonan.</string>
     <!-- Privacy screen -->
+    <string name="privacy_keyword_1">Local</string>
+    <string name="privacy_keyword_2">Sin conexión</string>
+    <string name="privacy_keyword_3">Seguro</string>
+    <string name="privacy_keyword_4">Privado</string>
     <string name="privacy_point_1">Esta app no contiene publicidad y almacena todos los escaneos exclusivamente en tu dispositivo.</string>
     <string name="privacy_point_2">No se transmiten documentos ni contenidos a servidores externos.</string>
     <string name="privacy_point_3">La función de escaneo utiliza Google Play Services. Pueden transmitirse datos de diagnóstico técnicos (p. ej. para análisis de errores). Los contenidos de tus documentos escaneados no se envían.</string>
@@ -80,6 +85,7 @@
     <!-- OCR -->
     <string name="cd_extract_text">Extraer texto</string>
     <string name="ocr_result_title">Texto extraído</string>
+    <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">No hay imagen disponible para la extracción de texto</string>
     <string name="ocr_no_text_found">No se encontró texto en este documento</string>
     <string name="ocr_failed">Error en la extracción de texto</string>

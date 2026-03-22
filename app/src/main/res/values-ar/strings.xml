@@ -24,6 +24,7 @@
     <string name="confirm_delete_title">حذف؟</string>
     <string name="confirm_delete_single">حذف %1$s؟</string>
     <string name="confirm_delete_multi">حذف %1$d مستند؟</string>
+    <string name="selection_count_fraction">%1$d/%2$d</string>
     <string name="selection_count">تم تحديد %1$d</string>
     <string name="action_select_all">تحديد الكل</string>
     <string name="error_title">خطأ</string>
@@ -46,8 +47,8 @@
     <string name="help_step3">بعد المسح تظهر نافذة حوار. أدخل اسم الملف واضغط حفظ. يُخزَّن PDF محلياً على جهازك.</string>
     <string name="help_section_archive">إدارة الأرشيف</string>
     <string name="help_item_open">انقر على عنصر في القائمة لفتح PDF في عارض خارجي.</string>
-    <string name="help_item_share">انقر على أيقونة المشاركة لإرسال PDF عبر البريد الإلكتروني أو الرسائل أو تطبيقات أخرى.</string>
-    <string name="help_item_delete">انقر على أيقونة الحذف لإزالة مستند نهائياً.</string>
+    <string name="help_item_share">انقر على مربع الاختيار الخاص بعنصر لتحديده. يعرض شريط العنوان العدد ويتيح تحديد الكل.</string>
+    <string name="help_item_delete">يوفر شريط الإجراءات أسفل الشاشة: مشاركة وتصدير واستخراج النص (OCR) وحذف جميع العناصر المحددة.</string>
     <string name="help_section_navigation">التنقل</string>
     <string name="help_nav_text">استخدم قائمة الهامبرغر (أعلى اليسار) للوصول إلى الأرشيف والماسح والمساعدة والمعلومات.</string>
     <string name="help_section_notes">ملاحظات</string>
@@ -71,6 +72,10 @@
     <string name="info_section_privacy">الخصوصية</string>
     <string name="info_privacy_body">لا يحتوي هذا التطبيق على إعلانات، ولا يجمع أي بيانات، ولا يتطلب اتصالاً بالإنترنت، وليس له نموذج اشتراك. لا تُطلب أذونات الكاميرا أو جهات الاتصال أو الشبكة. تُخزَّن جميع المستندات الممسوحة حصرياً على جهازك ولا تغادره أبداً.</string>
     <!-- Privacy screen -->
+    <string name="privacy_keyword_1">محلي</string>
+    <string name="privacy_keyword_2">غير متصل</string>
+    <string name="privacy_keyword_3">آمن</string>
+    <string name="privacy_keyword_4">خاص</string>
     <string name="privacy_point_1">لا يحتوي هذا التطبيق على إعلانات وتُخزَّن جميع المستندات الممسوحة حصرياً على جهازك.</string>
     <string name="privacy_point_2">لا تُنقل أي مستندات أو محتويات إلى خوادم خارجية.</string>
     <string name="privacy_point_3">تستخدم وظيفة المسح الضوئي خدمات Google Play. قد تُنقل بيانات تشخيصية تقنية لأغراض تحليل الأخطاء. لا تُرسل محتويات مستنداتك الممسوحة.</string>
@@ -80,6 +85,7 @@
     <!-- OCR -->
     <string name="cd_extract_text">استخراج النص</string>
     <string name="ocr_result_title">النص المستخرج</string>
+    <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">لا توجد صورة متاحة لاستخراج النص</string>
     <string name="ocr_no_text_found">لم يُعثر على نص في هذا المستند</string>
     <string name="ocr_failed">فشل استخراج النص</string>

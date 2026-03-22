@@ -16,6 +16,7 @@ private val fontProvider = GoogleFont.Provider(
 )
 
 private val dmSans = GoogleFont("DM Sans")
+private val spaceGrotesk = GoogleFont("Space Grotesk")
 
 private val DmSans = FontFamily(
     Font(googleFont = dmSans, fontProvider = fontProvider, weight = FontWeight.Normal),
@@ -24,13 +25,18 @@ private val DmSans = FontFamily(
     Font(googleFont = dmSans, fontProvider = fontProvider, weight = FontWeight.Bold),
 )
 
+private val SpaceGrotesk = FontFamily(
+    Font(googleFont = spaceGrotesk, fontProvider = fontProvider, weight = FontWeight.SemiBold),
+    Font(googleFont = spaceGrotesk, fontProvider = fontProvider, weight = FontWeight.Bold),
+)
+
 val Typography = Typography(
-    displayLarge   = TextStyle(fontFamily = DmSans, fontWeight = FontWeight.Bold,     fontSize = 57.sp, lineHeight = 64.sp, letterSpacing = (-0.25).sp),
-    displayMedium  = TextStyle(fontFamily = DmSans, fontWeight = FontWeight.Bold,     fontSize = 45.sp, lineHeight = 52.sp),
-    displaySmall   = TextStyle(fontFamily = DmSans, fontWeight = FontWeight.Bold,     fontSize = 36.sp, lineHeight = 44.sp),
-    headlineLarge  = TextStyle(fontFamily = DmSans, fontWeight = FontWeight.SemiBold, fontSize = 32.sp, lineHeight = 40.sp),
-    headlineMedium = TextStyle(fontFamily = DmSans, fontWeight = FontWeight.SemiBold, fontSize = 28.sp, lineHeight = 36.sp),
-    headlineSmall  = TextStyle(fontFamily = DmSans, fontWeight = FontWeight.SemiBold, fontSize = 24.sp, lineHeight = 32.sp),
+    displayLarge   = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold,     fontSize = 57.sp, lineHeight = 64.sp, letterSpacing = (-0.25).sp),
+    displayMedium  = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold,     fontSize = 45.sp, lineHeight = 52.sp),
+    displaySmall   = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold,     fontSize = 36.sp, lineHeight = 44.sp),
+    headlineLarge  = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.SemiBold, fontSize = 32.sp, lineHeight = 40.sp),
+    headlineMedium = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.SemiBold, fontSize = 28.sp, lineHeight = 36.sp),
+    headlineSmall  = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.SemiBold, fontSize = 24.sp, lineHeight = 32.sp),
     titleLarge     = TextStyle(fontFamily = DmSans, fontWeight = FontWeight.SemiBold, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = 0.sp),
     titleMedium    = TextStyle(fontFamily = DmSans, fontWeight = FontWeight.Medium,   fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.15.sp),
     titleSmall     = TextStyle(fontFamily = DmSans, fontWeight = FontWeight.Medium,   fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp),

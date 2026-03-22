@@ -24,6 +24,7 @@
     <string name="confirm_delete_title">删除？</string>
     <string name="confirm_delete_single">删除 %1$s？</string>
     <string name="confirm_delete_multi">删除 %1$d 个文档？</string>
+    <string name="selection_count_fraction">%1$d/%2$d</string>
     <string name="selection_count">已选 %1$d 个</string>
     <string name="action_select_all">全选</string>
     <string name="error_title">错误</string>
@@ -46,8 +47,8 @@
     <string name="help_step3">扫描完成后会弹出对话框。输入文件名并点击"保存"，PDF 将保存到您的设备本地。</string>
     <string name="help_section_archive">管理文件库</string>
     <string name="help_item_open">点击列表中的条目，可在外部 PDF 查看器中打开文档。</string>
-    <string name="help_item_share">点击分享图标，可通过电子邮件、即时通讯或其他应用发送 PDF。</string>
-    <string name="help_item_delete">点击删除图标，可永久删除文档。</string>
+    <string name="help_item_share">点击条目的复选框可将其选中。标题栏显示数量，并可全选。</string>
+    <string name="help_item_delete">底部操作栏提供对所有选中条目的分享、导出、文字提取（OCR）和删除功能。</string>
     <string name="help_section_navigation">导航</string>
     <string name="help_nav_text">通过左上角的汉堡菜单可访问文件库、扫描仪、帮助和关于页面。</string>
     <string name="help_section_notes">注意事项</string>
@@ -71,6 +72,10 @@
     <string name="info_section_privacy">隐私</string>
     <string name="info_privacy_body">本应用不含广告、不收集任何数据、不需要网络访问权限，也没有订阅模式。不会请求相机、联系人或网络权限。所有扫描文件仅存储在您的设备本地，永不离开设备。</string>
     <!-- Privacy screen -->
+    <string name="privacy_keyword_1">本地</string>
+    <string name="privacy_keyword_2">离线</string>
+    <string name="privacy_keyword_3">安全</string>
+    <string name="privacy_keyword_4">私密</string>
     <string name="privacy_point_1">本应用不含广告，所有扫描文件仅存储在您的设备本地。</string>
     <string name="privacy_point_2">不会将任何文档或内容主动传输至外部服务器。</string>
     <string name="privacy_point_3">扫描功能使用 Google Play 服务。可能会传输技术诊断数据（例如用于错误分析）。您扫描文档的内容不会被发送。</string>
@@ -80,6 +85,7 @@
     <!-- OCR -->
     <string name="cd_extract_text">提取文本</string>
     <string name="ocr_result_title">提取的文本</string>
+    <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">没有可用于文本提取的图片</string>
     <string name="ocr_no_text_found">此文档中未找到文本</string>
     <string name="ocr_failed">文本提取失败</string>

@@ -185,6 +185,51 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun extractTexts(records: List<ScanRecord>) {
+        if (_ocrLoading.value) return
+        val withImages = records.filter { it.thumbnailPath != null }
+        if (withImages.isEmpty()) {
+            _error.value = context.getString(R.string.ocr_no_image)
+            return
+        }
+        _ocrLoading.value = true
+        viewModelScope.launch {
+            try {
+                val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                val results = StringBuilder()
+                for (record in withImages) {
+                    val image = withContext(Dispatchers.IO) {
+                        InputImage.fromFilePath(context, Uri.fromFile(File(record.thumbnailPath!!)))
+                    }
+                    val text = suspendCancellableCoroutine<String> { cont ->
+                        recognizer.process(image)
+                            .addOnSuccessListener { result -> cont.resume(result.text) }
+                            .addOnFailureListener { e -> cont.resumeWithException(e) }
+                        cont.invokeOnCancellation { recognizer.close() }
+                    }
+                    if (text.isNotBlank()) {
+                        if (results.isNotEmpty()) results.append("\n\n")
+                        if (withImages.size > 1) {
+                            results.append(context.getString(R.string.ocr_bulk_separator, record.filename))
+                            results.append("\n")
+                        }
+                        results.append(text)
+                    }
+                }
+                recognizer.close()
+                if (results.isBlank()) {
+                    _error.value = context.getString(R.string.ocr_no_text_found)
+                } else {
+                    _ocrText.value = results.toString()
+                }
+            } catch (e: Exception) {
+                _error.value = context.getString(R.string.ocr_failed)
+            } finally {
+                _ocrLoading.value = false
+            }
+        }
+    }
+
     fun clearOcrText() {
         _ocrText.value = null
     }

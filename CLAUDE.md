@@ -24,8 +24,8 @@ ui/
 │                            # Verwaltet scanTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
 ├── home/
 │   ├── HomeScreen.kt        # Scan-Liste, Empty State, Mehrfachauswahl, Bestätigungs-Dialoge
-│   └── HomeViewModel.kt     # saveScan, deleteScan, deleteScans, exportScan, extractText (OCR)
-│                            # @ApplicationContext; _error/_success/_ocrText: StateFlow
+│   └── HomeViewModel.kt     # saveScan, deleteScan, deleteScans, exportScan, extractText, extractTexts (OCR)
+│                            # @ApplicationContext; _error/_success/_ocrText/_ocrLoading: StateFlow
 ├── help/HelpScreen.kt
 ├── info/InfoScreen.kt       # Version dynamisch aus BuildConfig
 └── privacy/PrivacyScreen.kt # 4 Icon-Karten (PhoneAndroid, CloudOff, Shield, Lock)
@@ -55,11 +55,14 @@ util/FileUtil.kt             # savePdfFromUri(), saveThumbnailFromUri()
 
 ## Mehrfachauswahl
 
-- **LongPress** → Auswahlmodus; Tippen togglet; Back/✕ beendet
-- Ausgewählte Cards: `primaryContainer` + Checkbox-Overlay; Einzel-Buttons ausgeblendet
-- **SelectionBar** (Overlay unten): Anzahl · Alle auswählen · Share · Export · Löschen (rot)
-- Löschen (Einzel & Bulk) immer mit Bestätigungs-Dialog (`confirm_delete_single` / `confirm_delete_multi`)
-- Bulk-Share: `Intent.ACTION_SEND_MULTIPLE`
+- **Checkbox** (rechts an jedem Eintrag) → Auswahlmodus; weiteres Antippen togglet; Back/✕ beendet
+- Ausgewählte Cards: `primaryContainer`; keine Einzel-Action-Buttons
+- **SelectionTitleBar** (top, erscheint ab 1 Auswahl): ✕ deselektieren · `count/total` · SelectAll-Icon
+- **BulkActionBar** (bottom): Share · Export · OCR (TextSnippet) · Delete (rot)
+  - Share: `ACTION_SEND` (1 Item) vs. `ACTION_SEND_MULTIPLE` (mehrere)
+  - Delete: Einzel-Dialog mit Dateiname (`confirm_delete_single`) vs. Bulk-Dialog (`confirm_delete_multi`)
+  - OCR: `extractTexts(records)` — mehrere Records sequenziell, `— filename —` Trenner nur bei >1
+- Löschen immer mit Bestätigungs-Dialog
 
 ## Tech Stack
 
@@ -82,6 +85,6 @@ Versionen zentral in `gradle/libs.versions.toml`. Gradle-Besonderheiten:
 
 ## Schrift & Design
 
-- **DM Sans** via GMS Downloadable Fonts (`ui-text-google-fonts`); Zertifikate in `res/values/font_certs.xml`
+- **DM Sans** (body/title) + **Space Grotesk** (display/headline) via GMS Downloadable Fonts (`ui-text-google-fonts`); Zertifikate in `res/values/font_certs.xml`
 - Gradient-Hintergrund in `AppNavigation.kt`: `primaryContainer(18%) → surface(0%) → secondaryContainer(10%)`
 - Adaptives Icon: `ic_launcher_background.xml` (Indigo→Teal) + `ic_launcher_foreground.xml` (Safe Zone 18–90 im 108dp-Canvas)

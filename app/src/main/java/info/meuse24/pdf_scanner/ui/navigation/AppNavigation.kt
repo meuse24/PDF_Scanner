@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -73,7 +74,9 @@ fun AppNavigation() {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(
+            drawerContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ) {
                 Spacer(Modifier.height(8.dp))
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(Modifier.height(8.dp))
@@ -173,15 +176,18 @@ fun AppNavigation() {
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor        = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor     = MaterialTheme.colorScheme.onPrimaryContainer,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        containerColor             = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        titleContentColor          = MaterialTheme.colorScheme.onSurface,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
             },
             floatingActionButton = {
                 if ((currentRoute == Screen.Ablage.route || currentRoute == null) && !isSelectionMode) {
-                    FloatingActionButton(onClick = { scanTrigger = true }) {
+                    FloatingActionButton(
+                        onClick = { scanTrigger = true },
+                        shape   = RoundedCornerShape(20.dp)
+                    ) {
                         Icon(Icons.Default.Add, stringResource(R.string.cd_new_scan))
                     }
                 }

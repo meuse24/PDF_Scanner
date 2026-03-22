@@ -1,7 +1,7 @@
 package info.meuse24.pdf_scanner.ui.privacy
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudOff
@@ -37,18 +38,22 @@ import info.meuse24.pdf_scanner.R
 @Composable
 fun PrivacyScreen() {
     val points = listOf(
-        Icons.Default.PhoneAndroid to stringResource(R.string.privacy_point_1),
-        Icons.Default.CloudOff     to stringResource(R.string.privacy_point_2),
-        Icons.Default.Shield       to stringResource(R.string.privacy_point_3),
-        Icons.Default.Lock         to stringResource(R.string.privacy_point_4),
+        Triple(Icons.Default.PhoneAndroid, stringResource(R.string.privacy_keyword_1), stringResource(R.string.privacy_point_1)),
+        Triple(Icons.Default.CloudOff,     stringResource(R.string.privacy_keyword_2), stringResource(R.string.privacy_point_2)),
+        Triple(Icons.Default.Shield,       stringResource(R.string.privacy_keyword_3), stringResource(R.string.privacy_point_3)),
+        Triple(Icons.Default.Lock,         stringResource(R.string.privacy_keyword_4), stringResource(R.string.privacy_point_4)),
     )
 
+    val lazyListState = rememberLazyListState()
+
     LazyColumn(
-        contentPadding        = PaddingValues(16.dp),
-        verticalArrangement   = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
+        state             = lazyListState,
+        flingBehavior     = rememberSnapFlingBehavior(lazyListState),
+        contentPadding    = PaddingValues(16.dp),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
     ) {
-        items(points) { (icon, text) ->
-            PrivacyCard(icon = icon, text = text)
+        items(points) { (icon, keyword, text) ->
+            PrivacyCard(icon = icon, keyword = keyword, text = text)
         }
 
         item {
@@ -67,35 +72,41 @@ fun PrivacyScreen() {
 }
 
 @Composable
-private fun PrivacyCard(icon: ImageVector, text: String) {
+private fun PrivacyCard(icon: ImageVector, keyword: String, text: String) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Row(
-            modifier          = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-            Box(
-                modifier         = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector        = icon,
-                    contentDescription = null,
-                    tint               = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier           = Modifier.size(26.dp)
+        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                androidx.compose.foundation.layout.Box(
+                    modifier         = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector        = icon,
+                        contentDescription = null,
+                        tint               = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier           = Modifier.size(22.dp)
+                    )
+                }
+                Spacer(Modifier.width(14.dp))
+                Text(
+                    text  = keyword,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
-            Spacer(Modifier.width(16.dp))
+            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            Spacer(Modifier.height(12.dp))
             Text(
-                text     = text,
-                style    = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.weight(1f)
+                text  = text,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }

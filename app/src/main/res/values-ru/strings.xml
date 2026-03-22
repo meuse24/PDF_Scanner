@@ -24,6 +24,7 @@
     <string name="confirm_delete_title">Удалить?</string>
     <string name="confirm_delete_single">Удалить %1$s?</string>
     <string name="confirm_delete_multi">Удалить %1$d документов?</string>
+    <string name="selection_count_fraction">%1$d/%2$d</string>
     <string name="selection_count">Выбрано: %1$d</string>
     <string name="action_select_all">Выбрать все</string>
     <string name="error_title">Ошибка</string>
@@ -46,8 +47,8 @@
     <string name="help_step3">После сканирования появится диалог. Введите имя файла и нажмите «Сохранить». PDF сохранится локально на устройстве.</string>
     <string name="help_section_archive">Управление архивом</string>
     <string name="help_item_open">Нажмите на элемент списка, чтобы открыть PDF во внешней программе просмотра.</string>
-    <string name="help_item_share">Нажмите значок «Поделиться», чтобы отправить PDF по почте, в мессенджере или других приложениях.</string>
-    <string name="help_item_delete">Нажмите значок «Удалить», чтобы навсегда удалить документ.</string>
+    <string name="help_item_share">Нажмите флажок записи, чтобы выбрать её. В заголовке отображается количество и доступно выделение всех записей.</string>
+    <string name="help_item_delete">Панель действий внизу предлагает: поделиться, экспортировать, извлечь текст (OCR) и удалить все выбранные записи.</string>
     <string name="help_section_navigation">Навигация</string>
     <string name="help_nav_text">Используйте меню-гамбургер (вверху слева) для доступа к Архиву, Сканеру, Справке и разделу «О приложении».</string>
     <string name="help_section_notes">Примечания</string>
@@ -71,6 +72,10 @@
     <string name="info_section_privacy">Конфиденциальность</string>
     <string name="info_privacy_body">Приложение не содержит рекламы, не собирает никаких данных, не требует доступа к сети и не имеет модели подписки. Разрешения на доступ к камере, контактам или сети не запрашиваются. Все отсканированные документы хранятся исключительно на вашем устройстве и никогда его не покидают.</string>
     <!-- Privacy screen -->
+    <string name="privacy_keyword_1">Локально</string>
+    <string name="privacy_keyword_2">Офлайн</string>
+    <string name="privacy_keyword_3">Надёжно</string>
+    <string name="privacy_keyword_4">Конфиденциально</string>
     <string name="privacy_point_1">Это приложение не содержит рекламы и хранит все отсканированные документы исключительно на вашем устройстве.</string>
     <string name="privacy_point_2">Никакие документы или содержимое не передаются на внешние серверы.</string>
     <string name="privacy_point_3">Функция сканирования использует сервисы Google Play. Для анализа ошибок могут передаваться технические диагностические данные. Содержимое ваших отсканированных документов не отправляется.</string>
@@ -80,6 +85,7 @@
     <!-- OCR -->
     <string name="cd_extract_text">Извлечь текст</string>
     <string name="ocr_result_title">Извлечённый текст</string>
+    <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">Нет изображения для извлечения текста</string>
     <string name="ocr_no_text_found">Текст в документе не найден</string>
     <string name="ocr_failed">Ошибка извлечения текста</string>

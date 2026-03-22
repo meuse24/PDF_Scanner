@@ -24,6 +24,7 @@
     <string name="confirm_delete_title">削除しますか？</string>
     <string name="confirm_delete_single">%1$s を削除しますか？</string>
     <string name="confirm_delete_multi">%1$d 件のドキュメントを削除しますか？</string>
+    <string name="selection_count_fraction">%1$d/%2$d</string>
     <string name="selection_count">%1$d 件を選択中</string>
     <string name="action_select_all">すべて選択</string>
     <string name="error_title">エラー</string>
@@ -46,8 +47,8 @@
     <string name="help_step3">スキャン後にダイアログが表示されます。ファイル名を入力して「保存」をタップしてください。PDF はデバイスにローカル保存されます。</string>
     <string name="help_section_archive">アーカイブの管理</string>
     <string name="help_item_open">リストの項目をタップすると、外部ビューアで PDF を開けます。</string>
-    <string name="help_item_share">共有アイコンをタップすると、メール・メッセンジャー・他のアプリで PDF を送信できます。</string>
-    <string name="help_item_delete">削除アイコンをタップすると、ドキュメントを完全に削除できます。</string>
+    <string name="help_item_share">チェックボックスをタップして項目を選択します。タイトルバーに件数が表示され、全選択も可能です。</string>
+    <string name="help_item_delete">下部のアクションバーでは、選択したすべての項目に対して共有・エクスポート・テキスト抽出（OCR）・削除が行えます。</string>
     <string name="help_section_navigation">ナビゲーション</string>
     <string name="help_nav_text">左上のハンバーガーメニューからアーカイブ・スキャナー・ヘルプ・情報にアクセスできます。</string>
     <string name="help_section_notes">注意事項</string>
@@ -71,6 +72,10 @@
     <string name="info_section_privacy">プライバシー</string>
     <string name="info_privacy_body">このアプリは広告を含まず、データを収集せず、ネットワークアクセスを必要とせず、サブスクリプションモデルもありません。カメラ、連絡先、ネットワークの権限は一切要求しません。すべてのスキャンはデバイス上にのみ保存され、外部に送信されることは一切ありません。</string>
     <!-- Privacy screen -->
+    <string name="privacy_keyword_1">ローカル</string>
+    <string name="privacy_keyword_2">オフライン</string>
+    <string name="privacy_keyword_3">セキュア</string>
+    <string name="privacy_keyword_4">プライベート</string>
     <string name="privacy_point_1">このアプリは広告を含まず、すべてのスキャンはデバイス上にのみ保存されます。</string>
     <string name="privacy_point_2">ドキュメントや内容が外部サーバーに送信されることはありません。</string>
     <string name="privacy_point_3">スキャン機能は Google Play サービスを使用します。エラー分析などのための技術的な診断データが送信される場合があります。スキャンしたドキュメントの内容は送信されません。</string>
@@ -80,6 +85,7 @@
     <!-- OCR -->
     <string name="cd_extract_text">テキストを抽出</string>
     <string name="ocr_result_title">抽出されたテキスト</string>
+    <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">テキスト抽出に使用できる画像がありません</string>
     <string name="ocr_no_text_found">このドキュメントにテキストが見つかりません</string>
     <string name="ocr_failed">テキスト抽出に失敗しました</string>

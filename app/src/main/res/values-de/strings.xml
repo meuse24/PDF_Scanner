@@ -24,6 +24,7 @@
     <string name="confirm_delete_title">Löschen?</string>
     <string name="confirm_delete_single">%1$s löschen?</string>
     <string name="confirm_delete_multi">%1$d Dokumente löschen?</string>
+    <string name="selection_count_fraction">%1$d/%2$d</string>
     <string name="selection_count">%1$d ausgewählt</string>
     <string name="action_select_all">Alle auswählen</string>
     <string name="error_title">Fehler</string>
@@ -46,8 +47,8 @@
     <string name="help_step3">Nach dem Scan öffnet sich ein Dialog. Gib einen Dateinamen ein und tippe Speichern. Das PDF wird lokal auf deinem Gerät gespeichert.</string>
     <string name="help_section_archive">Ablage verwalten</string>
     <string name="help_item_open">Tippe auf einen Eintrag in der Liste, um das PDF in einem externen Viewer zu öffnen.</string>
-    <string name="help_item_share">Tippe auf das Teilen-Icon, um das PDF per E-Mail, Messenger oder anderen Apps zu versenden.</string>
-    <string name="help_item_delete">Tippe auf das Löschen-Icon, um ein Dokument dauerhaft zu entfernen.</string>
+    <string name="help_item_share">Checkbox eines Eintrags antippen, um ihn auszuwählen. Die Titelleiste zeigt die Anzahl und ermöglicht das Auswählen aller Einträge.</string>
+    <string name="help_item_delete">Die Aktionsleiste unten bietet Teilen, Exportieren, Textextraktion (OCR) und Löschen für alle ausgewählten Einträge.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Über das Hamburger-Menü (oben links) erreichst du die Ablage, den Scanner, die Hilfe und den Info-Screen.</string>
     <string name="help_section_notes">Hinweise</string>
@@ -71,6 +72,10 @@
     <string name="info_section_privacy">Datenschutz</string>
     <string name="info_privacy_body">Diese App enthält keine Werbung, erhebt keine Daten, benötigt keinen Internetzugang und hat kein Abo-Modell. Es werden keine Kamera-, Kontakt- oder Netzwerkberechtigungen angefragt. Alle Scans werden ausschließlich auf Ihrem Gerät gespeichert und verlassen es nie.</string>
     <!-- Privacy screen -->
+    <string name="privacy_keyword_1">Lokal</string>
+    <string name="privacy_keyword_2">Offline</string>
+    <string name="privacy_keyword_3">Sicher</string>
+    <string name="privacy_keyword_4">Privat</string>
     <string name="privacy_point_1">Diese App enthält keine Werbung und speichert alle erstellten Scans ausschließlich lokal auf Ihrem Gerät.</string>
     <string name="privacy_point_2">Es werden keine Dokumente oder Inhalte aktiv an externe Server übertragen.</string>
     <string name="privacy_point_3">Für die Scan-Funktion werden Google Play Services verwendet. Dabei können technische Diagnosedaten (z. B. zur Fehleranalyse) übertragen werden. Inhalte Ihrer gescannten Dokumente werden dabei nicht übermittelt.</string>
@@ -80,6 +85,7 @@
     <!-- OCR -->
     <string name="cd_extract_text">Text extrahieren</string>
     <string name="ocr_result_title">Extrahierter Text</string>
+    <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">Kein Bild für Texterkennung verfügbar</string>
     <string name="ocr_no_text_found">Kein Text im Dokument gefunden</string>
     <string name="ocr_failed">Texterkennung fehlgeschlagen</string>

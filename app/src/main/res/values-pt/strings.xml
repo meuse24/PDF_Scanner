@@ -24,6 +24,7 @@
     <string name="confirm_delete_title">Excluir?</string>
     <string name="confirm_delete_single">Excluir %1$s?</string>
     <string name="confirm_delete_multi">Excluir %1$d documentos?</string>
+    <string name="selection_count_fraction">%1$d/%2$d</string>
     <string name="selection_count">%1$d selecionados</string>
     <string name="action_select_all">Selecionar tudo</string>
     <string name="error_title">Erro</string>
@@ -46,8 +47,8 @@
     <string name="help_step3">Após o scan, um diálogo é exibido. Digite um nome de arquivo e toque em Salvar. O PDF é armazenado localmente no seu dispositivo.</string>
     <string name="help_section_archive">Gerenciar arquivo</string>
     <string name="help_item_open">Toque em um item da lista para abrir o PDF em um visualizador externo.</string>
-    <string name="help_item_share">Toque no ícone de compartilhamento para enviar o PDF por e-mail, mensageiro ou outros apps.</string>
-    <string name="help_item_delete">Toque no ícone de exclusão para remover permanentemente um documento.</string>
+    <string name="help_item_share">Toque na caixa de seleção de um item para selecioná-lo. A barra de título exibe a contagem e permite selecionar tudo.</string>
+    <string name="help_item_delete">A barra de ações inferior oferece Compartilhar, Exportar, Extração de texto (OCR) e Excluir para todos os itens selecionados.</string>
     <string name="help_section_navigation">Navegação</string>
     <string name="help_nav_text">Use o menu hambúrguer (canto superior esquerdo) para acessar o Arquivo, Scanner, Ajuda e Info.</string>
     <string name="help_section_notes">Observações</string>
@@ -71,6 +72,10 @@
     <string name="info_section_privacy">Privacidade</string>
     <string name="info_privacy_body">Este app não contém publicidade, não coleta dados, não requer acesso à internet e não possui modelo de assinatura. Nenhuma permissão de câmera, contatos ou rede é solicitada. Todos os scans são armazenados exclusivamente no seu dispositivo e nunca o deixam.</string>
     <!-- Privacy screen -->
+    <string name="privacy_keyword_1">Local</string>
+    <string name="privacy_keyword_2">Offline</string>
+    <string name="privacy_keyword_3">Seguro</string>
+    <string name="privacy_keyword_4">Privado</string>
     <string name="privacy_point_1">Este app não contém publicidade e armazena todos os scans exclusivamente no seu dispositivo.</string>
     <string name="privacy_point_2">Nenhum documento ou conteúdo é transmitido ativamente a servidores externos.</string>
     <string name="privacy_point_3">A função de digitalização utiliza os Google Play Services. Dados de diagnóstico técnicos podem ser transmitidos para análise de erros. O conteúdo dos seus documentos digitalizados não é enviado.</string>
@@ -80,6 +85,7 @@
     <!-- OCR -->
     <string name="cd_extract_text">Extrair texto</string>
     <string name="ocr_result_title">Texto extraído</string>
+    <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">Nenhuma imagem disponível para extração de texto</string>
     <string name="ocr_no_text_found">Nenhum texto encontrado neste documento</string>
     <string name="ocr_failed">Falha na extração de texto</string>

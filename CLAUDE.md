@@ -17,7 +17,7 @@ ADB-Pfad (Windows): `C:/Users/guent/AppData/Local/Android/Sdk/platform-tools/adb
 
 ## Architektur
 
-**Paket:** `info.meuse24.pdf_scanner` | **Min SDK:** 29 | **Target SDK:** 36
+**App-Name:** M24 PDF-Scanner | **Paket:** `info.meuse24.pdf_scanner` | **Min SDK:** 29 | **Target SDK:** 36
 
 ```
 ui/
@@ -25,8 +25,8 @@ ui/
 │   ├── Screen.kt            # Route-Definitionen (Ablage, Help, Info, Privacy)
 │   └── AppNavigation.kt     # ModalNavigationDrawer + Scaffold + NavHost + Gradient-Hintergrund
 ├── home/
-│   ├── HomeScreen.kt        # Scan-Liste / Empty State (kein eigenes Scaffold)
-│   └── HomeViewModel.kt     # saveScan, deleteScan, exportScan, extractText (OCR), _success-Flow; @ApplicationContext für Strings
+│   ├── HomeScreen.kt        # Scan-Liste / Empty State / Mehrfachauswahl / Bestätigungs-Dialoge (kein eigenes Scaffold)
+│   └── HomeViewModel.kt     # saveScan, deleteScan, deleteScans, exportScan, extractText (OCR), _success-Flow; @ApplicationContext für Strings
 ├── help/HelpScreen.kt       # Anleitung
 ├── info/InfoScreen.kt       # Copyright, Tech Stack, Bibliotheken, Source Code, Credits
 └── privacy/PrivacyScreen.kt # Datenschutz-Karten (PhoneAndroid, CloudOff, Shield, Lock)
@@ -53,13 +53,13 @@ MainActivity.kt              # @AndroidEntryPoint → AppNavigation()
 
 `AppNavigation` ist das Root-Composable. Es stellt bereit:
 - `ModalNavigationDrawer` mit Drawer-Items (Ablage, Scanner starten, Hilfe, Info, Datenschutz)
-- `Scaffold` mit `TopAppBar` (dynamischer Titel + Hamburger/Back-Icon) und FAB (nur auf Ablage-Screen)
+- `Scaffold` mit `TopAppBar` (dynamischer Titel + Hamburger/Back-Icon) und FAB (nur auf Ablage-Screen, ausgeblendet im Auswahlmodus)
 - `NavHost` mit vier Routes: `ablage`, `help`, `info`, `privacy`
 - Dezenter Gradient-Hintergrund via `Brush.verticalGradient` (primaryContainer → surface → secondaryContainer), gilt für alle Screens
 
 Help, Info und Privacy navigieren mit `popUpTo(Screen.Ablage.route) + launchSingleTop = true`, sodass sie immer direkt über Ablage liegen und sich nicht mehrfach stapeln können.
 
-Der Scanner-Trigger (`scanTrigger: Boolean`) wird von `AppNavigation` verwaltet und als Parameter an `HomeScreen` übergeben. `HomeScreen` reagiert darauf per `LaunchedEffect` und ruft `GmsDocumentScanning` auf.
+Der Scanner-Trigger (`scanTrigger: Boolean`) und der Auswahlmodus-Status (`isSelectionMode: Boolean`) werden von `AppNavigation` verwaltet. `onSelectionModeChange: (Boolean) -> Unit` wird an `HomeScreen` übergeben, damit AppNavigation den FAB ausblenden kann.
 
 ### Scanner-Pattern
 
@@ -143,6 +143,8 @@ Alle Versionen zentral in `gradle/libs.versions.toml` (Version Catalog).
 
 In `gradle.properties` ist `android.disallowKotlinSourceSets=false` gesetzt — notwendig damit KSP-generierte Sources mit AGP 9's eingebautem Kotlin-Support funktionieren.
 
+`buildFeatures { buildConfig = true }` ist aktiviert — `BuildConfig.VERSION_NAME` und `VERSION_CODE` werden in `InfoScreen.kt` für die dynamische Versionsanzeige genutzt.
+
 ## App-Icon
 
 Adaptives Icon in `res/drawable/`:
@@ -178,8 +180,19 @@ Eigenständiger Screen (`ui/privacy/PrivacyScreen.kt`) mit 4 Icon-Karten:
 
 Footer mit `privacy_footer`-String (Stand März 2026).
 
+## Mehrfachauswahl & Lösch-Bestätigung
+
+- **LongPress** auf ein ScanItem → Auswahlmodus starten; weiteres Tippen togglet Auswahl
+- Ausgewählte Cards: `primaryContainer`-Hintergrund + Checkbox-Overlay (24dp) auf dem Thumbnail
+- Individuelle Aktionsbuttons ausgeblendet im Auswahlmodus
+- **SelectionBar** (overlay unten): `selection_count` · „Alle auswählen" · Share · Export · Löschen (rot)
+- **Back**-Taste oder ✕ beendet Auswahlmodus
+- Bulk-Share via `Intent.ACTION_SEND_MULTIPLE`; Bulk-Export ruft `exportScan()` pro Item
+- Löschen (Einzel & Bulk) zeigt immer einen Bestätigungs-Dialog (`confirm_delete_single` / `confirm_delete_multi`)
+- ViewModel: `deleteScans(List<ScanRecord>)` für Bulk-Löschung
+
 ## Info-Screen Abschnitte
 
-Reihenfolge: App-Name/Version → Copyright & License → Tech Stack → Libraries → Source Code → Credits.
+Reihenfolge: App-Name/Version (dynamisch aus `BuildConfig`) → Copyright & License → Tech Stack → Libraries → Source Code → Credits.
 
 - **Credits**: Claude Code (Architektur, Implementierung), OpenAI Codex und Google Gemini CLI (Code-Reviews) — Strings: `info_credits_reviews_intro`, `info_credits_reviews_tools`.

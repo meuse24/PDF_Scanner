@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy | PDF Scanner</title>
-    <meta name="description" content="Privacy Policy for the Android app PDF Scanner by Guenther Meusburger.">
+    <title>Privacy Policy | M24 PDF-Scanner</title>
+    <meta name="description" content="Privacy Policy for the Android app M24 PDF-Scanner by Guenther Meusburger.">
     <style>
         :root {
             --bg: #f6f7f3;
@@ -201,7 +201,7 @@
     <section class="hero">
         <div class="hero-top">
             <div>
-                <div class="eyebrow">PDF Scanner</div>
+                <div class="eyebrow">M24 PDF-Scanner</div>
                 <h1 id="page-title">Privacy Policy</h1>
             </div>
             <div class="lang-switcher" aria-label="Language switcher">
@@ -642,8 +642,8 @@
     </section>
 
     <footer>
-        <span data-lang-content="en">PDF Scanner Privacy Policy, last updated March 22, 2026.</span>
-        <span data-lang-content="de">PDF Scanner Datenschutzerklaerung, Stand 22. Maerz 2026.</span>
+        <span data-lang-content="en">M24 PDF-Scanner Privacy Policy, last updated March 22, 2026.</span>
+        <span data-lang-content="de">M24 PDF-Scanner Datenschutzerklaerung, Stand 22. Maerz 2026.</span>
     </footer>
 </main>
 
@@ -657,14 +657,14 @@
             de: "Datenschutzerklaerung"
         };
         const descriptions = {
-            en: "Privacy Policy for the Android app PDF Scanner by Guenther Meusburger.",
-            de: "Datenschutzerklaerung fuer die Android-App PDF Scanner von Guenther Meusburger."
+            en: "Privacy Policy for the Android app M24 PDF-Scanner by Guenther Meusburger.",
+            de: "Datenschutzerklaerung fuer die Android-App M24 PDF-Scanner von Guenther Meusburger."
         };
 
         function setLanguage(lang) {
             const activeLang = lang === "de" ? "de" : "en";
             document.documentElement.lang = activeLang;
-            document.title = titles[activeLang] + " | PDF Scanner";
+            document.title = titles[activeLang] + " | M24 PDF-Scanner";
             const description = document.querySelector('meta[name="description"]');
             if (description) {
                 description.setAttribute("content", descriptions[activeLang]);

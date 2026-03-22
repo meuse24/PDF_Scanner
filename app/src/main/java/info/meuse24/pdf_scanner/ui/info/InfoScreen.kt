@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import info.meuse24.pdf_scanner.BuildConfig
 import info.meuse24.pdf_scanner.R
 
 @Composable
@@ -32,7 +33,7 @@ fun InfoScreen() {
             .padding(20.dp)
     ) {
         Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
-        Text(stringResource(R.string.info_version), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
+        Text("v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
         Spacer(Modifier.height(24.dp))
 
         SectionHeader(stringResource(R.string.info_section_copyright))

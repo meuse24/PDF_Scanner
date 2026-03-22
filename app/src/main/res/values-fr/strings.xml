@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PDF Scanner</string>
+    <string name="app_name">M24 PDF-Scanner</string>
     <string name="nav_archive">Archives</string>
     <string name="nav_start_scanner">Lancer le scanner</string>
     <string name="nav_help">Aide</string>

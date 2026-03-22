@@ -47,14 +47,14 @@ class SearchablePdfBuilder @Inject constructor(
         private val RENDER_SCALE = RENDER_DPI / POINTS_PER_INCH // ≈ 2.083
     }
 
-    /** Kompaktes Ergebnis pro Seite — enthält keine Bitmap mehr. */
-    private data class BlockData(val text: String, val bbox: Rect)
+    /** Ein OCR-Wort (Element-Ebene) mit seiner Bounding Box. */
+    private data class WordData(val text: String, val bbox: Rect)
     private data class PageData(
         val widthPts: Float,
         val heightPts: Float,
         val bitmapW: Int,
         val bitmapH: Int,
-        val blocks: List<BlockData>
+        val words: List<WordData>
     )
 
     suspend fun makeSearchable(
@@ -82,7 +82,7 @@ class SearchablePdfBuilder @Inject constructor(
                             val bitmapW = (widthPts * RENDER_SCALE).toInt().coerceAtLeast(1)
                             val bitmapH = (heightPts * RENDER_SCALE).toInt().coerceAtLeast(1)
 
-                            val bitmap = Bitmap.createBitmap(bitmapW, bitmapH, Bitmap.Config.RGB_565)
+                            val bitmap = Bitmap.createBitmap(bitmapW, bitmapH, Bitmap.Config.ARGB_8888)
                             bitmap.eraseColor(Color.WHITE)
                             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
 
@@ -97,12 +97,17 @@ class SearchablePdfBuilder @Inject constructor(
                                 bitmap.recycle() // immer freigeben — auch bei OCR-Fehler
                             }
 
+                            // Element-Ebene (Wörter) für präzise Textauswahl im PDF-Viewer
                             pageResults.add(
                                 PageData(
                                     widthPts, heightPts, bitmapW, bitmapH,
-                                    ocrText.textBlocks.mapNotNull { block ->
-                                        val bbox = block.boundingBox ?: return@mapNotNull null
-                                        BlockData(block.text, Rect(bbox))
+                                    ocrText.textBlocks.flatMap { block ->
+                                        block.lines.flatMap { line ->
+                                            line.elements.mapNotNull { element ->
+                                                val bbox = element.boundingBox ?: return@mapNotNull null
+                                                WordData(element.text, Rect(bbox))
+                                            }
+                                        }
                                     }
                                 )
                             )
@@ -133,30 +138,39 @@ class SearchablePdfBuilder @Inject constructor(
                 ).use { cs ->
                     cs.beginText()
                     cs.setRenderingMode(RenderingMode.NEITHER)
+                    // Größe 1 — tatsächliche Skalierung steckt in der Textmatrix
                     cs.setFont(font, 1f)
 
-                    for (block in pd.blocks) {
-                        val fontSize = ((block.bbox.bottom - block.bbox.top) * scaleY)
-                            .coerceAtLeast(1f)
-
+                    for (word in pd.words) {
                         // PDF-Koordinaten: Ursprung unten links, Y wächst aufwärts
-                        val pdfX = block.bbox.left * scaleX
-                        val pdfY = pageH - block.bbox.bottom * scaleY
+                        val bboxH   = (word.bbox.bottom - word.bbox.top)  * scaleY
+                        val bboxW   = (word.bbox.right  - word.bbox.left) * scaleX
+                        val fontSize = bboxH.coerceAtLeast(1f)
+                        val pdfX    = word.bbox.left   * scaleX
+                        val pdfY    = pageH - word.bbox.bottom * scaleY
 
                         // RTL (Arabisch): Text am rechten Rand der BoundingBox verankern
-                        val adjustedX = if (languageCode == "ar") {
-                            (block.bbox.right * scaleX).coerceAtLeast(0f)
+                        val anchorX = if (languageCode == "ar") {
+                            (word.bbox.right * scaleX).coerceAtLeast(0f)
                         } else {
                             pdfX
                         }
 
                         try {
-                            cs.setFont(font, fontSize)
-                            cs.setTextMatrix(Matrix.getTranslateInstance(adjustedX, pdfY))
-                            val safeText = sanitizeForFont(block.text, font)
-                            if (safeText.isNotEmpty()) cs.showText(safeText)
+                            val safeText = sanitizeForFont(word.text, font)
+                            if (safeText.isEmpty()) continue
+
+                            // Horizontale Skalierung: Textbreite an Bbox-Breite anpassen →
+                            // ermöglicht wortgenaue Auswahl im PDF-Viewer
+                            val rawWidth = font.getStringWidth(safeText) / 1000f
+                            val hScale   = if (rawWidth > 0f && bboxW > 0f) bboxW / rawWidth
+                                           else fontSize
+
+                            // Textmatrix [hScale 0 0 fontSize anchorX pdfY]
+                            cs.setTextMatrix(Matrix(hScale, 0f, 0f, fontSize, anchorX, pdfY))
+                            cs.showText(safeText)
                         } catch (_: Exception) {
-                            // Block überspringen wenn Font Zeichen nicht encodieren kann
+                            // Wort überspringen wenn Font Zeichen nicht encodieren kann
                         }
                     }
                     cs.endText()

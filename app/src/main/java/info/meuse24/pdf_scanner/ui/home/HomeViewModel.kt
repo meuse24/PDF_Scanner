@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.ui.home
 
 import android.content.ContentValues
 import android.content.Context
+import android.util.Log
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -83,7 +84,8 @@ class HomeViewModel @Inject constructor(
                             _ocrProgress.value = cur to tot
                         }
                         isSearchable = true
-                    } catch (e: Exception) {
+                    } catch (e: Throwable) {
+                        Log.e("SearchablePDF", "makeSearchable (saveScan) failed", e)
                         _error.value = context.getString(R.string.searchable_failed)
                     } finally {
                         _ocrLoading.value  = false
@@ -208,7 +210,8 @@ class HomeViewModel @Inject constructor(
                 } else {
                     context.getString(R.string.searchable_success_multi, pending.size)
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
+                Log.e("SearchablePDF", "makeSearchableScans failed", e)
                 _error.value = context.getString(R.string.searchable_failed)
             } finally {
                 _ocrLoading.value  = false

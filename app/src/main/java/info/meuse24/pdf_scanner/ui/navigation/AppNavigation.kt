@@ -57,6 +57,7 @@ import info.meuse24.pdf_scanner.ui.info.InfoScreen
 import info.meuse24.pdf_scanner.ui.documentaction.CompressPdfScreen
 import info.meuse24.pdf_scanner.ui.documentaction.ProtectPdfScreen
 import info.meuse24.pdf_scanner.ui.documentaction.UnlockPdfScreen
+import info.meuse24.pdf_scanner.ui.signature.SignatureScreen
 import info.meuse24.pdf_scanner.ui.overlay.PageNumbersScreen
 import info.meuse24.pdf_scanner.ui.overlay.TextWatermarkScreen
 import info.meuse24.pdf_scanner.ui.pageedit.DeletePagesScreen
@@ -184,6 +185,7 @@ fun AppNavigation() {
                                 currentRoute?.startsWith("compress-pdf/") == true -> stringResource(R.string.compress_pdf_screen_title)
                                 currentRoute?.startsWith("protect-pdf/") == true -> stringResource(R.string.protect_pdf_screen_title)
                                 currentRoute?.startsWith("unlock-pdf/") == true -> stringResource(R.string.unlock_pdf_screen_title)
+                                currentRoute?.startsWith("signature/") == true -> stringResource(R.string.signature_screen_title)
                                 else                                 -> stringResource(R.string.app_name)
                             }
                         )
@@ -250,7 +252,8 @@ fun AppNavigation() {
                         onNavigateToTextWatermark = { scanId -> navController.navigate(Screen.TextWatermark.createRoute(scanId)) },
                         onNavigateToCompressPdf = { scanId -> navController.navigate(Screen.CompressPdf.createRoute(scanId)) },
                         onNavigateToProtectPdf = { scanId -> navController.navigate(Screen.ProtectPdf.createRoute(scanId)) },
-                        onNavigateToUnlockPdf = { scanId -> navController.navigate(Screen.UnlockPdf.createRoute(scanId)) }
+                        onNavigateToUnlockPdf = { scanId -> navController.navigate(Screen.UnlockPdf.createRoute(scanId)) },
+                        onNavigateToSignature = { scanId -> navController.navigate(Screen.Signature.createRoute(scanId)) }
                     )
                 }
                 composable(Screen.Help.route)    { HelpScreen() }
@@ -321,6 +324,12 @@ fun AppNavigation() {
                     arguments = listOf(navArgument("scanId") { type = NavType.LongType })
                 ) {
                     UnlockPdfScreen(onNavigateBack = { navController.navigateUp() })
+                }
+                composable(
+                    route = Screen.Signature.route,
+                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                ) {
+                    SignatureScreen(onNavigateBack = { navController.navigateUp() })
                 }
             }
             } // Box

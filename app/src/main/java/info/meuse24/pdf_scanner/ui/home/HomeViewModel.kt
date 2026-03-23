@@ -21,6 +21,7 @@ import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ReorderPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RotatePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
+import info.meuse24.pdf_scanner.domain.workflow.SignatureStampWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.SplitPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.TextWatermarkWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
@@ -37,6 +38,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import android.graphics.Bitmap
 import java.io.File
 import java.util.Locale
 import javax.inject.Inject
@@ -61,6 +63,7 @@ class HomeViewModel @Inject constructor(
     private val compressPdfWorkflow: CompressPdfWorkflow,
     private val protectPdfWorkflow: ProtectPdfWorkflow,
     private val unlockPdfWorkflow: UnlockPdfWorkflow,
+    private val signatureStampWorkflow: SignatureStampWorkflow,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -448,6 +451,39 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun applySignatureStamp(
+        record: ScanRecord,
+        signatureBitmap: Bitmap?,
+        pageIndex: Int,
+        scaleFraction: Float
+    ) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (
+                    val result = signatureStampWorkflow(
+                        record = record,
+                        signatureBitmap = signatureBitmap,
+                        pageIndex = pageIndex,
+                        scaleFraction = scaleFraction,
+                        scansDir = scansDir
+                    )
+                ) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            R.string.signature_success,
+                            result.value.outputFilename
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
     // ── Hilfsmethoden ─────────────────────────────────────────────────────────
 
     fun clearOcrText() { _ocrText.value = null }
@@ -468,8 +504,9 @@ class HomeViewModel @Inject constructor(
         ScanWorkflowError.InvalidPageSelection -> context.getString(R.string.page_selection_invalid)
         ScanWorkflowError.InvalidPageOrder -> context.getString(R.string.reorder_error)
         ScanWorkflowError.InvalidWatermarkText -> context.getString(R.string.watermark_invalid)
+        ScanWorkflowError.SignatureRequired -> context.getString(R.string.signature_required)
         ScanWorkflowError.CompressionUnsupportedForSearchablePdf -> context.getString(R.string.compress_pdf_searchable_unsupported)
-        ScanWorkflowError.ProtectedPdfUnsupported -> context.getString(R.string.compress_pdf_protected_unsupported)
+        ScanWorkflowError.ProtectedPdfUnsupported -> context.getString(R.string.protected_pdf_unsupported)
         ScanWorkflowError.PasswordRequired -> context.getString(R.string.password_required)
         ScanWorkflowError.WrongPassword -> context.getString(R.string.password_wrong)
         ScanWorkflowError.AlreadyProtected -> context.getString(R.string.protect_pdf_already_protected)
@@ -490,5 +527,6 @@ class HomeViewModel @Inject constructor(
         is ScanWorkflowError.CompressionFailed -> context.getString(R.string.compress_pdf_error)
         is ScanWorkflowError.ProtectFailed -> context.getString(R.string.protect_pdf_error)
         is ScanWorkflowError.UnlockFailed -> context.getString(R.string.unlock_pdf_error)
+        is ScanWorkflowError.SignatureFailed -> context.getString(R.string.signature_error)
     }
 }

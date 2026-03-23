@@ -84,7 +84,8 @@ internal fun ScanItem(
     onTextWatermark:  () -> Unit = {},
     onCompressPdf:    () -> Unit = {},
     onProtectPdf:     () -> Unit = {},
-    onUnlockPdf:      () -> Unit = {}
+    onUnlockPdf:      () -> Unit = {},
+    onSignature:      () -> Unit = {}
 ) {
     val context = LocalContext.current
     var menuExpanded by remember { mutableStateOf(false) }
@@ -256,6 +257,10 @@ internal fun ScanItem(
                         DropdownMenuItem(
                             text    = { Text(stringResource(R.string.action_unlock_pdf)) },
                             onClick = { menuExpanded = false; onUnlockPdf() }
+                        )
+                        DropdownMenuItem(
+                            text    = { Text(stringResource(R.string.action_sign_pdf)) },
+                            onClick = { menuExpanded = false; onSignature() }
                         )
                     }
                 }

@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
@@ -91,6 +92,7 @@ fun HelpScreen() {
                 HelpStep(Icons.Default.PictureAsPdf, "·", stringResource(R.string.help_item_compress_pdf))
                 HelpStep(Icons.Default.MoreVert, "·", stringResource(R.string.help_item_protect_pdf))
                 HelpStep(Icons.Default.MoreVert, "·", stringResource(R.string.help_item_unlock_pdf))
+                HelpStep(Icons.Default.Edit, "·", stringResource(R.string.help_item_sign_pdf))
                 HelpStep(Icons.Default.Save, "·", stringResource(R.string.help_item_edit_copy))
             }
         }

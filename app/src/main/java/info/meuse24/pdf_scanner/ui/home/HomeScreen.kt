@@ -99,6 +99,7 @@ fun HomeScreen(
     onNavigateToCompressPdf: (Long) -> Unit = {},
     onNavigateToProtectPdf: (Long) -> Unit = {},
     onNavigateToUnlockPdf: (Long) -> Unit = {},
+    onNavigateToSignature: (Long) -> Unit = {},
     viewModel:             HomeViewModel = hiltViewModel()
 ) {
     val scans        by viewModel.scans.collectAsState()
@@ -282,7 +283,8 @@ fun HomeScreen(
                             onTextWatermark  = { onNavigateToTextWatermark(record.id) },
                             onCompressPdf    = { onNavigateToCompressPdf(record.id) },
                             onProtectPdf     = { onNavigateToProtectPdf(record.id) },
-                            onUnlockPdf      = { onNavigateToUnlockPdf(record.id) }
+                            onUnlockPdf      = { onNavigateToUnlockPdf(record.id) },
+                            onSignature      = { onNavigateToSignature(record.id) }
                         )
                     }
                 }

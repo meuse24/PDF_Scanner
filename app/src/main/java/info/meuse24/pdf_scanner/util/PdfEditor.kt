@@ -17,6 +17,7 @@ import com.tom_roush.pdfbox.pdmodel.font.PDFont
 import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
 import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
 import com.tom_roush.pdfbox.pdmodel.graphics.image.JPEGFactory
+import com.tom_roush.pdfbox.pdmodel.graphics.image.LosslessFactory
 import com.tom_roush.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
 import com.tom_roush.pdfbox.util.Matrix
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
@@ -299,6 +300,29 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
+    open fun applySignatureStamp(
+        input: File,
+        outputDir: File,
+        signatureBitmap: Bitmap,
+        pageIndex: Int,
+        scaleFraction: Float
+    ): File {
+        require(scaleFraction > 0f) { "Signaturgroesse muss groesser als 0 sein" }
+        return writeDerivedPdf(input, outputDir, "_Signiert", "Signature") { source, signed ->
+            repeat(source.numberOfPages) { currentPageIndex ->
+                val page = signed.importPage(source.getPage(currentPageIndex))
+                if (currentPageIndex == pageIndex) {
+                    appendSignatureStamp(
+                        page = page,
+                        document = signed,
+                        signatureBitmap = signatureBitmap,
+                        scaleFraction = scaleFraction
+                    )
+                }
+            }
+        }
+    }
+
     /**
      * Gibt die Seitenanzahl von [pdfFile] zurück, 0 bei Fehler.
      * Muss auf Dispatchers.IO aufgerufen werden.
@@ -537,6 +561,32 @@ private fun PdfEditor.appendTextWatermark(
         )
         contentStream.showText(text)
         contentStream.endText()
+    }
+}
+
+private fun PdfEditor.appendSignatureStamp(
+    page: PDPage,
+    document: PDDocument,
+    signatureBitmap: Bitmap,
+    scaleFraction: Float
+) {
+    val image = LosslessFactory.createFromImage(document, signatureBitmap)
+    val maxWidth = page.mediaBox.width * scaleFraction.coerceIn(0.12f, 0.45f)
+    val aspectRatio = signatureBitmap.height.toFloat() / signatureBitmap.width.toFloat()
+    val width = maxWidth.coerceAtLeast(48f)
+    val height = (width * aspectRatio).coerceAtLeast(24f)
+    val margin = 20f
+    val x = (page.mediaBox.width - width - margin).coerceAtLeast(margin)
+    val y = margin
+
+    PDPageContentStream(
+        document,
+        page,
+        PDPageContentStream.AppendMode.APPEND,
+        true,
+        true
+    ).use { contentStream ->
+        contentStream.drawImage(image, x, y, width, height)
     }
 }
 

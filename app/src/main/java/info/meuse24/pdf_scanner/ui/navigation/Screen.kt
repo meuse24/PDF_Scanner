@@ -38,4 +38,7 @@ sealed class Screen(val route: String) {
     data object UnlockPdf : Screen("unlock-pdf/{scanId}") {
         fun createRoute(scanId: Long) = "unlock-pdf/$scanId"
     }
+    data object Signature : Screen("signature/{scanId}") {
+        fun createRoute(scanId: Long) = "signature/$scanId"
+    }
 }

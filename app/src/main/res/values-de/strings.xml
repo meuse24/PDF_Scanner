@@ -253,4 +253,23 @@
     <string name="help_item_compress_pdf">Mit PDF komprimieren erstellst du eine kleinere Kopie eines nicht durchsuchbaren PDFs. Die Originaldatei bleibt unverändert.</string>
     <string name="help_item_protect_pdf">Mit PDF schützen erstellst du eine passwortgeschützte Kopie, die beim Öffnen das Passwort verlangt.</string>
     <string name="help_item_unlock_pdf">Mit PDF entsperren und dem aktuellen Passwort speicherst du eine ungeschützte Kopie.</string>
+    <string name="signature_screen_title">PDF signieren</string>
+    <string name="signature_description">Einen handschriftlichen Signatur-Stempel zu diesem PDF hinzufügen</string>
+    <string name="signature_details">Zeichne deine Signatur, wähle die Zielseite und speichere eine neue signierte PDF-Kopie. Die Signatur wird unten rechts auf der gewählten Seite als Stempel platziert. Vorhandener Inhalt und vorhandener OCR-Text bleiben erhalten.</string>
+    <string name="signature_hint">Zeichne deine Signatur mit einem oder mehreren Strichen.</string>
+    <string name="signature_apply">Signatur hinzufügen</string>
+    <string name="signature_success">Signierte PDF erstellt: %1$s</string>
+    <string name="signature_error">Fehler beim Hinzufügen der Signatur</string>
+    <string name="signature_required">Bitte zuerst eine Signatur zeichnen</string>
+    <string name="action_sign_pdf">PDF signieren</string>
+    <string name="signature_target_page">Zielseite: %1$d von %2$d</string>
+    <string name="signature_page_previous">Vorherige Seite</string>
+    <string name="signature_page_next">Nächste Seite</string>
+    <string name="signature_size_label">Signaturgröße</string>
+    <string name="signature_size_small">Klein</string>
+    <string name="signature_size_medium">Mittel</string>
+    <string name="signature_size_large">Groß</string>
+    <string name="signature_clear">Signatur löschen</string>
+    <string name="protected_pdf_unsupported">Bitte entsperre die PDF, bevor du sie bearbeitest</string>
+    <string name="help_item_sign_pdf">Mit PDF signieren zeichnest du eine handschriftliche Signatur, wählst Zielseite und Stempelgröße und speicherst das Ergebnis als neue PDF-Kopie.</string>
 </resources>

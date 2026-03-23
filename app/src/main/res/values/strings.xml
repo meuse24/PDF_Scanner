@@ -68,16 +68,24 @@
     <string name="help_step3">After scanning, a dialog appears. Enter a file name and tap Save. The PDF is stored locally on your device.</string>
     <string name="help_section_archive">Manage Archive</string>
     <string name="help_item_open">Tap an entry in the list to open the PDF in an external viewer.</string>
-    <string name="help_item_share">Tap the checkbox to select one or more entries. The title bar shows the count and lets you select all.</string>
-    <string name="help_item_delete">The action bar at the bottom offers Share, Export, Merge, Text Extraction (OCR), Make Searchable, and Delete for all selected entries. Merge combines two or more PDFs into a new file. OCR and Make Searchable open a language selection dialog before processing.</string>
-    <string name="help_item_pdf_edit">Tap the three-dot menu (⋮) on any multi-page PDF to split it at selected pages or reorder its pages via drag &amp; drop.</string>
+    <string name="help_item_select">Tap the checkbox to select one or more entries. The title bar shows the count and lets you select all.</string>
+    <string name="help_item_share_export">Use Share to send PDFs to other apps. Use Export to copy them to Downloads.</string>
+    <string name="help_section_pdf_edit">Edit PDFs</string>
+    <string name="help_item_merge">Select at least two PDFs and tap Merge to combine them into a new document.</string>
+    <string name="help_item_split">Open the three-dot menu on a multi-page PDF and choose Split pages to create multiple PDFs at selected split points.</string>
+    <string name="help_item_reorder">Open the three-dot menu and choose Reorder pages to rearrange pages via drag and drop or the up and down buttons.</string>
+    <string name="help_item_delete">Use Delete to remove selected PDFs from the archive. The app also removes the stored file and thumbnail.</string>
+    <string name="help_section_ocr">OCR and Text Extraction</string>
+    <string name="help_item_extract_text">Text Extraction (OCR) reads all pages and shows the recognized text in a panel where you can copy or share it.</string>
+    <string name="help_item_make_searchable">Make Searchable adds an invisible text layer to the PDF so text can be found in PDF viewers.</string>
+    <string name="help_item_ocr_language">Choose the document language before OCR or Make Searchable. The Hindi model is downloaded on first use.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Use the hamburger menu (top left) to access the Archive, Scanner, Help, and Info screens.</string>
     <string name="help_section_notes">Notes</string>
     <string name="help_note1">The app does not require direct camera access — the ML Kit Document Scanner runs as a separate system process.</string>
     <string name="help_note2">All PDFs are stored locally in the app directory and do not leave the device.</string>
     <string name="help_note3">For multi-page documents, photograph multiple pages in sequence — the scanner automatically combines them into a single PDF.</string>
-    <string name="help_note4">OCR text extraction and Make Searchable cover all pages of a document. Both operations prompt for language selection; the Hindi model is downloaded on first use via Google Play Services.</string>
+    <string name="help_note4">OCR and PDF editing run locally on the device. Your documents are not uploaded by the app.</string>
 
     <!-- Info screen -->
     <string name="info_version">Version 1.1</string>

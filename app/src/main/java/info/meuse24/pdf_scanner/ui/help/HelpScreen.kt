@@ -18,17 +18,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.automirrored.filled.ManageSearch
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckBox
-import androidx.compose.material.icons.filled.DoneAll
+import androidx.compose.material.icons.filled.ContentCut
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.TipsAndUpdates
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -56,33 +59,40 @@ fun HelpScreen() {
     ) {
         item {
             SectionCard(Icons.Default.PhotoCamera, stringResource(R.string.help_section_scan)) {
-                HelpStep(Icons.Default.Add,         "1.", stringResource(R.string.help_step1))
+                HelpStep(Icons.Default.PhotoCamera, "1.", stringResource(R.string.help_step1))
                 HelpStep(Icons.Default.PhotoCamera, "2.", stringResource(R.string.help_step2))
                 HelpStep(Icons.Default.Save,        "3.", stringResource(R.string.help_step3))
+                HelpStep(Icons.Default.PhotoCamera, "·", stringResource(R.string.help_note1))
+                HelpStep(Icons.Default.PictureAsPdf, "·", stringResource(R.string.help_note3))
             }
         }
         item {
             SectionCard(Icons.Default.FolderOpen, stringResource(R.string.help_section_archive)) {
-                HelpStep(Icons.Default.PictureAsPdf,                   "·", stringResource(R.string.help_item_open))
-                HelpStep(Icons.Default.CheckBox,                       "·", stringResource(R.string.help_item_share))
-                HelpStep(Icons.AutoMirrored.Filled.ManageSearch,       "·", stringResource(R.string.help_item_delete))
-                HelpStep(Icons.Default.MoreVert,                       "·", stringResource(R.string.help_item_pdf_edit))
+                HelpStep(Icons.Default.PictureAsPdf, "·", stringResource(R.string.help_item_open))
+                HelpStep(Icons.Default.CheckBox, "·", stringResource(R.string.help_item_select))
+                HelpStep(Icons.Default.Share, "·", stringResource(R.string.help_item_share_export))
+                HelpStep(Icons.Default.FolderOpen, "·", stringResource(R.string.help_note2))
+            }
+        }
+        item {
+            SectionCard(Icons.Default.PictureAsPdf, stringResource(R.string.help_section_pdf_edit)) {
+                HelpStep(Icons.AutoMirrored.Filled.CallMerge, "·", stringResource(R.string.help_item_merge))
+                HelpStep(Icons.Default.ContentCut, "·", stringResource(R.string.help_item_split))
+                HelpStep(Icons.Default.SwapVert, "·", stringResource(R.string.help_item_reorder))
+                HelpStep(Icons.Default.Delete, "·", stringResource(R.string.help_item_delete))
+            }
+        }
+        item {
+            SectionCard(Icons.AutoMirrored.Filled.ManageSearch, stringResource(R.string.help_section_ocr)) {
+                HelpStep(Icons.AutoMirrored.Filled.ManageSearch, "·", stringResource(R.string.help_item_extract_text))
+                HelpStep(Icons.Default.Download, "·", stringResource(R.string.help_item_make_searchable))
+                HelpStep(Icons.Default.MoreVert, "·", stringResource(R.string.help_item_ocr_language))
+                HelpStep(Icons.AutoMirrored.Filled.ManageSearch, "·", stringResource(R.string.help_note4))
             }
         }
         item {
             SectionCard(Icons.Default.Menu, stringResource(R.string.help_section_navigation)) {
                 HelpStep(Icons.Default.FolderOpen, "·", stringResource(R.string.help_nav_text))
-            }
-        }
-        item {
-            SectionCard(Icons.Default.TipsAndUpdates, stringResource(R.string.help_section_notes)) {
-                Text("• ${stringResource(R.string.help_note1)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Spacer(Modifier.height(8.dp))
-                Text("• ${stringResource(R.string.help_note2)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Spacer(Modifier.height(8.dp))
-                Text("• ${stringResource(R.string.help_note3)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Spacer(Modifier.height(8.dp))
-                Text("• ${stringResource(R.string.help_note4)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         item { Spacer(Modifier.height(8.dp)) }

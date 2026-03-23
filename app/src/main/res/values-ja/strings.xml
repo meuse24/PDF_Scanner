@@ -141,6 +141,7 @@
     <string name="action_reorder">ページを並び替え</string>
     <string name="reorder_save_as_copy">コピーとして保存</string>
     <string name="reorder_overwrite_hint">元のファイルが置き換えられます</string>
+    <string name="split_page_label">%1$dページ</string>
     <string name="cd_drag_handle">ページを移動</string>
     <string name="cd_page_up">上へ移動</string>
     <string name="cd_page_down">下へ移動</string>

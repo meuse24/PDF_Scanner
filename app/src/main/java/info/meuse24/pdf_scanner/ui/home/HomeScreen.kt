@@ -46,14 +46,19 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
+import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.automirrored.filled.ManageSearch
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.ContentCut
+import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
@@ -129,14 +134,18 @@ fun HomeScreen(
     scanTrigger:           Boolean    = false,
     onScanTriggered:       () -> Unit = {},
     onSelectionModeChange: (Boolean) -> Unit = {},
+    onNavigateToSplit:     (Long) -> Unit = {},
+    onNavigateToReorder:   (Long) -> Unit = {},
     viewModel:             HomeViewModel = hiltViewModel()
 ) {
-    val scans      by viewModel.scans.collectAsState()
-    val error      by viewModel.error.collectAsState()
-    val success    by viewModel.success.collectAsState()
+    val scans       by viewModel.scans.collectAsState()
+    val error       by viewModel.error.collectAsState()
+    val success     by viewModel.success.collectAsState()
     val ocrText     by viewModel.ocrText.collectAsState()
     val ocrLoading  by viewModel.ocrLoading.collectAsState()
     val ocrProgress by viewModel.ocrProgress.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val editProgress by viewModel.editProgress.collectAsState()
     val context    = LocalContext.current
     val clipboard  = LocalClipboardManager.current
     val haptic     = LocalHapticFeedback.current
@@ -156,6 +165,10 @@ fun HomeScreen(
     val isSelectionMode        = selectedIds.isNotEmpty()
     var pendingDeleteRecord   by remember { mutableStateOf<ScanRecord?>(null) }
     var showBulkDeleteConfirm by remember { mutableStateOf(false) }
+
+    // ── Merge dialog state ────────────────────────────────────────────────────
+    var showMergeDialog    by remember { mutableStateOf(false) }
+    var mergeFilenameInput by rememberSaveable { mutableStateOf("") }
 
     // ── Bulk OCR language dialog ───────────────────────────────────────────────
     var showBulkLangDialog    by remember { mutableStateOf(false) }
@@ -258,9 +271,10 @@ fun HomeScreen(
                                           else            selectedIds + record.id
                         }
                         ScanItem(
-                            record   = record,
-                            isSelected = isSelected,
-                            modifier = Modifier
+                            record          = record,
+                            isSelected      = isSelected,
+                            inSelectionMode = isSelectionMode,
+                            modifier        = Modifier
                                 .padding(horizontal = 16.dp, vertical = 4.dp)
                                 .animateItem(),
                             onClick = {
@@ -284,6 +298,8 @@ fun HomeScreen(
                                 }
                             },
                             onCheckboxToggle = toggleSelect,
+                            onSplit   = { onNavigateToSplit(record.id) },
+                            onReorder = { onNavigateToReorder(record.id) }
                         )
                     }
                 }
@@ -326,6 +342,12 @@ fun HomeScreen(
                 extractEnabled     = selectedRecords.isNotEmpty(),
                 onMakeSearchable   = { bulkLangForSearchable = true; showBulkLangDialog = true },
                 makeSearchableEnabled = selectedRecords.any { !it.isSearchable },
+                onMerge = {
+                    val fmt = java.text.SimpleDateFormat("ddMMyyyy", Locale.getDefault())
+                    mergeFilenameInput = context.getString(R.string.merge_filename_default) + "_${fmt.format(java.util.Date())}"
+                    showMergeDialog = true
+                },
+                mergeEnabled = selectedRecords.size >= 2,
                 onDelete = {
                     if (selectedRecords.size == 1) pendingDeleteRecord = selectedRecords.first()
                     else showBulkDeleteConfirm = true
@@ -375,6 +397,24 @@ fun HomeScreen(
                     Text(stringResource(R.string.action_cancel))
                 }
             }
+        )
+    }
+
+    // ── Merge dialog ─────────────────────────────────────────────────────────
+    if (showMergeDialog) {
+        val selectedRecordsForMerge = scans.filter { it.id in selectedIds }
+        MergeDialog(
+            filename      = mergeFilenameInput,
+            onFilenameChange = { mergeFilenameInput = it },
+            records       = selectedRecordsForMerge,
+            onConfirm     = {
+                if (mergeFilenameInput.isNotBlank()) {
+                    viewModel.mergePdfs(selectedRecordsForMerge, mergeFilenameInput.trim())
+                    selectedIds = emptySet()
+                    showMergeDialog = false
+                }
+            },
+            onDismiss     = { showMergeDialog = false }
         )
     }
 
@@ -449,6 +489,32 @@ fun HomeScreen(
                 ) {
                     ScannerLoadingAnimation()
                     val progress = ocrProgress
+                    if (progress != null) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            stringResource(R.string.searchable_progress, progress.first, progress.second),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline
+                        )
+                    }
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    // ── Edit loading overlay ──────────────────────────────────────────────────
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Column(
+                    modifier            = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    ScannerLoadingAnimation()
+                    val progress = editProgress
                     if (progress != null) {
                         Spacer(Modifier.height(8.dp))
                         Text(
@@ -680,9 +746,11 @@ private fun BulkActionBar(
     onExport:          () -> Unit,
     onExtractTexts:    () -> Unit,
     onMakeSearchable:      () -> Unit,
+    onMerge:               () -> Unit,
     onDelete:              () -> Unit,
     extractEnabled:        Boolean  = true,
     makeSearchableEnabled: Boolean  = true,
+    mergeEnabled:          Boolean  = false,
     modifier:              Modifier = Modifier
 ) {
     Surface(
@@ -702,6 +770,10 @@ private fun BulkActionBar(
             }
             IconButton(onClick = onExport) {
                 Icon(Icons.Default.Download, contentDescription = stringResource(R.string.action_export))
+            }
+            IconButton(onClick = onMerge, enabled = mergeEnabled) {
+                Icon(Icons.AutoMirrored.Filled.CallMerge,
+                    contentDescription = stringResource(R.string.cd_merge))
             }
             IconButton(onClick = onExtractTexts, enabled = extractEnabled) {
                 Icon(Icons.AutoMirrored.Filled.TextSnippet,
@@ -756,10 +828,14 @@ private fun EmptyStateContent(modifier: Modifier = Modifier) {
 private fun ScanItem(
     record:           ScanRecord,
     isSelected:       Boolean,
+    inSelectionMode:  Boolean  = false,
     modifier:         Modifier = Modifier,
     onClick:          () -> Unit,
     onCheckboxToggle: () -> Unit,
+    onSplit:          () -> Unit = {},
+    onReorder:        () -> Unit = {}
 ) {
+    var menuExpanded by remember { mutableStateOf(false) }
     val dateStr = remember(record.timestamp) {
         SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(Date(record.timestamp))
     }
@@ -862,6 +938,30 @@ private fun ScanItem(
                 }
             }
 
+            // MoreVert menu (only outside selection mode, pageCount >= 2)
+            if (!inSelectionMode && record.pageCount >= 2) {
+                Box {
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = null)
+                    }
+                    DropdownMenu(
+                        expanded         = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text         = { Text(stringResource(R.string.action_split)) },
+                            leadingIcon  = { Icon(Icons.Default.ContentCut, contentDescription = null) },
+                            onClick      = { menuExpanded = false; onSplit() }
+                        )
+                        DropdownMenuItem(
+                            text         = { Text(stringResource(R.string.action_reorder)) },
+                            leadingIcon  = { Icon(Icons.Default.SwapVert, contentDescription = null) },
+                            onClick      = { menuExpanded = false; onReorder() }
+                        )
+                    }
+                }
+            }
+
             // Checkbox always on the right
             Checkbox(
                 checked         = isSelected,
@@ -926,4 +1026,55 @@ private fun ScannerLoadingAnimation() {
         drawLine(glowBrush, Offset(left + 2.dp.toPx(), scanY - 3.dp.toPx()), Offset(right - 2.dp.toPx(), scanY - 3.dp.toPx()), 5.dp.toPx())
         drawLine(glowBrush, Offset(left + 2.dp.toPx(), scanY),                Offset(right - 2.dp.toPx(), scanY),                2.dp.toPx())
     }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Merge dialog
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun MergeDialog(
+    filename:         String,
+    onFilenameChange: (String) -> Unit,
+    records:          List<ScanRecord>,
+    onConfirm:        () -> Unit,
+    onDismiss:        () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title   = { Text(stringResource(R.string.merge_dialog_title)) },
+        text    = {
+            Column {
+                OutlinedTextField(
+                    value         = filename,
+                    onValueChange = onFilenameChange,
+                    label         = { Text(stringResource(R.string.merge_dialog_filename_label)) },
+                    singleLine    = true,
+                    modifier      = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    stringResource(R.string.merge_dialog_order_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline
+                )
+                Spacer(Modifier.height(8.dp))
+                records.forEachIndexed { index, record ->
+                    Text(
+                        "${index + 1}. ${record.filename}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                enabled = filename.isNotBlank()
+            ) { Text(stringResource(R.string.merge_dialog_confirm)) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        }
+    )
 }

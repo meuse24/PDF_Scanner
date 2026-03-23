@@ -49,10 +49,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import info.meuse24.pdf_scanner.R
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import info.meuse24.pdf_scanner.ui.help.HelpScreen
 import info.meuse24.pdf_scanner.ui.home.HomeScreen
 import info.meuse24.pdf_scanner.ui.info.InfoScreen
 import info.meuse24.pdf_scanner.ui.privacy.PrivacyScreen
+import info.meuse24.pdf_scanner.ui.reorder.ReorderScreen
+import info.meuse24.pdf_scanner.ui.split.SplitScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -156,11 +160,13 @@ fun AppNavigation() {
                 TopAppBar(
                     title = {
                         Text(
-                            when (currentRoute) {
-                                Screen.Help.route    -> stringResource(R.string.nav_help)
-                                Screen.Info.route    -> stringResource(R.string.nav_info)
-                                Screen.Privacy.route -> stringResource(R.string.nav_privacy)
-                                else                 -> stringResource(R.string.app_name)
+                            when {
+                                currentRoute == Screen.Help.route    -> stringResource(R.string.nav_help)
+                                currentRoute == Screen.Info.route    -> stringResource(R.string.nav_info)
+                                currentRoute == Screen.Privacy.route -> stringResource(R.string.nav_privacy)
+                                currentRoute?.startsWith("split/") == true   -> stringResource(R.string.split_screen_title)
+                                currentRoute?.startsWith("reorder/") == true -> stringResource(R.string.reorder_screen_title)
+                                else                                 -> stringResource(R.string.app_name)
                             }
                         )
                     },
@@ -215,12 +221,26 @@ fun AppNavigation() {
                     HomeScreen(
                         scanTrigger           = scanTrigger,
                         onScanTriggered       = { scanTrigger = false },
-                        onSelectionModeChange = { isSelectionMode = it }
+                        onSelectionModeChange = { isSelectionMode = it },
+                        onNavigateToSplit     = { scanId -> navController.navigate(Screen.Split.createRoute(scanId)) },
+                        onNavigateToReorder   = { scanId -> navController.navigate(Screen.Reorder.createRoute(scanId)) }
                     )
                 }
                 composable(Screen.Help.route)    { HelpScreen() }
                 composable(Screen.Info.route)    { InfoScreen() }
                 composable(Screen.Privacy.route) { PrivacyScreen() }
+                composable(
+                    route     = Screen.Split.route,
+                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                ) {
+                    SplitScreen(onNavigateBack = { navController.navigateUp() })
+                }
+                composable(
+                    route     = Screen.Reorder.route,
+                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                ) {
+                    ReorderScreen(onNavigateBack = { navController.navigateUp() })
+                }
             }
             } // Box
         }

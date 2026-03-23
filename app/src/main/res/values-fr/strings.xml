@@ -141,6 +141,7 @@
     <string name="action_reorder">Réorganiser les pages</string>
     <string name="reorder_save_as_copy">Enregistrer comme copie</string>
     <string name="reorder_overwrite_hint">L\'original sera remplacé</string>
+    <string name="split_page_label">Page %1$d</string>
     <string name="cd_drag_handle">Déplacer la page</string>
     <string name="cd_page_up">Monter la page</string>
     <string name="cd_page_down">Descendre la page</string>

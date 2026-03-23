@@ -141,6 +141,7 @@
     <string name="action_reorder">पृष्ठों को पुनः व्यवस्थित करें</string>
     <string name="reorder_save_as_copy">प्रति के रूप में सहेजें</string>
     <string name="reorder_overwrite_hint">मूल फ़ाइल बदल दी जाएगी</string>
+    <string name="split_page_label">पृष्ठ %1$d</string>
     <string name="cd_drag_handle">पृष्ठ त्वरित करें</string>
     <string name="cd_page_up">पृष्ठ उपर जाएं</string>
     <string name="cd_page_down">पृष्ठ नीचे जाएं</string>

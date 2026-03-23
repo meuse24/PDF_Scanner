@@ -141,6 +141,7 @@
     <string name="action_reorder">重新排列页面</string>
     <string name="reorder_save_as_copy">另存为副本</string>
     <string name="reorder_overwrite_hint">原文件将被替换</string>
+    <string name="split_page_label">第%1$d页</string>
     <string name="cd_drag_handle">移动页面</string>
     <string name="cd_page_up">上移页面</string>
     <string name="cd_page_down">下移页面</string>

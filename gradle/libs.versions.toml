@@ -19,6 +19,7 @@ mlkitTextJapanese = "16.0.1"
 mlkitTextDevanagari = "16.0.1"
 pdfboxAndroid = "2.0.27.0"
 navigationCompose = "2.9.7"
+reorderable = "2.4.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +52,7 @@ mlkit-text-japanese     = { group = "com.google.android.gms",        name = "pla
 mlkit-text-devanagari   = { group = "com.google.android.gms",        name = "play-services-mlkit-text-recognition-devanagari", version.ref = "mlkitTextDevanagari" }
 pdfbox-android          = { group = "com.tom-roush",                 name = "pdfbox-android",                                  version.ref = "pdfboxAndroid" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

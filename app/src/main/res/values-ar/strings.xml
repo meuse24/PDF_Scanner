@@ -141,6 +141,7 @@
     <string name="action_reorder">إعادة ترتيب الصفحات</string>
     <string name="reorder_save_as_copy">حفظ كنسخة</string>
     <string name="reorder_overwrite_hint">سيتم استبدال الأصل</string>
+    <string name="split_page_label">صفحة %1$d</string>
     <string name="cd_drag_handle">تحريك الصفحة</string>
     <string name="cd_page_up">نقل الصفحة للأعلى</string>
     <string name="cd_page_down">نقل الصفحة للأسفل</string>

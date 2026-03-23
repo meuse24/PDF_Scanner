@@ -8,15 +8,18 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.pdf.PdfRenderer
+import android.os.ParcelFileDescriptor
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.util.FileUtil
+import info.meuse24.pdf_scanner.util.OcrManager
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +41,7 @@ class HomeViewModel @Inject constructor(
     private val repository: ScanRepository,
     private val fileUtil: FileUtil,
     private val searchablePdfBuilder: SearchablePdfBuilder,
+    private val ocrManager: OcrManager,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -188,14 +192,14 @@ class HomeViewModel @Inject constructor(
 
     /** Macht bestehende Scans durchsuchbar (Bulk-Aktion).
      *  Bereits durchsuchbare Records werden übersprungen (Idempotenz). */
-    fun makeSearchableScans(records: List<ScanRecord>) {
+    fun makeSearchableScans(records: List<ScanRecord>, languageCode: String) {
         if (_ocrLoading.value) return
         val pending = records.filter { !it.isSearchable }
         if (pending.isEmpty()) return
         _ocrLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val lang = Locale.getDefault().language
+                val lang = languageCode
                 pending.forEach { record ->
                     val pdfFile = File(record.filepath)
                     if (!pdfFile.exists()) return@forEach
@@ -221,31 +225,71 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun extractText(record: ScanRecord) {
+    fun extractText(record: ScanRecord, languageCode: String = Locale.getDefault().language) {
         if (_ocrLoading.value) return
-        val imagePath = record.thumbnailPath
-        if (imagePath == null) {
+        val pdfFile = File(record.filepath)
+        if (!pdfFile.exists() && record.thumbnailPath == null) {
             _error.value = context.getString(R.string.ocr_no_image)
             return
         }
         _ocrLoading.value = true
         viewModelScope.launch {
             try {
-                val image = withContext(Dispatchers.IO) {
-                    InputImage.fromFilePath(context, Uri.fromFile(File(imagePath)))
+                val recognizer = ocrManager.getRecognizer(languageCode)
+                val result = StringBuilder()
+                try {
+                    if (pdfFile.exists()) {
+                        withContext(Dispatchers.IO) {
+                            ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                                PdfRenderer(pfd).use { renderer ->
+                                    repeat(renderer.pageCount) { i ->
+                                        renderer.openPage(i).use { page ->
+                                            val bmp = Bitmap.createBitmap(
+                                                page.width.coerceAtLeast(1),
+                                                page.height.coerceAtLeast(1),
+                                                Bitmap.Config.ARGB_8888
+                                            )
+                                            bmp.eraseColor(Color.WHITE)
+                                            page.render(bmp, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                                            val text = try {
+                                                suspendCancellableCoroutine<String> { cont ->
+                                                    recognizer.process(InputImage.fromBitmap(bmp, 0))
+                                                        .addOnSuccessListener { cont.resume(it.text) }
+                                                        .addOnFailureListener { e -> cont.resumeWithException(e) }
+                                                    cont.invokeOnCancellation { recognizer.close() }
+                                                }
+                                            } finally {
+                                                bmp.recycle()
+                                            }
+                                            if (text.isNotBlank()) {
+                                                if (result.isNotEmpty()) result.append("\n\n")
+                                                result.append(text)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // Fallback: thumbnailPath (erste Seite)
+                        val image = withContext(Dispatchers.IO) {
+                            InputImage.fromFilePath(context, Uri.fromFile(File(record.thumbnailPath!!)))
+                        }
+                        val text = suspendCancellableCoroutine<String> { cont ->
+                            recognizer.process(image)
+                                .addOnSuccessListener { cont.resume(it.text) }
+                                .addOnFailureListener { e -> cont.resumeWithException(e) }
+                            cont.invokeOnCancellation { recognizer.close() }
+                        }
+                        if (text.isNotBlank()) result.append(text)
+                    }
+                } finally {
+                    recognizer.close()
                 }
-                val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-                val text = suspendCancellableCoroutine { cont ->
-                    recognizer.process(image)
-                        .addOnSuccessListener { result -> cont.resume(result.text) }
-                        .addOnFailureListener { e -> cont.resumeWithException(e) }
-                    cont.invokeOnCancellation { recognizer.close() }
-                }
-                recognizer.close()
-                if (text.isBlank()) {
+                if (result.isBlank()) {
                     _error.value = context.getString(R.string.ocr_no_text_found)
                 } else {
-                    _ocrText.value = text
+                    _ocrText.value = result.toString()
                 }
             } catch (e: Exception) {
                 _error.value = context.getString(R.string.ocr_failed)
@@ -255,38 +299,78 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun extractTexts(records: List<ScanRecord>) {
+    fun extractTexts(records: List<ScanRecord>, languageCode: String = Locale.getDefault().language) {
         if (_ocrLoading.value) return
-        val withImages = records.filter { it.thumbnailPath != null }
-        if (withImages.isEmpty()) {
+        val validRecords = records.filter { File(it.filepath).exists() || it.thumbnailPath != null }
+        if (validRecords.isEmpty()) {
             _error.value = context.getString(R.string.ocr_no_image)
             return
         }
         _ocrLoading.value = true
         viewModelScope.launch {
             try {
-                val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                val recognizer = ocrManager.getRecognizer(languageCode)
                 val results    = StringBuilder()
-                for (record in withImages) {
-                    val image = withContext(Dispatchers.IO) {
-                        InputImage.fromFilePath(context, Uri.fromFile(File(record.thumbnailPath!!)))
-                    }
-                    val text = suspendCancellableCoroutine<String> { cont ->
-                        recognizer.process(image)
-                            .addOnSuccessListener { result -> cont.resume(result.text) }
-                            .addOnFailureListener { e -> cont.resumeWithException(e) }
-                        cont.invokeOnCancellation { recognizer.close() }
-                    }
-                    if (text.isNotBlank()) {
-                        if (results.isNotEmpty()) results.append("\n\n")
-                        if (withImages.size > 1) {
-                            results.append(context.getString(R.string.ocr_bulk_separator, record.filename))
-                            results.append("\n")
+                try {
+                    for (record in validRecords) {
+                        val pdfFile   = File(record.filepath)
+                        val pageTexts = StringBuilder()
+                        if (pdfFile.exists()) {
+                            withContext(Dispatchers.IO) {
+                                ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                                    PdfRenderer(pfd).use { renderer ->
+                                        repeat(renderer.pageCount) { i ->
+                                            renderer.openPage(i).use { page ->
+                                                val bmp = Bitmap.createBitmap(
+                                                    page.width.coerceAtLeast(1),
+                                                    page.height.coerceAtLeast(1),
+                                                    Bitmap.Config.ARGB_8888
+                                                )
+                                                bmp.eraseColor(Color.WHITE)
+                                                page.render(bmp, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                                                val text = try {
+                                                    suspendCancellableCoroutine<String> { cont ->
+                                                        recognizer.process(InputImage.fromBitmap(bmp, 0))
+                                                            .addOnSuccessListener { cont.resume(it.text) }
+                                                            .addOnFailureListener { e -> cont.resumeWithException(e) }
+                                                        cont.invokeOnCancellation { recognizer.close() }
+                                                    }
+                                                } finally {
+                                                    bmp.recycle()
+                                                }
+                                                if (text.isNotBlank()) {
+                                                    if (pageTexts.isNotEmpty()) pageTexts.append("\n\n")
+                                                    pageTexts.append(text)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (record.thumbnailPath != null) {
+                            val image = withContext(Dispatchers.IO) {
+                                InputImage.fromFilePath(context, Uri.fromFile(File(record.thumbnailPath)))
+                            }
+                            val text = suspendCancellableCoroutine<String> { cont ->
+                                recognizer.process(image)
+                                    .addOnSuccessListener { cont.resume(it.text) }
+                                    .addOnFailureListener { e -> cont.resumeWithException(e) }
+                                cont.invokeOnCancellation { recognizer.close() }
+                            }
+                            if (text.isNotBlank()) pageTexts.append(text)
                         }
-                        results.append(text)
+                        if (pageTexts.isNotBlank()) {
+                            if (results.isNotEmpty()) results.append("\n\n")
+                            if (validRecords.size > 1) {
+                                results.append(context.getString(R.string.ocr_bulk_separator, record.filename))
+                                results.append("\n")
+                            }
+                            results.append(pageTexts)
+                        }
                     }
+                } finally {
+                    recognizer.close()
                 }
-                recognizer.close()
                 if (results.isBlank()) {
                     _error.value = context.getString(R.string.ocr_no_text_found)
                 } else {

@@ -24,8 +24,9 @@ ui/
 │                            # Verwaltet scanTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
 ├── home/
 │   ├── HomeScreen.kt        # Scan-Liste, Empty State, Mehrfachauswahl, Bestätigungs-Dialoge
-│   └── HomeViewModel.kt     # saveScan, deleteScan, deleteScans, exportScan, extractText, extractTexts, makeSearchableScans
+│   └── HomeViewModel.kt     # saveScan, deleteScan, deleteScans, exportScan, extractText(record, lang), extractTexts(records, lang), makeSearchableScans(records, lang)
 │                            # @ApplicationContext; _error/_success/_ocrText/_ocrLoading/_ocrProgress: StateFlow
+│                            # OCR: PdfRenderer über alle Seiten; Fallback thumbnailPath wenn PDF fehlt; OcrManager injiziert
 ├── help/HelpScreen.kt
 ├── info/InfoScreen.kt       # Version dynamisch aus BuildConfig
 └── privacy/PrivacyScreen.kt # 4 Icon-Karten (PhoneAndroid, CloudOff, Shield, Lock)
@@ -50,7 +51,7 @@ util/SearchablePdfBuilder.kt # makeSearchable(pdfFile, lang, onProgress) — Pdf
 - **Neue Strings** immer in alle 10 Locale-Dateien eintragen (values/, -de, -es, -fr, -pt, -zh-rCN, -ar, -ja, -ru, -hi)
 - **Fehler** → `viewModel.reportError(String)` → `_error: StateFlow` → Snackbar/Toast in HomeScreen
 - **Erfolg** → `_success: StateFlow<String?>` → Toast + `clearSuccess()`
-- **OCR-Fehler** fallback wenn `thumbnailPath == null`
+- **OCR** nutzt PdfRenderer über alle Seiten; Fallback auf `thumbnailPath` wenn PDF fehlt
 - PDFs in `context.filesDir/scans/`; FileProvider-Authority: `${applicationId}.fileprovider`
 - Doppelte Dateinamen: `FileUtil` löst automatisch auf (`_2`, `_3`, …)
 - Export: `MediaStore.Downloads` (API 29+), IS_PENDING-Pattern, bei Fehler `resolver.delete()`
@@ -64,8 +65,8 @@ util/SearchablePdfBuilder.kt # makeSearchable(pdfFile, lang, onProgress) — Pdf
 - **BulkActionBar** (bottom): Share · Export · OCR (TextSnippet) · MakeSearchable (ManageSearch) · Delete (rot)
   - Share: `ACTION_SEND` (1 Item) vs. `ACTION_SEND_MULTIPLE` (mehrere)
   - Delete: Einzel-Dialog mit Dateiname (`confirm_delete_single`) vs. Bulk-Dialog (`confirm_delete_multi`)
-  - OCR: `extractTexts(records)` — mehrere Records sequenziell, `— filename —` Trenner nur bei >1
-  - MakeSearchable: `makeSearchableScans(records)` — filtert bereits durchsuchbare Records; Button disabled wenn alle bereits searchable
+  - OCR: `extractTexts(records, lang)` — Sprachauswahl-Dialog → PdfRenderer alle Seiten; `— filename —` Trenner nur bei >1
+  - MakeSearchable: `makeSearchableScans(records, lang)` — Sprachauswahl-Dialog → filtert bereits durchsuchbare Records; Button disabled wenn alle bereits searchable
   - Params: `extractEnabled`, `makeSearchableEnabled` (beide `Boolean`)
 - Löschen immer mit Bestätigungs-Dialog
 

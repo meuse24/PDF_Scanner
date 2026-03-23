@@ -157,6 +157,14 @@ fun HomeScreen(
     var pendingDeleteRecord   by remember { mutableStateOf<ScanRecord?>(null) }
     var showBulkDeleteConfirm by remember { mutableStateOf(false) }
 
+    // ── Bulk OCR language dialog ───────────────────────────────────────────────
+    var showBulkLangDialog    by remember { mutableStateOf(false) }
+    var bulkLangForSearchable by remember { mutableStateOf(false) }
+    var selectedBulkLang      by rememberSaveable { mutableStateOf(
+        Locale.getDefault().language.let { if (it in unsupportedLangs) "en" else it }
+    ) }
+    var bulkLangMenuExpanded  by remember { mutableStateOf(false) }
+
     LaunchedEffect(isSelectionMode) { onSelectionModeChange(isSelectionMode) }
 
     BackHandler(enabled = isSelectionMode) { selectedIds = emptySet() }
@@ -314,12 +322,9 @@ fun HomeScreen(
                     selectedRecords.forEach { viewModel.exportScan(it) }
                     selectedIds = emptySet()
                 },
-                onExtractTexts     = { viewModel.extractTexts(selectedRecords) },
-                extractEnabled     = selectedRecords.any { it.thumbnailPath != null },
-                onMakeSearchable   = {
-                    viewModel.makeSearchableScans(selectedRecords)
-                    selectedIds = emptySet()
-                },
+                onExtractTexts     = { bulkLangForSearchable = false; showBulkLangDialog = true },
+                extractEnabled     = selectedRecords.isNotEmpty(),
+                onMakeSearchable   = { bulkLangForSearchable = true; showBulkLangDialog = true },
                 makeSearchableEnabled = selectedRecords.any { !it.isSearchable },
                 onDelete = {
                     if (selectedRecords.size == 1) pendingDeleteRecord = selectedRecords.first()
@@ -367,6 +372,65 @@ fun HomeScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showBulkDeleteConfirm = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        )
+    }
+
+    // ── Bulk OCR language picker ──────────────────────────────────────────────
+    if (showBulkLangDialog) {
+        val bulkRecords = scans.filter { it.id in selectedIds }
+        val ocrLanguages = listOf(
+            "de" to "Deutsch", "en" to "English", "es" to "Español",
+            "fr" to "Français", "pt" to "Português", "ru" to "Русский",
+            "ar" to "العربية", "hi" to "हिन्दी"
+        )
+        AlertDialog(
+            onDismissRequest = { showBulkLangDialog = false },
+            title   = { Text(stringResource(R.string.dialog_ocr_language)) },
+            text    = {
+                ExposedDropdownMenuBox(
+                    expanded         = bulkLangMenuExpanded,
+                    onExpandedChange = { bulkLangMenuExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value         = ocrLanguages.find { it.first == selectedBulkLang }?.second ?: selectedBulkLang,
+                        onValueChange = {},
+                        readOnly      = true,
+                        label         = { Text(stringResource(R.string.dialog_ocr_language)) },
+                        trailingIcon  = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = bulkLangMenuExpanded) },
+                        colors        = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                        modifier      = Modifier
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded         = bulkLangMenuExpanded,
+                        onDismissRequest = { bulkLangMenuExpanded = false }
+                    ) {
+                        ocrLanguages.forEach { (code, name) ->
+                            DropdownMenuItem(
+                                text    = { Text(name) },
+                                onClick = { selectedBulkLang = code; bulkLangMenuExpanded = false }
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showBulkLangDialog = false
+                    if (bulkLangForSearchable) {
+                        viewModel.makeSearchableScans(bulkRecords, selectedBulkLang)
+                        selectedIds = emptySet()
+                    } else {
+                        viewModel.extractTexts(bulkRecords, selectedBulkLang)
+                    }
+                }) { Text(stringResource(R.string.action_ok)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showBulkLangDialog = false }) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }

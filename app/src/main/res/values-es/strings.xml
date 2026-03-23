@@ -48,14 +48,14 @@
     <string name="help_section_archive">Gestionar archivo</string>
     <string name="help_item_open">Toca un elemento de la lista para abrir el PDF en un visor externo.</string>
     <string name="help_item_share">Toca la casilla de un elemento para seleccionarlo. La barra de título muestra el recuento y permite seleccionar todo.</string>
-    <string name="help_item_delete">La barra de acciones inferior ofrece Compartir, Exportar, Extracción de texto (OCR), Hacer buscable y Eliminar para todos los elementos seleccionados.</string>
+    <string name="help_item_delete">La barra de acciones inferior ofrece Compartir, Exportar, Extracción de texto (OCR), Hacer buscable y Eliminar para todos los elementos seleccionados. OCR y Hacer buscable abren primero un diálogo de selección de idioma.</string>
     <string name="help_section_navigation">Navegación</string>
     <string name="help_nav_text">Usa el menú hamburguesa (arriba a la izquierda) para acceder al Archivo, Escáner, Ayuda e Info.</string>
     <string name="help_section_notes">Notas</string>
     <string name="help_note1">La app no requiere acceso directo a la cámara: el ML Kit Document Scanner funciona como proceso separado del sistema.</string>
     <string name="help_note2">Todos los PDFs se guardan localmente en el directorio de la app y no abandonan el dispositivo.</string>
     <string name="help_note3">Para documentos de varias páginas, fotografía las páginas en secuencia: el escáner las combina automáticamente en un solo PDF.</string>
-    <string name="help_note4">PDFs con búsqueda: se añade una capa de texto por OCR. El modelo de idioma para Hindi se descarga en el primer uso a través de Google Play Services.</string>
+    <string name="help_note4">La extracción de texto (OCR) y Hacer buscable cubren todas las páginas del documento. Ambas acciones solicitan la selección de idioma; el modelo hindi se descarga en el primer uso.</string>
     <string name="info_version">Versión 1.1</string>
     <string name="info_section_copyright">Copyright &amp; Licencia</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>

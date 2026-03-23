@@ -48,14 +48,14 @@
     <string name="help_section_archive">Ablage verwalten</string>
     <string name="help_item_open">Tippe auf einen Eintrag in der Liste, um das PDF in einem externen Viewer zu öffnen.</string>
     <string name="help_item_share">Checkbox eines Eintrags antippen, um ihn auszuwählen. Die Titelleiste zeigt die Anzahl und ermöglicht das Auswählen aller Einträge.</string>
-    <string name="help_item_delete">Die Aktionsleiste unten bietet Teilen, Exportieren, Textextraktion (OCR), Durchsuchbar machen und Löschen für alle ausgewählten Einträge.</string>
+    <string name="help_item_delete">Die Aktionsleiste unten bietet Teilen, Exportieren, Textextraktion (OCR), Durchsuchbar machen und Löschen für alle ausgewählten Einträge. OCR und Durchsuchbar machen öffnen zuvor einen Sprachauswahl-Dialog.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Über das Hamburger-Menü (oben links) erreichst du die Ablage, den Scanner, die Hilfe und den Info-Screen.</string>
     <string name="help_section_notes">Hinweise</string>
     <string name="help_note1">Die App benötigt keinen direkten Kamera-Zugriff — der ML Kit Document Scanner läuft als eigener System-Prozess.</string>
     <string name="help_note2">Alle PDFs werden lokal im App-Verzeichnis gespeichert und verlassen das Gerät nicht.</string>
     <string name="help_note3">Für mehrseitige Dokumente einfach mehrere Seiten hintereinander fotografieren — der Scanner verbindet sie automatisch zu einem PDF.</string>
-    <string name="help_note4">Durchsuchbare PDFs: Eine Textebene wird per OCR hinzugefügt. Das Hindi-Sprachmodell wird beim ersten Aufruf über Google Play Services heruntergeladen.</string>
+    <string name="help_note4">Textextraktion und Durchsuchbar machen erfassen alle Seiten eines Dokuments. Beide Aktionen fragen zuvor die OCR-Sprache ab; das Hindi-Modell wird beim ersten Aufruf heruntergeladen.</string>
     <string name="info_version">Version 1.1</string>
     <string name="info_section_copyright">Copyright &amp; Lizenz</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>

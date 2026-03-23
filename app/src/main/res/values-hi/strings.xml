@@ -48,14 +48,14 @@
     <string name="help_section_archive">संग्रह प्रबंधित करें</string>
     <string name="help_item_open">सूची में किसी एंट्री पर टैप करें तो PDF बाहरी व्यूअर में खुल जाएगा।</string>
     <string name="help_item_share">किसी प्रविष्टि की चेकबॉक्स टैप करके उसे चुनें। शीर्षक पट्टी संख्या दिखाती है और सभी चुनने की सुविधा देती है।</string>
-    <string name="help_item_delete">नीचे की क्रिया पट्टी चुनी गई सभी प्रविष्टियों के लिए साझा करें, निर्यात, पाठ निष्कर्षण (OCR), खोजयोग्य बनाएं और हटाएं प्रदान करती है।</string>
+    <string name="help_item_delete">नीचे की क्रिया पट्टी चुनी गई सभी प्रविष्टियों के लिए साझा करें, निर्यात, पाठ निष्कर्षण (OCR), खोजयोग्य बनाएं और हटाएं प्रदान करती है। OCR और खोजयोग्य बनाएं पहले भाषा चयन संवाद खोलते हैं।</string>
     <string name="help_section_navigation">नेविगेशन</string>
     <string name="help_nav_text">ऊपर बाईं ओर हैमबर्गर मेनू से संग्रह, स्कैनर, सहायता और जानकारी तक पहुंचें।</string>
     <string name="help_section_notes">नोट्स</string>
     <string name="help_note1">ऐप को सीधे कैमरा एक्सेस की ज़रूरत नहीं — ML Kit Document Scanner एक अलग सिस्टम प्रोसेस के रूप में चलता है।</string>
     <string name="help_note2">सभी PDF ऐप की स्थानीय डायरेक्टरी में सहेजी जाती हैं और डिवाइस से बाहर नहीं जातीं।</string>
     <string name="help_note3">बहु-पृष्ठ दस्तावेज़ों के लिए, पृष्ठों को एक-एक करके स्कैन करें — स्कैनर उन्हें स्वचालित रूप से एक PDF में जोड़ देगा।</string>
-    <string name="help_note4">PDF खोजयोग्य बनाना: OCR द्वारा एक टेक्स्ट परत जोड़ी जाती है। हिंदी भाषा मॉडल पहले उपयोग पर Google Play Services से डाउनलोड होता है।</string>
+    <string name="help_note4">पाठ निष्कर्षण (OCR) और खोजयोग्य बनाएं दस्तावेज़ के सभी पृष्ठों को संसाधित करते हैं। दोनों क्रियाएं भाषा चयन के लिए पूछती हैं; हिंदी मॉडल पहले उपयोग पर डाउनलोड होता है।</string>
     <string name="info_version">संस्करण 1.1</string>
     <string name="info_section_copyright">कॉपीराइट &amp; लाइसेंस</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>

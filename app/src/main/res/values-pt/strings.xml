@@ -48,14 +48,14 @@
     <string name="help_section_archive">Gerenciar arquivo</string>
     <string name="help_item_open">Toque em um item da lista para abrir o PDF em um visualizador externo.</string>
     <string name="help_item_share">Toque na caixa de seleção de um item para selecioná-lo. A barra de título exibe a contagem e permite selecionar tudo.</string>
-    <string name="help_item_delete">A barra de ações inferior oferece Compartilhar, Exportar, Extração de texto (OCR), Tornar pesquisável e Excluir para todos os itens selecionados.</string>
+    <string name="help_item_delete">A barra de ações inferior oferece Compartilhar, Exportar, Extração de texto (OCR), Tornar pesquisável e Excluir para todos os itens selecionados. OCR e Tornar pesquisável abrem primeiro um diálogo de seleção de idioma.</string>
     <string name="help_section_navigation">Navegação</string>
     <string name="help_nav_text">Use o menu hambúrguer (canto superior esquerdo) para acessar o Arquivo, Scanner, Ajuda e Info.</string>
     <string name="help_section_notes">Observações</string>
     <string name="help_note1">O app não requer acesso direto à câmera — o ML Kit Document Scanner funciona como um processo separado do sistema.</string>
     <string name="help_note2">Todos os PDFs são armazenados localmente no diretório do app e não saem do dispositivo.</string>
     <string name="help_note3">Para documentos de várias páginas, fotografe as páginas em sequência — o scanner as combina automaticamente em um único PDF.</string>
-    <string name="help_note4">PDFs pesquisáveis: uma camada de texto é adicionada por OCR. O modelo de idioma Hindi é baixado no primeiro uso via Google Play Services.</string>
+    <string name="help_note4">A extração de texto (OCR) e Tornar pesquisável cobrem todas as páginas do documento. Ambas as ações solicitam a seleção de idioma; o modelo hindi é baixado no primeiro uso.</string>
     <string name="info_version">Versão 1.1</string>
     <string name="info_section_copyright">Copyright &amp; Licença</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>

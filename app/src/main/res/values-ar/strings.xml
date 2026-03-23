@@ -48,14 +48,14 @@
     <string name="help_section_archive">إدارة الأرشيف</string>
     <string name="help_item_open">انقر على عنصر في القائمة لفتح PDF في عارض خارجي.</string>
     <string name="help_item_share">انقر على مربع الاختيار الخاص بعنصر لتحديده. يعرض شريط العنوان العدد ويتيح تحديد الكل.</string>
-    <string name="help_item_delete">يوفر شريط الإجراءات أسفل الشاشة: مشاركة وتصدير واستخراج النص (OCR) وجعله قابلاً للبحث وحذف جميع العناصر المحددة.</string>
+    <string name="help_item_delete">يوفر شريط الإجراءات أسفل الشاشة: مشاركة وتصدير واستخراج النص (OCR) وجعله قابلاً للبحث وحذف جميع العناصر المحددة. يفتح OCR وجعله قابلاً للبحث مربع حوار لاختيار اللغة أولاً.</string>
     <string name="help_section_navigation">التنقل</string>
     <string name="help_nav_text">استخدم قائمة الهامبرغر (أعلى اليسار) للوصول إلى الأرشيف والماسح والمساعدة والمعلومات.</string>
     <string name="help_section_notes">ملاحظات</string>
     <string name="help_note1">لا يتطلب التطبيق وصولاً مباشراً إلى الكاميرا — يعمل ML Kit Document Scanner كعملية نظام مستقلة.</string>
     <string name="help_note2">تُحفظ جميع ملفات PDF محلياً في دليل التطبيق ولا تغادر الجهاز.</string>
     <string name="help_note3">لمسح مستندات متعددة الصفحات، التقط الصفحات بالتسلسل — يجمعها الماسح تلقائياً في PDF واحد.</string>
-    <string name="help_note4">ملفات PDF قابلة للبحث: تُضاف طبقة نصية عبر OCR. يتم تنزيل نموذج لغة الهندية عند الاستخدام الأول عبر Google Play Services.</string>
+    <string name="help_note4">يغطي استخراج النص (OCR) وجعله قابلاً للبحث جميع صفحات المستند. يطلب كلا الإجراءين اختيار اللغة؛ يتم تنزيل نموذج الهندية عند الاستخدام الأول.</string>
     <string name="info_version">الإصدار 1.1</string>
     <string name="info_section_copyright">حقوق النشر &amp; الترخيص</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>

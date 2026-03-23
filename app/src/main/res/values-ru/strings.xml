@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">M24 PDF-Scanner</string>
+    <string name="app_label">PDF Скан</string>
     <string name="nav_archive">Архив</string>
     <string name="nav_start_scanner">Запустить сканер</string>
     <string name="nav_help">Справка</string>
@@ -113,6 +114,7 @@
     <string name="searchable_success">PDF теперь доступен для поиска: %1$s</string>
     <string name="searchable_success_multi">%1$d PDF доступны для поиска</string>
     <string name="searchable_failed">Не удалось создать PDF с поиском</string>
+    <string name="searchable_nothing_to_do">Выбранные PDF уже доступны для поиска</string>
     <string name="searchable_badge">Поисковый</string>
 
     <!-- Merge -->
@@ -123,6 +125,7 @@
     <string name="merge_dialog_confirm">Объединить</string>
     <string name="merge_success">PDF объединены: %1$s</string>
     <string name="merge_error">Ошибка объединения PDF</string>
+    <string name="merge_not_enough_scans">Выберите как минимум два PDF для объединения</string>
     <string name="merge_filename_default">Объединён_%1$s</string>
     <!-- Split -->
     <string name="split_screen_title">Разделить PDF</string>
@@ -149,4 +152,7 @@
     <!-- Edit loading -->
     <string name="edit_loading">Обработка PDF…</string>
     <string name="edit_error_file_locked">Файл занят – закройте его и повторите попытку</string>
+    <string name="workflow_nothing_selected">Выберите хотя бы один документ</string>
+    <string name="workflow_missing_files">Один или несколько выбранных файлов отсутствуют</string>
+    <string name="workflow_storage_failed">Не удалось записать PDF-файл</string>
 </resources>

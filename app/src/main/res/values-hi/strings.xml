@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">M24 PDF-Scanner</string>
+    <string name="app_label">PDF स्कैन</string>
     <string name="nav_archive">संग्रह</string>
     <string name="nav_start_scanner">स्कैनर शुरू करें</string>
     <string name="nav_help">सहायता</string>
@@ -113,6 +114,7 @@
     <string name="searchable_success">PDF अब खोज योग्य है: %1$s</string>
     <string name="searchable_success_multi">%1$d PDF अब खोज योग्य हैं</string>
     <string name="searchable_failed">खोज योग्य PDF बनाने में विफल</string>
+    <string name="searchable_nothing_to_do">चुने गए PDF पहले से खोज योग्य हैं</string>
     <string name="searchable_badge">खोज योग्य</string>
 
     <!-- Merge -->
@@ -123,6 +125,7 @@
     <string name="merge_dialog_confirm">मर्ज करें</string>
     <string name="merge_success">PDF मर्ज हो गए: %1$s</string>
     <string name="merge_error">PDF मर्ज करने में त्रुटि</string>
+    <string name="merge_not_enough_scans">मर्ज करने के लिए कम से कम दो PDF चुनें</string>
     <string name="merge_filename_default">मर्ज_%1$s</string>
     <!-- Split -->
     <string name="split_screen_title">PDF विभाजित करें</string>
@@ -149,4 +152,7 @@
     <!-- Edit loading -->
     <string name="edit_loading">PDF प्रोसेस हो रहा है…</string>
     <string name="edit_error_file_locked">फ़ाइल उपयोग में है – बंद करके पुनः प्रयास करें</string>
+    <string name="workflow_nothing_selected">कम से कम एक दस्तावेज़ चुनें</string>
+    <string name="workflow_missing_files">एक या अधिक चुनी गई फ़ाइलें गायब हैं</string>
+    <string name="workflow_storage_failed">PDF फ़ाइल लिखी नहीं जा सकी</string>
 </resources>

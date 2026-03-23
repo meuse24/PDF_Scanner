@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">M24 PDF-Scanner</string>
+    <string name="app_label">Digitalizar PDF</string>
     <string name="nav_archive">Arquivo</string>
     <string name="nav_start_scanner">Iniciar scanner</string>
     <string name="nav_help">Ajuda</string>
@@ -113,6 +114,7 @@
     <string name="searchable_success">O PDF agora é pesquisável: %1$s</string>
     <string name="searchable_success_multi">%1$d PDFs agora são pesquisáveis</string>
     <string name="searchable_failed">Não foi possível criar o PDF pesquisável</string>
+    <string name="searchable_nothing_to_do">Os PDFs selecionados já permitem pesquisa</string>
     <string name="searchable_badge">Pesquisável</string>
 
     <!-- Merge -->
@@ -123,6 +125,7 @@
     <string name="merge_dialog_confirm">Mesclar</string>
     <string name="merge_success">PDFs mesclados: %1$s</string>
     <string name="merge_error">Erro ao mesclar PDFs</string>
+    <string name="merge_not_enough_scans">Selecione pelo menos dois PDFs para mesclar</string>
     <string name="merge_filename_default">Mesclado_%1$s</string>
     <!-- Split -->
     <string name="split_screen_title">Dividir PDF</string>
@@ -149,4 +152,7 @@
     <!-- Edit loading -->
     <string name="edit_loading">Processando PDF…</string>
     <string name="edit_error_file_locked">Arquivo em uso – feche-o e tente novamente</string>
+    <string name="workflow_nothing_selected">Selecione pelo menos um documento</string>
+    <string name="workflow_missing_files">Um ou mais arquivos selecionados estão em falta</string>
+    <string name="workflow_storage_failed">Não foi possível escrever o arquivo PDF</string>
 </resources>

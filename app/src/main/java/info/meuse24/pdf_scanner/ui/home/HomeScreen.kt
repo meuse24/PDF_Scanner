@@ -59,6 +59,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -100,8 +101,15 @@ fun HomeScreen(
     val editLoading  by viewModel.editLoading.collectAsState()
     val editProgress by viewModel.editProgress.collectAsState()
     val context   = LocalContext.current
+    val resources = LocalResources.current
     val clipboard = LocalClipboardManager.current
     val haptic    = LocalHapticFeedback.current
+    val errorDeviceUnsupported = stringResource(R.string.error_device_unsupported)
+    val errorScannerUnavailable = stringResource(R.string.error_scanner_unavailable)
+    val errorNoPdfViewer = stringResource(R.string.error_no_pdf_viewer)
+    val sharePdfTitle = stringResource(R.string.share_pdf_title)
+    val actionShareTextLabel = stringResource(R.string.action_share_text)
+    val ocrCopiedMessage = stringResource(R.string.ocr_copied)
 
     var pendingScanResult  by remember { mutableStateOf<GmsDocumentScanningResult?>(null) }
     var showSaveDialog     by remember { mutableStateOf(false) }
@@ -164,9 +172,9 @@ fun HomeScreen(
                 }
                 .addOnFailureListener { e ->
                     val message = if (e is MlKitException && e.errorCode == MlKitException.UNSUPPORTED) {
-                        context.getString(R.string.error_device_unsupported)
+                        errorDeviceUnsupported
                     } else {
-                        e.message ?: context.getString(R.string.error_scanner_unavailable)
+                        e.message ?: errorScannerUnavailable
                     }
                     viewModel.reportError(message)
                 }
@@ -244,7 +252,7 @@ fun HomeScreen(
                                                 }
                                             )
                                         } catch (e: ActivityNotFoundException) {
-                                            viewModel.reportError(context.getString(R.string.error_no_pdf_viewer))
+                                            viewModel.reportError(errorNoPdfViewer)
                                         }
                                     }
                                 }
@@ -283,7 +291,7 @@ fun HomeScreen(
                                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             }
                         }
-                        context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_pdf_title)))
+                        context.startActivity(Intent.createChooser(intent, sharePdfTitle))
                     }
                 },
                 onExport = {
@@ -296,7 +304,10 @@ fun HomeScreen(
                 makeSearchableEnabled = selectedRecords.any { !it.isSearchable },
                 onMerge = {
                     val fmt = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
-                    mergeFilenameInput = context.getString(R.string.merge_filename_default) + "_${fmt.format(Date())}"
+                    mergeFilenameInput = resources.getString(
+                        R.string.merge_filename_default,
+                        fmt.format(Date())
+                    )
                     showMergeDialog = true
                 },
                 mergeEnabled = selectedRecords.size >= 2,
@@ -519,7 +530,7 @@ fun HomeScreen(
                                     type = "text/plain"
                                     putExtra(Intent.EXTRA_TEXT, ocrText)
                                 },
-                                context.getString(R.string.action_share_text)
+                                actionShareTextLabel
                             )
                         )
                     }) {
@@ -530,7 +541,7 @@ fun HomeScreen(
                     Spacer(Modifier.width(8.dp))
                     TextButton(onClick = {
                         clipboard.setText(AnnotatedString(ocrText!!))
-                        Toast.makeText(context, context.getString(R.string.ocr_copied), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, ocrCopiedMessage, Toast.LENGTH_SHORT).show()
                     }) {
                         Icon(Icons.Default.ContentCopy, contentDescription = null)
                         Spacer(Modifier.width(6.dp))

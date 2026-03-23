@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">M24 PDF-Scanner</string>
+    <string name="app_label">مسح PDF</string>
     <string name="nav_archive">الأرشيف</string>
     <string name="nav_start_scanner">بدء المسح الضوئي</string>
     <string name="nav_help">مساعدة</string>
@@ -113,6 +114,7 @@
     <string name="searchable_success">أصبح PDF قابلاً للبحث: %1$s</string>
     <string name="searchable_success_multi">%1$d ملفات PDF أصبحت قابلة للبحث</string>
     <string name="searchable_failed">فشل إنشاء PDF قابل للبحث</string>
+    <string name="searchable_nothing_to_do">ملفات PDF المحددة قابلة للبحث بالفعل</string>
     <string name="searchable_badge">قابل للبحث</string>
 
     <!-- Merge -->
@@ -123,6 +125,7 @@
     <string name="merge_dialog_confirm">دمج</string>
     <string name="merge_success">تم دمج PDF: %1$s</string>
     <string name="merge_error">خطأ في دمج PDF</string>
+    <string name="merge_not_enough_scans">حدّد ملفي PDF على الأقل لدمجهما</string>
     <string name="merge_filename_default">مدموج_%1$s</string>
     <!-- Split -->
     <string name="split_screen_title">تقسيم PDF</string>
@@ -149,4 +152,7 @@
     <!-- Edit loading -->
     <string name="edit_loading">جاري معالجة PDF…</string>
     <string name="edit_error_file_locked">الملف قيد الاستخدام – أغلقه ثم حاول مجدداً</string>
+    <string name="workflow_nothing_selected">حدّد مستندًا واحدًا على الأقل</string>
+    <string name="workflow_missing_files">ملف واحد أو أكثر من الملفات المحددة مفقود</string>
+    <string name="workflow_storage_failed">تعذّر كتابة ملف PDF</string>
 </resources>

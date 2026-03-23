@@ -145,20 +145,20 @@
     <string name="merge_dialog_filename_label">Filename for the new PDF</string>
     <string name="merge_dialog_order_hint">Order follows the list order</string>
     <string name="merge_dialog_confirm">Merge</string>
-    <string name="merge_success">PDFs merged: %1\$s</string>
+    <string name="merge_success">PDFs merged: %1$s</string>
     <string name="merge_error">Error merging PDFs</string>
     <string name="merge_not_enough_scans">Select at least two PDFs to merge</string>
-    <string name="merge_filename_default">Merged_%1\$s</string>
+    <string name="merge_filename_default">Merged_%1$s</string>
     <!-- Split -->
     <string name="split_screen_title">Split PDF</string>
-    <string name="split_preview">Creates %1\$d parts: %2\$s</string>
+    <string name="split_preview">Creates %1$d parts: %2$s</string>
     <string name="split_confirm">Split</string>
-    <string name="split_success">PDF split into %1\$d parts</string>
+    <string name="split_success">PDF split into %1$d parts</string>
     <string name="split_error">Error splitting PDF</string>
     <string name="split_no_points">Select at least one split point</string>
     <string name="action_split">Split pages</string>
-    <string name="cd_split_point_active">Remove split point after page %1\$d</string>
-    <string name="cd_split_point_inactive">Add split point after page %1\$d</string>
+    <string name="cd_split_point_active">Remove split point after page %1$d</string>
+    <string name="cd_split_point_inactive">Add split point after page %1$d</string>
     <!-- Reorder -->
     <string name="reorder_screen_title">Reorder pages</string>
     <string name="reorder_apply">Apply</string>

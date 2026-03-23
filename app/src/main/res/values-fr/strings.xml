@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">M24 PDF-Scanner</string>
+    <string name="app_label">Scan PDF</string>
     <string name="nav_archive">Archives</string>
     <string name="nav_start_scanner">Lancer le scanner</string>
     <string name="nav_help">Aide</string>
@@ -113,6 +114,7 @@
     <string name="searchable_success">Le PDF est désormais consultable : %1$s</string>
     <string name="searchable_success_multi">%1$d PDFs sont désormais consultables</string>
     <string name="searchable_failed">Impossible de créer le PDF consultable</string>
+    <string name="searchable_nothing_to_do">Les PDF sélectionnés sont déjà consultables</string>
     <string name="searchable_badge">Consultable</string>
 
     <!-- Merge -->
@@ -123,6 +125,7 @@
     <string name="merge_dialog_confirm">Fusionner</string>
     <string name="merge_success">PDF fusionnés : %1$s</string>
     <string name="merge_error">Erreur lors de la fusion des PDF</string>
+    <string name="merge_not_enough_scans">Sélectionnez au moins deux PDF à fusionner</string>
     <string name="merge_filename_default">Fusionné_%1$s</string>
     <!-- Split -->
     <string name="split_screen_title">Fractionner le PDF</string>
@@ -149,4 +152,7 @@
     <!-- Edit loading -->
     <string name="edit_loading">Traitement du PDF…</string>
     <string name="edit_error_file_locked">Le fichier est en cours d\'utilisation – fermez-le et réessayez</string>
+    <string name="workflow_nothing_selected">Sélectionnez au moins un document</string>
+    <string name="workflow_missing_files">Un ou plusieurs fichiers sélectionnés sont introuvables</string>
+    <string name="workflow_storage_failed">Impossible d\'écrire le fichier PDF</string>
 </resources>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">M24 PDF-Scanner</string>
+    <string name="app_label">PDFスキャン</string>
     <string name="nav_archive">アーカイブ</string>
     <string name="nav_start_scanner">スキャン開始</string>
     <string name="nav_help">ヘルプ</string>
@@ -113,6 +114,7 @@
     <string name="searchable_success">PDF が検索可能になりました：%1$s</string>
     <string name="searchable_success_multi">%1$d 件の PDF が検索可能になりました</string>
     <string name="searchable_failed">検索可能な PDF を作成できませんでした</string>
+    <string name="searchable_nothing_to_do">選択したPDFは既に検索可能です</string>
     <string name="searchable_badge">検索可能</string>
 
     <!-- Merge -->
@@ -123,6 +125,7 @@
     <string name="merge_dialog_confirm">結合</string>
     <string name="merge_success">PDFを結合しました：%1$s</string>
     <string name="merge_error">PDFの結合エラー</string>
+    <string name="merge_not_enough_scans">結合するには少なくとも2つのPDFを選択してください</string>
     <string name="merge_filename_default">結合済み_%1$s</string>
     <!-- Split -->
     <string name="split_screen_title">PDFを分割</string>
@@ -149,4 +152,7 @@
     <!-- Edit loading -->
     <string name="edit_loading">PDFを処理中…</string>
     <string name="edit_error_file_locked">ファイルが使用中です–閉じてから再試してください</string>
+    <string name="workflow_nothing_selected">少なくとも1つのドキュメントを選択してください</string>
+    <string name="workflow_missing_files">選択したファイルの一部が見つかりません</string>
+    <string name="workflow_storage_failed">PDFファイルを書き込めませんでした</string>
 </resources>

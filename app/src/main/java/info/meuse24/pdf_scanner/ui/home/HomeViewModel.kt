@@ -10,12 +10,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
+import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
-import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
-import info.meuse24.pdf_scanner.domain.usecase.MergePdfsUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ReorderPagesUseCase
 import info.meuse24.pdf_scanner.domain.usecase.SplitPdfUseCase
 import kotlinx.coroutines.Dispatchers
@@ -36,8 +38,8 @@ class HomeViewModel @Inject constructor(
     private val exportScanUseCase:   ExportScanUseCase,
     private val deleteScansUseCase:  DeleteScansUseCase,
     private val extractTextUseCase:  ExtractTextUseCase,
-    private val makeSearchableUseCase: MakeSearchableUseCase,
-    private val mergePdfsUseCase:    MergePdfsUseCase,
+    private val makeSearchableWorkflow: MakeSearchableWorkflow,
+    private val mergePdfsWorkflow:   MergePdfsWorkflow,
     private val splitPdfUseCase:     SplitPdfUseCase,
     private val reorderPagesUseCase: ReorderPagesUseCase,
     @ApplicationContext private val context: Context
@@ -150,23 +152,22 @@ class HomeViewModel @Inject constructor(
 
     fun makeSearchableScans(records: List<ScanRecord>, languageCode: String) {
         if (_ocrLoading.value) return
-        val pending = records.filter { !it.isSearchable }
-        if (pending.isEmpty()) return
         _ocrLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val count = makeSearchableUseCase(pending, languageCode) { cur, tot ->
+                when (val result = makeSearchableWorkflow(records, languageCode) { cur, tot ->
                     _ocrProgress.value = cur to tot
+                }) {
+                    is WorkflowResult.Success -> {
+                        val data = result.value
+                        _success.value = if (data.processedCount == 1) {
+                            context.getString(R.string.searchable_success, data.firstFilename)
+                        } else {
+                            context.getString(R.string.searchable_success_multi, data.processedCount)
+                        }
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("SearchablePDF", result.error)
                 }
-                val firstName = pending.firstOrNull()?.filename ?: ""
-                _success.value = if (count == 1) {
-                    context.getString(R.string.searchable_success, firstName)
-                } else {
-                    context.getString(R.string.searchable_success_multi, count)
-                }
-            } catch (e: Throwable) {
-                Log.e("SearchablePDF", "makeSearchableScans failed", e)
-                _error.value = context.getString(R.string.searchable_failed)
             } finally {
                 _ocrLoading.value  = false
                 _ocrProgress.value = null
@@ -181,11 +182,15 @@ class HomeViewModel @Inject constructor(
         _editLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val baseName = mergePdfsUseCase(records, outputFilename, scansDir)
-                _success.value = context.getString(R.string.merge_success, baseName)
-            } catch (e: Exception) {
-                Log.e("PdfEditor", "mergePdfs failed", e)
-                _error.value = context.getString(R.string.merge_error)
+                when (val result = mergePdfsWorkflow(records, outputFilename, scansDir)) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            R.string.merge_success,
+                            result.value.outputFilename
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
             } finally {
                 _editLoading.value = false
             }
@@ -230,4 +235,19 @@ class HomeViewModel @Inject constructor(
     fun reportError(message: String) { _error.value = message }
     fun clearError() { _error.value = null }
     fun clearSuccess() { _success.value = null }
+
+    private fun handleWorkflowFailure(tag: String, error: ScanWorkflowError) {
+        Log.e(tag, "workflow failed: $error", error.cause)
+        _error.value = mapWorkflowError(error)
+    }
+
+    private fun mapWorkflowError(error: ScanWorkflowError): String = when (error) {
+        ScanWorkflowError.NothingSelected -> context.getString(R.string.workflow_nothing_selected)
+        ScanWorkflowError.NotEnoughScans -> context.getString(R.string.merge_not_enough_scans)
+        ScanWorkflowError.NoEligibleScans -> context.getString(R.string.searchable_nothing_to_do)
+        is ScanWorkflowError.MissingFiles -> context.getString(R.string.workflow_missing_files)
+        is ScanWorkflowError.StorageWriteFailed -> context.getString(R.string.workflow_storage_failed)
+        is ScanWorkflowError.OcrFailed -> context.getString(R.string.searchable_failed)
+        is ScanWorkflowError.MergeFailed -> context.getString(R.string.merge_error)
+    }
 }

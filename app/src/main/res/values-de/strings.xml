@@ -106,6 +106,7 @@
     <string name="searchable_success">PDF ist jetzt durchsuchbar: %1$s</string>
     <string name="searchable_success_multi">%1$d PDFs sind jetzt durchsuchbar</string>
     <string name="searchable_failed">Durchsuchbares PDF konnte nicht erstellt werden</string>
+    <string name="searchable_nothing_to_do">Die ausgewaehlten PDFs sind bereits durchsuchbar</string>
     <string name="searchable_badge">Durchsuchbar</string>
 
     <string name="info_section_credits">Credits</string>
@@ -123,6 +124,7 @@
     <string name="merge_dialog_confirm">Zusammenführen</string>
     <string name="merge_success">PDFs zusammengeführt: %1\$s</string>
     <string name="merge_error">Fehler beim Zusammenführen</string>
+    <string name="merge_not_enough_scans">Mindestens zwei PDFs zum Zusammenfuehren auswaehlen</string>
     <string name="merge_filename_default">Zusammengeführt_%1\$s</string>
     <!-- Split -->
     <string name="split_screen_title">PDF aufteilen</string>
@@ -149,4 +151,7 @@
     <!-- Edit loading -->
     <string name="edit_loading">PDF wird bearbeitet…</string>
     <string name="edit_error_file_locked">Datei wird gerade verwendet – bitte schließen und erneut versuchen</string>
+    <string name="workflow_nothing_selected">Mindestens ein Dokument auswaehlen</string>
+    <string name="workflow_missing_files">Mindestens eine ausgewaehlte Datei fehlt</string>
+    <string name="workflow_storage_failed">PDF-Datei konnte nicht geschrieben werden</string>
 </resources>

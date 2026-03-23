@@ -28,7 +28,7 @@ import javax.inject.Singleton
  * Operationen (> 50 MB PDFs) in einer späteren Version geplant.
  */
 @Singleton
-class PdfEditor @Inject constructor() {
+open class PdfEditor @Inject constructor() {
 
     /**
      * Führt mehrere PDFs zu [output] zusammen.
@@ -36,7 +36,7 @@ class PdfEditor @Inject constructor() {
      * Bei IO-Fehler (z.B. Datei durch FileProvider gesperrt): IOException
      * mit Klartextmeldung, temp-Datei wird aufgeräumt.
      */
-    fun mergePdfs(inputs: List<File>, output: File) {
+    open fun mergePdfs(inputs: List<File>, output: File) {
         require(inputs.size >= 2) { "Mindestens zwei Dateien zum Zusammenführen erforderlich" }
         val temp = File(output.parent, "${output.nameWithoutExtension}_tmp.pdf")
         try {
@@ -69,7 +69,7 @@ class PdfEditor @Inject constructor() {
      * Gibt die Liste der erzeugten Dateien zurück.
      * Quelle wird einmal geladen und für alle Teile genutzt.
      */
-    fun splitPdf(input: File, outputDir: File, splitAtPages: List<Int>): List<File> {
+    open fun splitPdf(input: File, outputDir: File, splitAtPages: List<Int>): List<File> {
         require(splitAtPages.isNotEmpty()) { "Mindestens ein Trennpunkt erforderlich" }
         val results = mutableListOf<File>()
         PDDocument.load(input).use { source ->
@@ -98,7 +98,7 @@ class PdfEditor @Inject constructor() {
      * reorderPages() gültig und muss NICHT zurückgesetzt werden.
      * Gibt die Zieldatei zurück.
      */
-    fun reorderPages(input: File, newOrder: List<Int>, saveAsCopy: Boolean): File {
+    open fun reorderPages(input: File, newOrder: List<Int>, saveAsCopy: Boolean): File {
         require(newOrder.isNotEmpty()) { "Seitenreihenfolge darf nicht leer sein" }
         val parentDir = input.parentFile
             ?: input.absoluteFile.parentFile
@@ -135,7 +135,7 @@ class PdfEditor @Inject constructor() {
      * Gibt die Seitenanzahl von [pdfFile] zurück, 0 bei Fehler.
      * Muss auf Dispatchers.IO aufgerufen werden.
      */
-    fun getPageCount(pdfFile: File): Int {
+    open fun getPageCount(pdfFile: File): Int {
         return try {
             ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
                 PdfRenderer(pfd).use { it.pageCount }
@@ -147,7 +147,7 @@ class PdfEditor @Inject constructor() {
      * Rendert Seite 0 von [pdfFile] als JPEG-Thumbnail in [outputFile].
      * Gibt true zurück bei Erfolg. Muss auf Dispatchers.IO aufgerufen werden.
      */
-    fun generateThumbnail(pdfFile: File, outputFile: File): Boolean {
+    open fun generateThumbnail(pdfFile: File, outputFile: File): Boolean {
         return try {
             val bitmap = renderPageThumbnail(pdfFile, 0, 200) ?: return false
             outputFile.outputStream().use { out ->
@@ -165,7 +165,7 @@ class PdfEditor @Inject constructor() {
      * Das originale Seitenverhältnis wird beibehalten.
      * Gibt null bei Fehler zurück. Muss auf Dispatchers.IO aufgerufen werden.
      */
-    fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int): Bitmap? {
+    open fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int): Bitmap? {
         return try {
             ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
                 PdfRenderer(pfd).use { renderer ->

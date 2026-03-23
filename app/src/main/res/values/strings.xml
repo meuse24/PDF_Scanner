@@ -129,6 +129,7 @@
     <string name="searchable_success">PDF is now searchable: %1$s</string>
     <string name="searchable_success_multi">%1$d PDFs are now searchable</string>
     <string name="searchable_failed">Failed to create searchable PDF</string>
+    <string name="searchable_nothing_to_do">Selected PDFs are already searchable</string>
     <string name="searchable_badge">Searchable</string>
 
     <string name="info_section_credits">Credits</string>
@@ -146,6 +147,7 @@
     <string name="merge_dialog_confirm">Merge</string>
     <string name="merge_success">PDFs merged: %1\$s</string>
     <string name="merge_error">Error merging PDFs</string>
+    <string name="merge_not_enough_scans">Select at least two PDFs to merge</string>
     <string name="merge_filename_default">Merged_%1\$s</string>
     <!-- Split -->
     <string name="split_screen_title">Split PDF</string>
@@ -172,4 +174,7 @@
     <!-- Edit loading -->
     <string name="edit_loading">Processing PDF…</string>
     <string name="edit_error_file_locked">File is currently in use – please close it and try again</string>
+    <string name="workflow_nothing_selected">Select at least one document</string>
+    <string name="workflow_missing_files">One or more selected files are missing</string>
+    <string name="workflow_storage_failed">Could not write the PDF file</string>
 </resources>

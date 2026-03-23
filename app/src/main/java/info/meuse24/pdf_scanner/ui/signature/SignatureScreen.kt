@@ -30,10 +30,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -57,6 +59,26 @@ private data class SignatureSizeOption(
     val labelRes: Int
 )
 
+private val offsetListSaver = listSaver<List<Offset>, Float>(
+    save = { offsets -> offsets.flatMap { listOf(it.x, it.y) } },
+    restore = { values ->
+        values.chunked(2).mapNotNull { pair ->
+            if (pair.size == 2) Offset(pair[0], pair[1]) else null
+        }
+    }
+)
+
+private val strokeListSaver = listSaver<List<List<Offset>>, List<Float>>(
+    save = { strokes -> strokes.map { stroke -> stroke.flatMap { listOf(it.x, it.y) } } },
+    restore = { values ->
+        values.map { savedStroke ->
+            savedStroke.chunked(2).mapNotNull { pair ->
+                if (pair.size == 2) Offset(pair[0], pair[1]) else null
+            }
+        }
+    }
+)
+
 @Composable
 fun SignatureScreen(
     onNavigateBack: () -> Unit,
@@ -65,11 +87,19 @@ fun SignatureScreen(
 ) {
     val record by viewModel.record.collectAsState()
     val editLoading by homeViewModel.editLoading.collectAsState()
-    val completedStrokes = remember { mutableStateListOf<List<Offset>>() }
-    val currentStroke = remember { mutableStateListOf<Offset>() }
+    val completedStrokesState = rememberSaveable(stateSaver = strokeListSaver) {
+        mutableStateOf(emptyList<List<Offset>>())
+    }
+    val currentStrokeState = rememberSaveable(stateSaver = offsetListSaver) {
+        mutableStateOf(emptyList<Offset>())
+    }
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
-    var selectedPageIndex by remember { mutableStateOf(0) }
-    var selectedScale by remember { mutableStateOf(0.24f) }
+    var selectedPageIndex by rememberSaveable { mutableStateOf(0) }
+    var selectedScale by rememberSaveable { mutableStateOf(0.24f) }
+    val currentCanvasSize by rememberUpdatedState(canvasSize)
+
+    val completedStrokes = completedStrokesState.value
+    val currentStroke = currentStrokeState.value
 
     if (record == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -129,8 +159,9 @@ fun SignatureScreen(
         }
         item {
             SignaturePad(
-                completedStrokes = completedStrokes,
-                currentStroke = currentStroke,
+                completedStrokesState = completedStrokesState,
+                currentStrokeState = currentStrokeState,
+                canvasSize = currentCanvasSize,
                 onSizeChanged = { canvasSize = it }
             )
         }
@@ -138,8 +169,8 @@ fun SignatureScreen(
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedButton(
                     onClick = {
-                        completedStrokes.clear()
-                        currentStroke.clear()
+                        completedStrokesState.value = emptyList()
+                        currentStrokeState.value = emptyList()
                     }
                 ) {
                     Text(stringResource(R.string.signature_clear))
@@ -199,7 +230,7 @@ fun SignatureScreen(
         item {
             Button(
                 onClick = {
-                    val activeStroke = currentStroke.toList()
+                    val activeStroke = currentStroke
                     val signatureBitmap = createSignatureBitmap(
                         strokes = completedStrokes + listOf(activeStroke).filter { it.isNotEmpty() },
                         canvasSize = canvasSize
@@ -225,12 +256,15 @@ fun SignatureScreen(
 
 @Composable
 private fun SignaturePad(
-    completedStrokes: MutableList<List<Offset>>,
-    currentStroke: MutableList<Offset>,
+    completedStrokesState: androidx.compose.runtime.MutableState<List<List<Offset>>>,
+    currentStrokeState: androidx.compose.runtime.MutableState<List<Offset>>,
+    canvasSize: IntSize,
     onSizeChanged: (IntSize) -> Unit
 ) {
     val strokeColor = MaterialTheme.colorScheme.onSurface
     val strokeWidthPx = 8f
+    val completedStrokes = completedStrokesState.value
+    val currentStroke = currentStrokeState.value
     val allStrokes = completedStrokes + listOf(currentStroke.toList()).filter { it.isNotEmpty() }
 
     Box(
@@ -244,26 +278,26 @@ private fun SignaturePad(
                 shape = RoundedCornerShape(16.dp)
             )
             .onSizeChanged(onSizeChanged)
-            .pointerInput(completedStrokes.size) {
+            .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = { offset ->
-                        currentStroke.clear()
-                        currentStroke.add(offset)
+                        currentStrokeState.value = listOf(normalizePoint(offset, canvasSize))
                     },
                     onDrag = { change, _ ->
                         change.consume()
-                        currentStroke.add(change.position)
+                        currentStrokeState.value =
+                            currentStrokeState.value + normalizePoint(change.position, canvasSize)
                     },
                     onDragEnd = {
-                        if (currentStroke.isNotEmpty()) {
-                            completedStrokes.add(currentStroke.toList())
-                            currentStroke.clear()
+                        if (currentStrokeState.value.isNotEmpty()) {
+                            completedStrokesState.value = completedStrokesState.value + listOf(currentStrokeState.value)
+                            currentStrokeState.value = emptyList()
                         }
                     },
                     onDragCancel = {
-                        if (currentStroke.isNotEmpty()) {
-                            completedStrokes.add(currentStroke.toList())
-                            currentStroke.clear()
+                        if (currentStrokeState.value.isNotEmpty()) {
+                            completedStrokesState.value = completedStrokesState.value + listOf(currentStrokeState.value)
+                            currentStrokeState.value = emptyList()
                         }
                     }
                 )
@@ -273,8 +307,12 @@ private fun SignaturePad(
             allStrokes.forEach { stroke ->
                 val path = Path()
                 if (stroke.isNotEmpty()) {
-                    path.moveTo(stroke.first().x, stroke.first().y)
-                    stroke.drop(1).forEach { point -> path.lineTo(point.x, point.y) }
+                    val firstPoint = denormalizePoint(stroke.first(), size.width, size.height)
+                    path.moveTo(firstPoint.x, firstPoint.y)
+                    stroke.drop(1).forEach { point ->
+                        val denormalized = denormalizePoint(point, size.width, size.height)
+                        path.lineTo(denormalized.x, denormalized.y)
+                    }
                     drawPath(
                         path = path,
                         color = strokeColor,
@@ -284,7 +322,7 @@ private fun SignaturePad(
                         drawCircle(
                             color = strokeColor,
                             radius = strokeWidthPx / 2f,
-                            center = stroke.first()
+                            center = denormalizePoint(stroke.first(), size.width, size.height)
                         )
                     }
                 }
@@ -298,7 +336,9 @@ private fun createSignatureBitmap(
     canvasSize: IntSize
 ): Bitmap? {
     if (strokes.isEmpty() || canvasSize == IntSize.Zero) return null
-    val points = strokes.flatten()
+    val points = strokes
+        .flatten()
+        .map { point -> denormalizePoint(point, canvasSize.width.toFloat(), canvasSize.height.toFloat()) }
     if (points.isEmpty()) return null
 
     val padding = 18f
@@ -321,22 +361,37 @@ private fun createSignatureBitmap(
 
     strokes.forEach { stroke ->
         if (stroke.isEmpty()) return@forEach
+        val denormalizedStroke = stroke.map { point ->
+            denormalizePoint(point, canvasSize.width.toFloat(), canvasSize.height.toFloat())
+        }
         if (stroke.size == 1) {
             canvas.drawCircle(
-                stroke.first().x - left,
-                stroke.first().y - top,
+                denormalizedStroke.first().x - left,
+                denormalizedStroke.first().y - top,
                 paint.strokeWidth / 2f,
                 paint
             )
             return@forEach
         }
         val path = android.graphics.Path().apply {
-            moveTo(stroke.first().x - left, stroke.first().y - top)
-            stroke.drop(1).forEach { point ->
+            moveTo(denormalizedStroke.first().x - left, denormalizedStroke.first().y - top)
+            denormalizedStroke.drop(1).forEach { point ->
                 lineTo(point.x - left, point.y - top)
             }
         }
         canvas.drawPath(path, paint)
     }
     return bitmap
+}
+
+private fun normalizePoint(offset: Offset, canvasSize: IntSize): Offset {
+    if (canvasSize == IntSize.Zero) return Offset.Zero
+    return Offset(
+        x = (offset.x / canvasSize.width.toFloat()).coerceIn(0f, 1f),
+        y = (offset.y / canvasSize.height.toFloat()).coerceIn(0f, 1f)
+    )
+}
+
+private fun denormalizePoint(offset: Offset, width: Float, height: Float): Offset {
+    return Offset(offset.x * width, offset.y * height)
 }

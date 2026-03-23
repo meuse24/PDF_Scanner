@@ -272,4 +272,6 @@
     <string name="signature_clear">Signatur löschen</string>
     <string name="protected_pdf_unsupported">Bitte entsperre die PDF, bevor du sie bearbeitest</string>
     <string name="help_item_sign_pdf">Mit PDF signieren zeichnest du eine handschriftliche Signatur, wählst Zielseite und Stempelgröße und speicherst das Ergebnis als neue PDF-Kopie.</string>
+    <string name="reorder_invalid_order">Bitte eine gültige Seitenreihenfolge für das gesamte PDF wählen</string>
+    <string name="signature_scale_invalid">Bitte eine gültige Signaturgröße wählen</string>
 </resources>

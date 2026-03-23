@@ -12,7 +12,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import sun.misc.Unsafe
+import org.mockito.Mockito
 import java.io.File
 import java.io.IOException
 
@@ -84,6 +84,19 @@ class SignatureStampWorkflowTest {
     }
 
     @Test
+    fun `ungueltige Skalierung liefert InvalidSignatureScale`() = runTest {
+        val (workflow, _) = workflow(FakeSignaturePdfEditor())
+
+        val result = workflow(record(31L), fakeBitmap(), 0, 0f, tmpFolder.root)
+
+        assertTrue(result is WorkflowResult.Failure)
+        assertEquals(
+            ScanWorkflowError.InvalidSignatureScale,
+            (result as WorkflowResult.Failure).error
+        )
+    }
+
+    @Test
     fun `geschuetzte pdf liefert ProtectedPdfUnsupported`() = runTest {
         val (workflow, _) = workflow(FakeSignaturePdfEditor(encrypted = true))
 
@@ -118,13 +131,7 @@ class SignatureStampWorkflowTest {
         assertEquals(1, dao.inserted.size)
     }
 
-    private fun fakeBitmap(): Bitmap = unsafe.allocateInstance(Bitmap::class.java) as Bitmap
-
-    private val unsafe: Unsafe by lazy {
-        val field = Unsafe::class.java.getDeclaredField("theUnsafe")
-        field.isAccessible = true
-        field.get(null) as Unsafe
-    }
+    private fun fakeBitmap(): Bitmap = Mockito.mock(Bitmap::class.java)
 }
 
 private class FakeSignaturePdfEditor(

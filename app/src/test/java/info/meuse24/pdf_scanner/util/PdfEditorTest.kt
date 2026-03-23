@@ -129,4 +129,14 @@ class PdfEditorTest {
         val name = "Scan 2024-01"
         assertEquals(name, resolveUniqueFilename(dir, name))
     }
+
+    @Test
+    fun `calculateWatermarkFontSize clamps to lower bound`() {
+        assertEquals(18f, calculateWatermarkFontSize(pageWidth = 120f, textLength = 80), 0.001f)
+    }
+
+    @Test
+    fun `calculateWatermarkFontSize clamps to upper bound`() {
+        assertEquals(42f, calculateWatermarkFontSize(pageWidth = 1200f, textLength = 4), 0.001f)
+    }
 }

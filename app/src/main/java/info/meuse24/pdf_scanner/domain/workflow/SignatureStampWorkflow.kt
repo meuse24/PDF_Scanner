@@ -34,7 +34,7 @@ class SignatureStampWorkflow @Inject constructor(
             return WorkflowResult.Failure(ScanWorkflowError.InvalidPageSelection)
         }
         if (scaleFraction <= 0f) {
-            return WorkflowResult.Failure(ScanWorkflowError.SignatureRequired)
+            return WorkflowResult.Failure(ScanWorkflowError.InvalidSignatureScale)
         }
         if (pdfEditor.isPdfEncrypted(input)) {
             return WorkflowResult.Failure(ScanWorkflowError.ProtectedPdfUnsupported)

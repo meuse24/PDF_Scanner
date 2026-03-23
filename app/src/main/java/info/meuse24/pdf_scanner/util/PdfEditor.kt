@@ -25,7 +25,6 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
-import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -263,10 +262,11 @@ open class PdfEditor @Inject constructor() {
                 val imported = protectedDoc.importPage(source.getPage(pageIdx))
                 imported.rotation = source.getPage(pageIdx).rotation
             }
+            val normalizedPassword = password.trim()
             val permissions = AccessPermission.getOwnerAccessPermission()
             val policy = StandardProtectionPolicy(
-                "${password.trim()}_${UUID.randomUUID()}",
-                password.trim(),
+                normalizedPassword,
+                normalizedPassword,
                 permissions
             ).apply {
                 setEncryptionKeyLength(128)
@@ -536,8 +536,7 @@ private fun PdfEditor.appendTextWatermark(
     font: PDFont,
     text: String
 ) {
-    val fontSize = (page.mediaBox.width / text.length.coerceAtLeast(6)) * 0.55f
-        .coerceIn(18f, 42f)
+    val fontSize = calculateWatermarkFontSize(page.mediaBox.width, text.length)
     val textWidth = font.getStringWidth(text) / 1000f * fontSize
     val centerX = page.mediaBox.width / 2f
     val centerY = page.mediaBox.height / 2f
@@ -562,6 +561,10 @@ private fun PdfEditor.appendTextWatermark(
         contentStream.showText(text)
         contentStream.endText()
     }
+}
+
+internal fun calculateWatermarkFontSize(pageWidth: Float, textLength: Int): Float {
+    return ((pageWidth / textLength.coerceAtLeast(6)) * 0.55f).coerceIn(18f, 42f)
 }
 
 private fun PdfEditor.appendSignatureStamp(

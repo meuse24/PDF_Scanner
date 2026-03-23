@@ -11,6 +11,7 @@ sealed interface ScanWorkflowError {
     data object InvalidPageOrder : ScanWorkflowError
     data object InvalidWatermarkText : ScanWorkflowError
     data object SignatureRequired : ScanWorkflowError
+    data object InvalidSignatureScale : ScanWorkflowError
     data object CompressionUnsupportedForSearchablePdf : ScanWorkflowError
     data object ProtectedPdfUnsupported : ScanWorkflowError
     data object PasswordRequired : ScanWorkflowError

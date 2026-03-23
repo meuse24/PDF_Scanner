@@ -20,6 +20,7 @@ mlkitTextDevanagari = "16.0.1"
 pdfboxAndroid = "2.0.27.0"
 navigationCompose = "2.9.7"
 reorderable = "2.4.3"
+coroutinesTest = "1.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -53,6 +54,7 @@ mlkit-text-devanagari   = { group = "com.google.android.gms",        name = "pla
 pdfbox-android          = { group = "com.tom-roush",                 name = "pdfbox-android",                                  version.ref = "pdfboxAndroid" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

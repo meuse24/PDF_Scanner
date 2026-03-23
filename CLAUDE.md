@@ -17,43 +17,63 @@ ADB (Windows): `C:/Users/guent/AppData/Local/Android/Sdk/platform-tools/adb.exe`
 **App-Name:** M24 PDF-Scanner (Launcher-Label: „PDF Scan") | **Paket:** `info.meuse24.pdf_scanner` | **Min SDK:** 29 | **Target SDK:** 36
 
 ```
+domain/
+└── usecase/
+    ├── ImportScanUseCase.kt       # PDF kopieren + optional Thumbnail + optional OCR-Textlayer
+    ├── ExportScanUseCase.kt       # MediaStore.Downloads Export (IS_PENDING-Pattern)
+    ├── DeleteScansUseCase.kt      # Dateilöschung + Thumbnail + DB-Delete
+    ├── ExtractTextUseCase.kt      # OCR: PdfRenderer alle Seiten + Thumbnail-Fallback (dedupliziert)
+    ├── MakeSearchableUseCase.kt   # OCR-Textlayer einfügen; überspringt bereits durchsuchbare Records
+    ├── MergePdfsUseCase.kt        # PDFs zusammenführen + Thumbnail + DB-Insert
+    ├── SplitPdfUseCase.kt         # PDF aufteilen + Thumbnails + DB-InsertAll
+    └── ReorderPagesUseCase.kt     # Seiten umsortieren; saveAsCopy=true/_Sortiert, false=atomar überschreiben
+
 ui/
 ├── navigation/
-│   ├── Screen.kt            # Route-Definitionen (Ablage, Help, Info, Privacy)
-│   └── AppNavigation.kt     # ModalNavigationDrawer + Scaffold + NavHost + Gradient-Hintergrund
-│                            # Verwaltet scanTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
+│   ├── Screen.kt                  # Route-Definitionen (Ablage, Help, Info, Privacy)
+│   └── AppNavigation.kt           # ModalNavigationDrawer + Scaffold + NavHost + Gradient-Hintergrund
+│                                  # Verwaltet scanTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
 ├── home/
-│   ├── HomeScreen.kt        # Scan-Liste, Empty State, Mehrfachauswahl, Bestätigungs-Dialoge
-│   └── HomeViewModel.kt     # saveScan, deleteScan, deleteScans, exportScan, extractText(record, lang), extractTexts(records, lang), makeSearchableScans(records, lang)
-│                            # @ApplicationContext; _error/_success/_ocrText/_ocrLoading/_ocrProgress: StateFlow
-│                            # OCR: PdfRenderer über alle Seiten; Fallback thumbnailPath wenn PDF fehlt; OcrManager injiziert
+│   ├── HomeScreen.kt              # Koordinator: Scanner-Launcher, Dialoge, Listen-Routing
+│   ├── HomeViewModel.kt           # Koordinator: StateFlows + Delegation an Use Cases
+│   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading/_editProgress
+│   └── components/
+│       ├── ScanItem.kt            # Card mit Thumbnail, Metadaten, Auswahlzustand, MoreVert-Menü
+│       ├── SelectionTitleBar.kt   # ✕ · count/total · SelectAll-Icon
+│       ├── BulkActionBar.kt       # Share · Export · Merge · OCR · MakeSearchable · Delete (rot)
+│       ├── EmptyStateContent.kt   # Leerarchiv-Illustration + Hint-Texte
+│       ├── ScannerLoadingAnimation.kt  # Canvas-Animation (Dokument + Scan-Strahl)
+│       └── MergeDialog.kt         # Dateiname-Eingabe + Reihenfolge-Vorschau
 ├── help/HelpScreen.kt
-├── info/InfoScreen.kt       # Version dynamisch aus BuildConfig
-└── privacy/PrivacyScreen.kt # 4 Icon-Karten (PhoneAndroid, CloudOff, Shield, Lock)
+├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig
+└── privacy/PrivacyScreen.kt       # 4 Icon-Karten (PhoneAndroid, CloudOff, Shield, Lock)
 
 data/
 ├── local/
-│   ├── ScanRecord.kt        # Room @Entity (id, filename, filepath, thumbnailPath, pageCount, fileSize, isSearchable)
-│   ├── ScanDao.kt           # getAllScans(): Flow, insert, delete, markSearchable(id, fileSize)
-│   └── AppDatabase.kt       # Version 3, "pdf_scanner_db", MIGRATION_1_2 + MIGRATION_2_3
+│   ├── ScanRecord.kt              # Room @Entity (id, filename, filepath, thumbnailPath, pageCount, fileSize, isSearchable)
+│   ├── ScanDao.kt                 # getAllScans(): Flow, insert, delete, markSearchable(id, fileSize)
+│   └── AppDatabase.kt             # Version 3, "pdf_scanner_db", MIGRATION_1_2 + MIGRATION_2_3
 └── repository/ScanRepository.kt
 
-di/DatabaseModule.kt         # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3
-util/FileUtil.kt             # savePdfFromUri(), saveThumbnailFromUri()
-util/OcrManager.kt           # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur für Texterkennung (nicht searchable PDF); sonst Latin
-util/SearchablePdfBuilder.kt # makeSearchable(pdfFile, lang, onProgress) — PdfRenderer+OCR Phase1, PdfBox AppendMode Phase2
-                             # Sprachselektor im Speichern-Dialog; ZH/JA NICHT unterstützt (alle Android-CJK-Fonts sind TTC/OTC — PdfBox kann diese nicht einbetten)
+di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3
+util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
+util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
+util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, onProgress) — Phase1 PdfRenderer+OCR, Phase2 PdfBox
+                                   # ZH/JA NICHT als searchable PDF unterstützt (TTC/OTC-Fonts können nicht eingebettet werden)
+util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, getPageCount, generateThumbnail
+                                   # buildRanges() + resolveUniqueFilename() als top-level internal (JVM-testbar)
 ```
 
 ## Architektur-Regeln
 
+- **Schichtenregel:** ViewModel koordiniert State + ruft Use Cases auf → Use Cases verarbeiten → Repository persistiert
 - **Keine Literal-Strings im Kotlin-Code** — ausschließlich `context.getString(R.string.*)` oder `stringResource()`
 - **Neue Strings** immer in alle 10 Locale-Dateien eintragen (values/, -de, -es, -fr, -pt, -zh-rCN, -ar, -ja, -ru, -hi)
-- **Fehler** → `viewModel.reportError(String)` → `_error: StateFlow` → Snackbar/Toast in HomeScreen
+- **Fehler** → `viewModel.reportError(String)` → `_error: StateFlow` → AlertDialog in HomeScreen
 - **Erfolg** → `_success: StateFlow<String?>` → Toast + `clearSuccess()`
 - **OCR** nutzt PdfRenderer über alle Seiten; Fallback auf `thumbnailPath` wenn PDF fehlt
 - PDFs in `context.filesDir/scans/`; FileProvider-Authority: `${applicationId}.fileprovider`
-- Doppelte Dateinamen: `FileUtil` löst automatisch auf (`_2`, `_3`, …)
+- Doppelte Dateinamen: `resolveUniqueFilename()` in `util/PdfEditor.kt` (`_2`, `_3`, …)
 - Export: `MediaStore.Downloads` (API 29+), IS_PENDING-Pattern, bei Fehler `resolver.delete()`
 - Backup: `backup_rules.xml` + `data_extraction_rules.xml` schließen `filesDir/scans/` und DB aus
 
@@ -62,13 +82,28 @@ util/SearchablePdfBuilder.kt # makeSearchable(pdfFile, lang, onProgress) — Pdf
 - **Checkbox** (rechts an jedem Eintrag) → Auswahlmodus; weiteres Antippen togglet; Back/✕ beendet
 - Ausgewählte Cards: `primaryContainer`; keine Einzel-Action-Buttons
 - **SelectionTitleBar** (top, erscheint ab 1 Auswahl): ✕ deselektieren · `count/total` · SelectAll-Icon
-- **BulkActionBar** (bottom): Share · Export · OCR (TextSnippet) · MakeSearchable (ManageSearch) · Delete (rot)
+- **BulkActionBar** (bottom): Share · Export · Merge · OCR (TextSnippet) · MakeSearchable (ManageSearch) · Delete (rot)
   - Share: `ACTION_SEND` (1 Item) vs. `ACTION_SEND_MULTIPLE` (mehrere)
   - Delete: Einzel-Dialog mit Dateiname (`confirm_delete_single`) vs. Bulk-Dialog (`confirm_delete_multi`)
-  - OCR: `extractTexts(records, lang)` — Sprachauswahl-Dialog → PdfRenderer alle Seiten; `— filename —` Trenner nur bei >1
-  - MakeSearchable: `makeSearchableScans(records, lang)` — Sprachauswahl-Dialog → filtert bereits durchsuchbare Records; Button disabled wenn alle bereits searchable
+  - OCR: `extractTexts(records, lang)` → `ExtractTextUseCase` — Sprachauswahl-Dialog; `— filename —` Trenner nur bei >1
+  - MakeSearchable: `makeSearchableScans(records, lang)` → `MakeSearchableUseCase` — bereits durchsuchbare werden übersprungen
   - Params: `extractEnabled`, `makeSearchableEnabled` (beide `Boolean`)
 - Löschen immer mit Bestätigungs-Dialog
+
+## Tests
+
+```
+test/
+└── domain/usecase/
+    ├── DeleteScansUseCaseTest.kt      # Dateilöschung, Thumbnail, Fehlerpfad, Mehrfach-Delete
+    ├── MakeSearchableUseCaseTest.kt   # Idempotenz, DB-Updates, fehlende Dateien, Progress
+    ├── FakeScanDao (in DeleteScansUseCaseTest)   # In-Memory ScanDao-Implementierung
+    └── FakeSearchablePdfBuilder (in MakeSearchableUseCaseTest)  # Überschreibt makeSearchable
+util/
+    └── PdfEditorTest.kt               # buildRanges (7 Tests) + resolveUniqueFilename (6 Tests)
+```
+
+Testabhängigkeiten: `junit:4.13.2` + `kotlinx-coroutines-test:1.10.1`
 
 ## Tech Stack
 
@@ -86,6 +121,7 @@ util/SearchablePdfBuilder.kt # makeSearchable(pdfFile, lang, onProgress) — Pdf
 | PdfBox-Android | 2.0.27.0 |
 | Compose BOM | 2026.03.00 |
 | ui-text-google-fonts | via BOM (1.9.0) |
+| kotlinx-coroutines-test | 1.10.1 (testImplementation) |
 
 Versionen zentral in `gradle/libs.versions.toml`. Gradle-Besonderheiten:
 - `android.disallowKotlinSourceSets=false` in `gradle.properties` (KSP + AGP 9)

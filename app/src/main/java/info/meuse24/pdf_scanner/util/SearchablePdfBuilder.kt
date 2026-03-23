@@ -38,7 +38,7 @@ import kotlin.coroutines.resumeWithException
  * wäre WorkManager robuster als ein ViewModel-Coroutine-Scope.
  */
 @Singleton
-class SearchablePdfBuilder @Inject constructor(
+open class SearchablePdfBuilder @Inject constructor(
     private val ocrManager: OcrManager
 ) {
     companion object {
@@ -57,7 +57,7 @@ class SearchablePdfBuilder @Inject constructor(
         val words: List<WordData>
     )
 
-    suspend fun makeSearchable(
+    open suspend fun makeSearchable(
         pdfFile: File,
         languageCode: String,
         onProgress: (current: Int, total: Int) -> Unit

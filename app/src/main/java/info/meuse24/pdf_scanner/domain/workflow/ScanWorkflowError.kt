@@ -9,6 +9,7 @@ sealed interface ScanWorkflowError {
     data object InvalidSplitSelection : ScanWorkflowError
     data object InvalidPageSelection : ScanWorkflowError
     data object InvalidPageOrder : ScanWorkflowError
+    data object InvalidWatermarkText : ScanWorkflowError
     data object CannotDeleteAllPages : ScanWorkflowError
     data class MissingFiles(val filenames: List<String>) : ScanWorkflowError
     data class StorageWriteFailed(override val cause: Throwable) : ScanWorkflowError
@@ -20,4 +21,6 @@ sealed interface ScanWorkflowError {
     data class DeletePagesFailed(override val cause: Throwable) : ScanWorkflowError
     data class ExtractPagesFailed(override val cause: Throwable) : ScanWorkflowError
     data class DuplicatePagesFailed(override val cause: Throwable) : ScanWorkflowError
+    data class PageNumbersFailed(override val cause: Throwable) : ScanWorkflowError
+    data class TextWatermarkFailed(override val cause: Throwable) : ScanWorkflowError
 }

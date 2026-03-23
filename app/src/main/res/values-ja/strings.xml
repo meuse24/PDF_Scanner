@@ -197,4 +197,23 @@
     <string name="help_item_extract_pages">ページを抽出では、選択したページを新しいPDFとして保存できます。</string>
     <string name="help_item_duplicate_pages">ページを複製では、選択したページのコピーを含む新しいPDFを作成できます。</string>
     <string name="help_item_edit_copy">ページの回転、並べ替え、削除では、元のPDFを置き換えるか、結果をコピーとして保存できます。</string>
+    <string name="help_item_page_numbers">ページ番号を追加を使うと、各ページの下中央にページ番号が入った新しい PDF コピーを作成できます。</string>
+    <string name="help_item_watermark">テキスト透かしを追加を使うと、各ページに斜めのカスタムテキストを入れた新しい PDF コピーを作成できます。</string>
+    <string name="overlay_document_info">%1$dページ</string>
+    <string name="page_numbers_screen_title">ページ番号</string>
+    <string name="page_numbers_description">この PDF にページ番号を追加</string>
+    <string name="page_numbers_details">アプリは新しい PDF コピーを作成し、各ページの下中央にページ番号を配置します。既存の内容と OCR テキストはそのまま保持されます。</string>
+    <string name="page_numbers_apply">ページ番号を追加</string>
+    <string name="page_numbers_success">ページ番号を追加しました: %1$s</string>
+    <string name="page_numbers_error">ページ番号の追加中にエラーが発生しました</string>
+    <string name="action_page_numbers">ページ番号を追加</string>
+    <string name="watermark_screen_title">テキスト透かし</string>
+    <string name="watermark_description">この PDF にテキスト透かしを追加</string>
+    <string name="watermark_details">透かしは各ページに斜めに適用され、新しい PDF コピーとして保存されます。既存の内容と OCR テキストはそのまま保持されます。</string>
+    <string name="watermark_label">透かしのテキスト</string>
+    <string name="watermark_apply">透かしを追加</string>
+    <string name="watermark_success">透かしを追加しました: %1$s</string>
+    <string name="watermark_error">透かしの追加中にエラーが発生しました</string>
+    <string name="watermark_invalid">透かしのテキストを入力してください</string>
+    <string name="action_text_watermark">テキスト透かしを追加</string>
 </resources>

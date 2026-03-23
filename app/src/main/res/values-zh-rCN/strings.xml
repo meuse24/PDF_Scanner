@@ -197,4 +197,23 @@
     <string name="help_item_extract_pages">使用提取页面可将选定页面保存为新的 PDF。</string>
     <string name="help_item_duplicate_pages">使用复制页面可创建一个包含所选页面副本的新 PDF。</string>
     <string name="help_item_edit_copy">旋转、重新排序和删除页面既可以替换原始 PDF，也可以将结果保存为副本。</string>
+    <string name="help_item_page_numbers">使用添加页码可创建一个新的 PDF 副本，并在每页底部居中添加页码。</string>
+    <string name="help_item_watermark">使用添加文字水印可创建一个新的 PDF 副本，并在每页上斜向添加自定义文字。</string>
+    <string name="overlay_document_info">%1$d 页</string>
+    <string name="page_numbers_screen_title">页码</string>
+    <string name="page_numbers_description">为此 PDF 添加页码</string>
+    <string name="page_numbers_details">应用会创建一个新的 PDF 副本，并在每页底部居中放置页码。现有内容和 OCR 文本会保持不变。</string>
+    <string name="page_numbers_apply">添加页码</string>
+    <string name="page_numbers_success">已添加页码：%1$s</string>
+    <string name="page_numbers_error">添加页码时出错</string>
+    <string name="action_page_numbers">添加页码</string>
+    <string name="watermark_screen_title">文字水印</string>
+    <string name="watermark_description">为此 PDF 添加文字水印</string>
+    <string name="watermark_details">水印会斜向应用到每一页，并保存为新的 PDF 副本。现有内容和 OCR 文本会保持不变。</string>
+    <string name="watermark_label">水印文字</string>
+    <string name="watermark_apply">添加水印</string>
+    <string name="watermark_success">已添加水印：%1$s</string>
+    <string name="watermark_error">添加水印时出错</string>
+    <string name="watermark_invalid">请输入水印文字</string>
+    <string name="action_text_watermark">添加文字水印</string>
 </resources>

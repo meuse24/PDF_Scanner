@@ -197,4 +197,23 @@
     <string name="help_item_extract_pages">استخدم استخراج الصفحات لحفظ الصفحات المحددة كملف PDF جديد.</string>
     <string name="help_item_duplicate_pages">استخدم تكرار الصفحات لإنشاء ملف PDF جديد يحتوي على نسخ من الصفحات المحددة.</string>
     <string name="help_item_edit_copy">يمكن لتدوير الصفحات وإعادة ترتيبها وحذفها استبدال ملف PDF الأصلي أو حفظ النتيجة كنسخة.</string>
+    <string name="help_item_page_numbers">استخدم إضافة أرقام الصفحات لإنشاء نسخة PDF جديدة مع أرقام صفحات في وسط أسفل كل صفحة.</string>
+    <string name="help_item_watermark">استخدم إضافة علامة مائية نصية لوضع نص مخصص بشكل مائل على كل صفحة في نسخة PDF جديدة.</string>
+    <string name="overlay_document_info">%1$d صفحات</string>
+    <string name="page_numbers_screen_title">أرقام الصفحات</string>
+    <string name="page_numbers_description">إضافة أرقام صفحات إلى ملف PDF هذا</string>
+    <string name="page_numbers_details">ينشئ التطبيق نسخة PDF جديدة ويضع أرقام الصفحات في منتصف أسفل كل صفحة. يبقى المحتوى الحالي ونص OCR كما هما.</string>
+    <string name="page_numbers_apply">إضافة أرقام الصفحات</string>
+    <string name="page_numbers_success">تمت إضافة أرقام الصفحات: %1$s</string>
+    <string name="page_numbers_error">حدث خطأ أثناء إضافة أرقام الصفحات</string>
+    <string name="action_page_numbers">إضافة أرقام الصفحات</string>
+    <string name="watermark_screen_title">علامة مائية نصية</string>
+    <string name="watermark_description">إضافة علامة مائية نصية إلى ملف PDF هذا</string>
+    <string name="watermark_details">تتم إضافة العلامة المائية بشكل مائل على كل صفحة وحفظها كنسخة PDF جديدة. يبقى المحتوى الحالي ونص OCR كما هما.</string>
+    <string name="watermark_label">نص العلامة المائية</string>
+    <string name="watermark_apply">إضافة العلامة المائية</string>
+    <string name="watermark_success">تمت إضافة العلامة المائية: %1$s</string>
+    <string name="watermark_error">حدث خطأ أثناء إضافة العلامة المائية</string>
+    <string name="watermark_invalid">أدخل نص العلامة المائية</string>
+    <string name="action_text_watermark">إضافة علامة مائية نصية</string>
 </resources>

@@ -54,6 +54,8 @@ import androidx.navigation.navArgument
 import info.meuse24.pdf_scanner.ui.help.HelpScreen
 import info.meuse24.pdf_scanner.ui.home.HomeScreen
 import info.meuse24.pdf_scanner.ui.info.InfoScreen
+import info.meuse24.pdf_scanner.ui.overlay.PageNumbersScreen
+import info.meuse24.pdf_scanner.ui.overlay.TextWatermarkScreen
 import info.meuse24.pdf_scanner.ui.pageedit.DeletePagesScreen
 import info.meuse24.pdf_scanner.ui.pageedit.DuplicatePagesScreen
 import info.meuse24.pdf_scanner.ui.pageedit.ExtractPagesScreen
@@ -174,6 +176,8 @@ fun AppNavigation() {
                                 currentRoute?.startsWith("delete-pages/") == true -> stringResource(R.string.delete_pages_screen_title)
                                 currentRoute?.startsWith("extract-pages/") == true -> stringResource(R.string.extract_pages_screen_title)
                                 currentRoute?.startsWith("duplicate-pages/") == true -> stringResource(R.string.duplicate_pages_screen_title)
+                                currentRoute?.startsWith("page-numbers/") == true -> stringResource(R.string.page_numbers_screen_title)
+                                currentRoute?.startsWith("text-watermark/") == true -> stringResource(R.string.watermark_screen_title)
                                 else                                 -> stringResource(R.string.app_name)
                             }
                         )
@@ -235,7 +239,9 @@ fun AppNavigation() {
                         onNavigateToRotate    = { scanId -> navController.navigate(Screen.RotatePages.createRoute(scanId)) },
                         onNavigateToDeletePages = { scanId -> navController.navigate(Screen.DeletePages.createRoute(scanId)) },
                         onNavigateToExtractPages = { scanId -> navController.navigate(Screen.ExtractPages.createRoute(scanId)) },
-                        onNavigateToDuplicatePages = { scanId -> navController.navigate(Screen.DuplicatePages.createRoute(scanId)) }
+                        onNavigateToDuplicatePages = { scanId -> navController.navigate(Screen.DuplicatePages.createRoute(scanId)) },
+                        onNavigateToPageNumbers = { scanId -> navController.navigate(Screen.PageNumbers.createRoute(scanId)) },
+                        onNavigateToTextWatermark = { scanId -> navController.navigate(Screen.TextWatermark.createRoute(scanId)) }
                     )
                 }
                 composable(Screen.Help.route)    { HelpScreen() }
@@ -276,6 +282,18 @@ fun AppNavigation() {
                     arguments = listOf(navArgument("scanId") { type = NavType.LongType })
                 ) {
                     DuplicatePagesScreen(onNavigateBack = { navController.navigateUp() })
+                }
+                composable(
+                    route = Screen.PageNumbers.route,
+                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                ) {
+                    PageNumbersScreen(onNavigateBack = { navController.navigateUp() })
+                }
+                composable(
+                    route = Screen.TextWatermark.route,
+                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                ) {
+                    TextWatermarkScreen(onNavigateBack = { navController.navigateUp() })
                 }
             }
             } // Box

@@ -197,4 +197,23 @@
     <string name="help_item_extract_pages">Используйте Извлечь страницы, чтобы сохранить выбранные страницы как новый PDF.</string>
     <string name="help_item_duplicate_pages">Используйте Дублировать страницы, чтобы создать новый PDF с копиями выбранных страниц.</string>
     <string name="help_item_edit_copy">Поворот, изменение порядка и удаление страниц могут заменить исходный PDF или сохранить результат как копию.</string>
+    <string name="help_item_page_numbers">Используйте Добавить номера страниц, чтобы создать новую копию PDF с номерами по центру каждой страницы.</string>
+    <string name="help_item_watermark">Используйте Добавить текстовый водяной знак, чтобы разместить пользовательский текст по диагонали на каждой странице в новой копии PDF.</string>
+    <string name="overlay_document_info">%1$d страниц</string>
+    <string name="page_numbers_screen_title">Номера страниц</string>
+    <string name="page_numbers_description">Добавить номера страниц в этот PDF</string>
+    <string name="page_numbers_details">Приложение создает новую копию PDF и размещает номера страниц по центру внизу каждой страницы. Существующее содержимое и OCR-текст остаются без изменений.</string>
+    <string name="page_numbers_apply">Добавить номера страниц</string>
+    <string name="page_numbers_success">Номера страниц добавлены: %1$s</string>
+    <string name="page_numbers_error">Ошибка при добавлении номеров страниц</string>
+    <string name="action_page_numbers">Добавить номера страниц</string>
+    <string name="watermark_screen_title">Текстовый водяной знак</string>
+    <string name="watermark_description">Добавить текстовый водяной знак в этот PDF</string>
+    <string name="watermark_details">Водяной знак наносится по диагонали на каждую страницу и сохраняется как новая копия PDF. Существующее содержимое и OCR-текст остаются без изменений.</string>
+    <string name="watermark_label">Текст водяного знака</string>
+    <string name="watermark_apply">Добавить водяной знак</string>
+    <string name="watermark_success">Водяной знак добавлен: %1$s</string>
+    <string name="watermark_error">Ошибка при добавлении водяного знака</string>
+    <string name="watermark_invalid">Введите текст водяного знака</string>
+    <string name="action_text_watermark">Добавить текстовый водяной знак</string>
 </resources>

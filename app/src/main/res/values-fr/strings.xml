@@ -197,4 +197,23 @@
     <string name="help_item_extract_pages">Utilise Extraire les pages pour enregistrer les pages sélectionnées dans un nouveau PDF.</string>
     <string name="help_item_duplicate_pages">Utilise Dupliquer les pages pour créer un nouveau PDF contenant des copies des pages sélectionnées.</string>
     <string name="help_item_edit_copy">Faire pivoter, réorganiser et supprimer des pages peut remplacer le PDF original ou enregistrer le résultat comme copie.</string>
+    <string name="help_item_page_numbers">Utilise Ajouter des numéros de page pour créer une nouvelle copie du PDF avec des numéros centrés sur chaque page.</string>
+    <string name="help_item_watermark">Utilise Ajouter un filigrane texte pour placer un texte personnalisé en diagonale sur chaque page dans une nouvelle copie du PDF.</string>
+    <string name="overlay_document_info">%1$d pages</string>
+    <string name="page_numbers_screen_title">Numéros de page</string>
+    <string name="page_numbers_description">Ajouter des numéros de page à ce PDF</string>
+    <string name="page_numbers_details">Cette action crée une nouvelle copie du PDF et place des numéros de page centrés en bas de chaque page. Le contenu existant et le texte OCR restent inchangés.</string>
+    <string name="page_numbers_apply">Ajouter des numéros de page</string>
+    <string name="page_numbers_success">Numéros de page ajoutés : %1$s</string>
+    <string name="page_numbers_error">Erreur lors de l ajout des numéros de page</string>
+    <string name="action_page_numbers">Ajouter des numéros de page</string>
+    <string name="watermark_screen_title">Filigrane texte</string>
+    <string name="watermark_description">Ajouter un filigrane texte à ce PDF</string>
+    <string name="watermark_details">Le filigrane est appliqué en diagonale sur chaque page et enregistré comme nouvelle copie du PDF. Le contenu existant et le texte OCR restent inchangés.</string>
+    <string name="watermark_label">Texte du filigrane</string>
+    <string name="watermark_apply">Ajouter le filigrane</string>
+    <string name="watermark_success">Filigrane ajouté : %1$s</string>
+    <string name="watermark_error">Erreur lors de l ajout du filigrane</string>
+    <string name="watermark_invalid">Saisir un texte pour le filigrane</string>
+    <string name="action_text_watermark">Ajouter un filigrane texte</string>
 </resources>

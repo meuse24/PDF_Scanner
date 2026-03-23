@@ -79,7 +79,9 @@ internal fun ScanItem(
     onRotate:         () -> Unit = {},
     onDeletePages:    () -> Unit = {},
     onExtractPages:   () -> Unit = {},
-    onDuplicatePages: () -> Unit = {}
+    onDuplicatePages: () -> Unit = {},
+    onPageNumbers:    () -> Unit = {},
+    onTextWatermark:  () -> Unit = {}
 ) {
     val context = LocalContext.current
     var menuExpanded by remember { mutableStateOf(false) }
@@ -231,6 +233,14 @@ internal fun ScanItem(
                             text        = { Text(stringResource(R.string.action_duplicate_pages)) },
                             leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
                             onClick     = { menuExpanded = false; onDuplicatePages() }
+                        )
+                        DropdownMenuItem(
+                            text    = { Text(stringResource(R.string.action_page_numbers)) },
+                            onClick = { menuExpanded = false; onPageNumbers() }
+                        )
+                        DropdownMenuItem(
+                            text    = { Text(stringResource(R.string.action_text_watermark)) },
+                            onClick = { menuExpanded = false; onTextWatermark() }
                         )
                     }
                 }

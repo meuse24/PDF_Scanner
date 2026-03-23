@@ -197,4 +197,23 @@
     <string name="help_item_extract_pages">Mit Seiten extrahieren speicherst du die ausgewählten Seiten als neues PDF.</string>
     <string name="help_item_duplicate_pages">Mit Seiten duplizieren erstellst du ein neues PDF mit Kopien der ausgewählten Seiten.</string>
     <string name="help_item_edit_copy">Seiten drehen, neu anordnen und löschen können das Original ersetzen oder das Ergebnis als Kopie speichern.</string>
+    <string name="help_item_page_numbers">Mit Seitennummern hinzufügen erstellst du eine neue PDF-Kopie mit zentrierten Seitennummern auf jeder Seite.</string>
+    <string name="help_item_watermark">Mit Text-Wasserzeichen hinzufügen platzierst du eigenen Text diagonal über jede Seite in einer neuen PDF-Kopie.</string>
+    <string name="overlay_document_info">%1$d Seiten</string>
+    <string name="page_numbers_screen_title">Seitennummern</string>
+    <string name="page_numbers_description">Seitennummern zu diesem PDF hinzufügen</string>
+    <string name="page_numbers_details">Die App erstellt eine neue PDF-Kopie und platziert Seitennummern unten mittig auf jeder Seite. Vorhandener Inhalt und vorhandener OCR-Text bleiben erhalten.</string>
+    <string name="page_numbers_apply">Seitennummern hinzufügen</string>
+    <string name="page_numbers_success">Seitennummern hinzugefügt: %1$s</string>
+    <string name="page_numbers_error">Fehler beim Hinzufügen der Seitennummern</string>
+    <string name="action_page_numbers">Seitennummern hinzufügen</string>
+    <string name="watermark_screen_title">Text-Wasserzeichen</string>
+    <string name="watermark_description">Ein Text-Wasserzeichen zu diesem PDF hinzufügen</string>
+    <string name="watermark_details">Das Wasserzeichen wird diagonal auf jede Seite gelegt und als neue PDF-Kopie gespeichert. Vorhandener Inhalt und vorhandener OCR-Text bleiben erhalten.</string>
+    <string name="watermark_label">Wasserzeichen-Text</string>
+    <string name="watermark_apply">Wasserzeichen hinzufügen</string>
+    <string name="watermark_success">Wasserzeichen hinzugefügt: %1$s</string>
+    <string name="watermark_error">Fehler beim Hinzufügen des Wasserzeichens</string>
+    <string name="watermark_invalid">Bitte Text für das Wasserzeichen eingeben</string>
+    <string name="action_text_watermark">Text-Wasserzeichen hinzufügen</string>
 </resources>

@@ -23,4 +23,10 @@ sealed class Screen(val route: String) {
     data object DuplicatePages : Screen("duplicate-pages/{scanId}") {
         fun createRoute(scanId: Long) = "duplicate-pages/$scanId"
     }
+    data object PageNumbers : Screen("page-numbers/{scanId}") {
+        fun createRoute(scanId: Long) = "page-numbers/$scanId"
+    }
+    data object TextWatermark : Screen("text-watermark/{scanId}") {
+        fun createRoute(scanId: Long) = "text-watermark/$scanId"
+    }
 }

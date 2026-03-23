@@ -94,6 +94,8 @@ fun HomeScreen(
     onNavigateToDeletePages: (Long) -> Unit = {},
     onNavigateToExtractPages: (Long) -> Unit = {},
     onNavigateToDuplicatePages: (Long) -> Unit = {},
+    onNavigateToPageNumbers: (Long) -> Unit = {},
+    onNavigateToTextWatermark: (Long) -> Unit = {},
     viewModel:             HomeViewModel = hiltViewModel()
 ) {
     val scans        by viewModel.scans.collectAsState()
@@ -272,7 +274,9 @@ fun HomeScreen(
                             onRotate         = { onNavigateToRotate(record.id) },
                             onDeletePages    = { onNavigateToDeletePages(record.id) },
                             onExtractPages   = { onNavigateToExtractPages(record.id) },
-                            onDuplicatePages = { onNavigateToDuplicatePages(record.id) }
+                            onDuplicatePages = { onNavigateToDuplicatePages(record.id) },
+                            onPageNumbers    = { onNavigateToPageNumbers(record.id) },
+                            onTextWatermark  = { onNavigateToTextWatermark(record.id) }
                         )
                     }
                 }

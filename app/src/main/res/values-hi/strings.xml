@@ -197,4 +197,23 @@
     <string name="help_item_extract_pages">Extract pages से चुने गए पेजों को नए PDF के रूप में सहेजें।</string>
     <string name="help_item_duplicate_pages">Duplicate pages से चुने गए पेजों की प्रतियों के साथ नया PDF बनाएँ।</string>
     <string name="help_item_edit_copy">Rotate, reorder और delete pages मूल PDF को बदल सकते हैं या परिणाम को कॉपी के रूप में सहेज सकते हैं।</string>
+    <string name="help_item_page_numbers">पेज नंबर जोड़ें का उपयोग करें ताकि हर पेज पर बीच में पेज नंबर वाली नई PDF कॉपी बन सके।</string>
+    <string name="help_item_watermark">टेक्स्ट वॉटरमार्क जोड़ें का उपयोग करें ताकि हर पेज पर तिरछा कस्टम टेक्स्ट वाली नई PDF कॉपी बन सके।</string>
+    <string name="overlay_document_info">%1$d पेज</string>
+    <string name="page_numbers_screen_title">पेज नंबर</string>
+    <string name="page_numbers_description">इस PDF में पेज नंबर जोड़ें</string>
+    <string name="page_numbers_details">ऐप एक नई PDF कॉपी बनाता है और हर पेज के नीचे बीच में पेज नंबर जोड़ता है। मौजूदा सामग्री और OCR टेक्स्ट सुरक्षित रहते हैं।</string>
+    <string name="page_numbers_apply">पेज नंबर जोड़ें</string>
+    <string name="page_numbers_success">पेज नंबर जोड़े गए: %1$s</string>
+    <string name="page_numbers_error">पेज नंबर जोड़ने में त्रुटि</string>
+    <string name="action_page_numbers">पेज नंबर जोड़ें</string>
+    <string name="watermark_screen_title">टेक्स्ट वॉटरमार्क</string>
+    <string name="watermark_description">इस PDF में टेक्स्ट वॉटरमार्क जोड़ें</string>
+    <string name="watermark_details">वॉटरमार्क हर पेज पर तिरछा लगाया जाता है और नई PDF कॉपी के रूप में सेव होता है। मौजूदा सामग्री और OCR टेक्स्ट सुरक्षित रहते हैं।</string>
+    <string name="watermark_label">वॉटरमार्क टेक्स्ट</string>
+    <string name="watermark_apply">वॉटरमार्क जोड़ें</string>
+    <string name="watermark_success">वॉटरमार्क जोड़ा गया: %1$s</string>
+    <string name="watermark_error">वॉटरमार्क जोड़ने में त्रुटि</string>
+    <string name="watermark_invalid">वॉटरमार्क के लिए टेक्स्ट दर्ज करें</string>
+    <string name="action_text_watermark">टेक्स्ट वॉटरमार्क जोड़ें</string>
 </resources>

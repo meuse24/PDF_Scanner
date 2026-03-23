@@ -7,6 +7,13 @@ import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import com.tom_roush.pdfbox.multipdf.PDFMergerUtility
 import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.pdmodel.PDPage
+import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
+import com.tom_roush.pdfbox.pdmodel.font.PDFont
+import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
+import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
+import com.tom_roush.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
+import com.tom_roush.pdfbox.util.Matrix
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
@@ -161,6 +168,31 @@ open class PdfEditor @Inject constructor() {
                 if (pageIdx in selected) {
                     duplicated.importPage(source.getPage(pageIdx))
                 }
+            }
+        }
+    }
+
+    open fun addPageNumbers(input: File, outputDir: File): File {
+        return writeDerivedPdf(input, outputDir, "_Nummeriert", "PageNumbers") { source, numbered ->
+            val font = loadOverlayFont(numbered)
+            repeat(source.numberOfPages) { pageIdx ->
+                val page = numbered.importPage(source.getPage(pageIdx))
+                appendPageNumber(page, numbered, font, pageIdx + 1)
+            }
+        }
+    }
+
+    open fun applyTextWatermark(input: File, outputDir: File, text: String): File {
+        require(text.isNotBlank()) { "Wasserzeichen darf nicht leer sein" }
+        return writeDerivedPdf(input, outputDir, "_Wasserzeichen", "Watermark") { source, watermarked ->
+            val font = loadOverlayFont(watermarked)
+            val watermarkText = sanitizeOverlayText(text.trim(), font)
+            if (watermarkText.isBlank()) {
+                throw IOException("Wasserzeichen enthält keine unterstützten Zeichen")
+            }
+            repeat(source.numberOfPages) { pageIdx ->
+                val page = watermarked.importPage(source.getPage(pageIdx))
+                appendTextWatermark(page, watermarked, font, watermarkText)
             }
         }
     }
@@ -340,6 +372,97 @@ private inline fun PdfEditor.writePdf(
 private fun normalizeRotation(rotation: Int): Int {
     val normalized = rotation % 360
     return if (normalized < 0) normalized + 360 else normalized
+}
+
+private fun PdfEditor.appendPageNumber(
+    page: PDPage,
+    document: PDDocument,
+    font: PDFont,
+    pageNumber: Int
+) {
+    val label = pageNumber.toString()
+    val fontSize = (page.mediaBox.height * 0.018f).coerceIn(10f, 14f)
+    val textWidth = font.getStringWidth(label) / 1000f * fontSize
+    val x = ((page.mediaBox.width - textWidth) / 2f).coerceAtLeast(12f)
+    val y = 16f
+    val graphicsState = PDExtendedGraphicsState().apply { nonStrokingAlphaConstant = 0.7f }
+
+    PDPageContentStream(
+        document,
+        page,
+        PDPageContentStream.AppendMode.APPEND,
+        true,
+        true
+    ).use { contentStream ->
+        contentStream.setGraphicsStateParameters(graphicsState)
+        contentStream.beginText()
+        contentStream.setNonStrokingColor(82, 82, 91)
+        contentStream.setFont(font, fontSize)
+        contentStream.newLineAtOffset(x, y)
+        contentStream.showText(label)
+        contentStream.endText()
+    }
+}
+
+private fun PdfEditor.appendTextWatermark(
+    page: PDPage,
+    document: PDDocument,
+    font: PDFont,
+    text: String
+) {
+    val fontSize = (page.mediaBox.width / text.length.coerceAtLeast(6)) * 0.55f
+        .coerceIn(18f, 42f)
+    val textWidth = font.getStringWidth(text) / 1000f * fontSize
+    val centerX = page.mediaBox.width / 2f
+    val centerY = page.mediaBox.height / 2f
+    val x = (centerX - textWidth / 2f).coerceAtLeast(18f)
+    val y = centerY - fontSize / 3f
+    val graphicsState = PDExtendedGraphicsState().apply { nonStrokingAlphaConstant = 0.16f }
+
+    PDPageContentStream(
+        document,
+        page,
+        PDPageContentStream.AppendMode.APPEND,
+        true,
+        true
+    ).use { contentStream ->
+        contentStream.setGraphicsStateParameters(graphicsState)
+        contentStream.beginText()
+        contentStream.setNonStrokingColor(75, 85, 99)
+        contentStream.setFont(font, fontSize)
+        contentStream.setTextMatrix(
+            Matrix.getRotateInstance(Math.toRadians(45.0), x, y)
+        )
+        contentStream.showText(text)
+        contentStream.endText()
+    }
+}
+
+private fun PdfEditor.loadOverlayFont(document: PDDocument): PDFont {
+    val candidates = listOf(
+        "/system/fonts/Roboto-Regular.ttf",
+        "/system/fonts/NotoSans-Regular.ttf",
+        "/system/fonts/DroidSans.ttf"
+    )
+    for (path in candidates) {
+        try {
+            val file = File(path)
+            if (file.exists()) {
+                return PDType0Font.load(document, file.inputStream(), true)
+            }
+        } catch (_: Exception) {
+            // Fall through to the next available system font.
+        }
+    }
+    @Suppress("DEPRECATION")
+    return PDType1Font.HELVETICA
+}
+
+private fun sanitizeOverlayText(text: String, font: PDFont): String {
+    if (font is PDType1Font) {
+        return text.filter { it.code in 32..126 }
+    }
+    return text.replace("\n", " ").replace("\r", "").trim()
 }
 
 /**

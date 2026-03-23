@@ -219,4 +219,23 @@
     <string name="help_item_extract_pages">Choose Extract pages to save the selected pages as a new PDF.</string>
     <string name="help_item_duplicate_pages">Choose Duplicate pages to create a new PDF with copies of the selected pages.</string>
     <string name="help_item_edit_copy">Rotate, reorder, and delete pages can either replace the original PDF or save the result as a copy.</string>
+    <string name="help_item_page_numbers">Choose Add page numbers to create a new PDF copy with centered page numbers on every page.</string>
+    <string name="help_item_watermark">Choose Add text watermark to place custom text diagonally across every page in a new PDF copy.</string>
+    <string name="overlay_document_info">%1$d pages</string>
+    <string name="page_numbers_screen_title">Page numbers</string>
+    <string name="page_numbers_description">Add page numbers to this PDF</string>
+    <string name="page_numbers_details">The app creates a new PDF copy and places page numbers centered at the bottom of every page. Existing content and OCR text stay untouched.</string>
+    <string name="page_numbers_apply">Add page numbers</string>
+    <string name="page_numbers_success">Page numbers added: %1$s</string>
+    <string name="page_numbers_error">Error adding page numbers</string>
+    <string name="action_page_numbers">Add page numbers</string>
+    <string name="watermark_screen_title">Text watermark</string>
+    <string name="watermark_description">Add a text watermark to this PDF</string>
+    <string name="watermark_details">The watermark is applied diagonally across every page and saved as a new PDF copy. Existing content and OCR text stay untouched.</string>
+    <string name="watermark_label">Watermark text</string>
+    <string name="watermark_apply">Add watermark</string>
+    <string name="watermark_success">Watermark added: %1$s</string>
+    <string name="watermark_error">Error adding watermark</string>
+    <string name="watermark_invalid">Enter watermark text</string>
+    <string name="action_text_watermark">Add text watermark</string>
 </resources>

@@ -86,6 +86,8 @@ fun HelpScreen() {
                 HelpStep(Icons.Default.Delete, "·", stringResource(R.string.help_item_delete_pages))
                 HelpStep(Icons.Default.PictureAsPdf, "·", stringResource(R.string.help_item_extract_pages))
                 HelpStep(Icons.Default.ContentCopy, "·", stringResource(R.string.help_item_duplicate_pages))
+                HelpStep(Icons.Default.PictureAsPdf, "·", stringResource(R.string.help_item_page_numbers))
+                HelpStep(Icons.Default.MoreVert, "·", stringResource(R.string.help_item_watermark))
                 HelpStep(Icons.Default.Save, "·", stringResource(R.string.help_item_edit_copy))
             }
         }

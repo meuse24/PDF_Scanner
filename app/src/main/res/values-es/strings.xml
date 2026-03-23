@@ -197,4 +197,23 @@
     <string name="help_item_extract_pages">Usa Extraer páginas para guardar las páginas seleccionadas como un nuevo PDF.</string>
     <string name="help_item_duplicate_pages">Usa Duplicar páginas para crear un nuevo PDF con copias de las páginas seleccionadas.</string>
     <string name="help_item_edit_copy">Girar, reordenar y eliminar páginas pueden reemplazar el PDF original o guardar el resultado como copia.</string>
+    <string name="help_item_page_numbers">Usa Añadir números de página para crear una nueva copia del PDF con números centrados en cada página.</string>
+    <string name="help_item_watermark">Usa Añadir marca de agua de texto para colocar un texto personalizado en diagonal sobre cada página en una nueva copia del PDF.</string>
+    <string name="overlay_document_info">%1$d páginas</string>
+    <string name="page_numbers_screen_title">Números de página</string>
+    <string name="page_numbers_description">Añadir números de página a este PDF</string>
+    <string name="page_numbers_details">La app crea una nueva copia del PDF y coloca los números de página centrados al pie de cada página. El contenido existente y el texto OCR se conservan.</string>
+    <string name="page_numbers_apply">Añadir números de página</string>
+    <string name="page_numbers_success">Números de página añadidos: %1$s</string>
+    <string name="page_numbers_error">Error al añadir números de página</string>
+    <string name="action_page_numbers">Añadir números de página</string>
+    <string name="watermark_screen_title">Marca de agua de texto</string>
+    <string name="watermark_description">Añadir una marca de agua de texto a este PDF</string>
+    <string name="watermark_details">La marca de agua se aplica en diagonal sobre cada página y se guarda como una nueva copia del PDF. El contenido existente y el texto OCR se conservan.</string>
+    <string name="watermark_label">Texto de la marca de agua</string>
+    <string name="watermark_apply">Añadir marca de agua</string>
+    <string name="watermark_success">Marca de agua añadida: %1$s</string>
+    <string name="watermark_error">Error al añadir la marca de agua</string>
+    <string name="watermark_invalid">Introduce un texto para la marca de agua</string>
+    <string name="action_text_watermark">Añadir marca de agua de texto</string>
 </resources>

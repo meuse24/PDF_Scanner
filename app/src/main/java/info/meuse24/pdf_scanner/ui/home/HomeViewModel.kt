@@ -12,6 +12,7 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.DeletePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.DuplicatePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ExtractPagesWorkflow
@@ -19,6 +20,7 @@ import info.meuse24.pdf_scanner.domain.workflow.ReorderPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RotatePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
 import info.meuse24.pdf_scanner.domain.workflow.SplitPdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.TextWatermarkWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
@@ -50,6 +52,8 @@ class HomeViewModel @Inject constructor(
     private val deletePagesWorkflow: DeletePagesWorkflow,
     private val extractPagesWorkflow: ExtractPagesWorkflow,
     private val duplicatePagesWorkflow: DuplicatePagesWorkflow,
+    private val pageNumbersWorkflow: PageNumbersWorkflow,
+    private val textWatermarkWorkflow: TextWatermarkWorkflow,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -337,6 +341,46 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun addPageNumbers(record: ScanRecord) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = pageNumbersWorkflow(record, scansDir)) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            R.string.page_numbers_success,
+                            result.value.outputFilename
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun applyTextWatermark(record: ScanRecord, text: String) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = textWatermarkWorkflow(record, text, scansDir)) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            R.string.watermark_success,
+                            result.value.outputFilename
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
     // ── Hilfsmethoden ─────────────────────────────────────────────────────────
 
     fun clearOcrText() { _ocrText.value = null }
@@ -356,6 +400,7 @@ class HomeViewModel @Inject constructor(
         ScanWorkflowError.InvalidSplitSelection -> context.getString(R.string.split_no_points)
         ScanWorkflowError.InvalidPageSelection -> context.getString(R.string.page_selection_invalid)
         ScanWorkflowError.InvalidPageOrder -> context.getString(R.string.reorder_error)
+        ScanWorkflowError.InvalidWatermarkText -> context.getString(R.string.watermark_invalid)
         ScanWorkflowError.CannotDeleteAllPages -> context.getString(R.string.delete_pages_all_error)
         is ScanWorkflowError.MissingFiles -> context.getString(R.string.workflow_missing_files)
         is ScanWorkflowError.StorageWriteFailed -> context.getString(R.string.workflow_storage_failed)
@@ -367,5 +412,7 @@ class HomeViewModel @Inject constructor(
         is ScanWorkflowError.DeletePagesFailed -> context.getString(R.string.delete_pages_error)
         is ScanWorkflowError.ExtractPagesFailed -> context.getString(R.string.extract_pages_error)
         is ScanWorkflowError.DuplicatePagesFailed -> context.getString(R.string.duplicate_pages_error)
+        is ScanWorkflowError.PageNumbersFailed -> context.getString(R.string.page_numbers_error)
+        is ScanWorkflowError.TextWatermarkFailed -> context.getString(R.string.watermark_error)
     }
 }

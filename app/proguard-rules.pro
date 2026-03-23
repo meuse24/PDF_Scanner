@@ -9,6 +9,12 @@
 -dontwarn com.tom_roush.**
 -dontwarn org.apache.**
 
+# ── ML Kit (alle internen GMS-Klassen) ────────────────────────────────────────
+-keep class com.google.mlkit.** { *; }
+-keep class com.google.android.gms.internal.mlkit_** { *; }
+-dontwarn com.google.mlkit.**
+-dontwarn com.google.android.gms.internal.mlkit_**
+
 # ── Coroutines (internal compiler-generated classes) ─────────────────────────
 -keepclassmembers class kotlinx.coroutines.** { volatile <fields>; }
 -dontwarn kotlinx.coroutines.**

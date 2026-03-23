@@ -12,6 +12,7 @@ local.properties
 # Keystore & release artifacts — never commit
 *.jks
 *.keystore
+keystore.properties
 app/release/
 
 # Temporary plan files

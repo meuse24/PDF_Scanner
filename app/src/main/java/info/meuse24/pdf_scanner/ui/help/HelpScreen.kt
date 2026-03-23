@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Save
@@ -65,6 +66,7 @@ fun HelpScreen() {
                 HelpStep(Icons.Default.PictureAsPdf,                   "·", stringResource(R.string.help_item_open))
                 HelpStep(Icons.Default.CheckBox,                       "·", stringResource(R.string.help_item_share))
                 HelpStep(Icons.AutoMirrored.Filled.ManageSearch,       "·", stringResource(R.string.help_item_delete))
+                HelpStep(Icons.Default.MoreVert,                       "·", stringResource(R.string.help_item_pdf_edit))
             }
         }
         item {

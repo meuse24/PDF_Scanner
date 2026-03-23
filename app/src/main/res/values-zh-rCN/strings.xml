@@ -48,7 +48,8 @@
     <string name="help_section_archive">管理文件库</string>
     <string name="help_item_open">点击列表中的条目，可在外部 PDF 查看器中打开文档。</string>
     <string name="help_item_share">点击条目的复选框可将其选中。标题栏显示数量，并可全选。</string>
-    <string name="help_item_delete">底部操作栏提供对所有选中条目的分享、导出、文字提取（OCR）、设为可搜索和删除功能。OCR 和设为可搜索操作会先打开语言选择对话框。</string>
+    <string name="help_item_delete">底部操作栏为所有选中条目提供共享、导出、合并、文字提取（OCR）、设为可搜索和删除。合并可将两个或多个PDF合并为新文件。OCR和设为可搜索在处理前会打开语言选择对话框。</string>
+    <string name="help_item_pdf_edit">点击任意多页PDF上的三点菜单（⋮），可在选定页面处分割，或通过拖放重新排列页面。</string>
     <string name="help_section_navigation">导航</string>
     <string name="help_nav_text">通过左上角的汉堡菜单可访问文件库、扫描仪、帮助和关于页面。</string>
     <string name="help_section_notes">注意事项</string>

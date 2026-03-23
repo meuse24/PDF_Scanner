@@ -48,7 +48,8 @@
     <string name="help_section_archive">Ablage verwalten</string>
     <string name="help_item_open">Tippe auf einen Eintrag in der Liste, um das PDF in einem externen Viewer zu öffnen.</string>
     <string name="help_item_share">Checkbox eines Eintrags antippen, um ihn auszuwählen. Die Titelleiste zeigt die Anzahl und ermöglicht das Auswählen aller Einträge.</string>
-    <string name="help_item_delete">Die Aktionsleiste unten bietet Teilen, Exportieren, Textextraktion (OCR), Durchsuchbar machen und Löschen für alle ausgewählten Einträge. OCR und Durchsuchbar machen öffnen zuvor einen Sprachauswahl-Dialog.</string>
+    <string name="help_item_delete">Die Aktionsleiste unten bietet Teilen, Exportieren, Zusammenführen, Texterkennung (OCR), Durchsuchbar machen und Löschen für alle ausgewählten Einträge. Zusammenführen kombiniert zwei oder mehr PDFs zu einer neuen Datei. OCR und Durchsuchbar machen öffnen vorher einen Sprachauswahl-Dialog.</string>
+    <string name="help_item_pdf_edit">Tippe auf das Dreipunkt-Menü (⋮) eines mehrseitigen PDFs, um es an gewählten Seiten aufzuteilen oder Seiten per Drag &amp; Drop neu anzuordnen.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Über das Hamburger-Menü (oben links) erreichst du die Ablage, den Scanner, die Hilfe und den Info-Screen.</string>
     <string name="help_section_notes">Hinweise</string>

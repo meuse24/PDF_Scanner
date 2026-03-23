@@ -48,7 +48,8 @@
     <string name="help_section_archive">Gérer les archives</string>
     <string name="help_item_open">Appuie sur un élément de la liste pour ouvrir le PDF dans un visionneur externe.</string>
     <string name="help_item_share">Appuie sur la case d\'un élément pour le sélectionner. La barre de titre affiche le nombre et permet de tout sélectionner.</string>
-    <string name="help_item_delete">La barre d\'actions en bas propose Partager, Exporter, Extraction de texte (OCR), Rendre consultable et Supprimer pour tous les éléments sélectionnés. L\'OCR et Rendre consultable ouvrent d\'abord un dialogue de sélection de langue.</string>
+    <string name="help_item_delete">La barre d\'actions en bas propose Partager, Exporter, Fusionner, Extraction de texte (OCR), Rendre cherchable et Supprimer pour toutes les entrées sélectionnées. Fusionner combine deux PDFs ou plus en un nouveau fichier. OCR et Rendre cherchable ouvrent d\'abord un dialogue de sélection de langue.</string>
+    <string name="help_item_pdf_edit">Appuyez sur le menu à trois points (⋮) d\'un PDF de plusieurs pages pour le diviser à des pages sélectionnées ou réorganiser ses pages par glisser-déposer.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Utilise le menu hamburger (en haut à gauche) pour accéder aux Archives, au Scanner, à l\'Aide et à l\'Info.</string>
     <string name="help_section_notes">Remarques</string>

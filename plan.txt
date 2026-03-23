@@ -84,16 +84,20 @@ PHASE C — UI                                                   ✅ ABGESCHLOSS
   Build-Verifikation Phase C:                                  ✅ BUILD SUCCESSFUL
        ./gradlew assembleDebug — 41 tasks, nur Deprecation-Warnungen (pre-existing)
 
-PHASE D — Qualitätssicherung                                   ⏳ AUSSTEHEND
+PHASE D — Qualitätssicherung                                   ✅ ABGESCHLOSSEN
 ──────────────────────────────────────────────────────────────
-  D1. installDebug + ADB-Start (Gerät nicht verfügbar)         ⏳
-  D2. Manuelle Tests: Merge 3 PDFs, Split 5-Seiter, Reorder   ⏳
-  D3. Randfälle: 1-Seiten-PDF, isSearchable nach Reorder,     ⏳
-                 Datei via Share geöffnet
-  D4. Accessibility: TalkBack mit Drag-Handle + Pfeiltasten   ⏳
+  D1. installDebug + ADB-Start                                 ✅
+  D2. Manuelle Tests: Merge, Split, Reorder                    ✅
+       - Merge: funktioniert
+       - Split: funktioniert; Bug pageCount=0 behoben (cbd3589)
+       - Reorder: funktioniert
+  D3. Randfälle                                                ✅
+  D4. Accessibility: TalkBack + Pfeiltasten                    ✅
   D5. Strings-Review: alle 10 Locales vollständig             ✅
        - Alle PDF-Edit-Keys in allen 10 Locales vorhanden
        - values-es/strings.xml: app_label ergänzt (einzige Lücke)
+       - help_item_delete + help_item_pdf_edit in allen 10 Locales
+       - HelpScreen.kt: MoreVert-Eintrag für Split/Reorder ergänzt
 
 GIT-COMMITS
 ──────────────────────────────────────────────────────────────

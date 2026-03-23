@@ -69,7 +69,8 @@
     <string name="help_section_archive">Manage Archive</string>
     <string name="help_item_open">Tap an entry in the list to open the PDF in an external viewer.</string>
     <string name="help_item_share">Tap the checkbox to select one or more entries. The title bar shows the count and lets you select all.</string>
-    <string name="help_item_delete">The action bar at the bottom offers Share, Export, Text Extraction (OCR), Make Searchable, and Delete for all selected entries. OCR and Make Searchable open a language selection dialog before processing.</string>
+    <string name="help_item_delete">The action bar at the bottom offers Share, Export, Merge, Text Extraction (OCR), Make Searchable, and Delete for all selected entries. Merge combines two or more PDFs into a new file. OCR and Make Searchable open a language selection dialog before processing.</string>
+    <string name="help_item_pdf_edit">Tap the three-dot menu (⋮) on any multi-page PDF to split it at selected pages or reorder its pages via drag &amp; drop.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Use the hamburger menu (top left) to access the Archive, Scanner, Help, and Info screens.</string>
     <string name="help_section_notes">Notes</string>

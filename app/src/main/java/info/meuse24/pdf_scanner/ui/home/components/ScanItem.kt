@@ -81,7 +81,10 @@ internal fun ScanItem(
     onExtractPages:   () -> Unit = {},
     onDuplicatePages: () -> Unit = {},
     onPageNumbers:    () -> Unit = {},
-    onTextWatermark:  () -> Unit = {}
+    onTextWatermark:  () -> Unit = {},
+    onCompressPdf:    () -> Unit = {},
+    onProtectPdf:     () -> Unit = {},
+    onUnlockPdf:      () -> Unit = {}
 ) {
     val context = LocalContext.current
     var menuExpanded by remember { mutableStateOf(false) }
@@ -241,6 +244,18 @@ internal fun ScanItem(
                         DropdownMenuItem(
                             text    = { Text(stringResource(R.string.action_text_watermark)) },
                             onClick = { menuExpanded = false; onTextWatermark() }
+                        )
+                        DropdownMenuItem(
+                            text    = { Text(stringResource(R.string.action_compress_pdf)) },
+                            onClick = { menuExpanded = false; onCompressPdf() }
+                        )
+                        DropdownMenuItem(
+                            text    = { Text(stringResource(R.string.action_protect_pdf)) },
+                            onClick = { menuExpanded = false; onProtectPdf() }
+                        )
+                        DropdownMenuItem(
+                            text    = { Text(stringResource(R.string.action_unlock_pdf)) },
+                            onClick = { menuExpanded = false; onUnlockPdf() }
                         )
                     }
                 }

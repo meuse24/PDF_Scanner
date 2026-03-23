@@ -13,19 +13,23 @@ import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.DeletePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.DuplicatePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ExtractPagesWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ReorderPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RotatePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
 import info.meuse24.pdf_scanner.domain.workflow.SplitPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.TextWatermarkWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
+import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -54,6 +58,9 @@ class HomeViewModel @Inject constructor(
     private val duplicatePagesWorkflow: DuplicatePagesWorkflow,
     private val pageNumbersWorkflow: PageNumbersWorkflow,
     private val textWatermarkWorkflow: TextWatermarkWorkflow,
+    private val compressPdfWorkflow: CompressPdfWorkflow,
+    private val protectPdfWorkflow: ProtectPdfWorkflow,
+    private val unlockPdfWorkflow: UnlockPdfWorkflow,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -381,6 +388,66 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun compressPdf(record: ScanRecord, preset: PdfCompressionPreset) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = compressPdfWorkflow(record, preset, scansDir)) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            R.string.compress_pdf_success,
+                            result.value.outputFilename
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun protectPdf(record: ScanRecord, password: String) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = protectPdfWorkflow(record, password, scansDir)) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            R.string.protect_pdf_success,
+                            result.value.outputFilename
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun unlockPdf(record: ScanRecord, password: String) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = unlockPdfWorkflow(record, password, scansDir)) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            R.string.unlock_pdf_success,
+                            result.value.outputFilename
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
     // ── Hilfsmethoden ─────────────────────────────────────────────────────────
 
     fun clearOcrText() { _ocrText.value = null }
@@ -401,6 +468,12 @@ class HomeViewModel @Inject constructor(
         ScanWorkflowError.InvalidPageSelection -> context.getString(R.string.page_selection_invalid)
         ScanWorkflowError.InvalidPageOrder -> context.getString(R.string.reorder_error)
         ScanWorkflowError.InvalidWatermarkText -> context.getString(R.string.watermark_invalid)
+        ScanWorkflowError.CompressionUnsupportedForSearchablePdf -> context.getString(R.string.compress_pdf_searchable_unsupported)
+        ScanWorkflowError.ProtectedPdfUnsupported -> context.getString(R.string.compress_pdf_protected_unsupported)
+        ScanWorkflowError.PasswordRequired -> context.getString(R.string.password_required)
+        ScanWorkflowError.WrongPassword -> context.getString(R.string.password_wrong)
+        ScanWorkflowError.AlreadyProtected -> context.getString(R.string.protect_pdf_already_protected)
+        ScanWorkflowError.NotProtected -> context.getString(R.string.unlock_pdf_not_protected)
         ScanWorkflowError.CannotDeleteAllPages -> context.getString(R.string.delete_pages_all_error)
         is ScanWorkflowError.MissingFiles -> context.getString(R.string.workflow_missing_files)
         is ScanWorkflowError.StorageWriteFailed -> context.getString(R.string.workflow_storage_failed)
@@ -414,5 +487,8 @@ class HomeViewModel @Inject constructor(
         is ScanWorkflowError.DuplicatePagesFailed -> context.getString(R.string.duplicate_pages_error)
         is ScanWorkflowError.PageNumbersFailed -> context.getString(R.string.page_numbers_error)
         is ScanWorkflowError.TextWatermarkFailed -> context.getString(R.string.watermark_error)
+        is ScanWorkflowError.CompressionFailed -> context.getString(R.string.compress_pdf_error)
+        is ScanWorkflowError.ProtectFailed -> context.getString(R.string.protect_pdf_error)
+        is ScanWorkflowError.UnlockFailed -> context.getString(R.string.unlock_pdf_error)
     }
 }

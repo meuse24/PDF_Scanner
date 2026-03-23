@@ -9,15 +9,22 @@ import com.tom_roush.pdfbox.multipdf.PDFMergerUtility
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
 import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
+import com.tom_roush.pdfbox.pdmodel.common.PDRectangle
+import com.tom_roush.pdfbox.pdmodel.encryption.AccessPermission
+import com.tom_roush.pdfbox.pdmodel.encryption.InvalidPasswordException
+import com.tom_roush.pdfbox.pdmodel.encryption.StandardProtectionPolicy
 import com.tom_roush.pdfbox.pdmodel.font.PDFont
 import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
 import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
+import com.tom_roush.pdfbox.pdmodel.graphics.image.JPEGFactory
 import com.tom_roush.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
 import com.tom_roush.pdfbox.util.Matrix
+import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -36,6 +43,8 @@ import javax.inject.Singleton
  */
 @Singleton
 open class PdfEditor @Inject constructor() {
+
+    class WrongPasswordException(cause: Throwable? = null) : IOException("Falsches Passwort", cause)
 
     /**
      * Führt mehrere PDFs zu [output] zusammen.
@@ -194,6 +203,99 @@ open class PdfEditor @Inject constructor() {
                 val page = watermarked.importPage(source.getPage(pageIdx))
                 appendTextWatermark(page, watermarked, font, watermarkText)
             }
+        }
+    }
+
+    open fun compressPdf(input: File, outputDir: File, preset: PdfCompressionPreset): File {
+        val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_Komprimiert")
+        val output = File(outputDir, "$baseName.pdf")
+        return writePdf("Compress", output) { target ->
+            PDDocument().use { compressed ->
+                ParcelFileDescriptor.open(input, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                    PdfRenderer(pfd).use { renderer ->
+                        repeat(renderer.pageCount) { pageIndex ->
+                            renderer.openPage(pageIndex).use { page ->
+                                val scale = preset.renderDpi / 72f
+                                val bitmapWidth = (page.width * scale).toInt().coerceAtLeast(1)
+                                val bitmapHeight = (page.height * scale).toInt().coerceAtLeast(1)
+                                val bitmap = Bitmap.createBitmap(
+                                    bitmapWidth,
+                                    bitmapHeight,
+                                    Bitmap.Config.ARGB_8888
+                                )
+                                try {
+                                    Canvas(bitmap).drawColor(Color.WHITE)
+                                    page.render(
+                                        bitmap,
+                                        null,
+                                        null,
+                                        PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY
+                                    )
+                                    val pdfPage = PDPage(PDRectangle(page.width.toFloat(), page.height.toFloat()))
+                                    compressed.addPage(pdfPage)
+                                    val image = JPEGFactory.createFromImage(compressed, bitmap, preset.jpegQuality)
+                                    PDPageContentStream(compressed, pdfPage).use { contentStream ->
+                                        contentStream.drawImage(
+                                            image,
+                                            0f,
+                                            0f,
+                                            pdfPage.mediaBox.width,
+                                            pdfPage.mediaBox.height
+                                        )
+                                    }
+                                } finally {
+                                    bitmap.recycle()
+                                }
+                            }
+                        }
+                    }
+                }
+                compressed.save(target)
+            }
+        }
+    }
+
+    open fun protectPdf(input: File, outputDir: File, password: String): File {
+        require(password.isNotBlank()) { "Passwort darf nicht leer sein" }
+        return writeDerivedPdf(input, outputDir, "_Geschuetzt", "Protect") { source, protectedDoc ->
+            repeat(source.numberOfPages) { pageIdx ->
+                val imported = protectedDoc.importPage(source.getPage(pageIdx))
+                imported.rotation = source.getPage(pageIdx).rotation
+            }
+            val permissions = AccessPermission.getOwnerAccessPermission()
+            val policy = StandardProtectionPolicy(
+                "${password.trim()}_${UUID.randomUUID()}",
+                password.trim(),
+                permissions
+            ).apply {
+                setEncryptionKeyLength(128)
+                setPreferAES(true)
+            }
+            protectedDoc.protect(policy)
+        }
+    }
+
+    open fun unlockPdf(input: File, outputDir: File, password: String): File {
+        require(password.isNotBlank()) { "Passwort darf nicht leer sein" }
+        val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_Entsperrt")
+        val output = File(outputDir, "$baseName.pdf")
+        return writePdf("Unlock", output) { target ->
+            try {
+                PDDocument.load(input, password.trim()).use { document ->
+                    document.setAllSecurityToBeRemoved(true)
+                    document.save(target)
+                }
+            } catch (e: InvalidPasswordException) {
+                throw WrongPasswordException(e)
+            }
+        }
+    }
+
+    open fun isPdfEncrypted(input: File): Boolean {
+        return try {
+            PDDocument.load(input).use { document -> document.isEncrypted }
+        } catch (_: InvalidPasswordException) {
+            true
         }
     }
 

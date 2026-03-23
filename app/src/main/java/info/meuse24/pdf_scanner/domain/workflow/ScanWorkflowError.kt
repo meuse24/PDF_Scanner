@@ -10,6 +10,12 @@ sealed interface ScanWorkflowError {
     data object InvalidPageSelection : ScanWorkflowError
     data object InvalidPageOrder : ScanWorkflowError
     data object InvalidWatermarkText : ScanWorkflowError
+    data object CompressionUnsupportedForSearchablePdf : ScanWorkflowError
+    data object ProtectedPdfUnsupported : ScanWorkflowError
+    data object PasswordRequired : ScanWorkflowError
+    data object WrongPassword : ScanWorkflowError
+    data object AlreadyProtected : ScanWorkflowError
+    data object NotProtected : ScanWorkflowError
     data object CannotDeleteAllPages : ScanWorkflowError
     data class MissingFiles(val filenames: List<String>) : ScanWorkflowError
     data class StorageWriteFailed(override val cause: Throwable) : ScanWorkflowError
@@ -23,4 +29,7 @@ sealed interface ScanWorkflowError {
     data class DuplicatePagesFailed(override val cause: Throwable) : ScanWorkflowError
     data class PageNumbersFailed(override val cause: Throwable) : ScanWorkflowError
     data class TextWatermarkFailed(override val cause: Throwable) : ScanWorkflowError
+    data class CompressionFailed(override val cause: Throwable) : ScanWorkflowError
+    data class ProtectFailed(override val cause: Throwable) : ScanWorkflowError
+    data class UnlockFailed(override val cause: Throwable) : ScanWorkflowError
 }

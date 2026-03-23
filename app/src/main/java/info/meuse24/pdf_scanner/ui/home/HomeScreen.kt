@@ -96,6 +96,9 @@ fun HomeScreen(
     onNavigateToDuplicatePages: (Long) -> Unit = {},
     onNavigateToPageNumbers: (Long) -> Unit = {},
     onNavigateToTextWatermark: (Long) -> Unit = {},
+    onNavigateToCompressPdf: (Long) -> Unit = {},
+    onNavigateToProtectPdf: (Long) -> Unit = {},
+    onNavigateToUnlockPdf: (Long) -> Unit = {},
     viewModel:             HomeViewModel = hiltViewModel()
 ) {
     val scans        by viewModel.scans.collectAsState()
@@ -276,7 +279,10 @@ fun HomeScreen(
                             onExtractPages   = { onNavigateToExtractPages(record.id) },
                             onDuplicatePages = { onNavigateToDuplicatePages(record.id) },
                             onPageNumbers    = { onNavigateToPageNumbers(record.id) },
-                            onTextWatermark  = { onNavigateToTextWatermark(record.id) }
+                            onTextWatermark  = { onNavigateToTextWatermark(record.id) },
+                            onCompressPdf    = { onNavigateToCompressPdf(record.id) },
+                            onProtectPdf     = { onNavigateToProtectPdf(record.id) },
+                            onUnlockPdf      = { onNavigateToUnlockPdf(record.id) }
                         )
                     }
                 }

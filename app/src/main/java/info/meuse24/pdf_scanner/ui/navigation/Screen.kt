@@ -29,4 +29,13 @@ sealed class Screen(val route: String) {
     data object TextWatermark : Screen("text-watermark/{scanId}") {
         fun createRoute(scanId: Long) = "text-watermark/$scanId"
     }
+    data object CompressPdf : Screen("compress-pdf/{scanId}") {
+        fun createRoute(scanId: Long) = "compress-pdf/$scanId"
+    }
+    data object ProtectPdf : Screen("protect-pdf/{scanId}") {
+        fun createRoute(scanId: Long) = "protect-pdf/$scanId"
+    }
+    data object UnlockPdf : Screen("unlock-pdf/{scanId}") {
+        fun createRoute(scanId: Long) = "unlock-pdf/$scanId"
+    }
 }

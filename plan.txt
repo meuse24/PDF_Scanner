@@ -1,6 +1,103 @@
 ================================================================================
 IMPLEMENTIERUNGSPLAN: PDF-Bearbeitungsfunktionen (Merge, Split, Reorder)
 Stand: 2026-03-23 (Rev. 2 — nach Review)
+Fortschritt zuletzt aktualisiert: 2026-03-23
+================================================================================
+
+================================================================================
+FORTSCHRITT
+================================================================================
+
+PHASE A — Kern (PdfEditor, DB)                                 ✅ ABGESCHLOSSEN
+──────────────────────────────────────────────────────────────
+  A1. PdfEditor.kt                                             ✅ git: c5a6279
+       - mergePdfs, splitPdf, reorderPages, generateThumbnail,
+         renderPageThumbnail implementiert
+       - Intern: buildRanges(), resolveUniqueFilename() (top-level, JVM-testbar)
+       - ATOMIC_MOVE-Pattern für alle Schreiboperationen
+
+  A2. Unit-Tests: PdfEditorTest.kt (13 Tests)                  ✅ git: c5a6279
+       - buildRanges: 5 Tests (single/double split, total count)
+       - resolveUniqueFilename: 4 Tests (_2/_3/_4-Zähler)
+       - Alle Tests grün (./gradlew testDebugUnitTest)
+
+  A3. ScanDao.kt: insertAll() + updateFileSize()               ✅ git: c5a6279
+  A4. ScanRepository.kt: saveScans() + updateFileSize()        ✅ git: c5a6279
+  A5. di/DatabaseModule.kt: PdfEditor @Singleton               ✅ (via @Inject constructor)
+
+PHASE B — ViewModel                                            ✅ ABGESCHLOSSEN
+──────────────────────────────────────────────────────────────
+  B1. HomeViewModel: _editLoading + _editProgress StateFlows   ✅ git: c5a6279
+  B2. HomeViewModel: mergePdfs()                               ✅ git: c5a6279
+  B3. HomeViewModel: splitPdf()                                ✅ git: c5a6279
+  B4. HomeViewModel: reorderPages()                            ✅ git: c5a6279
+  B5. SplitViewModel.kt                                        ✅ git: c5a6279
+       - PageThumb, toggleSplitPoint, computePreview, getSplitPoints
+       - Thumbnails inkrementell auf Dispatchers.IO
+  B6. ReorderViewModel.kt                                      ✅ git: c5a6279
+       - ReorderPage, movePage, movePageUp, movePageDown, getCurrentOrder
+       - onCleared() recycelt Bitmaps
+
+PHASE C — UI                                                   ✅ ABGESCHLOSSEN
+──────────────────────────────────────────────────────────────
+  C1. String-Ressourcen (10 Locales)                           ✅ git: c5a6279 + 636b912
+       - Merge: cd_merge, merge_dialog_*, merge_success/error, merge_filename_default
+       - Split: split_screen_title, split_preview, split_confirm, split_success/error,
+                split_no_points, action_split, cd_split_point_*, split_page_label
+       - Reorder: reorder_screen_title, reorder_apply, reorder_success/error,
+                  action_reorder, reorder_save_as_copy, reorder_overwrite_hint,
+                  cd_drag_handle, cd_page_up, cd_page_down
+       - Gemeinsam: edit_loading, edit_error_file_locked
+
+  C2. BulkActionBar: CallMerge-Button + MergeDialog            ✅ git: 636b912
+       - 6 Buttons in Row (SpaceEvenly)
+       - MergeDialog: Dateiname vorausgefüllt „Merged_ddMMyyyy",
+         nummerierte Dateiliste, Bestätigen/Abbrechen
+
+  C3. ScanItem: MoreVert-Menü                                  ✅ git: 636b912
+       - Split + Reorder als Menüeinträge (nur pageCount ≥ 2)
+       - Ausgeblendet im Auswahlmodus (inSelectionMode)
+
+  C4. SplitScreen.kt                                           ✅ git: 636b912
+       - LazyColumn: Seitenthumbnails + tippbare Scherensymbol-Trennlinien
+       - Preview-Text mit Teilanzahl + Bereichsdarstellung
+       - Bestätigen-Button unten
+
+  C5. ReorderScreen.kt                                         ✅ git: 636b912
+       - sh.calvin.reorderable 2.4.3: Drag & Drop
+       - Up/Down-Pfeiltasten als Accessibility-Fallback
+       - Switch „Als Kopie speichern" (Standard: aus)
+
+  C6. Screen.kt + AppNavigation.kt                             ✅ git: 636b912
+       - Split/Reorder als sealed class-Einträge mit createRoute(scanId)
+       - Neue composable-Routen im NavHost
+       - TopAppBar-Titel für Split/Reorder-Screens
+
+  C7. EditLoading-Overlay in HomeScreen                        ✅ git: 636b912
+       - Analog zum OCR-Loading-Dialog (AlertDialog + ScannerLoadingAnimation)
+       - Reagiert auf editLoading + editProgress StateFlows
+
+  C8. reorderable-Dependency                                   ✅ git: 636b912
+       - libs.versions.toml: reorderable = "2.4.3"
+       - build.gradle.kts: implementation(libs.reorderable)
+
+  Build-Verifikation Phase C:                                  ✅ BUILD SUCCESSFUL
+       ./gradlew assembleDebug — 41 tasks, nur Deprecation-Warnungen (pre-existing)
+
+PHASE D — Qualitätssicherung                                   ⏳ AUSSTEHEND
+──────────────────────────────────────────────────────────────
+  D1. installDebug + ADB-Start (Gerät nicht verfügbar)         ⏳
+  D2. Manuelle Tests: Merge 3 PDFs, Split 5-Seiter, Reorder   ⏳
+  D3. Randfälle: 1-Seiten-PDF, isSearchable nach Reorder,     ⏳
+                 Datei via Share geöffnet
+  D4. Accessibility: TalkBack mit Drag-Handle + Pfeiltasten   ⏳
+  D5. Strings-Review: alle 10 Locales vollständig             ⏳
+
+GIT-COMMITS
+──────────────────────────────────────────────────────────────
+  fa15753  feat: Phase A+B — PdfEditor, ViewModels, DB, Strings (Phase A+B)
+  636b912  feat: Phase C — PDF-Edit-UI (Merge, Split, Reorder)
+
 ================================================================================
 
 ZIEL

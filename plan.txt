@@ -91,7 +91,9 @@ PHASE D — Qualitätssicherung                                   ⏳ AUSSTEHEND
   D3. Randfälle: 1-Seiten-PDF, isSearchable nach Reorder,     ⏳
                  Datei via Share geöffnet
   D4. Accessibility: TalkBack mit Drag-Handle + Pfeiltasten   ⏳
-  D5. Strings-Review: alle 10 Locales vollständig             ⏳
+  D5. Strings-Review: alle 10 Locales vollständig             ✅
+       - Alle PDF-Edit-Keys in allen 10 Locales vorhanden
+       - values-es/strings.xml: app_label ergänzt (einzige Lücke)
 
 GIT-COMMITS
 ──────────────────────────────────────────────────────────────

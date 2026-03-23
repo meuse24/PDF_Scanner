@@ -21,7 +21,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.ContentCut
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.SwapVert
@@ -72,7 +75,11 @@ internal fun ScanItem(
     onClick:          () -> Unit,
     onCheckboxToggle: () -> Unit,
     onSplit:          () -> Unit = {},
-    onReorder:        () -> Unit = {}
+    onReorder:        () -> Unit = {},
+    onRotate:         () -> Unit = {},
+    onDeletePages:    () -> Unit = {},
+    onExtractPages:   () -> Unit = {},
+    onDuplicatePages: () -> Unit = {}
 ) {
     val context = LocalContext.current
     var menuExpanded by remember { mutableStateOf(false) }
@@ -182,8 +189,7 @@ internal fun ScanItem(
                 }
             }
 
-            // MoreVert-Menü nur außerhalb des Auswahlmodus, bei mehrseitigen PDFs
-            if (!inSelectionMode && record.pageCount >= 2) {
+            if (!inSelectionMode && record.pageCount >= 1) {
                 Box {
                     IconButton(onClick = { menuExpanded = true }) {
                         Icon(Icons.Default.MoreVert, contentDescription = null)
@@ -193,14 +199,38 @@ internal fun ScanItem(
                         onDismissRequest = { menuExpanded = false }
                     ) {
                         DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_rotate)) },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.RotateRight, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onRotate() }
+                        )
+                        DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_split)) },
                             leadingIcon = { Icon(Icons.Default.ContentCut, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onSplit() }
+                            onClick     = { menuExpanded = false; onSplit() },
+                            enabled     = record.pageCount >= 2
                         )
                         DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_reorder)) },
                             leadingIcon = { Icon(Icons.Default.SwapVert, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onReorder() }
+                            onClick     = { menuExpanded = false; onReorder() },
+                            enabled     = record.pageCount >= 2
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_delete_pages)) },
+                            leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onDeletePages() },
+                            enabled     = record.pageCount >= 2
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_extract_pages)) },
+                            leadingIcon = { Icon(Icons.Default.PictureAsPdf, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onExtractPages() },
+                            enabled     = record.pageCount >= 2
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_duplicate_pages)) },
+                            leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onDuplicatePages() }
                         )
                     }
                 }

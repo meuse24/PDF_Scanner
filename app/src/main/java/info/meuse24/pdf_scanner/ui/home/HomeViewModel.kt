@@ -12,7 +12,11 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.DeletePagesWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.DuplicatePagesWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.ExtractPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ReorderPagesWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.RotatePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
 import info.meuse24.pdf_scanner.domain.workflow.SplitPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
@@ -42,6 +46,10 @@ class HomeViewModel @Inject constructor(
     private val mergePdfsWorkflow:   MergePdfsWorkflow,
     private val splitPdfWorkflow:    SplitPdfWorkflow,
     private val reorderPagesWorkflow: ReorderPagesWorkflow,
+    private val rotatePagesWorkflow: RotatePagesWorkflow,
+    private val deletePagesWorkflow: DeletePagesWorkflow,
+    private val extractPagesWorkflow: ExtractPagesWorkflow,
+    private val duplicatePagesWorkflow: DuplicatePagesWorkflow,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -234,6 +242,101 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun rotatePages(
+        record: ScanRecord,
+        pageIndexes: List<Int>,
+        rotationDegrees: Int,
+        saveAsCopy: Boolean
+    ) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (
+                    val result = rotatePagesWorkflow(
+                        record = record,
+                        pageIndexes = pageIndexes,
+                        rotationDegrees = rotationDegrees,
+                        saveAsCopy = saveAsCopy,
+                        scansDir = scansDir
+                    )
+                ) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            if (saveAsCopy) R.string.rotate_success_copy else R.string.rotate_success
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun deletePages(record: ScanRecord, pageIndexes: List<Int>, saveAsCopy: Boolean) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = deletePagesWorkflow(record, pageIndexes, saveAsCopy, scansDir)) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            if (saveAsCopy) {
+                                R.string.delete_pages_success_copy
+                            } else {
+                                R.string.delete_pages_success
+                            }
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun extractPages(record: ScanRecord, pageIndexes: List<Int>) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = extractPagesWorkflow(record, pageIndexes, scansDir)) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            R.string.extract_pages_success,
+                            result.value.outputFilename
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun duplicatePages(record: ScanRecord, pageIndexes: List<Int>) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = duplicatePagesWorkflow(record, pageIndexes, scansDir)) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            R.string.duplicate_pages_success,
+                            result.value.outputFilename
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
     // ── Hilfsmethoden ─────────────────────────────────────────────────────────
 
     fun clearOcrText() { _ocrText.value = null }
@@ -251,12 +354,18 @@ class HomeViewModel @Inject constructor(
         ScanWorkflowError.NotEnoughScans -> context.getString(R.string.merge_not_enough_scans)
         ScanWorkflowError.NoEligibleScans -> context.getString(R.string.searchable_nothing_to_do)
         ScanWorkflowError.InvalidSplitSelection -> context.getString(R.string.split_no_points)
+        ScanWorkflowError.InvalidPageSelection -> context.getString(R.string.page_selection_invalid)
         ScanWorkflowError.InvalidPageOrder -> context.getString(R.string.reorder_error)
+        ScanWorkflowError.CannotDeleteAllPages -> context.getString(R.string.delete_pages_all_error)
         is ScanWorkflowError.MissingFiles -> context.getString(R.string.workflow_missing_files)
         is ScanWorkflowError.StorageWriteFailed -> context.getString(R.string.workflow_storage_failed)
         is ScanWorkflowError.OcrFailed -> context.getString(R.string.searchable_failed)
         is ScanWorkflowError.MergeFailed -> context.getString(R.string.merge_error)
         is ScanWorkflowError.SplitFailed -> context.getString(R.string.split_error)
         is ScanWorkflowError.ReorderFailed -> context.getString(R.string.reorder_error)
+        is ScanWorkflowError.RotateFailed -> context.getString(R.string.rotate_error)
+        is ScanWorkflowError.DeletePagesFailed -> context.getString(R.string.delete_pages_error)
+        is ScanWorkflowError.ExtractPagesFailed -> context.getString(R.string.extract_pages_error)
+        is ScanWorkflowError.DuplicatePagesFailed -> context.getString(R.string.duplicate_pages_error)
     }
 }

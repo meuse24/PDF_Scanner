@@ -54,6 +54,10 @@ import androidx.navigation.navArgument
 import info.meuse24.pdf_scanner.ui.help.HelpScreen
 import info.meuse24.pdf_scanner.ui.home.HomeScreen
 import info.meuse24.pdf_scanner.ui.info.InfoScreen
+import info.meuse24.pdf_scanner.ui.pageedit.DeletePagesScreen
+import info.meuse24.pdf_scanner.ui.pageedit.DuplicatePagesScreen
+import info.meuse24.pdf_scanner.ui.pageedit.ExtractPagesScreen
+import info.meuse24.pdf_scanner.ui.pageedit.RotatePagesScreen
 import info.meuse24.pdf_scanner.ui.privacy.PrivacyScreen
 import info.meuse24.pdf_scanner.ui.reorder.ReorderScreen
 import info.meuse24.pdf_scanner.ui.split.SplitScreen
@@ -166,6 +170,10 @@ fun AppNavigation() {
                                 currentRoute == Screen.Privacy.route -> stringResource(R.string.nav_privacy)
                                 currentRoute?.startsWith("split/") == true   -> stringResource(R.string.split_screen_title)
                                 currentRoute?.startsWith("reorder/") == true -> stringResource(R.string.reorder_screen_title)
+                                currentRoute?.startsWith("rotate-pages/") == true -> stringResource(R.string.rotate_screen_title)
+                                currentRoute?.startsWith("delete-pages/") == true -> stringResource(R.string.delete_pages_screen_title)
+                                currentRoute?.startsWith("extract-pages/") == true -> stringResource(R.string.extract_pages_screen_title)
+                                currentRoute?.startsWith("duplicate-pages/") == true -> stringResource(R.string.duplicate_pages_screen_title)
                                 else                                 -> stringResource(R.string.app_name)
                             }
                         )
@@ -223,7 +231,11 @@ fun AppNavigation() {
                         onScanTriggered       = { scanTrigger = false },
                         onSelectionModeChange = { isSelectionMode = it },
                         onNavigateToSplit     = { scanId -> navController.navigate(Screen.Split.createRoute(scanId)) },
-                        onNavigateToReorder   = { scanId -> navController.navigate(Screen.Reorder.createRoute(scanId)) }
+                        onNavigateToReorder   = { scanId -> navController.navigate(Screen.Reorder.createRoute(scanId)) },
+                        onNavigateToRotate    = { scanId -> navController.navigate(Screen.RotatePages.createRoute(scanId)) },
+                        onNavigateToDeletePages = { scanId -> navController.navigate(Screen.DeletePages.createRoute(scanId)) },
+                        onNavigateToExtractPages = { scanId -> navController.navigate(Screen.ExtractPages.createRoute(scanId)) },
+                        onNavigateToDuplicatePages = { scanId -> navController.navigate(Screen.DuplicatePages.createRoute(scanId)) }
                     )
                 }
                 composable(Screen.Help.route)    { HelpScreen() }
@@ -240,6 +252,30 @@ fun AppNavigation() {
                     arguments = listOf(navArgument("scanId") { type = NavType.LongType })
                 ) {
                     ReorderScreen(onNavigateBack = { navController.navigateUp() })
+                }
+                composable(
+                    route = Screen.RotatePages.route,
+                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                ) {
+                    RotatePagesScreen(onNavigateBack = { navController.navigateUp() })
+                }
+                composable(
+                    route = Screen.DeletePages.route,
+                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                ) {
+                    DeletePagesScreen(onNavigateBack = { navController.navigateUp() })
+                }
+                composable(
+                    route = Screen.ExtractPages.route,
+                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                ) {
+                    ExtractPagesScreen(onNavigateBack = { navController.navigateUp() })
+                }
+                composable(
+                    route = Screen.DuplicatePages.route,
+                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                ) {
+                    DuplicatePagesScreen(onNavigateBack = { navController.navigateUp() })
                 }
             }
             } // Box

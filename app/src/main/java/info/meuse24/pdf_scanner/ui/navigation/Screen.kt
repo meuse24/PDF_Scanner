@@ -11,4 +11,16 @@ sealed class Screen(val route: String) {
     data object Reorder : Screen("reorder/{scanId}") {
         fun createRoute(scanId: Long) = "reorder/$scanId"
     }
+    data object RotatePages : Screen("rotate-pages/{scanId}") {
+        fun createRoute(scanId: Long) = "rotate-pages/$scanId"
+    }
+    data object DeletePages : Screen("delete-pages/{scanId}") {
+        fun createRoute(scanId: Long) = "delete-pages/$scanId"
+    }
+    data object ExtractPages : Screen("extract-pages/{scanId}") {
+        fun createRoute(scanId: Long) = "extract-pages/$scanId"
+    }
+    data object DuplicatePages : Screen("duplicate-pages/{scanId}") {
+        fun createRoute(scanId: Long) = "duplicate-pages/$scanId"
+    }
 }

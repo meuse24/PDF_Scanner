@@ -90,6 +90,10 @@ fun HomeScreen(
     onSelectionModeChange: (Boolean) -> Unit = {},
     onNavigateToSplit:     (Long) -> Unit = {},
     onNavigateToReorder:   (Long) -> Unit = {},
+    onNavigateToRotate:    (Long) -> Unit = {},
+    onNavigateToDeletePages: (Long) -> Unit = {},
+    onNavigateToExtractPages: (Long) -> Unit = {},
+    onNavigateToDuplicatePages: (Long) -> Unit = {},
     viewModel:             HomeViewModel = hiltViewModel()
 ) {
     val scans        by viewModel.scans.collectAsState()
@@ -264,7 +268,11 @@ fun HomeScreen(
                             },
                             onCheckboxToggle = toggleSelect,
                             onSplit          = { onNavigateToSplit(record.id) },
-                            onReorder        = { onNavigateToReorder(record.id) }
+                            onReorder        = { onNavigateToReorder(record.id) },
+                            onRotate         = { onNavigateToRotate(record.id) },
+                            onDeletePages    = { onNavigateToDeletePages(record.id) },
+                            onExtractPages   = { onNavigateToExtractPages(record.id) },
+                            onDuplicatePages = { onNavigateToDuplicatePages(record.id) }
                         )
                     }
                 }

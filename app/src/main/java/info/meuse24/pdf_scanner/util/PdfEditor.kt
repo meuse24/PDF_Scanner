@@ -100,35 +100,69 @@ open class PdfEditor @Inject constructor() {
      */
     open fun reorderPages(input: File, newOrder: List<Int>, saveAsCopy: Boolean): File {
         require(newOrder.isNotEmpty()) { "Seitenreihenfolge darf nicht leer sein" }
-        val parentDir = input.parentFile
-            ?: input.absoluteFile.parentFile
-            ?: throw IOException("Kann übergeordnetes Verzeichnis nicht ermitteln")
-        val output = if (saveAsCopy) {
-            val name = resolveUniqueFilename(parentDir, "${input.nameWithoutExtension}_Sortiert")
-            File(parentDir, "$name.pdf")
-        } else {
-            input
+        return editPdf(input, saveAsCopy, "_Sortiert", "Reorder") { source, reordered ->
+            newOrder.forEach { pageIdx -> reordered.importPage(source.getPage(pageIdx)) }
         }
-        val temp = File(parentDir, "${output.nameWithoutExtension}_tmp.pdf")
-        try {
-            PDDocument.load(input).use { source ->
-                PDDocument().use { reordered ->
-                    newOrder.forEach { pageIdx -> reordered.addPage(source.getPage(pageIdx)) }
-                    reordered.save(temp)
+    }
+
+    open fun rotatePages(
+        input: File,
+        pageIndexes: List<Int>,
+        rotationDegrees: Int,
+        saveAsCopy: Boolean
+    ): File {
+        require(pageIndexes.isNotEmpty()) { "Mindestens eine Seite zum Drehen erforderlich" }
+        require(rotationDegrees % 90 == 0) { "Rotation muss ein Vielfaches von 90 sein" }
+        return editPdf(input, saveAsCopy, "_Gedreht", "Rotate") { source, rotated ->
+            val selected = normalizePageIndexes(source.numberOfPages, pageIndexes).toSet()
+            repeat(source.numberOfPages) { pageIdx ->
+                val imported = rotated.importPage(source.getPage(pageIdx))
+                if (pageIdx in selected) {
+                    imported.rotation = normalizeRotation(imported.rotation + rotationDegrees)
                 }
             }
-            if (!temp.exists() || temp.length() == 0L) {
-                throw IOException("Reorder erzeugte keine Ausgabedatei")
-            }
-            Files.move(
-                temp.toPath(), output.toPath(),
-                StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING
-            )
-        } catch (e: Exception) {
-            temp.delete()
-            throw if (e is IOException) e else IOException("Fehler beim Neu-Anordnen: ${e.message}", e)
         }
-        return output
+    }
+
+    open fun deletePages(
+        input: File,
+        pageIndexes: List<Int>,
+        saveAsCopy: Boolean
+    ): File {
+        require(pageIndexes.isNotEmpty()) { "Mindestens eine Seite zum Löschen erforderlich" }
+        return editPdf(input, saveAsCopy, "_Gekürzt", "Delete") { source, trimmed ->
+            val selected = normalizePageIndexes(source.numberOfPages, pageIndexes).toSet()
+            repeat(source.numberOfPages) { pageIdx ->
+                if (pageIdx !in selected) {
+                    trimmed.importPage(source.getPage(pageIdx))
+                }
+            }
+            if (trimmed.numberOfPages == 0) {
+                throw IOException("Delete würde alle Seiten entfernen")
+            }
+        }
+    }
+
+    open fun extractPages(input: File, outputDir: File, pageIndexes: List<Int>): File {
+        require(pageIndexes.isNotEmpty()) { "Mindestens eine Seite zum Extrahieren erforderlich" }
+        return writeDerivedPdf(input, outputDir, "_Extrahiert", "Extract") { source, extracted ->
+            normalizePageIndexes(source.numberOfPages, pageIndexes).forEach { pageIdx ->
+                extracted.importPage(source.getPage(pageIdx))
+            }
+        }
+    }
+
+    open fun duplicatePages(input: File, outputDir: File, pageIndexes: List<Int>): File {
+        require(pageIndexes.isNotEmpty()) { "Mindestens eine Seite zum Duplizieren erforderlich" }
+        return writeDerivedPdf(input, outputDir, "_Dupliziert", "Duplicate") { source, duplicated ->
+            val selected = normalizePageIndexes(source.numberOfPages, pageIndexes).toSet()
+            repeat(source.numberOfPages) { pageIdx ->
+                duplicated.importPage(source.getPage(pageIdx))
+                if (pageIdx in selected) {
+                    duplicated.importPage(source.getPage(pageIdx))
+                }
+            }
+        }
     }
 
     /**
@@ -216,6 +250,96 @@ internal fun normalizeSplitPoints(pageCount: Int, splitPoints: List<Int>): List<
         .filter { it in 0 until (pageCount - 1) }
         .sorted()
         .distinct()
+}
+
+internal fun normalizePageIndexes(pageCount: Int, pageIndexes: List<Int>): List<Int> {
+    return pageIndexes
+        .filter { it in 0 until pageCount }
+        .sorted()
+        .distinct()
+}
+
+private inline fun PdfEditor.editPdf(
+    input: File,
+    saveAsCopy: Boolean,
+    outputSuffix: String,
+    operation: String,
+    edit: (PDDocument, PDDocument) -> Unit
+): File {
+    val parentDir = input.parentFile
+        ?: input.absoluteFile.parentFile
+        ?: throw IOException("Kann übergeordnetes Verzeichnis nicht ermitteln")
+    val output = if (saveAsCopy) {
+        val name = resolveUniqueFilename(parentDir, "${input.nameWithoutExtension}$outputSuffix")
+        File(parentDir, "$name.pdf")
+    } else {
+        input
+    }
+    return writePdf(operation, output) {
+        PDDocument.load(input).use { source ->
+            PDDocument().use { edited ->
+                edit(source, edited)
+                if (edited.numberOfPages == 0) {
+                    throw IOException("$operation erzeugte keine Seiten")
+                }
+                edited.save(it)
+            }
+        }
+    }
+}
+
+private inline fun PdfEditor.writeDerivedPdf(
+    input: File,
+    outputDir: File,
+    outputSuffix: String,
+    operation: String,
+    edit: (PDDocument, PDDocument) -> Unit
+): File {
+    val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}$outputSuffix")
+    val output = File(outputDir, "$baseName.pdf")
+    return writePdf(operation, output) {
+        PDDocument.load(input).use { source ->
+            PDDocument().use { edited ->
+                edit(source, edited)
+                if (edited.numberOfPages == 0) {
+                    throw IOException("$operation erzeugte keine Seiten")
+                }
+                edited.save(it)
+            }
+        }
+    }
+}
+
+private inline fun PdfEditor.writePdf(
+    operation: String,
+    output: File,
+    write: (File) -> Unit
+): File {
+    val parentDir = output.parentFile
+        ?: output.absoluteFile.parentFile
+        ?: throw IOException("Kann übergeordnetes Verzeichnis nicht ermitteln")
+    val temp = File(parentDir, "${output.nameWithoutExtension}_tmp.pdf")
+    try {
+        write(temp)
+        if (!temp.exists() || temp.length() == 0L) {
+            throw IOException("$operation erzeugte keine Ausgabedatei")
+        }
+        Files.move(
+            temp.toPath(),
+            output.toPath(),
+            StandardCopyOption.ATOMIC_MOVE,
+            StandardCopyOption.REPLACE_EXISTING
+        )
+    } catch (e: Exception) {
+        temp.delete()
+        throw if (e is IOException) e else IOException("Fehler bei $operation: ${e.message}", e)
+    }
+    return output
+}
+
+private fun normalizeRotation(rotation: Int): Int {
+    val normalized = rotation % 360
+    return if (normalized < 0) normalized + 360 else normalized
 }
 
 /**

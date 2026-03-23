@@ -20,7 +20,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.automirrored.filled.ManageSearch
+import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
@@ -71,15 +73,20 @@ fun HelpScreen() {
                 HelpStep(Icons.Default.PictureAsPdf, "·", stringResource(R.string.help_item_open))
                 HelpStep(Icons.Default.CheckBox, "·", stringResource(R.string.help_item_select))
                 HelpStep(Icons.Default.Share, "·", stringResource(R.string.help_item_share_export))
+                HelpStep(Icons.Default.Delete, "·", stringResource(R.string.help_item_delete))
                 HelpStep(Icons.Default.FolderOpen, "·", stringResource(R.string.help_note2))
             }
         }
         item {
             SectionCard(Icons.Default.PictureAsPdf, stringResource(R.string.help_section_pdf_edit)) {
                 HelpStep(Icons.AutoMirrored.Filled.CallMerge, "·", stringResource(R.string.help_item_merge))
+                HelpStep(Icons.AutoMirrored.Filled.RotateRight, "·", stringResource(R.string.help_item_rotate))
                 HelpStep(Icons.Default.ContentCut, "·", stringResource(R.string.help_item_split))
                 HelpStep(Icons.Default.SwapVert, "·", stringResource(R.string.help_item_reorder))
-                HelpStep(Icons.Default.Delete, "·", stringResource(R.string.help_item_delete))
+                HelpStep(Icons.Default.Delete, "·", stringResource(R.string.help_item_delete_pages))
+                HelpStep(Icons.Default.PictureAsPdf, "·", stringResource(R.string.help_item_extract_pages))
+                HelpStep(Icons.Default.ContentCopy, "·", stringResource(R.string.help_item_duplicate_pages))
+                HelpStep(Icons.Default.Save, "·", stringResource(R.string.help_item_edit_copy))
             }
         }
         item {

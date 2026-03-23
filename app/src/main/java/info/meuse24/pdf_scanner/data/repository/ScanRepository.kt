@@ -14,4 +14,6 @@ class ScanRepository @Inject constructor(private val dao: ScanDao) {
     suspend fun deleteScan(record: ScanRecord) = dao.delete(record)
     suspend fun markSearchable(id: Long, fileSize: Long) = dao.markSearchable(id, fileSize)
     suspend fun updateFileSize(id: Long, fileSize: Long) = dao.updateFileSize(id, fileSize)
+    suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) =
+        dao.updatePageMetrics(id, pageCount, fileSize)
 }

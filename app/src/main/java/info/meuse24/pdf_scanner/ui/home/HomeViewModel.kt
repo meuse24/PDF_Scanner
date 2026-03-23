@@ -450,7 +450,7 @@ class HomeViewModel @Inject constructor(
                         filename      = baseName,
                         filepath      = partFile.absolutePath,
                         timestamp     = System.currentTimeMillis(),
-                        pageCount     = 0,  // PdfRenderer-Seitenanzahl erst beim Öffnen bekannt
+                        pageCount     = pdfEditor.getPageCount(partFile),
                         fileSize      = partFile.length(),
                         thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath
                     )

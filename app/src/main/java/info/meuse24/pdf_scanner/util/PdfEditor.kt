@@ -132,6 +132,18 @@ class PdfEditor @Inject constructor() {
     }
 
     /**
+     * Gibt die Seitenanzahl von [pdfFile] zurück, 0 bei Fehler.
+     * Muss auf Dispatchers.IO aufgerufen werden.
+     */
+    fun getPageCount(pdfFile: File): Int {
+        return try {
+            ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                PdfRenderer(pfd).use { it.pageCount }
+            }
+        } catch (_: Exception) { 0 }
+    }
+
+    /**
      * Rendert Seite 0 von [pdfFile] als JPEG-Thumbnail in [outputFile].
      * Gibt true zurück bei Erfolg. Muss auf Dispatchers.IO aufgerufen werden.
      */

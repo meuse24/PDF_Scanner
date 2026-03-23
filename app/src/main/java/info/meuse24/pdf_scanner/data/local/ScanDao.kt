@@ -15,9 +15,15 @@ interface ScanDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(record: ScanRecord)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(records: List<ScanRecord>)
+
     @Delete
     suspend fun delete(record: ScanRecord)
 
     @Query("UPDATE scan_records SET is_searchable = 1, fileSize = :fileSize WHERE id = :id")
     suspend fun markSearchable(id: Long, fileSize: Long)
+
+    @Query("UPDATE scan_records SET fileSize = :fileSize WHERE id = :id")
+    suspend fun updateFileSize(id: Long, fileSize: Long)
 }

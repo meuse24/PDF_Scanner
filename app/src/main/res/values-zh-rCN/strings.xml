@@ -113,4 +113,38 @@
     <string name="searchable_success_multi">%1$d 个 PDF 现在可搜索</string>
     <string name="searchable_failed">无法创建可搜索 PDF</string>
     <string name="searchable_badge">可搜索</string>
+
+    <!-- Merge -->
+    <string name="cd_merge">合并PDF</string>
+    <string name="merge_dialog_title">合并PDF</string>
+    <string name="merge_dialog_filename_label">新PDF的文件名</string>
+    <string name="merge_dialog_order_hint">顺序与列表顺序一致</string>
+    <string name="merge_dialog_confirm">合并</string>
+    <string name="merge_success">PDF已合并：%1$s</string>
+    <string name="merge_error">合并PDF时出错</string>
+    <string name="merge_filename_default">已合并_%1$s</string>
+    <!-- Split -->
+    <string name="split_screen_title">分割PDF</string>
+    <string name="split_preview">创建%1$d个部分：%2$s</string>
+    <string name="split_confirm">分割</string>
+    <string name="split_success">PDF已分割为%1$d个部分</string>
+    <string name="split_error">分割PDF时出错</string>
+    <string name="split_no_points">请至少选择一个分割点</string>
+    <string name="action_split">分割页面</string>
+    <string name="cd_split_point_active">删除第%1$d页后的分割点</string>
+    <string name="cd_split_point_inactive">在第%1$d页后添加分割点</string>
+    <!-- Reorder -->
+    <string name="reorder_screen_title">重新排列页面</string>
+    <string name="reorder_apply">应用</string>
+    <string name="reorder_success">页面顺序已保存</string>
+    <string name="reorder_error">重新排列时出错</string>
+    <string name="action_reorder">重新排列页面</string>
+    <string name="reorder_save_as_copy">另存为副本</string>
+    <string name="reorder_overwrite_hint">原文件将被替换</string>
+    <string name="cd_drag_handle">移动页面</string>
+    <string name="cd_page_up">上移页面</string>
+    <string name="cd_page_down">下移页面</string>
+    <!-- Edit loading -->
+    <string name="edit_loading">正在处理PDF…</string>
+    <string name="edit_error_file_locked">文件正在使用中–请关闭后重试</string>
 </resources>

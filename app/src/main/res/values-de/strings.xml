@@ -113,4 +113,38 @@
     <string name="info_credits_detail">Planung, Architektur, Implementierung, Icon-Design und Dokumentation wurden im Dialog mit dem KI-Assistenten Claude Code erarbeitet.</string>
     <string name="info_credits_reviews_intro">Code-Reviews durch</string>
     <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
+
+    <!-- Merge -->
+    <string name="cd_merge">PDFs zusammenführen</string>
+    <string name="merge_dialog_title">PDFs zusammenführen</string>
+    <string name="merge_dialog_filename_label">Dateiname des neuen PDFs</string>
+    <string name="merge_dialog_order_hint">Reihenfolge entspricht der Listenreihenfolge</string>
+    <string name="merge_dialog_confirm">Zusammenführen</string>
+    <string name="merge_success">PDFs zusammengeführt: %1\$s</string>
+    <string name="merge_error">Fehler beim Zusammenführen</string>
+    <string name="merge_filename_default">Zusammengeführt_%1\$s</string>
+    <!-- Split -->
+    <string name="split_screen_title">PDF aufteilen</string>
+    <string name="split_preview">Erzeugt %1\$d Teile: %2\$s</string>
+    <string name="split_confirm">Aufteilen</string>
+    <string name="split_success">PDF aufgeteilt in %1\$d Teile</string>
+    <string name="split_error">Fehler beim Aufteilen</string>
+    <string name="split_no_points">Mindestens einen Trennpunkt wählen</string>
+    <string name="action_split">Seiten aufteilen</string>
+    <string name="cd_split_point_active">Trennpunkt entfernen nach Seite %1\$d</string>
+    <string name="cd_split_point_inactive">Trennpunkt setzen nach Seite %1\$d</string>
+    <!-- Reorder -->
+    <string name="reorder_screen_title">Seiten sortieren</string>
+    <string name="reorder_apply">Anwenden</string>
+    <string name="reorder_success">Seitenreihenfolge gespeichert</string>
+    <string name="reorder_error">Fehler beim Neu-Anordnen</string>
+    <string name="action_reorder">Seiten neu anordnen</string>
+    <string name="reorder_save_as_copy">Als Kopie speichern</string>
+    <string name="reorder_overwrite_hint">Das Original wird ersetzt</string>
+    <string name="cd_drag_handle">Seite verschieben</string>
+    <string name="cd_page_up">Seite nach oben</string>
+    <string name="cd_page_down">Seite nach unten</string>
+    <!-- Edit loading -->
+    <string name="edit_loading">PDF wird bearbeitet…</string>
+    <string name="edit_error_file_locked">Datei wird gerade verwendet – bitte schließen und erneut versuchen</string>
 </resources>

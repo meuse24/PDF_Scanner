@@ -136,4 +136,38 @@
     <string name="info_credits_detail">Architecture, planning, implementation, icon design, and documentation were developed in collaboration with the AI assistant Claude Code.</string>
     <string name="info_credits_reviews_intro">Code reviews by</string>
     <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
+
+    <!-- Merge -->
+    <string name="cd_merge">Merge PDFs</string>
+    <string name="merge_dialog_title">Merge PDFs</string>
+    <string name="merge_dialog_filename_label">Filename for the new PDF</string>
+    <string name="merge_dialog_order_hint">Order follows the list order</string>
+    <string name="merge_dialog_confirm">Merge</string>
+    <string name="merge_success">PDFs merged: %1\$s</string>
+    <string name="merge_error">Error merging PDFs</string>
+    <string name="merge_filename_default">Merged_%1\$s</string>
+    <!-- Split -->
+    <string name="split_screen_title">Split PDF</string>
+    <string name="split_preview">Creates %1\$d parts: %2\$s</string>
+    <string name="split_confirm">Split</string>
+    <string name="split_success">PDF split into %1\$d parts</string>
+    <string name="split_error">Error splitting PDF</string>
+    <string name="split_no_points">Select at least one split point</string>
+    <string name="action_split">Split pages</string>
+    <string name="cd_split_point_active">Remove split point after page %1\$d</string>
+    <string name="cd_split_point_inactive">Add split point after page %1\$d</string>
+    <!-- Reorder -->
+    <string name="reorder_screen_title">Reorder pages</string>
+    <string name="reorder_apply">Apply</string>
+    <string name="reorder_success">Page order saved</string>
+    <string name="reorder_error">Error reordering pages</string>
+    <string name="action_reorder">Reorder pages</string>
+    <string name="reorder_save_as_copy">Save as copy</string>
+    <string name="reorder_overwrite_hint">The original will be replaced</string>
+    <string name="cd_drag_handle">Move page</string>
+    <string name="cd_page_up">Move page up</string>
+    <string name="cd_page_down">Move page down</string>
+    <!-- Edit loading -->
+    <string name="edit_loading">Processing PDF…</string>
+    <string name="edit_error_file_locked">File is currently in use – please close it and try again</string>
 </resources>

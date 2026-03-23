@@ -20,6 +20,7 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.util.FileUtil
 import info.meuse24.pdf_scanner.util.OcrManager
+import info.meuse24.pdf_scanner.util.PdfEditor
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +43,7 @@ class HomeViewModel @Inject constructor(
     private val fileUtil: FileUtil,
     private val searchablePdfBuilder: SearchablePdfBuilder,
     private val ocrManager: OcrManager,
+    private val pdfEditor: PdfEditor,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -63,6 +65,14 @@ class HomeViewModel @Inject constructor(
     /** (aktuelleSeite, gesamtSeiten) während makeSearchable; null sonst */
     private val _ocrProgress = MutableStateFlow<Pair<Int, Int>?>(null)
     val ocrProgress: StateFlow<Pair<Int, Int>?> = _ocrProgress.asStateFlow()
+
+    /** true während merge/split/reorder Operationen */
+    private val _editLoading = MutableStateFlow(false)
+    val editLoading: StateFlow<Boolean> = _editLoading.asStateFlow()
+
+    /** (aktuellerSchritt, gesamtSchritte) während Edit-Bulk-Ops; null sonst */
+    private val _editProgress = MutableStateFlow<Pair<Int, Int>?>(null)
+    val editProgress: StateFlow<Pair<Int, Int>?> = _editProgress.asStateFlow()
 
     fun saveScan(
         pdfUri: Uri,
@@ -380,6 +390,120 @@ class HomeViewModel @Inject constructor(
                 _error.value = context.getString(R.string.ocr_failed)
             } finally {
                 _ocrLoading.value = false
+            }
+        }
+    }
+
+    // ── PDF-Bearbeitungsfunktionen ────────────────────────────────────────────
+
+    /**
+     * Führt die ausgewählten PDFs zu einer neuen Datei zusammen.
+     * Reihenfolge entspricht der Übergabeliste.
+     */
+    fun mergePdfs(records: List<ScanRecord>, outputFilename: String) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val scansDir = java.io.File(context.filesDir, "scans").apply { mkdirs() }
+                val baseName = info.meuse24.pdf_scanner.util.resolveUniqueFilename(scansDir, outputFilename)
+                val destFile = java.io.File(scansDir, "$baseName.pdf")
+                pdfEditor.mergePdfs(records.map { java.io.File(it.filepath) }, destFile)
+                val thumbFile = java.io.File(scansDir, "$baseName.jpg")
+                pdfEditor.generateThumbnail(destFile, thumbFile)
+                repository.saveScan(
+                    ScanRecord(
+                        filename      = baseName,
+                        filepath      = destFile.absolutePath,
+                        timestamp     = System.currentTimeMillis(),
+                        pageCount     = records.sumOf { it.pageCount },
+                        fileSize      = destFile.length(),
+                        thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath
+                    )
+                )
+                _success.value = context.getString(R.string.merge_success, baseName)
+            } catch (e: Exception) {
+                Log.e("PdfEditor", "mergePdfs failed", e)
+                _error.value = context.getString(R.string.merge_error)
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * Teilt ein PDF an den angegebenen Seitenindizes auf.
+     * Neue ScanRecords werden für jede erzeugte Datei angelegt.
+     */
+    fun splitPdf(record: ScanRecord, splitAtPages: List<Int>) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val scansDir = java.io.File(context.filesDir, "scans").apply { mkdirs() }
+                val parts = pdfEditor.splitPdf(java.io.File(record.filepath), scansDir, splitAtPages)
+                val newRecords = parts.map { partFile ->
+                    val baseName = partFile.nameWithoutExtension
+                    val thumbFile = java.io.File(scansDir, "$baseName.jpg")
+                    pdfEditor.generateThumbnail(partFile, thumbFile)
+                    ScanRecord(
+                        filename      = baseName,
+                        filepath      = partFile.absolutePath,
+                        timestamp     = System.currentTimeMillis(),
+                        pageCount     = 0,  // PdfRenderer-Seitenanzahl erst beim Öffnen bekannt
+                        fileSize      = partFile.length(),
+                        thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath
+                    )
+                }
+                repository.saveScans(newRecords)
+                _success.value = context.getString(R.string.split_success, parts.size)
+            } catch (e: Exception) {
+                Log.e("PdfEditor", "splitPdf failed", e)
+                _error.value = context.getString(R.string.split_error)
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * Ordnet Seiten eines PDFs neu an.
+     * [saveAsCopy] = false: Original wird atomar überschrieben.
+     * [saveAsCopy] = true: neue Datei mit Suffix „_Sortiert" angelegt.
+     * isSearchable bleibt erhalten (PdfBox konserviert Text-Layer).
+     */
+    fun reorderPages(record: ScanRecord, newOrder: List<Int>, saveAsCopy: Boolean) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val resultFile = pdfEditor.reorderPages(
+                    java.io.File(record.filepath), newOrder, saveAsCopy
+                )
+                val scansDir = java.io.File(context.filesDir, "scans")
+                val thumbFile = java.io.File(scansDir, "${resultFile.nameWithoutExtension}.jpg")
+                pdfEditor.generateThumbnail(resultFile, thumbFile)
+                if (saveAsCopy) {
+                    repository.saveScan(
+                        ScanRecord(
+                            filename      = resultFile.nameWithoutExtension,
+                            filepath      = resultFile.absolutePath,
+                            timestamp     = System.currentTimeMillis(),
+                            pageCount     = record.pageCount,
+                            fileSize      = resultFile.length(),
+                            thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath,
+                            isSearchable  = record.isSearchable
+                        )
+                    )
+                } else {
+                    repository.updateFileSize(record.id, resultFile.length())
+                }
+                _success.value = context.getString(R.string.reorder_success)
+            } catch (e: Exception) {
+                Log.e("PdfEditor", "reorderPages failed", e)
+                _error.value = context.getString(R.string.reorder_error)
+            } finally {
+                _editLoading.value = false
             }
         }
     }

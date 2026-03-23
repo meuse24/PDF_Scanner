@@ -113,4 +113,38 @@
     <string name="searchable_success_multi">%1$d PDF доступны для поиска</string>
     <string name="searchable_failed">Не удалось создать PDF с поиском</string>
     <string name="searchable_badge">Поисковый</string>
+
+    <!-- Merge -->
+    <string name="cd_merge">Объединить PDF</string>
+    <string name="merge_dialog_title">Объединить PDF</string>
+    <string name="merge_dialog_filename_label">Имя нового PDF</string>
+    <string name="merge_dialog_order_hint">Порядок соответствует порядку списка</string>
+    <string name="merge_dialog_confirm">Объединить</string>
+    <string name="merge_success">PDF объединены: %1$s</string>
+    <string name="merge_error">Ошибка объединения PDF</string>
+    <string name="merge_filename_default">Объединён_%1$s</string>
+    <!-- Split -->
+    <string name="split_screen_title">Разделить PDF</string>
+    <string name="split_preview">Создаёт %1$d части: %2$s</string>
+    <string name="split_confirm">Разделить</string>
+    <string name="split_success">PDF разделён на %1$d части</string>
+    <string name="split_error">Ошибка разделения PDF</string>
+    <string name="split_no_points">Выберите хотя бы одну точку раздела</string>
+    <string name="action_split">Разделить страницы</string>
+    <string name="cd_split_point_active">Удалить точку раздела после страницы %1$d</string>
+    <string name="cd_split_point_inactive">Добавить точку раздела после страницы %1$d</string>
+    <!-- Reorder -->
+    <string name="reorder_screen_title">Изменить порядок страниц</string>
+    <string name="reorder_apply">Применить</string>
+    <string name="reorder_success">Порядок страниц сохранён</string>
+    <string name="reorder_error">Ошибка изменения порядка</string>
+    <string name="action_reorder">Изменить порядок страниц</string>
+    <string name="reorder_save_as_copy">Сохранить как копию</string>
+    <string name="reorder_overwrite_hint">Оригинал будет заменён</string>
+    <string name="cd_drag_handle">Переместить страницу</string>
+    <string name="cd_page_up">Переместить страницу вверх</string>
+    <string name="cd_page_down">Переместить страницу вниз</string>
+    <!-- Edit loading -->
+    <string name="edit_loading">Обработка PDF…</string>
+    <string name="edit_error_file_locked">Файл занят – закройте его и повторите попытку</string>
 </resources>

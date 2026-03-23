@@ -113,4 +113,38 @@
     <string name="searchable_success_multi">%1$d ملفات PDF أصبحت قابلة للبحث</string>
     <string name="searchable_failed">فشل إنشاء PDF قابل للبحث</string>
     <string name="searchable_badge">قابل للبحث</string>
+
+    <!-- Merge -->
+    <string name="cd_merge">دمج PDF</string>
+    <string name="merge_dialog_title">دمج PDF</string>
+    <string name="merge_dialog_filename_label">اسم PDF الجديد</string>
+    <string name="merge_dialog_order_hint">الترتيب يتبع ترتيب القائمة</string>
+    <string name="merge_dialog_confirm">دمج</string>
+    <string name="merge_success">تم دمج PDF: %1$s</string>
+    <string name="merge_error">خطأ في دمج PDF</string>
+    <string name="merge_filename_default">مدموج_%1$s</string>
+    <!-- Split -->
+    <string name="split_screen_title">تقسيم PDF</string>
+    <string name="split_preview">ينشئ %1$d أجزاء: %2$s</string>
+    <string name="split_confirm">تقسيم</string>
+    <string name="split_success">تم تقسيم PDF إلى %1$d أجزاء</string>
+    <string name="split_error">خطأ في تقسيم PDF</string>
+    <string name="split_no_points">حدد نقطة تقسيم واحدة على الأقل</string>
+    <string name="action_split">تقسيم الصفحات</string>
+    <string name="cd_split_point_active">إزالة نقطة التقسيم بعد الصفحة %1$d</string>
+    <string name="cd_split_point_inactive">إضافة نقطة تقسيم بعد الصفحة %1$d</string>
+    <!-- Reorder -->
+    <string name="reorder_screen_title">إعادة ترتيب الصفحات</string>
+    <string name="reorder_apply">تطبيق</string>
+    <string name="reorder_success">تم حفظ ترتيب الصفحات</string>
+    <string name="reorder_error">خطأ في إعادة الترتيب</string>
+    <string name="action_reorder">إعادة ترتيب الصفحات</string>
+    <string name="reorder_save_as_copy">حفظ كنسخة</string>
+    <string name="reorder_overwrite_hint">سيتم استبدال الأصل</string>
+    <string name="cd_drag_handle">تحريك الصفحة</string>
+    <string name="cd_page_up">نقل الصفحة للأعلى</string>
+    <string name="cd_page_down">نقل الصفحة للأسفل</string>
+    <!-- Edit loading -->
+    <string name="edit_loading">جاري معالجة PDF…</string>
+    <string name="edit_error_file_locked">الملف قيد الاستخدام – أغلقه ثم حاول مجدداً</string>
 </resources>

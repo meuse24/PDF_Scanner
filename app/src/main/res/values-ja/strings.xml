@@ -113,4 +113,38 @@
     <string name="searchable_success_multi">%1$d 件の PDF が検索可能になりました</string>
     <string name="searchable_failed">検索可能な PDF を作成できませんでした</string>
     <string name="searchable_badge">検索可能</string>
+
+    <!-- Merge -->
+    <string name="cd_merge">PDFを結合</string>
+    <string name="merge_dialog_title">PDFを結合</string>
+    <string name="merge_dialog_filename_label">新しいPDFのファイル名</string>
+    <string name="merge_dialog_order_hint">順序はリストの順序に従います</string>
+    <string name="merge_dialog_confirm">結合</string>
+    <string name="merge_success">PDFを結合しました：%1$s</string>
+    <string name="merge_error">PDFの結合エラー</string>
+    <string name="merge_filename_default">結合済み_%1$s</string>
+    <!-- Split -->
+    <string name="split_screen_title">PDFを分割</string>
+    <string name="split_preview">%1$d個のパーツを作成：%2$s</string>
+    <string name="split_confirm">分割</string>
+    <string name="split_success">PDFを%1$d個に分割しました</string>
+    <string name="split_error">PDFの分割エラー</string>
+    <string name="split_no_points">分割点を少なくとも1つ選択してください</string>
+    <string name="action_split">ページを分割</string>
+    <string name="cd_split_point_active">ページ%1$dの後の分割点を削除</string>
+    <string name="cd_split_point_inactive">ページ%1$dの後に分割点を追加</string>
+    <!-- Reorder -->
+    <string name="reorder_screen_title">ページを並び替え</string>
+    <string name="reorder_apply">適用</string>
+    <string name="reorder_success">ページの順序を保存しました</string>
+    <string name="reorder_error">並び替えエラー</string>
+    <string name="action_reorder">ページを並び替え</string>
+    <string name="reorder_save_as_copy">コピーとして保存</string>
+    <string name="reorder_overwrite_hint">元のファイルが置き換えられます</string>
+    <string name="cd_drag_handle">ページを移動</string>
+    <string name="cd_page_up">上へ移動</string>
+    <string name="cd_page_down">下へ移動</string>
+    <!-- Edit loading -->
+    <string name="edit_loading">PDFを処理中…</string>
+    <string name="edit_error_file_locked">ファイルが使用中です–閉じてから再試してください</string>
 </resources>

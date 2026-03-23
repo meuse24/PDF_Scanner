@@ -113,4 +113,38 @@
     <string name="searchable_success_multi">%1$d PDFs ya son buscables</string>
     <string name="searchable_failed">No se pudo crear el PDF con búsqueda</string>
     <string name="searchable_badge">Buscable</string>
+
+    <!-- Merge -->
+    <string name="cd_merge">Combinar PDFs</string>
+    <string name="merge_dialog_title">Combinar PDFs</string>
+    <string name="merge_dialog_filename_label">Nombre del nuevo PDF</string>
+    <string name="merge_dialog_order_hint">El orden sigue el orden de la lista</string>
+    <string name="merge_dialog_confirm">Combinar</string>
+    <string name="merge_success">PDFs combinados: %1\$s</string>
+    <string name="merge_error">Error al combinar PDFs</string>
+    <string name="merge_filename_default">Combinado_%1\$s</string>
+    <!-- Split -->
+    <string name="split_screen_title">Dividir PDF</string>
+    <string name="split_preview">Crea %1\$d partes: %2\$s</string>
+    <string name="split_confirm">Dividir</string>
+    <string name="split_success">PDF dividido en %1\$d partes</string>
+    <string name="split_error">Error al dividir el PDF</string>
+    <string name="split_no_points">Seleccione al menos un punto de división</string>
+    <string name="action_split">Dividir páginas</string>
+    <string name="cd_split_point_active">Eliminar punto de división después de la página %1\$d</string>
+    <string name="cd_split_point_inactive">Añadir punto de división después de la página %1\$d</string>
+    <!-- Reorder -->
+    <string name="reorder_screen_title">Reordenar páginas</string>
+    <string name="reorder_apply">Aplicar</string>
+    <string name="reorder_success">Orden de páginas guardado</string>
+    <string name="reorder_error">Error al reordenar páginas</string>
+    <string name="action_reorder">Reordenar páginas</string>
+    <string name="reorder_save_as_copy">Guardar como copia</string>
+    <string name="reorder_overwrite_hint">El original será reemplazado</string>
+    <string name="cd_drag_handle">Mover página</string>
+    <string name="cd_page_up">Subir página</string>
+    <string name="cd_page_down">Bajar página</string>
+    <!-- Edit loading -->
+    <string name="edit_loading">Procesando PDF…</string>
+    <string name="edit_error_file_locked">El archivo está en uso – ciérrelo e inténtelo de nuevo</string>
 </resources>

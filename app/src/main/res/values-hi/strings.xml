@@ -113,4 +113,38 @@
     <string name="searchable_success_multi">%1$d PDF अब खोज योग्य हैं</string>
     <string name="searchable_failed">खोज योग्य PDF बनाने में विफल</string>
     <string name="searchable_badge">खोज योग्य</string>
+
+    <!-- Merge -->
+    <string name="cd_merge">PDF मर्ज करें</string>
+    <string name="merge_dialog_title">PDF मर्ज करें</string>
+    <string name="merge_dialog_filename_label">नए PDF का फ़ाइल नाम</string>
+    <string name="merge_dialog_order_hint">क्रम सूची क्रम के अनुसार होगा</string>
+    <string name="merge_dialog_confirm">मर्ज करें</string>
+    <string name="merge_success">PDF मर्ज हो गए: %1$s</string>
+    <string name="merge_error">PDF मर्ज करने में त्रुटि</string>
+    <string name="merge_filename_default">मर्ज_%1$s</string>
+    <!-- Split -->
+    <string name="split_screen_title">PDF विभाजित करें</string>
+    <string name="split_preview">%1$d भाग बनाता है: %2$s</string>
+    <string name="split_confirm">विभाजित करें</string>
+    <string name="split_success">PDF को %1$d भागों में विभाजित किया</string>
+    <string name="split_error">PDF विभाजन में त्रुटि</string>
+    <string name="split_no_points">कम से कम एक विभाजन बिंदु चुनें</string>
+    <string name="action_split">पृष्ठ विभाजित करें</string>
+    <string name="cd_split_point_active">पृष्ठ %1$d के बाद विभाजन बिंदु हटाएं</string>
+    <string name="cd_split_point_inactive">पृष्ठ %1$d के बाद विभाजन बिंदु जोड़ें</string>
+    <!-- Reorder -->
+    <string name="reorder_screen_title">पृष्ठों को पुनः व्यवस्थित करें</string>
+    <string name="reorder_apply">लागू करें</string>
+    <string name="reorder_success">पृष्ठ क्रम सहेजा गया</string>
+    <string name="reorder_error">पुनः व्यवस्थित करने में त्रुटि</string>
+    <string name="action_reorder">पृष्ठों को पुनः व्यवस्थित करें</string>
+    <string name="reorder_save_as_copy">प्रति के रूप में सहेजें</string>
+    <string name="reorder_overwrite_hint">मूल फ़ाइल बदल दी जाएगी</string>
+    <string name="cd_drag_handle">पृष्ठ त्वरित करें</string>
+    <string name="cd_page_up">पृष्ठ उपर जाएं</string>
+    <string name="cd_page_down">पृष्ठ नीचे जाएं</string>
+    <!-- Edit loading -->
+    <string name="edit_loading">PDF प्रोसेस हो रहा है…</string>
+    <string name="edit_error_file_locked">फ़ाइल उपयोग में है – बंद करके पुनः प्रयास करें</string>
 </resources>

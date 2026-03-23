@@ -9,6 +9,7 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.util.PdfEditor
 import info.meuse24.pdf_scanner.util.buildRanges
+import info.meuse24.pdf_scanner.util.normalizeSplitPoints
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -96,7 +97,7 @@ class SplitViewModel @Inject constructor(
     /** Gibt lesbare Vorschau zurück, z.B. "1–2 | 3–5 | 6" */
     fun computePreview(): String {
         val pageCount = _record.value?.pageCount ?: return ""
-        val sorted = _splitPoints.value.filter { it in 1 until pageCount }.sorted()
+        val sorted = normalizeSplitPoints(pageCount, _splitPoints.value.toList())
         return buildRanges(pageCount, sorted).joinToString(" | ") { range ->
             val from = range.first + 1
             val to = range.last + 1
@@ -107,7 +108,7 @@ class SplitViewModel @Inject constructor(
     /** Gibt die sortierten Split-Punkte zurück (0-basiert). */
     fun getSplitPoints(): List<Int> {
         val pageCount = _record.value?.pageCount ?: return emptyList()
-        return _splitPoints.value.filter { it in 1 until pageCount }.sorted()
+        return normalizeSplitPoints(pageCount, _splitPoints.value.toList())
     }
 
     override fun onCleared() {

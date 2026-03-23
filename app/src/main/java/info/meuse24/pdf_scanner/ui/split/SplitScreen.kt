@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.ui.home.HomeViewModel
+import info.meuse24.pdf_scanner.util.normalizeSplitPoints
 
 @Composable
 fun SplitScreen(
@@ -59,10 +60,10 @@ fun SplitScreen(
     val loading     by viewModel.loading.collectAsState()
 
     val preview = viewModel.computePreview()
-    val partsCount = splitPoints.count { pt ->
-        val pageCount = record?.pageCount ?: 0
-        pt in 1 until pageCount
-    } + 1
+    val partsCount = normalizeSplitPoints(
+        pageCount = record?.pageCount ?: 0,
+        splitPoints = splitPoints.toList()
+    ).size + 1
 
     Column(modifier = Modifier.fillMaxSize()) {
 

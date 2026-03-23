@@ -18,6 +18,7 @@
     <string name="home_stat_doc_count">Документы</string>
     <string name="home_stat_last_scan">Последний скан</string>
     <string name="dialog_save_title">Сохранить документ</string>
+    <string name="scan_filename_default">Скан_%1$s</string>
     <string name="dialog_filename_label">Имя файла</string>
     <string name="action_save">Сохранить</string>
     <string name="action_cancel">Отмена</string>
@@ -66,7 +67,7 @@
     <string name="help_note2">Все PDF-файлы хранятся локально в папке приложения и не покидают устройство.</string>
     <string name="help_note3">Для многостраничных документов просто фотографируйте страницы по порядку — сканер автоматически объединит их в один PDF.</string>
     <string name="help_note4">OCR и редактирование PDF выполняются локально на устройстве. Приложение не загружает ваши документы.</string>
-    <string name="info_version">Версия 1.1</string>
+    <string name="info_version">Версия %1$s (%2$d)</string>
     <string name="info_section_copyright">Авторские права &amp; Лицензия</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>

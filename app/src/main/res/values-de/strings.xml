@@ -18,6 +18,7 @@
     <string name="home_stat_doc_count">Dokumente</string>
     <string name="home_stat_last_scan">Zuletzt gescannt</string>
     <string name="dialog_save_title">Dokument speichern</string>
+    <string name="scan_filename_default">Scan_%1$s</string>
     <string name="dialog_filename_label">Dateiname</string>
     <string name="action_save">Speichern</string>
     <string name="action_cancel">Abbrechen</string>
@@ -66,7 +67,7 @@
     <string name="help_note2">Alle PDFs werden lokal im App-Verzeichnis gespeichert und verlassen das Gerät nicht.</string>
     <string name="help_note3">Für mehrseitige Dokumente einfach mehrere Seiten hintereinander fotografieren — der Scanner verbindet sie automatisch zu einem PDF.</string>
     <string name="help_note4">OCR und PDF-Bearbeitung laufen lokal auf dem Gerät. Die App lädt deine Dokumente nicht hoch.</string>
-    <string name="info_version">Version 1.1</string>
+    <string name="info_version">Version %1$s (%2$d)</string>
     <string name="info_section_copyright">Copyright &amp; Lizenz</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT Lizenz</string>

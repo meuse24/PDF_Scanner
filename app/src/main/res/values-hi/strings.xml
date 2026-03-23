@@ -18,6 +18,7 @@
     <string name="home_stat_doc_count">दस्तावेज़</string>
     <string name="home_stat_last_scan">अंतिम स्कैन</string>
     <string name="dialog_save_title">दस्तावेज़ सहेजें</string>
+    <string name="scan_filename_default">स्कैन_%1$s</string>
     <string name="dialog_filename_label">फ़ाइल नाम</string>
     <string name="action_save">सहेजें</string>
     <string name="action_cancel">रद्द करें</string>
@@ -66,7 +67,7 @@
     <string name="help_note2">सभी PDF ऐप की स्थानीय डायरेक्टरी में सहेजी जाती हैं और डिवाइस से बाहर नहीं जातीं।</string>
     <string name="help_note3">बहु-पृष्ठ दस्तावेज़ों के लिए, पृष्ठों को एक-एक करके स्कैन करें — स्कैनर उन्हें स्वचालित रूप से एक PDF में जोड़ देगा।</string>
     <string name="help_note4">OCR और PDF संपादन डिवाइस पर ही स्थानीय रूप से चलते हैं। ऐप आपके दस्तावेज़ अपलोड नहीं करता।</string>
-    <string name="info_version">संस्करण 1.1</string>
+    <string name="info_version">संस्करण %1$s (%2$d)</string>
     <string name="info_section_copyright">कॉपीराइट &amp; लाइसेंस</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>

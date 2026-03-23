@@ -18,6 +18,7 @@
     <string name="home_stat_doc_count">مستندات</string>
     <string name="home_stat_last_scan">آخر مسح</string>
     <string name="dialog_save_title">حفظ المستند</string>
+    <string name="scan_filename_default">مسح_%1$s</string>
     <string name="dialog_filename_label">اسم الملف</string>
     <string name="action_save">حفظ</string>
     <string name="action_cancel">إلغاء</string>
@@ -66,7 +67,7 @@
     <string name="help_note2">تُحفظ جميع ملفات PDF محلياً في دليل التطبيق ولا تغادر الجهاز.</string>
     <string name="help_note3">لمسح مستندات متعددة الصفحات، التقط الصفحات بالتسلسل — يجمعها الماسح تلقائياً في PDF واحد.</string>
     <string name="help_note4">يعمل OCR وتحرير PDF محلياً على الجهاز. لا يقوم التطبيق برفع مستنداتك.</string>
-    <string name="info_version">الإصدار 1.1</string>
+    <string name="info_version">الإصدار %1$s (%2$d)</string>
     <string name="info_section_copyright">حقوق النشر &amp; الترخيص</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>

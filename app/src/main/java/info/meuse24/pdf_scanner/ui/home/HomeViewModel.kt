@@ -12,14 +12,14 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.ReorderPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
+import info.meuse24.pdf_scanner.domain.workflow.SplitPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
-import info.meuse24.pdf_scanner.domain.usecase.ReorderPagesUseCase
-import info.meuse24.pdf_scanner.domain.usecase.SplitPdfUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,8 +40,8 @@ class HomeViewModel @Inject constructor(
     private val extractTextUseCase:  ExtractTextUseCase,
     private val makeSearchableWorkflow: MakeSearchableWorkflow,
     private val mergePdfsWorkflow:   MergePdfsWorkflow,
-    private val splitPdfUseCase:     SplitPdfUseCase,
-    private val reorderPagesUseCase: ReorderPagesUseCase,
+    private val splitPdfWorkflow:    SplitPdfWorkflow,
+    private val reorderPagesWorkflow: ReorderPagesWorkflow,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -202,11 +202,15 @@ class HomeViewModel @Inject constructor(
         _editLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val parts = splitPdfUseCase(record, splitAtPages, scansDir)
-                _success.value = context.getString(R.string.split_success, parts)
-            } catch (e: Exception) {
-                Log.e("PdfEditor", "splitPdf failed", e)
-                _error.value = context.getString(R.string.split_error)
+                when (val result = splitPdfWorkflow(record, splitAtPages, scansDir)) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(
+                            R.string.split_success,
+                            result.value.partsCount
+                        )
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
             } finally {
                 _editLoading.value = false
             }
@@ -218,11 +222,12 @@ class HomeViewModel @Inject constructor(
         _editLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                reorderPagesUseCase(record, newOrder, saveAsCopy, scansDir)
-                _success.value = context.getString(R.string.reorder_success)
-            } catch (e: Exception) {
-                Log.e("PdfEditor", "reorderPages failed", e)
-                _error.value = context.getString(R.string.reorder_error)
+                when (val result = reorderPagesWorkflow(record, newOrder, saveAsCopy, scansDir)) {
+                    is WorkflowResult.Success -> {
+                        _success.value = context.getString(R.string.reorder_success)
+                    }
+                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
+                }
             } finally {
                 _editLoading.value = false
             }
@@ -245,9 +250,13 @@ class HomeViewModel @Inject constructor(
         ScanWorkflowError.NothingSelected -> context.getString(R.string.workflow_nothing_selected)
         ScanWorkflowError.NotEnoughScans -> context.getString(R.string.merge_not_enough_scans)
         ScanWorkflowError.NoEligibleScans -> context.getString(R.string.searchable_nothing_to_do)
+        ScanWorkflowError.InvalidSplitSelection -> context.getString(R.string.split_no_points)
+        ScanWorkflowError.InvalidPageOrder -> context.getString(R.string.reorder_error)
         is ScanWorkflowError.MissingFiles -> context.getString(R.string.workflow_missing_files)
         is ScanWorkflowError.StorageWriteFailed -> context.getString(R.string.workflow_storage_failed)
         is ScanWorkflowError.OcrFailed -> context.getString(R.string.searchable_failed)
         is ScanWorkflowError.MergeFailed -> context.getString(R.string.merge_error)
+        is ScanWorkflowError.SplitFailed -> context.getString(R.string.split_error)
+        is ScanWorkflowError.ReorderFailed -> context.getString(R.string.reorder_error)
     }
 }

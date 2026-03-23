@@ -71,6 +71,18 @@ class PdfEditorTest {
         assertEquals(pageCount, total)
     }
 
+    @Test
+    fun `normalizeSplitPoints keeps split after first page`() {
+        val normalized = normalizeSplitPoints(pageCount = 4, splitPoints = listOf(0, 2))
+        assertEquals(listOf(0, 2), normalized)
+    }
+
+    @Test
+    fun `normalizeSplitPoints removes last page and duplicates`() {
+        val normalized = normalizeSplitPoints(pageCount = 4, splitPoints = listOf(0, 3, 0, 2))
+        assertEquals(listOf(0, 2), normalized)
+    }
+
     // ── resolveUniqueFilename ────────────────────────────────────────────────
 
     @Test

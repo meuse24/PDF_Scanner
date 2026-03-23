@@ -110,6 +110,8 @@ fun HomeScreen(
     val sharePdfTitle = stringResource(R.string.share_pdf_title)
     val actionShareTextLabel = stringResource(R.string.action_share_text)
     val ocrCopiedMessage = stringResource(R.string.ocr_copied)
+    val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
+    val ocrLanguages = remember(displayLocale) { buildOcrLanguageOptions(displayLocale) }
 
     var pendingScanResult  by remember { mutableStateOf<GmsDocumentScanningResult?>(null) }
     var showSaveDialog     by remember { mutableStateOf(false) }
@@ -149,7 +151,10 @@ fun HomeScreen(
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             pendingScanResult = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
-            filenameInput = "Scan_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}"
+            filenameInput = resources.getString(
+                R.string.scan_filename_default,
+                SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            )
             showSaveDialog = true
         }
     }
@@ -384,11 +389,6 @@ fun HomeScreen(
     // ── Bulk-OCR-Sprachauswahl ────────────────────────────────────────────────
     if (showBulkLangDialog) {
         val bulkRecords  = scans.filter { it.id in selectedIds }
-        val ocrLanguages = listOf(
-            "de" to "Deutsch", "en" to "English", "es" to "Español",
-            "fr" to "Français", "pt" to "Português", "ru" to "Русский",
-            "ar" to "العربية", "hi" to "हिन्दी"
-        )
         AlertDialog(
             onDismissRequest = { showBulkLangDialog = false },
             title   = { Text(stringResource(R.string.dialog_ocr_language)) },
@@ -588,11 +588,6 @@ fun HomeScreen(
                             color = MaterialTheme.colorScheme.outline
                         )
                         Spacer(Modifier.height(10.dp))
-                        val ocrLanguages = listOf(
-                            "de" to "Deutsch", "en" to "English", "es" to "Español",
-                            "fr" to "Français", "pt" to "Português", "ru" to "Русский",
-                            "ar" to "العربية", "hi" to "हिन्दी"
-                        )
                         ExposedDropdownMenuBox(
                             expanded         = langMenuExpanded,
                             onExpandedChange = { langMenuExpanded = it }
@@ -663,5 +658,16 @@ fun HomeScreen(
                 TextButton(onClick = viewModel::clearError) { Text(stringResource(R.string.action_ok)) }
             }
         )
+    }
+}
+
+private fun buildOcrLanguageOptions(displayLocale: Locale): List<Pair<String, String>> {
+    val supportedCodes = listOf("de", "en", "es", "fr", "pt", "ru", "ar", "hi")
+    return supportedCodes.map { code ->
+        val name = Locale.forLanguageTag(code).getDisplayLanguage(displayLocale)
+            .replaceFirstChar { char ->
+                if (char.isLowerCase()) char.titlecase(displayLocale) else char.toString()
+            }
+        code to name
     }
 }

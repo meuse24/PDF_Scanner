@@ -18,6 +18,7 @@
     <string name="home_stat_doc_count">Documentos</string>
     <string name="home_stat_last_scan">Último scan</string>
     <string name="dialog_save_title">Salvar documento</string>
+    <string name="scan_filename_default">Digitalizacao_%1$s</string>
     <string name="dialog_filename_label">Nome do arquivo</string>
     <string name="action_save">Salvar</string>
     <string name="action_cancel">Cancelar</string>
@@ -66,7 +67,7 @@
     <string name="help_note2">Todos os PDFs são armazenados localmente no diretório do app e não saem do dispositivo.</string>
     <string name="help_note3">Para documentos de várias páginas, fotografe as páginas em sequência — o scanner as combina automaticamente em um único PDF.</string>
     <string name="help_note4">O OCR e a edição de PDF são executados localmente no dispositivo. O app não envia seus documentos.</string>
-    <string name="info_version">Versão 1.1</string>
+    <string name="info_version">Versão %1$s (%2$d)</string>
     <string name="info_section_copyright">Copyright &amp; Licença</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>

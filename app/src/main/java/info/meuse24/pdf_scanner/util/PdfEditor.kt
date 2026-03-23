@@ -74,7 +74,7 @@ open class PdfEditor @Inject constructor() {
         val results = mutableListOf<File>()
         PDDocument.load(input).use { source ->
             val pageCount = source.numberOfPages
-            val sorted = splitAtPages.filter { it in 1 until pageCount }.sorted().distinct()
+            val sorted = normalizeSplitPoints(pageCount, splitAtPages)
             buildRanges(pageCount, sorted).forEachIndexed { idx, range ->
                 val name = resolveUniqueFilename(
                     outputDir, "${input.nameWithoutExtension}_Teil${idx + 1}"
@@ -203,6 +203,19 @@ open class PdfEditor @Inject constructor() {
 internal fun buildRanges(pageCount: Int, splitPoints: List<Int>): List<IntRange> {
     val boundaries = listOf(0) + splitPoints.map { it + 1 } + listOf(pageCount)
     return boundaries.zipWithNext { from, to -> from until to }.filter { !it.isEmpty() }
+}
+
+/**
+ * Normalisiert Split-Punkte auf gueltige 0-basierte Seitenindizes, nach denen
+ * getrennt werden darf. Bei einem Dokument mit 4 Seiten sind also 0, 1 und 2
+ * gueltig, 3 dagegen nicht.
+ */
+internal fun normalizeSplitPoints(pageCount: Int, splitPoints: List<Int>): List<Int> {
+    if (pageCount < 2) return emptyList()
+    return splitPoints
+        .filter { it in 0 until (pageCount - 1) }
+        .sorted()
+        .distinct()
 }
 
 /**

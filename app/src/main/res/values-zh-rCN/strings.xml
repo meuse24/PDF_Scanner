@@ -18,6 +18,7 @@
     <string name="home_stat_doc_count">文档</string>
     <string name="home_stat_last_scan">最近扫描</string>
     <string name="dialog_save_title">保存文档</string>
+    <string name="scan_filename_default">扫描_%1$s</string>
     <string name="dialog_filename_label">文件名</string>
     <string name="action_save">保存</string>
     <string name="action_cancel">取消</string>
@@ -66,7 +67,7 @@
     <string name="help_note2">所有 PDF 文件均保存在应用本地目录中，不会离开您的设备。</string>
     <string name="help_note3">扫描多页文档时，依次拍摄各页即可——扫描仪会自动合并为单个 PDF。</string>
     <string name="help_note4">OCR 与 PDF 编辑都在设备本地执行。应用不会上传你的文档。</string>
-    <string name="info_version">版本 1.1</string>
+    <string name="info_version">版本 %1$s (%2$d)</string>
     <string name="info_section_copyright">版权 &amp; 许可证</string>
     <string name="info_copyright">© 2026 Günther Meusburger</string>
     <string name="info_license_title">MIT License</string>

@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.ui.home.components
 
 import android.graphics.BitmapFactory
+import android.text.format.Formatter
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,7 +59,7 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.text.SimpleDateFormat
+import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
 
@@ -72,13 +74,17 @@ internal fun ScanItem(
     onSplit:          () -> Unit = {},
     onReorder:        () -> Unit = {}
 ) {
+    val context = LocalContext.current
     var menuExpanded by remember { mutableStateOf(false) }
     val dateStr = remember(record.timestamp) {
-        SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(Date(record.timestamp))
+        DateFormat.getDateTimeInstance(
+            DateFormat.SHORT,
+            DateFormat.SHORT,
+            Locale.getDefault()
+        ).format(Date(record.timestamp))
     }
-    val sizeStr = remember(record.fileSize) {
-        if (record.fileSize < 1024 * 1024) "${record.fileSize / 1024} KB"
-        else "%.1f MB".format(record.fileSize / (1024.0 * 1024.0))
+    val sizeStr = remember(record.fileSize, context) {
+        Formatter.formatShortFileSize(context, record.fileSize.coerceAtLeast(0L))
     }
     val subtitle = stringResource(R.string.scan_item_subtitle, dateStr, record.pageCount, sizeStr)
 

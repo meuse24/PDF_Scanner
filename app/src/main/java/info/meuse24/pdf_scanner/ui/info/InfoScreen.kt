@@ -59,9 +59,15 @@ fun InfoScreen() {
             SectionCard(Icons.Default.Gavel, stringResource(R.string.info_section_copyright)) {
                 Text(stringResource(R.string.info_copyright),
                     style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-                Text("v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                Text(
+                    stringResource(
+                        R.string.info_version,
+                        BuildConfig.VERSION_NAME,
+                        BuildConfig.VERSION_CODE
+                    ),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline)
+                    color = MaterialTheme.colorScheme.outline
+                )
                 Spacer(Modifier.height(10.dp))
                 Text(
                     text = buildAnnotatedString {

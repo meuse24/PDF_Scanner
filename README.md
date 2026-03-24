@@ -106,6 +106,8 @@ util/                   FileUtil, OcrManager, SearchablePdfBuilder, PdfEditor
 
 **Edit screens:** Each edit action navigates to a dedicated screen passing `scanId` as a route argument. `ScanDetailViewModel` or `PageSelectionViewModel` loads the record from the repository. `HomeViewModel` executes the operation via the corresponding workflow and reports success/error back through `StateFlow`s observed in `HomeScreen`.
 
+**Help screen:** `HelpScreen` is data-driven via `HelpSection` + `HelpAction`. The table of contents is rendered as one top-level card, the detail content is rendered as grouped `ActionCard`s below it, and scroll targets are derived from that list structure instead of hard-coded item indices. A floating action button returns the user to the contents after scrolling into the detail area.
+
 **OCR / searchable PDFs:** Two-phase process — Phase 1: `PdfRenderer` renders each page to a bitmap (150 DPI), ML Kit OCR extracts text with bounding boxes, bitmap is immediately recycled. Phase 2: PdfBox appends an invisible text layer to the original PDF. Only one bitmap in RAM at a time, safe for large documents. CJK (ZH/JA) is supported for text extraction only; searchable PDF generation is not supported due to TTC/OTC font embedding limitations in PdfBox.
 
 **Storage:** PDFs are saved to `filesDir/scans/<filename>.pdf`. Duplicate filenames resolved with `_2`, `_3`, etc. Sharing uses `FileProvider` (`${applicationId}.fileprovider`). Export writes to `MediaStore.Downloads` with the IS_PENDING pattern.

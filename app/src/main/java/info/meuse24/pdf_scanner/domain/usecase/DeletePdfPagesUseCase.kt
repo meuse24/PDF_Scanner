@@ -39,16 +39,4 @@ class DeletePdfPagesUseCase @Inject constructor(
         return pageCount
     }
 
-    private fun thumbnailFile(
-        record: ScanRecord,
-        resultFile: File,
-        saveAsCopy: Boolean,
-        scansDir: File
-    ): File {
-        if (saveAsCopy) {
-            return File(scansDir, "${resultFile.nameWithoutExtension}.jpg")
-        }
-        val existing = record.thumbnailPath?.let(::File)
-        return existing ?: File(scansDir, "${record.filename}.jpg")
-    }
 }

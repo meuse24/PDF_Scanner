@@ -26,25 +26,51 @@ domain/
     ├── MakeSearchableUseCase.kt   # OCR-Textlayer einfügen; überspringt bereits durchsuchbare Records
     ├── MergePdfsUseCase.kt        # PDFs zusammenführen + Thumbnail + DB-Insert
     ├── SplitPdfUseCase.kt         # PDF aufteilen + Thumbnails + DB-InsertAll
-    └── ReorderPagesUseCase.kt     # Seiten umsortieren; saveAsCopy=true/_Sortiert, false=atomar überschreiben
+    ├── ReorderPagesUseCase.kt     # Seiten umsortieren; saveAsCopy=true/_Sortiert, false=atomar überschreiben
+    ├── RotatePagesUseCase.kt      # Seiten drehen; nutzt thumbnailFile() aus PageEditUtils
+    ├── DeletePdfPagesUseCase.kt   # Seiten löschen; nutzt thumbnailFile() aus PageEditUtils
+    └── PageEditUtils.kt           # thumbnailFile(): gemeinsame Hilfsfunktion für Seitenbearbeitungs-UseCases
 
 ui/
 ├── navigation/
-│   ├── Screen.kt                  # Route-Definitionen (Ablage, Help, Info, Privacy)
+│   ├── Screen.kt                  # Route-Definitionen (Ablage, Help, Info, Privacy + alle Edit-Screens)
 │   └── AppNavigation.kt           # ModalNavigationDrawer + Scaffold + NavHost + Gradient-Hintergrund
 │                                  # Verwaltet scanTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
 ├── home/
 │   ├── HomeScreen.kt              # Koordinator: Scanner-Launcher, Dialoge, Listen-Routing
-│   ├── HomeViewModel.kt           # Koordinator: StateFlows + Delegation an Use Cases
+│   │                              # ScanItem.onAction(ScanAction) → navigiert zu Edit-Screens
+│   ├── HomeViewModel.kt           # Koordinator: StateFlows + Delegation an Use Cases + Workflows
 │   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading/_editProgress
 │   └── components/
 │       ├── ScanItem.kt            # Card mit Thumbnail, Metadaten, Auswahlzustand, MoreVert-Menü
+│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Signature)
+│       │                          # onAction: (ScanAction) → Unit ersetzt 12 einzelne Lambda-Parameter
 │       ├── SelectionTitleBar.kt   # ✕ · count/total · SelectAll-Icon
 │       ├── BulkActionBar.kt       # Share · Export · Merge · OCR · MakeSearchable · Delete (rot)
 │       ├── EmptyStateContent.kt   # Leerarchiv-Illustration + Hint-Texte
 │       ├── ScannerLoadingAnimation.kt  # Canvas-Animation (Dokument + Scan-Strahl)
 │       └── MergeDialog.kt         # Dateiname-Eingabe + Reihenfolge-Vorschau
-├── help/HelpScreen.kt
+├── components/
+│   ├── ScanPreviewCard.kt         # Dokument-Vorschaukarte (Thumbnail + Dateiname + Seitenzahl)
+│   └── ActionScreenContent.kt     # Gemeinsames Layout für Aktions-Screens:
+│                                  # Titel · Beschreibung · ScanPreviewCard · Formular-Slot · Bestätigen-Button
+├── overlay/
+│   ├── ScanDetailViewModel.kt     # Lädt ScanRecord per scanId aus SavedStateHandle
+│   └── OverlayActionScreens.kt    # PageNumbersScreen, TextWatermarkScreen — nutzen ActionScreenContent
+├── documentaction/
+│   └── DocumentActionScreens.kt  # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen — nutzen ActionScreenContent
+├── pageedit/
+│   ├── PageSelectionViewModel.kt  # Lädt Seiten-Thumbnails, verwaltet Auswahl + saveAsCopy
+│   └── PageActionScreens.kt       # RotatePagesScreen, DeletePagesScreen, ExtractPagesScreen, DuplicatePagesScreen
+├── split/
+│   ├── SplitViewModel.kt
+│   └── SplitScreen.kt
+├── reorder/
+│   ├── ReorderViewModel.kt
+│   └── ReorderScreen.kt
+├── signature/
+│   └── SignatureScreen.kt         # Freihand-Zeichen-Pad + Seiten-/Größenauswahl
+├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
 ├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig
 └── privacy/PrivacyScreen.kt       # 4 Icon-Karten (PhoneAndroid, CloudOff, Shield, Lock)
 
@@ -60,13 +86,14 @@ util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
 util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
 util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, onProgress) — Phase1 PdfRenderer+OCR, Phase2 PdfBox
                                    # ZH/JA NICHT als searchable PDF unterstützt (TTC/OTC-Fonts können nicht eingebettet werden)
-util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, getPageCount, generateThumbnail
+util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePages, deletePages, getPageCount, generateThumbnail
+                                   # appendTextWatermark nutzt calculateWatermarkFontSize() (internal, testbar)
                                    # buildRanges() + resolveUniqueFilename() als top-level internal (JVM-testbar)
 ```
 
 ## Architektur-Regeln
 
-- **Schichtenregel:** ViewModel koordiniert State + ruft Use Cases auf → Use Cases verarbeiten → Repository persistiert
+- **Schichtenregel:** ViewModel koordiniert State + ruft Use Cases/Workflows auf → Use Cases verarbeiten → Repository persistiert
 - **Keine Literal-Strings im Kotlin-Code** — ausschließlich `context.getString(R.string.*)` oder `stringResource()`
 - **Neue Strings** immer in alle 10 Locale-Dateien eintragen (values/, -de, -es, -fr, -pt, -zh-rCN, -ar, -ja, -ru, -hi)
 - **Fehler** → `viewModel.reportError(String)` → `_error: StateFlow` → AlertDialog in HomeScreen
@@ -76,6 +103,8 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, getPageC
 - Doppelte Dateinamen: `resolveUniqueFilename()` in `util/PdfEditor.kt` (`_2`, `_3`, …)
 - Export: `MediaStore.Downloads` (API 29+), IS_PENDING-Pattern, bei Fehler `resolver.delete()`
 - Backup: `backup_rules.xml` + `data_extraction_rules.xml` schließen `filesDir/scans/` und DB aus
+- **Aktions-Screens** (Overlay + DocumentAction) nutzen `ActionScreenContent` aus `ui/components/`
+- **ScanItem-Aktionen** via `ScanAction` sealed interface — kein direktes Navigieren aus dem Item heraus
 
 ## Mehrfachauswahl
 
@@ -126,7 +155,7 @@ Testabhängigkeiten: `junit:4.13.2` + `kotlinx-coroutines-test:1.10.1`
 Versionen zentral in `gradle/libs.versions.toml`. Gradle-Besonderheiten:
 - `android.disallowKotlinSourceSets=false` in `gradle.properties` (KSP + AGP 9)
 - `buildFeatures { buildConfig = true }` für `BuildConfig.VERSION_NAME` / `VERSION_CODE`
-- `org.gradle.caching=true`, `org.gradle.parallel=true` aktiv
+- `org.gradle.caching=true`, `org.gradle.parallel=true`, `org.gradle.configuration-cache=true` aktiv
 - `PDFBoxResourceLoader.init(this)` in `PdfScannerApp.onCreate()` erforderlich
 
 ## Schrift & Design

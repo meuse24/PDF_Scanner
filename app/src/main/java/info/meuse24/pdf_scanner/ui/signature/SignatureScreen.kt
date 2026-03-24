@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.ui.home.HomeViewModel
-import info.meuse24.pdf_scanner.ui.overlay.OverlayActionViewModel
+import info.meuse24.pdf_scanner.ui.overlay.ScanDetailViewModel
 
 private data class SignatureSizeOption(
     val scaleFraction: Float,
@@ -82,7 +82,7 @@ private val strokeListSaver = listSaver<List<List<Offset>>, List<Float>>(
 @Composable
 fun SignatureScreen(
     onNavigateBack: () -> Unit,
-    viewModel: OverlayActionViewModel = hiltViewModel(),
+    viewModel: ScanDetailViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val record by viewModel.record.collectAsState()

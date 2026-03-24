@@ -21,10 +21,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.BrandingWatermark
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Compress
+import androidx.compose.material.icons.filled.FormatListNumbered
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.SwapVert
@@ -66,6 +72,22 @@ import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
 
+/** Aktionen aus dem Kontextmenü eines Scan-Eintrags. */
+sealed interface ScanAction {
+    data object Split           : ScanAction
+    data object Reorder         : ScanAction
+    data object Rotate          : ScanAction
+    data object DeletePages     : ScanAction
+    data object ExtractPages    : ScanAction
+    data object DuplicatePages  : ScanAction
+    data object PageNumbers     : ScanAction
+    data object TextWatermark   : ScanAction
+    data object CompressPdf     : ScanAction
+    data object ProtectPdf      : ScanAction
+    data object UnlockPdf       : ScanAction
+    data object Signature       : ScanAction
+}
+
 @Composable
 internal fun ScanItem(
     record:           ScanRecord,
@@ -74,18 +96,7 @@ internal fun ScanItem(
     modifier:         Modifier = Modifier,
     onClick:          () -> Unit,
     onCheckboxToggle: () -> Unit,
-    onSplit:          () -> Unit = {},
-    onReorder:        () -> Unit = {},
-    onRotate:         () -> Unit = {},
-    onDeletePages:    () -> Unit = {},
-    onExtractPages:   () -> Unit = {},
-    onDuplicatePages: () -> Unit = {},
-    onPageNumbers:    () -> Unit = {},
-    onTextWatermark:  () -> Unit = {},
-    onCompressPdf:    () -> Unit = {},
-    onProtectPdf:     () -> Unit = {},
-    onUnlockPdf:      () -> Unit = {},
-    onSignature:      () -> Unit = {}
+    onAction:         (ScanAction) -> Unit = {}
 ) {
     val context = LocalContext.current
     var menuExpanded by remember { mutableStateOf(false) }
@@ -207,60 +218,66 @@ internal fun ScanItem(
                         DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_rotate)) },
                             leadingIcon = { Icon(Icons.AutoMirrored.Filled.RotateRight, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onRotate() }
+                            onClick     = { menuExpanded = false; onAction(ScanAction.Rotate) }
                         )
                         DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_split)) },
                             leadingIcon = { Icon(Icons.Default.ContentCut, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onSplit() },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.Split) },
                             enabled     = record.pageCount >= 2
                         )
                         DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_reorder)) },
                             leadingIcon = { Icon(Icons.Default.SwapVert, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onReorder() },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.Reorder) },
                             enabled     = record.pageCount >= 2
                         )
                         DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_delete_pages)) },
                             leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onDeletePages() },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.DeletePages) },
                             enabled     = record.pageCount >= 2
                         )
                         DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_extract_pages)) },
                             leadingIcon = { Icon(Icons.Default.PictureAsPdf, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onExtractPages() },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.ExtractPages) },
                             enabled     = record.pageCount >= 2
                         )
                         DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_duplicate_pages)) },
                             leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onDuplicatePages() }
+                            onClick     = { menuExpanded = false; onAction(ScanAction.DuplicatePages) }
                         )
                         DropdownMenuItem(
-                            text    = { Text(stringResource(R.string.action_page_numbers)) },
-                            onClick = { menuExpanded = false; onPageNumbers() }
+                            text        = { Text(stringResource(R.string.action_page_numbers)) },
+                            leadingIcon = { Icon(Icons.Default.FormatListNumbered, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.PageNumbers) }
                         )
                         DropdownMenuItem(
-                            text    = { Text(stringResource(R.string.action_text_watermark)) },
-                            onClick = { menuExpanded = false; onTextWatermark() }
+                            text        = { Text(stringResource(R.string.action_text_watermark)) },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.BrandingWatermark, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.TextWatermark) }
                         )
                         DropdownMenuItem(
-                            text    = { Text(stringResource(R.string.action_compress_pdf)) },
-                            onClick = { menuExpanded = false; onCompressPdf() }
+                            text        = { Text(stringResource(R.string.action_compress_pdf)) },
+                            leadingIcon = { Icon(Icons.Default.Compress, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.CompressPdf) }
                         )
                         DropdownMenuItem(
-                            text    = { Text(stringResource(R.string.action_protect_pdf)) },
-                            onClick = { menuExpanded = false; onProtectPdf() }
+                            text        = { Text(stringResource(R.string.action_protect_pdf)) },
+                            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.ProtectPdf) }
                         )
                         DropdownMenuItem(
-                            text    = { Text(stringResource(R.string.action_unlock_pdf)) },
-                            onClick = { menuExpanded = false; onUnlockPdf() }
+                            text        = { Text(stringResource(R.string.action_unlock_pdf)) },
+                            leadingIcon = { Icon(Icons.Default.LockOpen, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.UnlockPdf) }
                         )
                         DropdownMenuItem(
-                            text    = { Text(stringResource(R.string.action_sign_pdf)) },
-                            onClick = { menuExpanded = false; onSignature() }
+                            text        = { Text(stringResource(R.string.action_sign_pdf)) },
+                            leadingIcon = { Icon(Icons.Default.Draw, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.Signature) }
                         )
                     }
                 }

@@ -74,6 +74,7 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.ui.home.components.BulkActionBar
 import info.meuse24.pdf_scanner.ui.home.components.EmptyStateContent
 import info.meuse24.pdf_scanner.ui.home.components.MergeDialog
+import info.meuse24.pdf_scanner.ui.home.components.ScanAction
 import info.meuse24.pdf_scanner.ui.home.components.ScanItem
 import info.meuse24.pdf_scanner.ui.home.components.ScannerLoadingAnimation
 import info.meuse24.pdf_scanner.ui.home.components.SelectionTitleBar
@@ -88,19 +89,19 @@ fun HomeScreen(
     scanTrigger:           Boolean    = false,
     onScanTriggered:       () -> Unit = {},
     onSelectionModeChange: (Boolean) -> Unit = {},
-    onNavigateToSplit:     (Long) -> Unit = {},
-    onNavigateToReorder:   (Long) -> Unit = {},
-    onNavigateToRotate:    (Long) -> Unit = {},
-    onNavigateToDeletePages: (Long) -> Unit = {},
-    onNavigateToExtractPages: (Long) -> Unit = {},
+    onNavigateToSplit:          (Long) -> Unit = {},
+    onNavigateToReorder:        (Long) -> Unit = {},
+    onNavigateToRotate:         (Long) -> Unit = {},
+    onNavigateToDeletePages:    (Long) -> Unit = {},
+    onNavigateToExtractPages:   (Long) -> Unit = {},
     onNavigateToDuplicatePages: (Long) -> Unit = {},
-    onNavigateToPageNumbers: (Long) -> Unit = {},
-    onNavigateToTextWatermark: (Long) -> Unit = {},
-    onNavigateToCompressPdf: (Long) -> Unit = {},
-    onNavigateToProtectPdf: (Long) -> Unit = {},
-    onNavigateToUnlockPdf: (Long) -> Unit = {},
-    onNavigateToSignature: (Long) -> Unit = {},
-    viewModel:             HomeViewModel = hiltViewModel()
+    onNavigateToPageNumbers:    (Long) -> Unit = {},
+    onNavigateToTextWatermark:  (Long) -> Unit = {},
+    onNavigateToCompressPdf:    (Long) -> Unit = {},
+    onNavigateToProtectPdf:     (Long) -> Unit = {},
+    onNavigateToUnlockPdf:      (Long) -> Unit = {},
+    onNavigateToSignature:      (Long) -> Unit = {},
+    viewModel:                  HomeViewModel  = hiltViewModel()
 ) {
     val scans        by viewModel.scans.collectAsState()
     val error        by viewModel.error.collectAsState()
@@ -273,18 +274,22 @@ fun HomeScreen(
                                 }
                             },
                             onCheckboxToggle = toggleSelect,
-                            onSplit          = { onNavigateToSplit(record.id) },
-                            onReorder        = { onNavigateToReorder(record.id) },
-                            onRotate         = { onNavigateToRotate(record.id) },
-                            onDeletePages    = { onNavigateToDeletePages(record.id) },
-                            onExtractPages   = { onNavigateToExtractPages(record.id) },
-                            onDuplicatePages = { onNavigateToDuplicatePages(record.id) },
-                            onPageNumbers    = { onNavigateToPageNumbers(record.id) },
-                            onTextWatermark  = { onNavigateToTextWatermark(record.id) },
-                            onCompressPdf    = { onNavigateToCompressPdf(record.id) },
-                            onProtectPdf     = { onNavigateToProtectPdf(record.id) },
-                            onUnlockPdf      = { onNavigateToUnlockPdf(record.id) },
-                            onSignature      = { onNavigateToSignature(record.id) }
+                            onAction = { action ->
+                                when (action) {
+                                    ScanAction.Split          -> onNavigateToSplit(record.id)
+                                    ScanAction.Reorder        -> onNavigateToReorder(record.id)
+                                    ScanAction.Rotate         -> onNavigateToRotate(record.id)
+                                    ScanAction.DeletePages    -> onNavigateToDeletePages(record.id)
+                                    ScanAction.ExtractPages   -> onNavigateToExtractPages(record.id)
+                                    ScanAction.DuplicatePages -> onNavigateToDuplicatePages(record.id)
+                                    ScanAction.PageNumbers    -> onNavigateToPageNumbers(record.id)
+                                    ScanAction.TextWatermark  -> onNavigateToTextWatermark(record.id)
+                                    ScanAction.CompressPdf    -> onNavigateToCompressPdf(record.id)
+                                    ScanAction.ProtectPdf     -> onNavigateToProtectPdf(record.id)
+                                    ScanAction.UnlockPdf      -> onNavigateToUnlockPdf(record.id)
+                                    ScanAction.Signature      -> onNavigateToSignature(record.id)
+                                }
+                            }
                         )
                     }
                 }

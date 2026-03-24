@@ -1,17 +1,11 @@
 package info.meuse24.pdf_scanner.ui.documentaction
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -22,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,23 +23,22 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
-import info.meuse24.pdf_scanner.ui.components.ScanPreviewCard
+import info.meuse24.pdf_scanner.ui.components.ActionScreenContent
 import info.meuse24.pdf_scanner.ui.home.HomeViewModel
-import info.meuse24.pdf_scanner.ui.overlay.OverlayActionViewModel
+import info.meuse24.pdf_scanner.ui.overlay.ScanDetailViewModel
 
 @Composable
 fun CompressPdfScreen(
     onNavigateBack: () -> Unit,
-    viewModel: OverlayActionViewModel = hiltViewModel(),
+    viewModel: ScanDetailViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val record by viewModel.record.collectAsState()
     val editLoading by homeViewModel.editLoading.collectAsState()
     var preset by rememberSaveable { mutableStateOf(PdfCompressionPreset.MEDIUM.name) }
 
-    DocumentActionContent(
+    ActionScreenContent(
         record = record,
         title = stringResource(R.string.compress_pdf_description),
         body = stringResource(R.string.compress_pdf_details),
@@ -59,7 +51,7 @@ fun CompressPdfScreen(
         confirmLabel = stringResource(R.string.compress_pdf_apply),
         confirmEnabled = record != null && !editLoading,
         onConfirm = {
-            val currentRecord = record ?: return@DocumentActionContent
+            val currentRecord = record ?: return@ActionScreenContent
             homeViewModel.compressPdf(currentRecord, PdfCompressionPreset.valueOf(preset))
             onNavigateBack()
         }
@@ -69,7 +61,7 @@ fun CompressPdfScreen(
 @Composable
 fun ProtectPdfScreen(
     onNavigateBack: () -> Unit,
-    viewModel: OverlayActionViewModel = hiltViewModel(),
+    viewModel: ScanDetailViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val record by viewModel.record.collectAsState()
@@ -78,7 +70,7 @@ fun ProtectPdfScreen(
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     val passwordsMatch = password.isNotBlank() && password == confirmPassword
 
-    DocumentActionContent(
+    ActionScreenContent(
         record = record,
         title = stringResource(R.string.protect_pdf_description),
         body = stringResource(R.string.protect_pdf_details),
@@ -112,7 +104,7 @@ fun ProtectPdfScreen(
         confirmLabel = stringResource(R.string.protect_pdf_apply),
         confirmEnabled = record != null && passwordsMatch && !editLoading,
         onConfirm = {
-            val currentRecord = record ?: return@DocumentActionContent
+            val currentRecord = record ?: return@ActionScreenContent
             homeViewModel.protectPdf(currentRecord, password)
             onNavigateBack()
         }
@@ -122,14 +114,14 @@ fun ProtectPdfScreen(
 @Composable
 fun UnlockPdfScreen(
     onNavigateBack: () -> Unit,
-    viewModel: OverlayActionViewModel = hiltViewModel(),
+    viewModel: ScanDetailViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val record by viewModel.record.collectAsState()
     val editLoading by homeViewModel.editLoading.collectAsState()
     var password by rememberSaveable { mutableStateOf("") }
 
-    DocumentActionContent(
+    ActionScreenContent(
         record = record,
         title = stringResource(R.string.unlock_pdf_description),
         body = stringResource(R.string.unlock_pdf_details),
@@ -146,66 +138,11 @@ fun UnlockPdfScreen(
         confirmLabel = stringResource(R.string.unlock_pdf_apply),
         confirmEnabled = record != null && password.isNotBlank() && !editLoading,
         onConfirm = {
-            val currentRecord = record ?: return@DocumentActionContent
+            val currentRecord = record ?: return@ActionScreenContent
             homeViewModel.unlockPdf(currentRecord, password)
             onNavigateBack()
         }
     )
-}
-
-@Composable
-private fun DocumentActionContent(
-    record: ScanRecord?,
-    title: String,
-    body: String,
-    form: @Composable () -> Unit,
-    confirmLabel: String,
-    confirmEnabled: Boolean,
-    onConfirm: () -> Unit
-) {
-    if (record == null) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-        item {
-            Text(
-                text = body,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.outline
-            )
-        }
-        item {
-            ScanPreviewCard(record)
-        }
-        item { form() }
-        item {
-            Button(
-                onClick = onConfirm,
-                enabled = confirmEnabled,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(confirmLabel)
-            }
-        }
-    }
 }
 
 @Composable

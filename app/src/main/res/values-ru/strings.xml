@@ -43,6 +43,9 @@
     <string name="share_pdf_title">Поделиться PDF</string>
     <string name="scan_item_subtitle">%1$s · %2$d стр. · %3$s</string>
     <string name="help_screen_title">Инструкция</string>
+    <string name="help_section_contents">Содержание</string>
+    <string name="help_group_drawer_menu">Hamburger menu</string>
+    <string name="help_group_selection_menu">Selection toolbar</string>
     <string name="help_section_scan">Сканировать документ</string>
     <string name="help_step1">Нажмите кнопку + (внизу справа) или выберите «Запустить сканер» в меню.</string>
     <string name="help_step2">Откроется Google Document Scanner. Сфотографируйте одну или несколько страниц — края и перспектива исправляются автоматически.</string>
@@ -52,6 +55,17 @@
     <string name="help_item_select">Нажмите флажок, чтобы выбрать одну или несколько записей. В заголовке отображается количество и доступно выделение всех записей.</string>
     <string name="help_item_share_export">Используйте Поделиться, чтобы отправить PDF в другие приложения. Используйте Экспорт, чтобы скопировать файлы в Загрузки.</string>
     <string name="help_section_pdf_edit">Редактирование PDF</string>
+    <string name="help_section_pdf_pages">Страницы и структура</string>
+    <string name="help_section_pdf_page_changes">Изменение страниц</string>
+    <string name="help_section_pdf_marks">Метки и нумерация</string>
+    <string name="help_section_pdf_output">Вывод и защита</string>
+    <string name="help_desc_archive">Opens the archive with your saved PDFs. From there you can open documents, select them, and start further actions.</string>
+    <string name="help_desc_start_scanner">Starts the document scanner so you can capture one or more pages and save them as a PDF.</string>
+    <string name="help_desc_help">Opens this help screen with the main functions and symbols used in the app.</string>
+    <string name="help_desc_info">Shows the app version, licenses, tech stack, and project credits.</string>
+    <string name="help_desc_privacy">Explains how the app works locally on your device and which data is not transmitted.</string>
+    <string name="help_desc_share">Shares the selected PDFs with other apps.</string>
+    <string name="help_desc_export">Exports the selected PDFs to your Downloads folder.</string>
     <string name="help_item_merge">Выберите как минимум два PDF и нажмите Объединить, чтобы создать из них новый документ.</string>
     <string name="help_item_split">Откройте меню с тремя точками у многостраничного PDF и выберите Разделить страницы, чтобы создать несколько PDF в отмеченных точках разделения.</string>
     <string name="help_item_reorder">Откройте меню с тремя точками и выберите Изменить порядок страниц, чтобы переставить страницы перетаскиванием или кнопками вверх и вниз.</string>

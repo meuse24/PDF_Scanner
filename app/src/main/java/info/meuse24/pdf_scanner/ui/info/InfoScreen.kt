@@ -2,7 +2,6 @@ package info.meuse24.pdf_scanner.ui.info
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
@@ -48,11 +46,8 @@ import info.meuse24.pdf_scanner.R
 
 @Composable
 fun InfoScreen() {
-    val lazyListState = rememberLazyListState()
     LazyColumn(
-        state             = lazyListState,
-        flingBehavior     = rememberSnapFlingBehavior(lazyListState),
-        contentPadding    = PaddingValues(16.dp),
+        contentPadding      = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {

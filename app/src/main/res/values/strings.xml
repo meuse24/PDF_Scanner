@@ -63,6 +63,9 @@
 
     <!-- Help screen -->
     <string name="help_screen_title">Instructions</string>
+    <string name="help_section_contents">Contents</string>
+    <string name="help_group_drawer_menu">Hamburger menu</string>
+    <string name="help_group_selection_menu">Selection toolbar</string>
     <string name="help_section_scan">Scan a document</string>
     <string name="help_step1">Tap the + button (bottom right) or choose Start Scanner from the menu.</string>
     <string name="help_step2">The Google Document Scanner opens. Photograph one or more pages — edges and perspective are corrected automatically.</string>
@@ -72,6 +75,17 @@
     <string name="help_item_select">Tap the checkbox to select one or more entries. The title bar shows the count and lets you select all.</string>
     <string name="help_item_share_export">Use Share to send PDFs to other apps. Use Export to copy them to Downloads.</string>
     <string name="help_section_pdf_edit">Edit PDFs</string>
+    <string name="help_section_pdf_pages">Pages and structure</string>
+    <string name="help_section_pdf_page_changes">Page changes</string>
+    <string name="help_section_pdf_marks">Marks and numbering</string>
+    <string name="help_section_pdf_output">Output and protection</string>
+    <string name="help_desc_archive">Opens the archive with your saved PDFs. From there you can open documents, select them, and start further actions.</string>
+    <string name="help_desc_start_scanner">Starts the document scanner so you can capture one or more pages and save them as a PDF.</string>
+    <string name="help_desc_help">Opens this help screen with the main functions and symbols used in the app.</string>
+    <string name="help_desc_info">Shows the app version, licenses, tech stack, and project credits.</string>
+    <string name="help_desc_privacy">Explains how the app works locally on your device and which data is not transmitted.</string>
+    <string name="help_desc_share">Shares the selected PDFs with other apps.</string>
+    <string name="help_desc_export">Exports the selected PDFs to your Downloads folder.</string>
     <string name="help_item_merge">Select at least two PDFs and tap Merge to combine them into a new document.</string>
     <string name="help_item_split">Open the three-dot menu on a multi-page PDF and choose Split pages to create multiple PDFs at selected split points.</string>
     <string name="help_item_reorder">Open the three-dot menu and choose Reorder pages to rearrange pages via drag and drop or the up and down buttons.</string>
@@ -294,6 +308,7 @@
     <string name="signature_clear">Clear signature</string>
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
+    <string name="help_back_to_contents">Back to contents</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
 </resources>

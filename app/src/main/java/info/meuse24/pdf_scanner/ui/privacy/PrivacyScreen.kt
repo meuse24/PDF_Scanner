@@ -1,7 +1,8 @@
 package info.meuse24.pdf_scanner.ui.privacy
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudOff
@@ -44,13 +44,9 @@ fun PrivacyScreen() {
         Triple(Icons.Default.Lock,         stringResource(R.string.privacy_keyword_4), stringResource(R.string.privacy_point_4)),
     )
 
-    val lazyListState = rememberLazyListState()
-
     LazyColumn(
-        state             = lazyListState,
-        flingBehavior     = rememberSnapFlingBehavior(lazyListState),
-        contentPadding    = PaddingValues(16.dp),
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
+        contentPadding      = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(points) { (icon, keyword, text) ->
             PrivacyCard(icon = icon, keyword = keyword, text = text)
@@ -80,7 +76,7 @@ private fun PrivacyCard(icon: ImageVector, keyword: String, text: String) {
     ) {
         Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                androidx.compose.foundation.layout.Box(
+                Box(
                     modifier         = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(12.dp))

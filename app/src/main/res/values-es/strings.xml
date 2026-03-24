@@ -43,6 +43,9 @@
     <string name="share_pdf_title">Compartir PDF</string>
     <string name="scan_item_subtitle">%1$s · %2$d p. · %3$s</string>
     <string name="help_screen_title">Instrucciones</string>
+    <string name="help_section_contents">Contenido</string>
+    <string name="help_group_drawer_menu">Hamburger menu</string>
+    <string name="help_group_selection_menu">Selection toolbar</string>
     <string name="help_section_scan">Escanear un documento</string>
     <string name="help_step1">Toca el botón + (abajo a la derecha) o elige Iniciar escáner en el menú.</string>
     <string name="help_step2">Se abre el Google Document Scanner. Fotografía una o varias páginas: los bordes y la perspectiva se corrigen automáticamente.</string>
@@ -52,6 +55,17 @@
     <string name="help_item_select">Toca la casilla para seleccionar una o varias entradas. La barra de título muestra la cantidad y permite seleccionar todo.</string>
     <string name="help_item_share_export">Usa Compartir para enviar PDFs a otras aplicaciones. Usa Exportar para copiar los archivos a Descargas.</string>
     <string name="help_section_pdf_edit">Editar PDFs</string>
+    <string name="help_section_pdf_pages">Páginas y estructura</string>
+    <string name="help_section_pdf_page_changes">Cambios en páginas</string>
+    <string name="help_section_pdf_marks">Marcas y numeración</string>
+    <string name="help_section_pdf_output">Salida y protección</string>
+    <string name="help_desc_archive">Opens the archive with your saved PDFs. From there you can open documents, select them, and start further actions.</string>
+    <string name="help_desc_start_scanner">Starts the document scanner so you can capture one or more pages and save them as a PDF.</string>
+    <string name="help_desc_help">Opens this help screen with the main functions and symbols used in the app.</string>
+    <string name="help_desc_info">Shows the app version, licenses, tech stack, and project credits.</string>
+    <string name="help_desc_privacy">Explains how the app works locally on your device and which data is not transmitted.</string>
+    <string name="help_desc_share">Shares the selected PDFs with other apps.</string>
+    <string name="help_desc_export">Exports the selected PDFs to your Downloads folder.</string>
     <string name="help_item_merge">Selecciona al menos dos PDFs y toca Combinar para unirlos en un nuevo documento.</string>
     <string name="help_item_split">Abre el menú de tres puntos de un PDF de varias páginas y elige Dividir páginas para crear varios PDFs en los puntos seleccionados.</string>
     <string name="help_item_reorder">Abre el menú de tres puntos y elige Reordenar páginas para cambiar el orden con arrastrar y soltar o con los botones arriba y abajo.</string>

@@ -43,6 +43,9 @@
     <string name="share_pdf_title">PDF teilen</string>
     <string name="scan_item_subtitle">%1$s · %2$d S. · %3$s</string>
     <string name="help_screen_title">Anleitung</string>
+    <string name="help_section_contents">Inhaltsverzeichnis</string>
+    <string name="help_group_drawer_menu">Hamburger-Menü</string>
+    <string name="help_group_selection_menu">Auswahlleiste</string>
     <string name="help_section_scan">Dokument scannen</string>
     <string name="help_step1">Tippe auf den + Button (unten rechts) oder wähle im Hamburger-Menü auf Scanner starten.</string>
     <string name="help_step2">Der Google Document Scanner öffnet sich. Fotografiere eine oder mehrere Seiten — Ränder und Perspektive werden automatisch korrigiert.</string>
@@ -52,6 +55,17 @@
     <string name="help_item_select">Checkbox eines Eintrags antippen, um ihn auszuwählen. Die Titelleiste zeigt die Anzahl und ermöglicht das Auswählen aller Einträge.</string>
     <string name="help_item_share_export">Mit Teilen sendest du PDFs an andere Apps. Mit Exportieren kopierst du sie in den Downloads-Ordner.</string>
     <string name="help_section_pdf_edit">PDFs bearbeiten</string>
+    <string name="help_section_pdf_pages">Seiten und Struktur</string>
+    <string name="help_section_pdf_page_changes">Seiten ändern</string>
+    <string name="help_section_pdf_marks">Markierungen und Nummerierung</string>
+    <string name="help_section_pdf_output">Ausgabe und Schutz</string>
+    <string name="help_desc_archive">Öffnet die Ablage mit deinen gespeicherten PDFs. Von dort aus kannst du Dokumente öffnen, auswählen und weitere Aktionen starten.</string>
+    <string name="help_desc_start_scanner">Startet den Dokumentenscanner, damit du eine oder mehrere Seiten erfassen und als PDF speichern kannst.</string>
+    <string name="help_desc_help">Öffnet diese Hilfe mit den wichtigsten Funktionen und Symbolen der App.</string>
+    <string name="help_desc_info">Zeigt App-Version, Lizenzen, Tech Stack und Projekt-Credits.</string>
+    <string name="help_desc_privacy">Erklärt, wie die App lokal auf dem Gerät arbeitet und welche Daten nicht übertragen werden.</string>
+    <string name="help_desc_share">Teilt die ausgewählten PDFs mit anderen Apps.</string>
+    <string name="help_desc_export">Exportiert die ausgewählten PDFs in deinen Downloads-Ordner.</string>
     <string name="help_item_merge">Wähle mindestens zwei PDFs aus und tippe auf Zusammenführen, um daraus ein neues Dokument zu erstellen.</string>
     <string name="help_item_split">Öffne das Dreipunkt-Menü eines mehrseitigen PDFs und wähle Seiten aufteilen, um an markierten Trennpunkten mehrere PDFs zu erzeugen.</string>
     <string name="help_item_reorder">Öffne das Dreipunkt-Menü und wähle Seiten neu anordnen, um Seiten per Drag and Drop oder mit den Auf- und Ab-Tasten umzulegen.</string>
@@ -272,6 +286,7 @@
     <string name="signature_clear">Signatur löschen</string>
     <string name="protected_pdf_unsupported">Bitte entsperre die PDF, bevor du sie bearbeitest</string>
     <string name="help_item_sign_pdf">Mit PDF signieren zeichnest du eine handschriftliche Signatur, wählst Zielseite und Stempelgröße und speicherst das Ergebnis als neue PDF-Kopie.</string>
+    <string name="help_back_to_contents">Zum Inhaltsverzeichnis</string>
     <string name="reorder_invalid_order">Bitte eine gültige Seitenreihenfolge für das gesamte PDF wählen</string>
     <string name="signature_scale_invalid">Bitte eine gültige Signaturgröße wählen</string>
 </resources>

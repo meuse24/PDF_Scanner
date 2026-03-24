@@ -39,8 +39,8 @@ ui/
 ├── home/
 │   ├── HomeScreen.kt              # Koordinator: Scanner-Launcher, Dialoge, Listen-Routing
 │   │                              # ScanItem.onAction(ScanAction) → navigiert zu Edit-Screens
-│   ├── HomeViewModel.kt           # Koordinator: StateFlows + Delegation an Use Cases + Workflows
-│   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading/_editProgress
+│   ├── HomeViewModel.kt           # Archivkern: Liste, Auswahl, Scanner-Trigger, Bulk-Aktionen
+│   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading (nur Merge)
 │   └── components/
 │       ├── ScanItem.kt            # Card mit Thumbnail, Metadaten, Auswahlzustand, MoreVert-Menü
 │       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Signature)
@@ -55,21 +55,23 @@ ui/
 │   └── ActionScreenContent.kt     # Gemeinsames Layout für Aktions-Screens:
 │                                  # Titel · Beschreibung · ScanPreviewCard · Formular-Slot · Bestätigen-Button
 ├── overlay/
-│   ├── ScanDetailViewModel.kt     # Lädt ScanRecord per scanId aus SavedStateHandle
-│   └── OverlayActionScreens.kt    # PageNumbersScreen, TextWatermarkScreen — nutzen ActionScreenContent
+│   ├── ScanDetailViewModel.kt     # Lädt ScanRecord per scanId (noch vorhanden, nicht mehr verwendet)
+│   └── OverlayActionScreens.kt    # PageNumbersScreen, TextWatermarkScreen — nutzen DocumentEditViewModel
 ├── documentaction/
-│   └── DocumentActionScreens.kt  # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen — nutzen ActionScreenContent
+│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature
+│   │                              # Lädt ScanRecord + führt Workflows aus; _editLoading/_error/_success
+│   └── DocumentActionScreens.kt  # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen — nutzen DocumentEditViewModel
 ├── pageedit/
-│   ├── PageSelectionViewModel.kt  # Lädt Seiten-Thumbnails, verwaltet Auswahl + saveAsCopy
+│   ├── PageSelectionViewModel.kt  # Seiten-Thumbnails, Auswahl, saveAsCopy + Rotate/Delete/Extract/Duplicate-Workflows
 │   └── PageActionScreens.kt       # RotatePagesScreen, DeletePagesScreen, ExtractPagesScreen, DuplicatePagesScreen
 ├── split/
-│   ├── SplitViewModel.kt
+│   ├── SplitViewModel.kt          # Seiten-Thumbnails, Split-Punkte + SplitPdfWorkflow
 │   └── SplitScreen.kt
 ├── reorder/
-│   ├── ReorderViewModel.kt
+│   ├── ReorderViewModel.kt        # Seiten-Thumbnails, Reihenfolge + ReorderPagesWorkflow
 │   └── ReorderScreen.kt
 ├── signature/
-│   └── SignatureScreen.kt         # Freihand-Zeichen-Pad + Seiten-/Größenauswahl
+│   └── SignatureScreen.kt         # Freihand-Zeichen-Pad + Seiten-/Größenauswahl — nutzt DocumentEditViewModel
 ├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
 ├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig
 └── privacy/PrivacyScreen.kt       # 4 Icon-Karten (PhoneAndroid, CloudOff, Shield, Lock)
@@ -81,6 +83,7 @@ data/
 │   └── AppDatabase.kt             # Version 3, "pdf_scanner_db", MIGRATION_1_2 + MIGRATION_2_3
 └── repository/ScanRepository.kt
 
+domain/workflow/WorkflowErrorMapper.kt  # @Singleton: ScanWorkflowError → lokalisierter String (geteilt)
 di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
 util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
@@ -96,8 +99,10 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
 - **Schichtenregel:** ViewModel koordiniert State + ruft Use Cases/Workflows auf → Use Cases verarbeiten → Repository persistiert
 - **Keine Literal-Strings im Kotlin-Code** — ausschließlich `context.getString(R.string.*)` oder `stringResource()`
 - **Neue Strings** immer in alle 10 Locale-Dateien eintragen (values/, -de, -es, -fr, -pt, -zh-rCN, -ar, -ja, -ru, -hi)
-- **Fehler** → `viewModel.reportError(String)` → `_error: StateFlow` → AlertDialog in HomeScreen
-- **Erfolg** → `_success: StateFlow<String?>` → Toast + `clearSuccess()`
+- **Fehler in HomeScreen** → `viewModel.reportError(String)` → `_error: StateFlow` → AlertDialog
+- **Fehler in Edit-Screens** → eigener `_error: StateFlow<String?>` im jeweiligen ViewModel → AlertDialog im Screen
+- **Erfolg in HomeScreen** → `_success: StateFlow<String?>` → Toast + `clearSuccess()`
+- **Erfolg in Edit-Screens** → `_success: StateFlow<Boolean>` → `LaunchedEffect` → `onNavigateBack()`
 - **OCR** nutzt PdfRenderer über alle Seiten; Fallback auf `thumbnailPath` wenn PDF fehlt
 - PDFs in `context.filesDir/scans/`; FileProvider-Authority: `${applicationId}.fileprovider`
 - Doppelte Dateinamen: `resolveUniqueFilename()` in `util/PdfEditor.kt` (`_2`, `_3`, …)

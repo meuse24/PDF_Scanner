@@ -1,12 +1,17 @@
 package info.meuse24.pdf_scanner.ui.reorder
 
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.workflow.ReorderPagesWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
+import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.util.PdfEditor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +31,9 @@ data class ReorderPage(
 class ReorderViewModel @Inject constructor(
     private val repository: ScanRepository,
     private val pdfEditor: PdfEditor,
+    private val reorderPagesWorkflow: ReorderPagesWorkflow,
+    private val errorMapper: WorkflowErrorMapper,
+    @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -42,6 +50,17 @@ class ReorderViewModel @Inject constructor(
 
     private val _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading.asStateFlow()
+
+    private val _editLoading = MutableStateFlow(false)
+    val editLoading: StateFlow<Boolean> = _editLoading.asStateFlow()
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
+    private val _success = MutableStateFlow(false)
+    val success: StateFlow<Boolean> = _success.asStateFlow()
+
+    private val scansDir get() = File(context.filesDir, "scans").apply { mkdirs() }
 
     init {
         loadRecord()
@@ -106,6 +125,24 @@ class ReorderViewModel @Inject constructor(
 
     /** Gibt die neue Seitenreihenfolge als Liste von Original-Indizes zurück. */
     fun getCurrentOrder(): List<Int> = _pages.value.map { it.originalIndex }
+
+    fun reorderPages() {
+        val record = _record.value ?: return
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = reorderPagesWorkflow(record, getCurrentOrder(), _saveAsCopy.value, scansDir)) {
+                    is WorkflowResult.Success -> _success.value = true
+                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun clearError() { _error.value = null }
 
     override fun onCleared() {
         super.onCleared()

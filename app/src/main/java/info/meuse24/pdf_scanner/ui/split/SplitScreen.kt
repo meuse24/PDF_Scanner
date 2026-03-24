@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCut
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,7 +31,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -45,19 +48,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.ui.home.HomeViewModel
 import info.meuse24.pdf_scanner.util.normalizeSplitPoints
 
 @Composable
 fun SplitScreen(
     onNavigateBack: () -> Unit,
-    viewModel:      SplitViewModel  = hiltViewModel(),
-    homeViewModel:  HomeViewModel   = hiltViewModel()
+    viewModel:      SplitViewModel  = hiltViewModel()
 ) {
     val record      by viewModel.record.collectAsState()
     val pages       by viewModel.pages.collectAsState()
     val splitPoints by viewModel.splitPoints.collectAsState()
     val loading     by viewModel.loading.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error       by viewModel.error.collectAsState()
+    val success     by viewModel.success.collectAsState()
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
 
     val preview = viewModel.computePreview()
     val partsCount = normalizeSplitPoints(
@@ -149,19 +157,43 @@ fun SplitScreen(
         // Confirm button
         Button(
             onClick  = {
-                val rec = record ?: return@Button
                 val pts = viewModel.getSplitPoints()
                 if (pts.isEmpty()) return@Button
-                homeViewModel.splitPdf(rec, pts)
-                onNavigateBack()
+                viewModel.splitPdf(pts)
             },
-            enabled  = splitPoints.isNotEmpty() && record != null,
+            enabled  = splitPoints.isNotEmpty() && record != null && !editLoading,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
             Text(stringResource(R.string.split_confirm))
         }
+    }
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
     }
 }
 

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,7 +30,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,20 +46,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.ui.home.HomeViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun ReorderScreen(
     onNavigateBack: () -> Unit,
-    viewModel:      ReorderViewModel = hiltViewModel(),
-    homeViewModel:  HomeViewModel    = hiltViewModel()
+    viewModel:      ReorderViewModel = hiltViewModel()
 ) {
     val record     by viewModel.record.collectAsState()
     val pages      by viewModel.pages.collectAsState()
     val saveAsCopy by viewModel.saveAsCopy.collectAsState()
     val loading    by viewModel.loading.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error      by viewModel.error.collectAsState()
+    val success    by viewModel.success.collectAsState()
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
 
     val listState = rememberLazyListState()
     val reorderState = rememberReorderableLazyListState(listState) { from, to ->
@@ -190,17 +198,39 @@ fun ReorderScreen(
 
         // Apply button
         Button(
-            onClick  = {
-                val rec = record ?: return@Button
-                homeViewModel.reorderPages(rec, viewModel.getCurrentOrder(), saveAsCopy)
-                onNavigateBack()
-            },
-            enabled  = record != null && !loading,
+            onClick  = { viewModel.reorderPages() },
+            enabled  = record != null && !loading && !editLoading,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
             Text(stringResource(R.string.reorder_apply))
         }
+    }
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
     }
 }

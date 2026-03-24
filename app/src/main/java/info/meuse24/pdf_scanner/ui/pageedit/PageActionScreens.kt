@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,7 +27,9 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -44,21 +47,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.ui.home.HomeViewModel
 
 @Composable
 fun RotatePagesScreen(
     onNavigateBack: () -> Unit,
-    viewModel: PageSelectionViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel()
+    viewModel: PageSelectionViewModel = hiltViewModel()
 ) {
     val record by viewModel.record.collectAsState()
     val pages by viewModel.pages.collectAsState()
     val selectedPages by viewModel.selectedPages.collectAsState()
     val saveAsCopy by viewModel.saveAsCopy.collectAsState()
     val loading by viewModel.loading.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
     var rotationDegrees by rememberSaveable { mutableIntStateOf(90) }
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
 
     PageSelectionContent(
         pages = pages,
@@ -79,33 +86,56 @@ fun RotatePagesScreen(
             )
         },
         confirmLabel = stringResource(R.string.rotate_apply),
-        confirmEnabled = record != null && selectedPages.isNotEmpty() && !loading,
+        confirmEnabled = record != null && selectedPages.isNotEmpty() && !loading && !editLoading,
         onTogglePage = viewModel::togglePage,
-        onConfirm = {
-            val currentRecord = record ?: return@PageSelectionContent
-            homeViewModel.rotatePages(
-                record = currentRecord,
-                pageIndexes = viewModel.getSelectedPages(),
-                rotationDegrees = rotationDegrees,
-                saveAsCopy = saveAsCopy
-            )
-            onNavigateBack()
-        }
+        onConfirm = { viewModel.rotatePages(rotationDegrees) }
     )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
 }
 
 @Composable
 fun DeletePagesScreen(
     onNavigateBack: () -> Unit,
-    viewModel: PageSelectionViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel()
+    viewModel: PageSelectionViewModel = hiltViewModel()
 ) {
     val record by viewModel.record.collectAsState()
     val pages by viewModel.pages.collectAsState()
     val selectedPages by viewModel.selectedPages.collectAsState()
     val saveAsCopy by viewModel.saveAsCopy.collectAsState()
     val loading by viewModel.loading.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
     val allPagesSelected = record != null && selectedPages.size >= record!!.pageCount
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
 
     PageSelectionContent(
         pages = pages,
@@ -120,59 +150,54 @@ fun DeletePagesScreen(
         allowSaveAsCopy = true,
         onSaveAsCopyChange = viewModel::setSaveAsCopy,
         confirmLabel = stringResource(R.string.delete_pages_apply),
-        confirmEnabled = record != null && selectedPages.isNotEmpty() && !loading && !allPagesSelected,
+        confirmEnabled = record != null && selectedPages.isNotEmpty() && !loading && !editLoading && !allPagesSelected,
         onTogglePage = viewModel::togglePage,
-        onConfirm = {
-            val currentRecord = record ?: return@PageSelectionContent
-            homeViewModel.deletePages(currentRecord, viewModel.getSelectedPages(), saveAsCopy)
-            onNavigateBack()
-        }
+        onConfirm = { viewModel.deletePages() }
     )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
 }
 
 @Composable
 fun ExtractPagesScreen(
     onNavigateBack: () -> Unit,
-    viewModel: PageSelectionViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel()
-) {
-    PageActionScreen(
-        confirmLabelRes = R.string.extract_pages_apply,
-        onNavigateBack = onNavigateBack,
-        onConfirm = { record, selectedPages, _ ->
-            homeViewModel.extractPages(record, selectedPages)
-        },
-        viewModel = viewModel
-    )
-}
-
-@Composable
-fun DuplicatePagesScreen(
-    onNavigateBack: () -> Unit,
-    viewModel: PageSelectionViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel()
-) {
-    PageActionScreen(
-        confirmLabelRes = R.string.duplicate_pages_apply,
-        onNavigateBack = onNavigateBack,
-        onConfirm = { record, selectedPages, _ ->
-            homeViewModel.duplicatePages(record, selectedPages)
-        },
-        viewModel = viewModel
-    )
-}
-
-@Composable
-private fun PageActionScreen(
-    confirmLabelRes: Int,
-    onNavigateBack: () -> Unit,
-    onConfirm: (ScanRecord, List<Int>, Boolean) -> Unit,
-    viewModel: PageSelectionViewModel
+    viewModel: PageSelectionViewModel = hiltViewModel()
 ) {
     val record by viewModel.record.collectAsState()
     val pages by viewModel.pages.collectAsState()
     val selectedPages by viewModel.selectedPages.collectAsState()
     val loading by viewModel.loading.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
 
     PageSelectionContent(
         pages = pages,
@@ -186,15 +211,99 @@ private fun PageActionScreen(
         saveAsCopy = true,
         allowSaveAsCopy = false,
         onSaveAsCopyChange = {},
-        confirmLabel = stringResource(confirmLabelRes),
-        confirmEnabled = record != null && selectedPages.isNotEmpty() && !loading,
+        confirmLabel = stringResource(R.string.extract_pages_apply),
+        confirmEnabled = record != null && selectedPages.isNotEmpty() && !loading && !editLoading,
         onTogglePage = viewModel::togglePage,
-        onConfirm = {
-            val currentRecord = record ?: return@PageSelectionContent
-            onConfirm(currentRecord, viewModel.getSelectedPages(), true)
-            onNavigateBack()
-        }
+        onConfirm = { viewModel.extractPages() }
     )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun DuplicatePagesScreen(
+    onNavigateBack: () -> Unit,
+    viewModel: PageSelectionViewModel = hiltViewModel()
+) {
+    val record by viewModel.record.collectAsState()
+    val pages by viewModel.pages.collectAsState()
+    val selectedPages by viewModel.selectedPages.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
+
+    PageSelectionContent(
+        pages = pages,
+        selectedPages = selectedPages,
+        loading = loading,
+        selectionSummary = if (selectedPages.isNotEmpty()) {
+            stringResource(R.string.selection_count, selectedPages.size)
+        } else {
+            null
+        },
+        saveAsCopy = true,
+        allowSaveAsCopy = false,
+        onSaveAsCopyChange = {},
+        confirmLabel = stringResource(R.string.duplicate_pages_apply),
+        confirmEnabled = record != null && selectedPages.isNotEmpty() && !loading && !editLoading,
+        onTogglePage = viewModel::togglePage,
+        onConfirm = { viewModel.duplicatePages() }
+    )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
 }
 
 @Composable

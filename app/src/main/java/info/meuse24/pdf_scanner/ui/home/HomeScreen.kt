@@ -110,7 +110,6 @@ fun HomeScreen(
     val ocrLoading   by viewModel.ocrLoading.collectAsState()
     val ocrProgress  by viewModel.ocrProgress.collectAsState()
     val editLoading  by viewModel.editLoading.collectAsState()
-    val editProgress by viewModel.editProgress.collectAsState()
     val context   = LocalContext.current
     val resources = LocalResources.current
     val clipboard = LocalClipboardManager.current
@@ -502,15 +501,6 @@ fun HomeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     ScannerLoadingAnimation()
-                    val progress = editProgress
-                    if (progress != null) {
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            stringResource(R.string.searchable_progress, progress.first, progress.second),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                    }
                 }
             },
             confirmButton = {}

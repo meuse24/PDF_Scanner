@@ -1,21 +1,27 @@
 package info.meuse24.pdf_scanner.ui.documentaction
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,18 +31,21 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import info.meuse24.pdf_scanner.ui.components.ActionScreenContent
-import info.meuse24.pdf_scanner.ui.home.HomeViewModel
-import info.meuse24.pdf_scanner.ui.overlay.ScanDetailViewModel
 
 @Composable
 fun CompressPdfScreen(
     onNavigateBack: () -> Unit,
-    viewModel: ScanDetailViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel()
+    viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
     val record by viewModel.record.collectAsState()
-    val editLoading by homeViewModel.editLoading.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
     var preset by rememberSaveable { mutableStateOf(PdfCompressionPreset.MEDIUM.name) }
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
 
     ActionScreenContent(
         record = record,
@@ -50,25 +59,52 @@ fun CompressPdfScreen(
         },
         confirmLabel = stringResource(R.string.compress_pdf_apply),
         confirmEnabled = record != null && !editLoading,
-        onConfirm = {
-            val currentRecord = record ?: return@ActionScreenContent
-            homeViewModel.compressPdf(currentRecord, PdfCompressionPreset.valueOf(preset))
-            onNavigateBack()
-        }
+        onConfirm = { viewModel.compressPdf(PdfCompressionPreset.valueOf(preset)) }
     )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
 }
 
 @Composable
 fun ProtectPdfScreen(
     onNavigateBack: () -> Unit,
-    viewModel: ScanDetailViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel()
+    viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
     val record by viewModel.record.collectAsState()
-    val editLoading by homeViewModel.editLoading.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     val passwordsMatch = password.isNotBlank() && password == confirmPassword
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
 
     ActionScreenContent(
         record = record,
@@ -103,23 +139,50 @@ fun ProtectPdfScreen(
         },
         confirmLabel = stringResource(R.string.protect_pdf_apply),
         confirmEnabled = record != null && passwordsMatch && !editLoading,
-        onConfirm = {
-            val currentRecord = record ?: return@ActionScreenContent
-            homeViewModel.protectPdf(currentRecord, password)
-            onNavigateBack()
-        }
+        onConfirm = { viewModel.protectPdf(password) }
     )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
 }
 
 @Composable
 fun UnlockPdfScreen(
     onNavigateBack: () -> Unit,
-    viewModel: ScanDetailViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel()
+    viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
     val record by viewModel.record.collectAsState()
-    val editLoading by homeViewModel.editLoading.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
     var password by rememberSaveable { mutableStateOf("") }
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
 
     ActionScreenContent(
         record = record,
@@ -137,12 +200,34 @@ fun UnlockPdfScreen(
         },
         confirmLabel = stringResource(R.string.unlock_pdf_apply),
         confirmEnabled = record != null && password.isNotBlank() && !editLoading,
-        onConfirm = {
-            val currentRecord = record ?: return@ActionScreenContent
-            homeViewModel.unlockPdf(currentRecord, password)
-            onNavigateBack()
-        }
+        onConfirm = { viewModel.unlockPdf(password) }
     )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
 }
 
 @Composable

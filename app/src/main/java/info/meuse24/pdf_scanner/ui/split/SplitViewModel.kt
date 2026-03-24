@@ -1,12 +1,17 @@
 package info.meuse24.pdf_scanner.ui.split
 
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.workflow.SplitPdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
+import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.util.PdfEditor
 import info.meuse24.pdf_scanner.util.buildRanges
 import info.meuse24.pdf_scanner.util.normalizeSplitPoints
@@ -15,7 +20,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
@@ -29,6 +33,9 @@ data class PageThumb(
 class SplitViewModel @Inject constructor(
     private val repository: ScanRepository,
     private val pdfEditor: PdfEditor,
+    private val splitPdfWorkflow: SplitPdfWorkflow,
+    private val errorMapper: WorkflowErrorMapper,
+    @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -45,6 +52,17 @@ class SplitViewModel @Inject constructor(
 
     private val _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading.asStateFlow()
+
+    private val _editLoading = MutableStateFlow(false)
+    val editLoading: StateFlow<Boolean> = _editLoading.asStateFlow()
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
+    private val _success = MutableStateFlow(false)
+    val success: StateFlow<Boolean> = _success.asStateFlow()
+
+    private val scansDir get() = File(context.filesDir, "scans").apply { mkdirs() }
 
     init {
         loadRecord()
@@ -110,6 +128,24 @@ class SplitViewModel @Inject constructor(
         val pageCount = _record.value?.pageCount ?: return emptyList()
         return normalizeSplitPoints(pageCount, _splitPoints.value.toList())
     }
+
+    fun splitPdf(splitAtPages: List<Int>) {
+        val record = _record.value ?: return
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = splitPdfWorkflow(record, splitAtPages, scansDir)) {
+                    is WorkflowResult.Success -> _success.value = true
+                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun clearError() { _error.value = null }
 
     override fun onCleared() {
         super.onCleared()

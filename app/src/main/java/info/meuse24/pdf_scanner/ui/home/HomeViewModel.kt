@@ -12,25 +12,12 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.DeletePagesWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.DuplicatePagesWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.ExtractPagesWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.ReorderPagesWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.RotatePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
-import info.meuse24.pdf_scanner.domain.workflow.SignatureStampWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.SplitPdfWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.TextWatermarkWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
-import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -38,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import android.graphics.Bitmap
 import java.io.File
 import java.util.Locale
 import javax.inject.Inject
@@ -52,18 +38,6 @@ class HomeViewModel @Inject constructor(
     private val extractTextUseCase:  ExtractTextUseCase,
     private val makeSearchableWorkflow: MakeSearchableWorkflow,
     private val mergePdfsWorkflow:   MergePdfsWorkflow,
-    private val splitPdfWorkflow:    SplitPdfWorkflow,
-    private val reorderPagesWorkflow: ReorderPagesWorkflow,
-    private val rotatePagesWorkflow: RotatePagesWorkflow,
-    private val deletePagesWorkflow: DeletePagesWorkflow,
-    private val extractPagesWorkflow: ExtractPagesWorkflow,
-    private val duplicatePagesWorkflow: DuplicatePagesWorkflow,
-    private val pageNumbersWorkflow: PageNumbersWorkflow,
-    private val textWatermarkWorkflow: TextWatermarkWorkflow,
-    private val compressPdfWorkflow: CompressPdfWorkflow,
-    private val protectPdfWorkflow: ProtectPdfWorkflow,
-    private val unlockPdfWorkflow: UnlockPdfWorkflow,
-    private val signatureStampWorkflow: SignatureStampWorkflow,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -86,13 +60,9 @@ class HomeViewModel @Inject constructor(
     private val _ocrProgress = MutableStateFlow<Pair<Int, Int>?>(null)
     val ocrProgress: StateFlow<Pair<Int, Int>?> = _ocrProgress.asStateFlow()
 
-    /** true während merge/split/reorder Operationen */
+    /** true während merge Operationen */
     private val _editLoading = MutableStateFlow(false)
     val editLoading: StateFlow<Boolean> = _editLoading.asStateFlow()
-
-    /** (aktuellerSchritt, gesamtSchritte) während Edit-Bulk-Ops; null sonst */
-    private val _editProgress = MutableStateFlow<Pair<Int, Int>?>(null)
-    val editProgress: StateFlow<Pair<Int, Int>?> = _editProgress.asStateFlow()
 
     private val scansDir get() = File(context.filesDir, "scans").apply { mkdirs() }
 
@@ -197,7 +167,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // ── PDF-Bearbeitung: Merge / Split / Reorder ──────────────────────────────
+    // ── PDF-Bearbeitung: Merge ────────────────────────────────────────────────
 
     fun mergePdfs(records: List<ScanRecord>, outputFilename: String) {
         if (_editLoading.value) return
@@ -208,271 +178,6 @@ class HomeViewModel @Inject constructor(
                     is WorkflowResult.Success -> {
                         _success.value = context.getString(
                             R.string.merge_success,
-                            result.value.outputFilename
-                        )
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun splitPdf(record: ScanRecord, splitAtPages: List<Int>) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (val result = splitPdfWorkflow(record, splitAtPages, scansDir)) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(
-                            R.string.split_success,
-                            result.value.partsCount
-                        )
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun reorderPages(record: ScanRecord, newOrder: List<Int>, saveAsCopy: Boolean) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (val result = reorderPagesWorkflow(record, newOrder, saveAsCopy, scansDir)) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(R.string.reorder_success)
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun rotatePages(
-        record: ScanRecord,
-        pageIndexes: List<Int>,
-        rotationDegrees: Int,
-        saveAsCopy: Boolean
-    ) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (
-                    val result = rotatePagesWorkflow(
-                        record = record,
-                        pageIndexes = pageIndexes,
-                        rotationDegrees = rotationDegrees,
-                        saveAsCopy = saveAsCopy,
-                        scansDir = scansDir
-                    )
-                ) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(
-                            if (saveAsCopy) R.string.rotate_success_copy else R.string.rotate_success
-                        )
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun deletePages(record: ScanRecord, pageIndexes: List<Int>, saveAsCopy: Boolean) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (val result = deletePagesWorkflow(record, pageIndexes, saveAsCopy, scansDir)) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(
-                            if (saveAsCopy) {
-                                R.string.delete_pages_success_copy
-                            } else {
-                                R.string.delete_pages_success
-                            }
-                        )
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun extractPages(record: ScanRecord, pageIndexes: List<Int>) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (val result = extractPagesWorkflow(record, pageIndexes, scansDir)) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(
-                            R.string.extract_pages_success,
-                            result.value.outputFilename
-                        )
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun duplicatePages(record: ScanRecord, pageIndexes: List<Int>) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (val result = duplicatePagesWorkflow(record, pageIndexes, scansDir)) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(
-                            R.string.duplicate_pages_success,
-                            result.value.outputFilename
-                        )
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun addPageNumbers(record: ScanRecord) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (val result = pageNumbersWorkflow(record, scansDir)) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(
-                            R.string.page_numbers_success,
-                            result.value.outputFilename
-                        )
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun applyTextWatermark(record: ScanRecord, text: String) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (val result = textWatermarkWorkflow(record, text, scansDir)) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(
-                            R.string.watermark_success,
-                            result.value.outputFilename
-                        )
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun compressPdf(record: ScanRecord, preset: PdfCompressionPreset) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (val result = compressPdfWorkflow(record, preset, scansDir)) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(
-                            R.string.compress_pdf_success,
-                            result.value.outputFilename
-                        )
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun protectPdf(record: ScanRecord, password: String) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (val result = protectPdfWorkflow(record, password, scansDir)) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(
-                            R.string.protect_pdf_success,
-                            result.value.outputFilename
-                        )
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun unlockPdf(record: ScanRecord, password: String) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (val result = unlockPdfWorkflow(record, password, scansDir)) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(
-                            R.string.unlock_pdf_success,
-                            result.value.outputFilename
-                        )
-                    }
-                    is WorkflowResult.Failure -> handleWorkflowFailure("PdfEditor", result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
-    }
-
-    fun applySignatureStamp(
-        record: ScanRecord,
-        signatureBitmap: Bitmap?,
-        pageIndex: Int,
-        scaleFraction: Float
-    ) {
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                when (
-                    val result = signatureStampWorkflow(
-                        record = record,
-                        signatureBitmap = signatureBitmap,
-                        pageIndex = pageIndex,
-                        scaleFraction = scaleFraction,
-                        scansDir = scansDir
-                    )
-                ) {
-                    is WorkflowResult.Success -> {
-                        _success.value = context.getString(
-                            R.string.signature_success,
                             result.value.outputFilename
                         )
                     }

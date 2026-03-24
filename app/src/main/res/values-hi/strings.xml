@@ -287,5 +287,6 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
+    <string name="help_back_to_contents">सामग्री पर वापस जाएं</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
 </resources>

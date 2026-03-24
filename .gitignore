@@ -18,3 +18,4 @@ app/release/
 # Temporary plan files
 plan-*.txt
 .kotlin/
+.claude/

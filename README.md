@@ -51,9 +51,10 @@ A clean, privacy-focused Android app for scanning documents to PDF using Google'
 ./gradlew installDebug           # build + install on connected device
 ./gradlew assembleRelease        # build release APK
 ./gradlew test                   # run unit tests (JVM-only, no emulator needed)
+./gradlew lintDebug              # run Android lint for the debug variant
 ```
 
-Requires Android Studio Meerkat or newer, JDK 21+.
+Requires Android Studio Meerkat or newer, JDK 11+.
 
 ## Architecture
 
@@ -77,19 +78,21 @@ ui/
 ├── home/
 │   ├── HomeScreen.kt   Coordinator (scanner launcher, dialogs, routing)
 │   │                   ScanItem.onAction(ScanAction) → navigates to edit screens
-│   ├── HomeViewModel.kt State coordinator — delegates to use cases + workflows
+│   ├── HomeViewModel.kt Archive coordinator — import/export/delete/OCR/
+│   │                   make-searchable/merge state and feedback
 │   └── components/     ScanItem (+ ScanAction sealed interface), SelectionTitleBar,
 │                         BulkActionBar, EmptyStateContent, ScannerLoadingAnimation,
 │                         MergeDialog
 ├── overlay/            PageNumbersScreen, TextWatermarkScreen
-│                         + ScanDetailViewModel (loads ScanRecord by ID)
 ├── documentaction/     CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen
+│                         + DocumentEditViewModel
 ├── pageedit/           RotatePagesScreen, DeletePagesScreen,
 │                         ExtractPagesScreen, DuplicatePagesScreen
 │                         + PageSelectionViewModel
 ├── split/              SplitScreen + SplitViewModel
 ├── reorder/            ReorderScreen + ReorderViewModel
-├── signature/          SignatureScreen (freehand pad + page/size selector)
+├── signature/          SignatureScreen (freehand pad + page/size selector,
+│                         also backed by DocumentEditViewModel)
 └── help / info / privacy
 
 data/
@@ -104,7 +107,7 @@ util/                   FileUtil, OcrManager, SearchablePdfBuilder, PdfEditor
 
 **Scanner flow:** Triggered via a `Boolean` state in `AppNavigation`, passed to `HomeScreen`, which reacts with `LaunchedEffect`. Avoids holding an Activity reference in the ViewModel.
 
-**Edit screens:** Each edit action navigates to a dedicated screen passing `scanId` as a route argument. `ScanDetailViewModel` or `PageSelectionViewModel` loads the record from the repository. `HomeViewModel` executes the operation via the corresponding workflow and reports success/error back through `StateFlow`s observed in `HomeScreen`.
+**Edit screens:** Each edit action navigates to a dedicated screen passing `scanId` as a route argument. `DocumentEditViewModel` loads the target `ScanRecord` for page numbers, text watermark, compress, protect, unlock, and signature flows and maps workflow failures through `WorkflowErrorMapper`. Page-oriented edit screens use `PageSelectionViewModel`; split and reorder use their dedicated view models.
 
 **Help screen:** `HelpScreen` is data-driven via `HelpSection` + `HelpAction`. The table of contents is rendered as one top-level card, the detail content is rendered as grouped `ActionCard`s below it, and scroll targets are derived from that list structure instead of hard-coded item indices. A floating action button returns the user to the contents after scrolling into the detail area.
 
@@ -117,14 +120,18 @@ util/                   FileUtil, OcrManager, SearchablePdfBuilder, PdfEditor
 Unit tests run on JVM (no emulator required):
 
 ```
-util/PdfEditorTest.kt                          — buildRanges (7), resolveUniqueFilename (6)
-domain/usecase/DeleteScansUseCaseTest.kt       — file deletion, thumbnails, error path (5)
-domain/usecase/MakeSearchableUseCaseTest.kt    — idempotency, DB updates, missing files (4)
-domain/workflow/PageNumbersWorkflowTest.kt     — success path, missing file, DB update
-domain/workflow/TextWatermarkWorkflowTest.kt   — success path, blank text validation
+util/PdfEditorTest.kt                          — PDF helper coverage
+domain/usecase/DeleteScansUseCaseTest.kt       — file deletion, thumbnails, error paths
+domain/usecase/MakeSearchableUseCaseTest.kt    — idempotency, DB updates, missing files
+domain/workflow/*.kt                           — merge, split, reorder, rotate, delete, extract,
+                                                 duplicate, page numbers, watermark, compress,
+                                                 protect, unlock, signature, searchable
+ui/documentaction/DocumentEditViewModelTest.kt — edit-loading guard, success/failure mapping
+ui/reorder/ReorderViewModelTest.kt             — reorder state + workflow dispatch
+ui/split/SplitViewModelTest.kt                 — split state + workflow dispatch
 ```
 
-Test infrastructure uses in-memory fakes (`FakeScanDao`, `FakeSearchablePdfBuilder`) without Mockito or Hilt.
+Test infrastructure uses in-memory fakes plus Mockito for Android framework types such as `Bitmap`.
 
 ## Tech Stack
 

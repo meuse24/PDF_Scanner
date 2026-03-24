@@ -7,6 +7,7 @@
 ./gradlew assembleRelease        # Release-APK
 ./gradlew installDebug           # Bauen + installieren
 ./gradlew test                   # Unit-Tests
+./gradlew lintDebug              # Android Lint (Debug)
 ./gradlew clean                  # Bereinigen
 ```
 
@@ -55,12 +56,12 @@ ui/
 │   └── ActionScreenContent.kt     # Gemeinsames Layout für Aktions-Screens:
 │                                  # Titel · Beschreibung · ScanPreviewCard · Formular-Slot · Bestätigen-Button
 ├── overlay/
-│   ├── ScanDetailViewModel.kt     # Lädt ScanRecord per scanId (noch vorhanden, nicht mehr verwendet)
 │   └── OverlayActionScreens.kt    # PageNumbersScreen, TextWatermarkScreen — nutzen DocumentEditViewModel
 ├── documentaction/
 │   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature
-│   │                              # Lädt ScanRecord + führt Workflows aus; _editLoading/_error/_success
-│   └── DocumentActionScreens.kt  # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen — nutzen DocumentEditViewModel
+│   │                              # Lädt ScanRecord per scanId, führt Workflows aus,
+│   │                              # mappt Fehler über WorkflowErrorMapper; _editLoading/_error/_success
+│   └── DocumentActionScreens.kt   # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen
 ├── pageedit/
 │   ├── PageSelectionViewModel.kt  # Seiten-Thumbnails, Auswahl, saveAsCopy + Rotate/Delete/Extract/Duplicate-Workflows
 │   └── PageActionScreens.kt       # RotatePagesScreen, DeletePagesScreen, ExtractPagesScreen, DuplicatePagesScreen
@@ -83,7 +84,7 @@ data/
 │   └── AppDatabase.kt             # Version 3, "pdf_scanner_db", MIGRATION_1_2 + MIGRATION_2_3
 └── repository/ScanRepository.kt
 
-domain/workflow/WorkflowErrorMapper.kt  # @Singleton: ScanWorkflowError → lokalisierter String (geteilt)
+domain/workflow/WorkflowErrorMapper.kt  # @Singleton: ScanWorkflowError → lokalisierter String
 di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
 util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
@@ -128,16 +129,26 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
 
 ```
 test/
-└── domain/usecase/
-    ├── DeleteScansUseCaseTest.kt      # Dateilöschung, Thumbnail, Fehlerpfad, Mehrfach-Delete
-    ├── MakeSearchableUseCaseTest.kt   # Idempotenz, DB-Updates, fehlende Dateien, Progress
-    ├── FakeScanDao (in DeleteScansUseCaseTest)   # In-Memory ScanDao-Implementierung
-    └── FakeSearchablePdfBuilder (in MakeSearchableUseCaseTest)  # Überschreibt makeSearchable
-util/
-    └── PdfEditorTest.kt               # buildRanges (7 Tests) + resolveUniqueFilename (6 Tests)
+├── domain/usecase/
+│   ├── DeleteScansUseCaseTest.kt           # Dateilöschung, Thumbnail, Fehlerpfad, Mehrfach-Delete
+│   ├── MakeSearchableUseCaseTest.kt        # Idempotenz, DB-Updates, fehlende Dateien, Progress
+│   ├── FakeScanDao (in DeleteScansUseCaseTest)          # In-Memory ScanDao-Implementierung
+│   └── FakeSearchablePdfBuilder (in MakeSearchableUseCaseTest)  # Überschreibt makeSearchable
+├── domain/workflow/
+│   ├── *WorkflowTest.kt                    # Merge/Split/Reorder/Rotate/Delete/Extract/Duplicate
+│   └── *WorkflowTest.kt                    # PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Searchable
+├── ui/
+│   ├── split/SplitViewModelTest.kt         # editLoading-Guard, Success/Failure, clearError (5 Tests)
+│   ├── reorder/ReorderViewModelTest.kt     # editLoading-Guard, Success/Failure, clearError (4 Tests)
+│   └── documentaction/DocumentEditViewModelTest.kt  # addPageNumbers Success/Failure/Guard/clearError (4 Tests)
+└── util/
+    └── PdfEditorTest.kt                    # buildRanges (7 Tests) + resolveUniqueFilename (6 Tests)
 ```
 
-Testabhängigkeiten: `junit:4.13.2` + `kotlinx-coroutines-test:1.10.1`
+ViewModel-Testmuster: `UnconfinedTestDispatcher` + reale Workflow-Instanzen mit Fake-`PdfEditor`-Subklassen;
+`StateFlow.first { !it }` zum Synchronisieren auf IO-Abschluss ohne Timeouts.
+
+Testabhängigkeiten: `junit:4.13.2` + `kotlinx-coroutines-test:1.10.1` + `mockito-inline:5.2.0`
 
 ## Tech Stack
 

@@ -350,4 +350,21 @@
     <string name="help_back_to_contents">Back to contents</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
+    <!-- Highlight PDF -->
+    <string name="action_highlight_pdf">Highlight PDF</string>
+    <string name="highlight_screen_title">Highlight PDF</string>
+    <string name="highlight_description">Mark text with a yellow highlighter</string>
+    <string name="highlight_details">Drag over areas to highlight them in yellow. Navigate between pages to mark multiple pages at once. A new highlighted PDF copy will be created.</string>
+    <string name="highlight_apply">Save highlights</string>
+    <string name="highlight_clear_page">Clear page</string>
+    <string name="highlight_hint">Drag over text to mark it.</string>
+    <string name="highlight_target_page">Page: %1$d of %2$d</string>
+    <string name="highlight_success">Highlighted PDF created: %1$s</string>
+    <string name="highlight_error">Error adding highlights</string>
+    <string name="highlight_no_strokes">Draw highlights first</string>
+    <string name="highlight_stroke_thin">Thin</string>
+    <string name="highlight_stroke_medium">Medium</string>
+    <string name="highlight_stroke_thick">Thick</string>
+    <string name="highlight_stroke_width">Marker width</string>
+    <string name="help_item_highlight_pdf">Choose Highlight PDF to draw yellow highlights over the document. Navigate between pages to add highlights to multiple pages, then save as a new PDF copy.</string>
 </resources>

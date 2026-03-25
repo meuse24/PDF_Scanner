@@ -258,5 +258,7 @@ class HomeViewModel @Inject constructor(
         ScanWorkflowError.PasswordRequiredToRemove -> context.getString(R.string.remove_password_requires_input)
         is ScanWorkflowError.RemovePasswordFailed -> context.getString(R.string.remove_password_error)
         is ScanWorkflowError.UsageRestrictionFailed -> context.getString(R.string.restrict_usage_error)
+        ScanWorkflowError.NoHighlightStrokes -> context.getString(R.string.highlight_no_strokes)
+        is ScanWorkflowError.HighlightFailed -> context.getString(R.string.highlight_error)
     }
 }

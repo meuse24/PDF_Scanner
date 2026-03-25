@@ -20,6 +20,7 @@ import com.tom_roush.pdfbox.pdmodel.graphics.image.JPEGFactory
 import com.tom_roush.pdfbox.pdmodel.graphics.image.LosslessFactory
 import com.tom_roush.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
 import com.tom_roush.pdfbox.util.Matrix
+import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import java.io.File
 import java.io.IOException
@@ -422,6 +423,54 @@ open class PdfEditor @Inject constructor() {
                         signatureBitmap = signatureBitmap,
                         scaleFraction = scaleFraction
                     )
+                }
+            }
+        }
+    }
+
+    /**
+     * Zeichnet gelbe Marker-Striche auf die angegebenen Seiten von [input]
+     * und speichert das Ergebnis mit Suffix "_Markiert" in [outputDir].
+     * [strokes] enthält normalisierte Koordinaten (0..1) pro Seite.
+     */
+    open fun applyHighlight(
+        input: File,
+        outputDir: File,
+        strokes: List<HighlightStroke>
+    ): File {
+        require(strokes.isNotEmpty()) { "Mindestens ein Strich erforderlich" }
+        return writeDerivedPdf(input, outputDir, "_Markiert", "Highlight") { source, result ->
+            val gsHighlight = PDExtendedGraphicsState().apply {
+                strokingAlphaConstant = 0.4f
+            }
+            repeat(source.numberOfPages) { pageIdx ->
+                val page = result.importPage(source.getPage(pageIdx))
+                val pageStrokes = strokes.filter { it.pageIndex == pageIdx }
+                if (pageStrokes.isNotEmpty()) {
+                    val pageWidth = page.mediaBox.width
+                    val pageHeight = page.mediaBox.height
+                    PDPageContentStream(
+                        result, page,
+                        PDPageContentStream.AppendMode.APPEND,
+                        true, true
+                    ).use { cs ->
+                        cs.setGraphicsStateParameters(gsHighlight)
+                        cs.setStrokingColor(255, 220, 0)
+                        pageStrokes.forEach { stroke ->
+                            if (stroke.points.size < 2) return@forEach
+                            val strokeWidthPt =
+                                (pageWidth * stroke.strokeWidthFraction).coerceIn(3f, 36f)
+                            cs.setLineWidth(strokeWidthPt)
+                            cs.setLineCapStyle(1)
+                            cs.setLineJoinStyle(1)
+                            val first = stroke.points.first()
+                            cs.moveTo(first.first * pageWidth, pageHeight * (1f - first.second))
+                            stroke.points.drop(1).forEach { (nx, ny) ->
+                                cs.lineTo(nx * pageWidth, pageHeight * (1f - ny))
+                            }
+                            cs.stroke()
+                        }
+                    }
                 }
             }
         }

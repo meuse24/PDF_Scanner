@@ -328,4 +328,21 @@
     <string name="help_item_restrict_usage">Choose Restrict usage rights to create a copy with an owner password that controls whether printing, copying, and editing are allowed. The document can still be opened without a password.</string>
     <string name="help_back_to_contents">К оглавлению</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
+    <!-- Highlight PDF -->
+    <string name="action_highlight_pdf">Выделить PDF</string>
+    <string name="highlight_screen_title">Выделить PDF</string>
+    <string name="highlight_description">Отмечайте текст жёлтым маркером</string>
+    <string name="highlight_details">Проведите по областям, чтобы выделить их жёлтым. Переходите между страницами для выделения нескольких страниц. Будет создана новая копия PDF с выделениями.</string>
+    <string name="highlight_apply">Сохранить выделения</string>
+    <string name="highlight_clear_page">Очистить страницу</string>
+    <string name="highlight_hint">Проведите по тексту, чтобы отметить его.</string>
+    <string name="highlight_target_page">Страница: %1$d из %2$d</string>
+    <string name="highlight_success">Создан PDF с выделениями: %1$s</string>
+    <string name="highlight_error">Ошибка при добавлении выделений</string>
+    <string name="highlight_no_strokes">Сначала нарисуйте выделения</string>
+    <string name="highlight_stroke_thin">Тонкий</string>
+    <string name="highlight_stroke_medium">Средний</string>
+    <string name="highlight_stroke_thick">Толстый</string>
+    <string name="highlight_stroke_width">Ширина маркера</string>
+    <string name="help_item_highlight_pdf">Выберите Выделить PDF, чтобы нарисовать жёлтые выделения на документе. Переходите между страницами для добавления выделений на несколько страниц и сохраните как новую копию PDF.</string>
 </resources>

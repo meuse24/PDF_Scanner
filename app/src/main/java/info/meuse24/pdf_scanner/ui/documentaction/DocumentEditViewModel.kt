@@ -9,8 +9,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.HighlightPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RemovePasswordWorkflow
@@ -21,6 +23,7 @@ import info.meuse24.pdf_scanner.domain.workflow.TextWatermarkWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
+import info.meuse24.pdf_scanner.util.PdfEditor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +44,8 @@ class DocumentEditViewModel @Inject constructor(
     private val removeTextLayerWorkflow: RemoveTextLayerWorkflow,
     private val removePasswordWorkflow: RemovePasswordWorkflow,
     private val restrictUsageWorkflow: RestrictUsageWorkflow,
+    private val highlightPdfWorkflow: HighlightPdfWorkflow,
+    private val pdfEditor: PdfEditor,
     private val errorMapper: WorkflowErrorMapper,
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
@@ -61,6 +66,18 @@ class DocumentEditViewModel @Inject constructor(
     val success: StateFlow<Boolean> = _success.asStateFlow()
 
     private val scansDir get() = File(context.filesDir, "scans").apply { mkdirs() }
+
+    private val _highlightPageBitmap = MutableStateFlow<Bitmap?>(null)
+    val highlightPageBitmap: StateFlow<Bitmap?> = _highlightPageBitmap.asStateFlow()
+
+    fun loadHighlightPage(pageIndex: Int) {
+        val record = _record.value ?: return
+        viewModelScope.launch(Dispatchers.IO) {
+            _highlightPageBitmap.value = pdfEditor.renderPageThumbnail(
+                File(record.filepath), pageIndex, 1024
+            )
+        }
+    }
 
     init {
         viewModelScope.launch {
@@ -205,6 +222,22 @@ class DocumentEditViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 when (val result = restrictUsageWorkflow(record, scansDir, ownerPassword, canPrint, canCopy, canEdit)) {
+                    is WorkflowResult.Success -> _success.value = true
+                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun applyHighlight(strokes: List<HighlightStroke>) {
+        val record = _record.value ?: return
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = highlightPdfWorkflow(record, strokes, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
                     is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
                 }

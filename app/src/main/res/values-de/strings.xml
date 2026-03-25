@@ -328,4 +328,21 @@
     <string name="help_back_to_contents">Zum Inhaltsverzeichnis</string>
     <string name="reorder_invalid_order">Bitte eine gültige Seitenreihenfolge für das gesamte PDF wählen</string>
     <string name="signature_scale_invalid">Bitte eine gültige Signaturgröße wählen</string>
+    <!-- Highlight PDF -->
+    <string name="action_highlight_pdf">PDF markieren</string>
+    <string name="highlight_screen_title">PDF markieren</string>
+    <string name="highlight_description">Text mit gelbem Marker hervorheben</string>
+    <string name="highlight_details">Streiche über Bereiche, um sie gelb zu markieren. Navigiere zwischen Seiten, um mehrere Seiten zu markieren. Es wird eine neue markierte PDF-Kopie erstellt.</string>
+    <string name="highlight_apply">Markierungen speichern</string>
+    <string name="highlight_clear_page">Seite löschen</string>
+    <string name="highlight_hint">Über Text ziehen, um ihn zu markieren.</string>
+    <string name="highlight_target_page">Seite: %1$d von %2$d</string>
+    <string name="highlight_success">Markiertes PDF erstellt: %1$s</string>
+    <string name="highlight_error">Fehler beim Hinzufügen der Markierungen</string>
+    <string name="highlight_no_strokes">Zuerst Markierungen zeichnen</string>
+    <string name="highlight_stroke_thin">Dünn</string>
+    <string name="highlight_stroke_medium">Mittel</string>
+    <string name="highlight_stroke_thick">Dick</string>
+    <string name="highlight_stroke_width">Markierungsbreite</string>
+    <string name="help_item_highlight_pdf">Mit PDF markieren kannst du gelbe Markierungen über das Dokument ziehen. Navigiere zwischen Seiten, um mehrere Seiten zu markieren, und speichere dann als neue PDF-Kopie.</string>
 </resources>

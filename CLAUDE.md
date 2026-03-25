@@ -33,6 +33,8 @@ domain/
     ├── RemoveTextLayerUseCase.kt  # Seiten per PdfRenderer rendern → LosslessFactory → isSearchable=false
     ├── RemovePasswordUseCase.kt   # removePassword() aufrufen → isSearchable erhalten
     ├── RestrictUsageUseCase.kt    # restrictUsage() aufrufen → isSearchable=false
+    ├── HighlightPdfUseCase.kt     # applyHighlight() aufrufen + Thumbnail + DB-Insert → Suffix _Markiert
+    ├── HighlightStroke.kt         # data class: points List<Pair<Float,Float>> + pageIndex + strokeWidthFraction
     └── PageEditUtils.kt           # thumbnailFile(): gemeinsame Hilfsfunktion für Seitenbearbeitungs-UseCases
 
 ui/
@@ -49,7 +51,7 @@ ui/
 │       ├── ScanItem.kt            # Card: Dateiname (maxLines=2, volle Breite) + Row(Thumbnail · Metadaten · Menü · Checkbox)
 │       │                          # MoreVert: Hauptmenü (7 Items) + Submenu Seitenstruktur (5) + Submenu Schutz&Passwort (5)
 │       │                          # encryption-aware enabled-State: notEncrypted = !record.isEncrypted
-│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/RemoveTextLayer/RemovePassword/RestrictUsage)
+│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/RemoveTextLayer/RemovePassword/RestrictUsage/Highlight)
 │       │                          # onAction: (ScanAction) → Unit
 │       ├── SelectionTitleBar.kt   # ✕ · count/total · SelectAll-Icon
 │       ├── BulkActionBar.kt       # Share · Export · Merge · OCR · MakeSearchable · Delete (rot)
@@ -63,9 +65,10 @@ ui/
 ├── overlay/
 │   └── OverlayActionScreens.kt    # PageNumbersScreen, TextWatermarkScreen — nutzen DocumentEditViewModel
 ├── documentaction/
-│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/RemoveTextLayer/RemovePassword/RestrictUsage
+│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Highlight/RemoveTextLayer/RemovePassword/RestrictUsage
 │   │                              # Lädt ScanRecord per scanId, führt Workflows aus,
 │   │                              # mappt Fehler über WorkflowErrorMapper; _editLoading/_error/_success
+│   │                              # loadHighlightPage(pageIndex): lädt Bitmap → _highlightPageBitmap für HighlightScreen
 │   └── DocumentActionScreens.kt   # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen, RemovePasswordScreen, RemoveTextLayerScreen, RestrictUsageScreen
 ├── pageedit/
 │   ├── PageSelectionViewModel.kt  # Seiten-Thumbnails, Auswahl, saveAsCopy + Rotate/Delete/Extract/Duplicate-Workflows
@@ -78,6 +81,8 @@ ui/
 │   └── ReorderScreen.kt
 ├── signature/
 │   └── SignatureScreen.kt         # Freihand-Zeichen-Pad + Seiten-/Größenauswahl — nutzt DocumentEditViewModel
+├── highlight/
+│   └── HighlightScreen.kt         # Gelber-Marker-Pad: PDF-Seite als Hintergrund + Canvas-Overlay; Seiten-/Breiten-Auswahl — nutzt DocumentEditViewModel
 ├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
 ├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig
 └── privacy/PrivacyScreen.kt       # 4 Icon-Karten (PhoneAndroid, CloudOff, Shield, Lock)
@@ -95,6 +100,7 @@ domain/workflow/RemovePasswordWorkflow.kt   # Prüft: Datei existiert + isPdfEnc
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
 domain/workflow/RestrictUsageWorkflow.kt    # Prüft: Datei existiert → RestrictUsageUseCase
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
+domain/workflow/HighlightPdfWorkflow.kt     # Prüft: Datei existiert + strokes nicht leer + nicht verschlüsselt → HighlightPdfUseCase
 di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3 + MIGRATION_3_4
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
 util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
@@ -105,6 +111,7 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
                                    # buildRanges() + resolveUniqueFilename() als top-level internal (JVM-testbar)
                                    # removeTextLayer(): Seiten per PdfRenderer → LosslessFactory neu rendern → kein OCR-Text
                                    # removePassword(): PDDocument.load(file, "") → setAllSecurityToBeRemoved; wirft PasswordRequiredException bei echtem Benutzerpasswort
+                                   # applyHighlight(input, outputDir, strokes): normalisierte Strokes → PDPageContentStream (APPEND) mit strokingAlpha=0.4; Suffix _Markiert
                                    # restrictUsage(ownerPwd, canPrint, canCopy, canEdit): AccessPermission + StandardProtectionPolicy(ownerPwd, "", ap); Suffix _Eingeschraenkt
                                    # WrongPasswordException + PasswordRequiredException als innere IOException-Subklassen
 ```
@@ -151,7 +158,8 @@ test/
 │   └── FakeSearchablePdfBuilder (in MakeSearchableUseCaseTest)  # Überschreibt makeSearchable
 ├── domain/workflow/
 │   ├── *WorkflowTest.kt                    # Merge/Split/Reorder/Rotate/Delete/Extract/Duplicate
-│   └── *WorkflowTest.kt                    # PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Searchable
+│   ├── *WorkflowTest.kt                    # PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Searchable
+│   └── HighlightPdfWorkflowTest.kt         # leere Strokes, fehlende Datei, verschlüsselt, IO-Fehler, Erfolg (6 Tests)
 ├── ui/
 │   ├── split/SplitViewModelTest.kt         # editLoading-Guard, Success/Failure, clearError (5 Tests)
 │   ├── reorder/ReorderViewModelTest.kt     # editLoading-Guard, Success/Failure, clearError (4 Tests)

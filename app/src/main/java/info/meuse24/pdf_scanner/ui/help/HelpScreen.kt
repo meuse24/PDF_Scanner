@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.FormatListNumbered
@@ -147,6 +148,7 @@ fun HelpScreen() {
                     HelpAction(Icons.Default.NoEncryption, R.string.action_remove_password, R.string.help_item_remove_password),
                     HelpAction(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage, R.string.help_item_restrict_usage),
                     HelpAction(Icons.Default.Draw, R.string.action_sign_pdf, R.string.help_item_sign_pdf),
+                    HelpAction(Icons.Default.BorderColor, R.string.action_highlight_pdf, R.string.help_item_highlight_pdf),
                     HelpAction(Icons.AutoMirrored.Filled.ManageSearch, R.string.action_remove_text_layer, R.string.help_item_remove_text_layer)
                 )
             )

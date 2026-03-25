@@ -328,4 +328,21 @@
     <string name="help_item_restrict_usage">Choose Restrict usage rights to create a copy with an owner password that controls whether printing, copying, and editing are allowed. The document can still be opened without a password.</string>
     <string name="help_back_to_contents">सामग्री पर वापस जाएं</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
+    <!-- Highlight PDF -->
+    <string name="action_highlight_pdf">PDF हाइलाइट करें</string>
+    <string name="highlight_screen_title">PDF हाइलाइट करें</string>
+    <string name="highlight_description">पीले मार्कर से टेक्स्ट चिह्नित करें</string>
+    <string name="highlight_details">क्षेत्रों को पीले रंग में हाइलाइट करने के लिए खींचें। कई पृष्ठों को चिह्नित करने के लिए पृष्ठों के बीच नेविगेट करें। एक नई हाइलाइट की गई PDF कॉपी बनाई जाएगी।</string>
+    <string name="highlight_apply">हाइलाइट सहेजें</string>
+    <string name="highlight_clear_page">पृष्ठ साफ़ करें</string>
+    <string name="highlight_hint">चिह्नित करने के लिए टेक्स्ट पर खींचें।</string>
+    <string name="highlight_target_page">पृष्ठ: %1$d / %2$d</string>
+    <string name="highlight_success">हाइलाइट PDF बनाया गया: %1$s</string>
+    <string name="highlight_error">हाइलाइट जोड़ने में त्रुटि</string>
+    <string name="highlight_no_strokes">पहले हाइलाइट बनाएं</string>
+    <string name="highlight_stroke_thin">पतला</string>
+    <string name="highlight_stroke_medium">मध्यम</string>
+    <string name="highlight_stroke_thick">मोटा</string>
+    <string name="highlight_stroke_width">मार्कर चौड़ाई</string>
+    <string name="help_item_highlight_pdf">दस्तावेज़ पर पीले हाइलाइट बनाने के लिए PDF हाइलाइट करें चुनें। कई पृष्ठों पर हाइलाइट जोड़ने के लिए नेविगेट करें, फिर नई PDF कॉपी के रूप में सहेजें।</string>
 </resources>

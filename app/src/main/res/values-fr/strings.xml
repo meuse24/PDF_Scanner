@@ -328,4 +328,21 @@
     <string name="help_item_restrict_usage">Choose Restrict usage rights to create a copy with an owner password that controls whether printing, copying, and editing are allowed. The document can still be opened without a password.</string>
     <string name="help_back_to_contents">Retour à la table des matières</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
+    <!-- Highlight PDF -->
+    <string name="action_highlight_pdf">Surligner PDF</string>
+    <string name="highlight_screen_title">Surligner PDF</string>
+    <string name="highlight_description">Marquez le texte avec un surligneur jaune</string>
+    <string name="highlight_details">Faites glisser sur les zones pour les surligner en jaune. Naviguez entre les pages pour surligner plusieurs pages. Une nouvelle copie PDF surlignée sera créée.</string>
+    <string name="highlight_apply">Enregistrer les surlignages</string>
+    <string name="highlight_clear_page">Effacer la page</string>
+    <string name="highlight_hint">Faites glisser sur le texte pour le marquer.</string>
+    <string name="highlight_target_page">Page : %1$d sur %2$d</string>
+    <string name="highlight_success">PDF surligné créé : %1$s</string>
+    <string name="highlight_error">Erreur lors de l\'ajout des surlignages</string>
+    <string name="highlight_no_strokes">Dessinez d\'abord des surlignages</string>
+    <string name="highlight_stroke_thin">Fin</string>
+    <string name="highlight_stroke_medium">Moyen</string>
+    <string name="highlight_stroke_thick">Épais</string>
+    <string name="highlight_stroke_width">Largeur du marqueur</string>
+    <string name="help_item_highlight_pdf">Choisissez Surligner PDF pour dessiner des surlignages jaunes sur le document. Naviguez entre les pages pour en surligner plusieurs, puis enregistrez en tant que nouvelle copie PDF.</string>
 </resources>

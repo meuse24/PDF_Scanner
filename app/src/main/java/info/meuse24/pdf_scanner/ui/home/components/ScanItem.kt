@@ -27,6 +27,7 @@ import androidx.compose.material.icons.automirrored.filled.ManageSearch
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Compress
@@ -98,6 +99,7 @@ sealed interface ScanAction {
     data object RemovePassword   : ScanAction
     data object RestrictUsage    : ScanAction
     data object ExportAsJpg      : ScanAction
+    data object Highlight        : ScanAction
 }
 
 @Composable
@@ -256,6 +258,12 @@ internal fun ScanItem(
                             text        = { Text(stringResource(R.string.action_sign_pdf)) },
                             leadingIcon = { Icon(Icons.Default.Draw, null) },
                             onClick     = { menuExpanded = false; onAction(ScanAction.Signature) },
+                            enabled     = notEncrypted
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_highlight_pdf)) },
+                            leadingIcon = { Icon(Icons.Default.BorderColor, null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.Highlight) },
                             enabled     = notEncrypted
                         )
                         DropdownMenuItem(

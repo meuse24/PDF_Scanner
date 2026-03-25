@@ -328,4 +328,21 @@
     <string name="help_item_restrict_usage">Choose Restrict usage rights to create a copy with an owner password that controls whether printing, copying, and editing are allowed. The document can still be opened without a password.</string>
     <string name="help_back_to_contents">目次に戻る</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
+    <!-- Highlight PDF -->
+    <string name="action_highlight_pdf">PDF をハイライト</string>
+    <string name="highlight_screen_title">PDF をハイライト</string>
+    <string name="highlight_description">黄色のマーカーでテキストをマーク</string>
+    <string name="highlight_details">黄色でハイライトするエリアをドラッグします。ページ間を移動して複数のページをマークできます。新しいハイライト付き PDF コピーが作成されます。</string>
+    <string name="highlight_apply">ハイライトを保存</string>
+    <string name="highlight_clear_page">ページをクリア</string>
+    <string name="highlight_hint">テキスト上をドラッグしてマークします。</string>
+    <string name="highlight_target_page">ページ: %1$d / %2$d</string>
+    <string name="highlight_success">ハイライト PDF を作成: %1$s</string>
+    <string name="highlight_error">ハイライトの追加中にエラーが発生しました</string>
+    <string name="highlight_no_strokes">先にハイライトを描いてください</string>
+    <string name="highlight_stroke_thin">細い</string>
+    <string name="highlight_stroke_medium">中</string>
+    <string name="highlight_stroke_thick">太い</string>
+    <string name="highlight_stroke_width">マーカーの幅</string>
+    <string name="help_item_highlight_pdf">PDF をハイライトを選択して、ドキュメントに黄色のハイライトを描きます。ページ間を移動して複数のページにハイライトを追加し、新しい PDF コピーとして保存します。</string>
 </resources>

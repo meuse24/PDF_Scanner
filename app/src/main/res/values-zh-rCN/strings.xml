@@ -328,4 +328,21 @@
     <string name="help_item_restrict_usage">Choose Restrict usage rights to create a copy with an owner password that controls whether printing, copying, and editing are allowed. The document can still be opened without a password.</string>
     <string name="help_back_to_contents">返回目录</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
+    <!-- Highlight PDF -->
+    <string name="action_highlight_pdf">高亮 PDF</string>
+    <string name="highlight_screen_title">高亮 PDF</string>
+    <string name="highlight_description">用黄色荧光笔标记文本</string>
+    <string name="highlight_details">拖动以黄色高亮显示区域。在页面之间导航以标记多页。将创建新的高亮 PDF 副本。</string>
+    <string name="highlight_apply">保存高亮</string>
+    <string name="highlight_clear_page">清除页面</string>
+    <string name="highlight_hint">拖动文本以标记。</string>
+    <string name="highlight_target_page">第 %1$d 页，共 %2$d 页</string>
+    <string name="highlight_success">已创建高亮 PDF：%1$s</string>
+    <string name="highlight_error">添加高亮时出错</string>
+    <string name="highlight_no_strokes">请先绘制高亮</string>
+    <string name="highlight_stroke_thin">细</string>
+    <string name="highlight_stroke_medium">中</string>
+    <string name="highlight_stroke_thick">粗</string>
+    <string name="highlight_stroke_width">标记宽度</string>
+    <string name="help_item_highlight_pdf">选择高亮 PDF，在文档上绘制黄色高亮。在页面间导航以添加高亮，然后保存为新的 PDF 副本。</string>
 </resources>

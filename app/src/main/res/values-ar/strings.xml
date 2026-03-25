@@ -39,6 +39,10 @@
     <string name="action_export">تصدير</string>
     <string name="export_success">تم الحفظ في التنزيلات: %1$s</string>
     <string name="error_export_failed">فشل التصدير</string>
+    <string name="action_export_as_jpg">تصدير كـ JPG</string>
+    <string name="export_jpg_success">تم الحفظ في التنزيلات: %1$s.jpg</string>
+    <string name="export_jpg_success_multi">تم تصدير %1$d صفحات بصيغة JPEG إلى التنزيلات</string>
+    <string name="error_export_jpg_failed">فشل تصدير JPEG</string>
     <string name="error_device_unsupported">الماسح الضوئي غير مدعوم على هذا الجهاز</string>
     <string name="share_pdf_title">مشاركة PDF</string>
     <string name="scan_item_subtitle">%1$s · %2$d ص. · %3$s</string>

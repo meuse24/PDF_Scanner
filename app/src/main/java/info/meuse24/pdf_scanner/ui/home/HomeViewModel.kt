@@ -15,6 +15,7 @@ import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
@@ -34,6 +35,7 @@ class HomeViewModel @Inject constructor(
     private val repository:          ScanRepository,
     private val importScanUseCase:   ImportScanUseCase,
     private val exportScanUseCase:   ExportScanUseCase,
+    private val exportAsJpgUseCase:  ExportAsJpgUseCase,
     private val deleteScansUseCase:  DeleteScansUseCase,
     private val extractTextUseCase:  ExtractTextUseCase,
     private val makeSearchableWorkflow: MakeSearchableWorkflow,
@@ -111,6 +113,23 @@ class HomeViewModel @Inject constructor(
                 _success.value = context.getString(R.string.export_success, displayName)
             } catch (e: Exception) {
                 _error.value = context.getString(R.string.error_export_failed)
+            }
+        }
+    }
+
+    // ── Als JPEG exportieren ──────────────────────────────────────────────────
+
+    fun exportAsJpg(record: ScanRecord) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val count = exportAsJpgUseCase(record)
+                _success.value = if (count == 1) {
+                    context.getString(R.string.export_jpg_success, record.filename)
+                } else {
+                    context.getString(R.string.export_jpg_success_multi, count)
+                }
+            } catch (e: Exception) {
+                _error.value = context.getString(R.string.error_export_jpg_failed)
             }
         }
     }

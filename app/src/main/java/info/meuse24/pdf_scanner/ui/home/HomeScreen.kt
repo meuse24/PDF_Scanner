@@ -294,6 +294,7 @@ fun HomeScreen(
                                     ScanAction.RemoveTextLayer -> onNavigateToRemoveTextLayer(record.id)
                                     ScanAction.RemovePassword  -> onNavigateToRemovePassword(record.id)
                                     ScanAction.RestrictUsage   -> onNavigateToRestrictUsage(record.id)
+                                    ScanAction.ExportAsJpg     -> viewModel.exportAsJpg(record)
                                 }
                             }
                         )

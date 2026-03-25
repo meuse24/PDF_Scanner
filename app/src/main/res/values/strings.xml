@@ -53,6 +53,10 @@
     <string name="action_export">Export</string>
     <string name="export_success">Saved to Downloads: %1$s</string>
     <string name="error_export_failed">Export failed</string>
+    <string name="action_export_as_jpg">Export as JPG</string>
+    <string name="export_jpg_success">Saved to Downloads: %1$s.jpg</string>
+    <string name="export_jpg_success_multi">%1$d pages exported as JPEG to Downloads</string>
+    <string name="error_export_jpg_failed">JPEG export failed</string>
     <string name="error_device_unsupported">Scanner not supported on this device</string>
 
     <!-- Home: share -->

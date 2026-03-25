@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Badge
@@ -96,6 +97,7 @@ sealed interface ScanAction {
     data object RemoveTextLayer  : ScanAction
     data object RemovePassword   : ScanAction
     data object RestrictUsage    : ScanAction
+    data object ExportAsJpg      : ScanAction
 }
 
 @Composable
@@ -261,6 +263,12 @@ internal fun ScanItem(
                             leadingIcon = { Icon(Icons.Default.Compress, null) },
                             onClick     = { menuExpanded = false; onAction(ScanAction.CompressPdf) },
                             enabled     = notEncrypted && !record.isSearchable
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_export_as_jpg)) },
+                            leadingIcon = { Icon(Icons.Default.Image, null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.ExportAsJpg) },
+                            enabled     = notEncrypted
                         )
                         HorizontalDivider()
                         DropdownMenuItem(

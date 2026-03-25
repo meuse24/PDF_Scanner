@@ -39,6 +39,10 @@
     <string name="action_export">导出</string>
     <string name="export_success">已保存到下载：%1$s</string>
     <string name="error_export_failed">导出失败</string>
+    <string name="action_export_as_jpg">导出为 JPG</string>
+    <string name="export_jpg_success">已保存到下载：%1$s.jpg</string>
+    <string name="export_jpg_success_multi">%1$d 页已作为 JPEG 导出到下载</string>
+    <string name="error_export_jpg_failed">JPEG 导出失败</string>
     <string name="error_device_unsupported">此设备不支持扫描仪</string>
     <string name="share_pdf_title">分享 PDF</string>
     <string name="scan_item_subtitle">%1$s · %2$d 页 · %3$s</string>

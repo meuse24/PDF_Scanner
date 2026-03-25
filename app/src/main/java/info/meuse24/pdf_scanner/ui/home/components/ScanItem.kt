@@ -196,7 +196,7 @@ internal fun ScanItem(
                     record.filename,
                     style      = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
-                    maxLines   = 1,
+                    maxLines   = 2,
                     overflow   = TextOverflow.Ellipsis
                 )
                 Text(

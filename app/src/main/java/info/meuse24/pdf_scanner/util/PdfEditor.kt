@@ -447,8 +447,11 @@ open class PdfEditor @Inject constructor() {
                 val page = result.importPage(source.getPage(pageIdx))
                 val pageStrokes = strokes.filter { it.pageIndex == pageIdx }
                 if (pageStrokes.isNotEmpty()) {
-                    val pageWidth = page.mediaBox.width
+                    val pageWidth  = page.mediaBox.width
                     val pageHeight = page.mediaBox.height
+                    val rotation   = normalizeRotation(page.rotation)
+                    // Bei 90°/270° ist die angezeigte Breite die kanonische Höhe
+                    val displayedWidth = if (rotation == 90 || rotation == 270) pageHeight else pageWidth
                     PDPageContentStream(
                         result, page,
                         PDPageContentStream.AppendMode.APPEND,
@@ -457,18 +460,34 @@ open class PdfEditor @Inject constructor() {
                         cs.setGraphicsStateParameters(gsHighlight)
                         cs.setStrokingColor(255, 220, 0)
                         pageStrokes.forEach { stroke ->
-                            if (stroke.points.size < 2) return@forEach
                             val strokeWidthPt =
-                                (pageWidth * stroke.strokeWidthFraction).coerceIn(3f, 36f)
+                                (displayedWidth * stroke.strokeWidthFraction).coerceIn(3f, 36f)
                             cs.setLineWidth(strokeWidthPt)
                             cs.setLineCapStyle(1)
                             cs.setLineJoinStyle(1)
-                            val first = stroke.points.first()
-                            cs.moveTo(first.first * pageWidth, pageHeight * (1f - first.second))
-                            stroke.points.drop(1).forEach { (nx, ny) ->
-                                cs.lineTo(nx * pageWidth, pageHeight * (1f - ny))
+                            if (stroke.points.size == 1) {
+                                // Einzelpunkt als winziges Segment mit runden Kappen → erscheint als Kreis
+                                val (px, py) = mapDisplayToPdfCoord(
+                                    stroke.points[0].first, stroke.points[0].second,
+                                    pageWidth, pageHeight, rotation
+                                )
+                                cs.moveTo(px - 0.5f, py)
+                                cs.lineTo(px + 0.5f, py)
+                                cs.stroke()
+                            } else {
+                                val first = stroke.points.first()
+                                val (fx, fy) = mapDisplayToPdfCoord(
+                                    first.first, first.second, pageWidth, pageHeight, rotation
+                                )
+                                cs.moveTo(fx, fy)
+                                stroke.points.drop(1).forEach { (nx, ny) ->
+                                    val (px, py) = mapDisplayToPdfCoord(
+                                        nx, ny, pageWidth, pageHeight, rotation
+                                    )
+                                    cs.lineTo(px, py)
+                                }
+                                cs.stroke()
                             }
-                            cs.stroke()
                         }
                     }
                 }
@@ -568,6 +587,28 @@ internal fun normalizePageIndexes(pageCount: Int, pageIndexes: List<Int>): List<
         .filter { it in 0 until pageCount }
         .sorted()
         .distinct()
+}
+
+/**
+ * Wandelt normalisierte Anzeigekoordinaten (0..1) in kanonische PDF-Koordinaten um.
+ * [pageWidth]/[pageHeight] sind die Maße der mediaBox (vor Rotation).
+ * [rotation] ist der Rotationswinkel der Seite (0, 90, 180 oder 270).
+ *
+ * Hintergrund: PdfRenderer rendert Seiten bereits in der angezeigten Ausrichtung
+ * (Rotation inklusive). Die hier errechneten Koordinaten beziehen sich auf den
+ * unrotierten kanonischen Koordinatenraum, in den PDF-ContentStreams schreiben.
+ */
+internal fun mapDisplayToPdfCoord(
+    nx: Float,
+    ny: Float,
+    pageWidth: Float,
+    pageHeight: Float,
+    rotation: Int
+): Pair<Float, Float> = when (rotation) {
+    90  -> ny * pageWidth  to nx * pageHeight
+    180 -> (1f - nx) * pageWidth to (1f - ny) * pageHeight
+    270 -> (1f - ny) * pageWidth to (1f - nx) * pageHeight
+    else -> nx * pageWidth to (1f - ny) * pageHeight  // R=0
 }
 
 private inline fun PdfEditor.editPdf(

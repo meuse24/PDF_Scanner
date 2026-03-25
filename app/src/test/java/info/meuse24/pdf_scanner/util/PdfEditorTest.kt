@@ -139,4 +139,68 @@ class PdfEditorTest {
     fun `calculateWatermarkFontSize clamps to upper bound`() {
         assertEquals(42f, calculateWatermarkFontSize(pageWidth = 1200f, textLength = 4), 0.001f)
     }
+
+    // ── mapDisplayToPdfCoord ──────────────────────────────────────────────────
+
+    private val W = 200f
+    private val H = 300f
+
+    @Test
+    fun `mapDisplayToPdfCoord rotation 0 top-left maps to top-left in PDF`() {
+        val (x, y) = mapDisplayToPdfCoord(0f, 0f, W, H, 0)
+        assertEquals(0f,  x, 0.001f)
+        assertEquals(300f, y, 0.001f)   // pdfY = H*(1-0) = H
+    }
+
+    @Test
+    fun `mapDisplayToPdfCoord rotation 0 center maps to center`() {
+        val (x, y) = mapDisplayToPdfCoord(0.5f, 0.5f, W, H, 0)
+        assertEquals(100f, x, 0.001f)
+        assertEquals(150f, y, 0.001f)
+    }
+
+    @Test
+    fun `mapDisplayToPdfCoord rotation 90 top-left maps to bottom-left in PDF`() {
+        // display top-left (0,0) → pdfX=ny*W=0, pdfY=nx*H=0  → PDF origin
+        val (x, y) = mapDisplayToPdfCoord(0f, 0f, W, H, 90)
+        assertEquals(0f, x, 0.001f)
+        assertEquals(0f, y, 0.001f)
+    }
+
+    @Test
+    fun `mapDisplayToPdfCoord rotation 90 center maps to center`() {
+        val (x, y) = mapDisplayToPdfCoord(0.5f, 0.5f, W, H, 90)
+        assertEquals(100f, x, 0.001f)   // ny*W = 0.5*200
+        assertEquals(150f, y, 0.001f)   // nx*H = 0.5*300
+    }
+
+    @Test
+    fun `mapDisplayToPdfCoord rotation 180 top-left maps to bottom-right in PDF`() {
+        val (x, y) = mapDisplayToPdfCoord(0f, 0f, W, H, 180)
+        assertEquals(200f, x, 0.001f)   // (1-0)*W
+        assertEquals(300f, y, 0.001f)   // (1-0)*H
+    }
+
+    @Test
+    fun `mapDisplayToPdfCoord rotation 270 top-left maps to top-right in PDF`() {
+        // display (0,0) → pdfX=(1-ny)*W=(1-0)*200=200, pdfY=(1-nx)*H=(1-0)*300=300
+        val (x, y) = mapDisplayToPdfCoord(0f, 0f, W, H, 270)
+        assertEquals(200f, x, 0.001f)
+        assertEquals(300f, y, 0.001f)
+    }
+
+    @Test
+    fun `mapDisplayToPdfCoord rotation 270 center maps to center`() {
+        val (x, y) = mapDisplayToPdfCoord(0.5f, 0.5f, W, H, 270)
+        assertEquals(100f, x, 0.001f)
+        assertEquals(150f, y, 0.001f)
+    }
+
+    @Test
+    fun `mapDisplayToPdfCoord unknown rotation falls back to rotation 0`() {
+        val (x0, y0) = mapDisplayToPdfCoord(0.3f, 0.7f, W, H, 0)
+        val (xUnk, yUnk) = mapDisplayToPdfCoord(0.3f, 0.7f, W, H, 45)
+        assertEquals(x0, xUnk, 0.001f)
+        assertEquals(y0, yUnk, 0.001f)
+    }
 }

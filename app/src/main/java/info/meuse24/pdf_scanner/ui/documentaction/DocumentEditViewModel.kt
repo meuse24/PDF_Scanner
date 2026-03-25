@@ -25,6 +25,7 @@ import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.util.PdfEditor
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -70,9 +71,13 @@ class DocumentEditViewModel @Inject constructor(
     private val _highlightPageBitmap = MutableStateFlow<Bitmap?>(null)
     val highlightPageBitmap: StateFlow<Bitmap?> = _highlightPageBitmap.asStateFlow()
 
+    private var highlightPageJob: Job? = null
+
     fun loadHighlightPage(pageIndex: Int) {
         val record = _record.value ?: return
-        viewModelScope.launch(Dispatchers.IO) {
+        highlightPageJob?.cancel()
+        _highlightPageBitmap.value = null
+        highlightPageJob = viewModelScope.launch(Dispatchers.IO) {
             _highlightPageBitmap.value = pdfEditor.renderPageThumbnail(
                 File(record.filepath), pageIndex, 1024
             )

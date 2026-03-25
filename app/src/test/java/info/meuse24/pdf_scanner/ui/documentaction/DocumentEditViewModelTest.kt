@@ -9,6 +9,9 @@ import info.meuse24.pdf_scanner.domain.usecase.AddPageNumbersUseCase
 import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.RemovePasswordWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.RemoveTextLayerWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.RestrictUsageWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.SignatureStampWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.TextWatermarkWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
@@ -87,12 +90,15 @@ class DocumentEditViewModelTest {
         val addPageNumbersUseCase = AddPageNumbersUseCase(pdfEditor, repository)
         val pageNumbersWorkflow = PageNumbersWorkflow(addPageNumbersUseCase)
 
-        // The other 5 workflows are never invoked in these tests — mock them.
-        val textWatermarkWorkflow = mock(TextWatermarkWorkflow::class.java)
-        val compressPdfWorkflow = mock(CompressPdfWorkflow::class.java)
-        val protectPdfWorkflow = mock(ProtectPdfWorkflow::class.java)
-        val unlockPdfWorkflow = mock(UnlockPdfWorkflow::class.java)
-        val signatureStampWorkflow = mock(SignatureStampWorkflow::class.java)
+        // The other workflows are never invoked in these tests — mock them.
+        val textWatermarkWorkflow    = mock(TextWatermarkWorkflow::class.java)
+        val compressPdfWorkflow      = mock(CompressPdfWorkflow::class.java)
+        val protectPdfWorkflow       = mock(ProtectPdfWorkflow::class.java)
+        val unlockPdfWorkflow        = mock(UnlockPdfWorkflow::class.java)
+        val signatureStampWorkflow   = mock(SignatureStampWorkflow::class.java)
+        val removeTextLayerWorkflow  = mock(RemoveTextLayerWorkflow::class.java)
+        val removePasswordWorkflow   = mock(RemovePasswordWorkflow::class.java)
+        val restrictUsageWorkflow    = mock(RestrictUsageWorkflow::class.java)
 
         val context = mock(Context::class.java)
         `when`(context.filesDir).thenReturn(tmpFolder.root)
@@ -106,6 +112,9 @@ class DocumentEditViewModelTest {
             protectPdfWorkflow = protectPdfWorkflow,
             unlockPdfWorkflow = unlockPdfWorkflow,
             signatureStampWorkflow = signatureStampWorkflow,
+            removeTextLayerWorkflow = removeTextLayerWorkflow,
+            removePasswordWorkflow = removePasswordWorkflow,
+            restrictUsageWorkflow = restrictUsageWorkflow,
             errorMapper = errorMapper,
             context = context,
             savedStateHandle = savedState

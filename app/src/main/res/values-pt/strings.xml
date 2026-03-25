@@ -287,6 +287,26 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
+    <!-- Remove password -->
+    <string name="remove_password_screen_title">Remover senha</string>
+    <string name="remove_password_description">Criar uma cópia desprotegida sem inserir senha</string>
+    <string name="remove_password_details">Funciona com PDFs que abrem sem senha mas têm restrições de uso (p. ex. sem impressão ou cópia). Uma nova cópia desprotegida é criada. O arquivo original não é modificado.\n\nSe o PDF exigir senha para abrir, use \"Desbloquear PDF\".</string>
+    <string name="remove_password_apply">Remover senha</string>
+    <string name="remove_password_success">Senha removida: %1$s</string>
+    <string name="remove_password_error">Erro ao remover a senha</string>
+    <string name="remove_password_requires_input">Este PDF requer uma senha para abrir. Use \"Desbloquear PDF\" para inserir a senha.</string>
+    <string name="action_remove_password">Remover senha</string>
+    <string name="help_item_remove_password">Escolha Remover senha para criar uma cópia desprotegida de um PDF que abre sem senha mas tem restrições de uso. Se o PDF exigir senha para abrir, use Desbloquear PDF.</string>
+    <!-- Remove text layer -->
+    <string name="remove_text_layer_screen_title">Remover camada de texto</string>
+    <string name="remove_text_layer_description">Criar uma cópia sem a camada de texto OCR</string>
+    <string name="remove_text_layer_details">Cada página é renderizada novamente como imagem e salva como nova cópia em PDF. A camada de texto é removida; a aparência visual permanece inalterada. O arquivo original não é modificado.</string>
+    <string name="remove_text_layer_apply">Remover camada de texto</string>
+    <string name="remove_text_layer_success">Camada de texto removida: %1$s</string>
+    <string name="remove_text_layer_error">Erro ao remover a camada de texto</string>
+    <string name="remove_text_layer_not_searchable">Este PDF não possui camada de texto</string>
+    <string name="action_remove_text_layer">Remover camada de texto</string>
+    <string name="help_item_remove_text_layer">Escolha Remover camada de texto para criar uma cópia de um PDF pesquisável em que a camada de texto OCR invisível é removida. Esta opção só está disponível para PDFs pesquisáveis.</string>
     <string name="help_back_to_contents">Voltar ao índice</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
 </resources>

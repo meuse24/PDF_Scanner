@@ -287,6 +287,26 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
+    <!-- Remove password -->
+    <string name="remove_password_screen_title">Удалить пароль</string>
+    <string name="remove_password_description">Создать незащищённую копию без ввода пароля</string>
+    <string name="remove_password_details">Работает для PDF, которые открываются без пароля, но имеют ограничения использования (например, запрет печати или копирования). Создаётся новая незащищённая копия. Исходный файл не изменяется.\n\nЕсли PDF требует пароль для открытия, используйте «Разблокировать PDF».</string>
+    <string name="remove_password_apply">Удалить пароль</string>
+    <string name="remove_password_success">Пароль удалён: %1$s</string>
+    <string name="remove_password_error">Ошибка при удалении пароля</string>
+    <string name="remove_password_requires_input">Этот PDF требует пароль для открытия. Используйте «Разблокировать PDF» для его ввода.</string>
+    <string name="action_remove_password">Удалить пароль</string>
+    <string name="help_item_remove_password">Выберите «Удалить пароль», чтобы создать незащищённую копию PDF, который открывается без пароля, но имеет ограничения использования. Если PDF требует пароль для открытия, используйте «Разблокировать PDF».</string>
+    <!-- Remove text layer -->
+    <string name="remove_text_layer_screen_title">Удалить текстовый слой</string>
+    <string name="remove_text_layer_description">Создать копию без слоя текста OCR</string>
+    <string name="remove_text_layer_details">Каждая страница заново отображается как изображение и сохраняется в новой копии PDF. Текстовый слой удаляется; визуальный вид остаётся неизменным. Исходный файл не изменяется.</string>
+    <string name="remove_text_layer_apply">Удалить текстовый слой</string>
+    <string name="remove_text_layer_success">Текстовый слой удалён: %1$s</string>
+    <string name="remove_text_layer_error">Ошибка при удалении текстового слоя</string>
+    <string name="remove_text_layer_not_searchable">У этого PDF нет текстового слоя</string>
+    <string name="action_remove_text_layer">Удалить текстовый слой</string>
+    <string name="help_item_remove_text_layer">Выберите «Удалить текстовый слой», чтобы создать копию доступного для поиска PDF, в которой удалён невидимый слой текста OCR. Эта функция доступна только для PDF с возможностью поиска.</string>
     <string name="help_back_to_contents">К оглавлению</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
 </resources>

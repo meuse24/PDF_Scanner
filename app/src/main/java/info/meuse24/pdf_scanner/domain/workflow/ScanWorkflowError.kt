@@ -19,6 +19,8 @@ sealed interface ScanWorkflowError {
     data object AlreadyProtected : ScanWorkflowError
     data object NotProtected : ScanWorkflowError
     data object CannotDeleteAllPages : ScanWorkflowError
+    data object NotSearchable : ScanWorkflowError
+    data object PasswordRequiredToRemove : ScanWorkflowError
     data class MissingFiles(val filenames: List<String>) : ScanWorkflowError
     data class StorageWriteFailed(override val cause: Throwable) : ScanWorkflowError
     data class OcrFailed(override val cause: Throwable) : ScanWorkflowError
@@ -35,4 +37,6 @@ sealed interface ScanWorkflowError {
     data class ProtectFailed(override val cause: Throwable) : ScanWorkflowError
     data class UnlockFailed(override val cause: Throwable) : ScanWorkflowError
     data class SignatureFailed(override val cause: Throwable) : ScanWorkflowError
+    data class RemoveTextLayerFailed(override val cause: Throwable) : ScanWorkflowError
+    data class RemovePasswordFailed(override val cause: Throwable) : ScanWorkflowError
 }

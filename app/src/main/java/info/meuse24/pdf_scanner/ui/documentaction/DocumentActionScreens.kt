@@ -231,6 +231,108 @@ fun UnlockPdfScreen(
 }
 
 @Composable
+fun RemovePasswordScreen(
+    onNavigateBack: () -> Unit,
+    viewModel: DocumentEditViewModel = hiltViewModel()
+) {
+    val record by viewModel.record.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
+
+    ActionScreenContent(
+        record = record,
+        title = stringResource(R.string.remove_password_description),
+        body = stringResource(R.string.remove_password_details),
+        form = {},
+        confirmLabel = stringResource(R.string.remove_password_apply),
+        confirmEnabled = record != null && !editLoading,
+        onConfirm = { viewModel.removePassword() }
+    )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun RemoveTextLayerScreen(
+    onNavigateBack: () -> Unit,
+    viewModel: DocumentEditViewModel = hiltViewModel()
+) {
+    val record by viewModel.record.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
+
+    ActionScreenContent(
+        record = record,
+        title = stringResource(R.string.remove_text_layer_description),
+        body = stringResource(R.string.remove_text_layer_details),
+        form = {},
+        confirmLabel = stringResource(R.string.remove_text_layer_apply),
+        confirmEnabled = record != null && !editLoading,
+        onConfirm = { viewModel.removeTextLayer() }
+    )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
+}
+
+@Composable
 private fun CompressionPresetSelector(
     selectedPreset: PdfCompressionPreset,
     onSelect: (PdfCompressionPreset) -> Unit

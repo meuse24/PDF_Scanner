@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
+import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PictureAsPdf
@@ -140,7 +141,9 @@ fun HelpScreen() {
                     HelpAction(Icons.Default.Compress, R.string.action_compress_pdf, R.string.help_item_compress_pdf),
                     HelpAction(Icons.Default.Lock, R.string.action_protect_pdf, R.string.help_item_protect_pdf),
                     HelpAction(Icons.Default.LockOpen, R.string.action_unlock_pdf, R.string.help_item_unlock_pdf),
-                    HelpAction(Icons.Default.Draw, R.string.action_sign_pdf, R.string.help_item_sign_pdf)
+                    HelpAction(Icons.Default.NoEncryption, R.string.action_remove_password, R.string.help_item_remove_password),
+                    HelpAction(Icons.Default.Draw, R.string.action_sign_pdf, R.string.help_item_sign_pdf),
+                    HelpAction(Icons.AutoMirrored.Filled.ManageSearch, R.string.action_remove_text_layer, R.string.help_item_remove_text_layer)
                 )
             )
         )

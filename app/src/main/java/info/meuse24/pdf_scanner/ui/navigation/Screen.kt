@@ -41,4 +41,10 @@ sealed class Screen(val route: String) {
     data object Signature : Screen("signature/{scanId}") {
         fun createRoute(scanId: Long) = "signature/$scanId"
     }
+    data object RemoveTextLayer : Screen("remove-text-layer/{scanId}") {
+        fun createRoute(scanId: Long) = "remove-text-layer/$scanId"
+    }
+    data object RemovePassword : Screen("remove-password/{scanId}") {
+        fun createRoute(scanId: Long) = "remove-password/$scanId"
+    }
 }

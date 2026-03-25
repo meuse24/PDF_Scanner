@@ -287,6 +287,26 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
+    <!-- Remove password -->
+    <string name="remove_password_screen_title">Supprimer le mot de passe</string>
+    <string name="remove_password_description">Créer une copie non protégée sans saisir de mot de passe</string>
+    <string name="remove_password_details">Fonctionne avec les PDF qui s\'ouvrent sans mot de passe mais ont des restrictions d\'utilisation (p. ex. pas d\'impression ni de copie). Une nouvelle copie non protégée est créée. Le fichier original n\'est pas modifié.\n\nSi le PDF nécessite un mot de passe pour s\'ouvrir, utilisez « Déverrouiller le PDF ».</string>
+    <string name="remove_password_apply">Supprimer le mot de passe</string>
+    <string name="remove_password_success">Mot de passe supprimé : %1$s</string>
+    <string name="remove_password_error">Erreur lors de la suppression du mot de passe</string>
+    <string name="remove_password_requires_input">Ce PDF nécessite un mot de passe pour s\'ouvrir. Utilisez « Déverrouiller le PDF » pour le saisir.</string>
+    <string name="action_remove_password">Supprimer le mot de passe</string>
+    <string name="help_item_remove_password">Choisissez Supprimer le mot de passe pour créer une copie non protégée d\'un PDF qui s\'ouvre sans mot de passe mais a des restrictions d\'utilisation. Si le PDF nécessite un mot de passe pour s\'ouvrir, utilisez Déverrouiller le PDF.</string>
+    <!-- Remove text layer -->
+    <string name="remove_text_layer_screen_title">Supprimer la couche de texte</string>
+    <string name="remove_text_layer_description">Créer une copie sans la couche de texte OCR</string>
+    <string name="remove_text_layer_details">Chaque page est restituée en tant qu\'image et enregistrée dans une nouvelle copie PDF. La couche de texte est supprimée ; l\'aspect visuel reste inchangé. Le fichier original n\'est pas modifié.</string>
+    <string name="remove_text_layer_apply">Supprimer la couche de texte</string>
+    <string name="remove_text_layer_success">Couche de texte supprimée : %1$s</string>
+    <string name="remove_text_layer_error">Erreur lors de la suppression de la couche de texte</string>
+    <string name="remove_text_layer_not_searchable">Ce PDF ne possède pas de couche de texte</string>
+    <string name="action_remove_text_layer">Supprimer la couche de texte</string>
+    <string name="help_item_remove_text_layer">Choisissez Supprimer la couche de texte pour créer une copie d\'un PDF consultable dont la couche de texte OCR invisible est supprimée. Cette option n\'est disponible que pour les PDF consultables.</string>
     <string name="help_back_to_contents">Retour à la table des matières</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
 </resources>

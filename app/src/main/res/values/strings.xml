@@ -308,6 +308,26 @@
     <string name="signature_clear">Clear signature</string>
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
+    <!-- Remove password -->
+    <string name="remove_password_screen_title">Remove password</string>
+    <string name="remove_password_description">Create an unprotected copy without entering a password</string>
+    <string name="remove_password_details">Works for PDFs that open without a password but have usage restrictions (e.g. no printing or copying). A new unprotected copy is created. The original file stays unchanged.\n\nIf the PDF requires a password to open, use \"Unlock PDF\" instead.</string>
+    <string name="remove_password_apply">Remove password</string>
+    <string name="remove_password_success">Password removed: %1$s</string>
+    <string name="remove_password_error">Error removing password</string>
+    <string name="remove_password_requires_input">This PDF requires a password to open. Use \"Unlock PDF\" to enter the password.</string>
+    <string name="action_remove_password">Remove password</string>
+    <string name="help_item_remove_password">Choose Remove password to create an unprotected copy of a PDF that opens without a password but has usage restrictions. If the PDF requires a password to open, use Unlock PDF instead.</string>
+    <!-- Remove text layer -->
+    <string name="remove_text_layer_screen_title">Remove text layer</string>
+    <string name="remove_text_layer_description">Create a copy without the OCR text layer</string>
+    <string name="remove_text_layer_details">Each page is re-rendered as an image and saved as a new PDF copy. The text layer is removed; the visual appearance stays unchanged. The original file is not modified.</string>
+    <string name="remove_text_layer_apply">Remove text layer</string>
+    <string name="remove_text_layer_success">Text layer removed: %1$s</string>
+    <string name="remove_text_layer_error">Error removing text layer</string>
+    <string name="remove_text_layer_not_searchable">This PDF does not have a text layer</string>
+    <string name="action_remove_text_layer">Remove text layer</string>
+    <string name="help_item_remove_text_layer">Choose Remove text layer to create a copy of a searchable PDF in which the invisible OCR text layer is stripped out. This option is only available for searchable PDFs.</string>
     <string name="help_back_to_contents">Back to contents</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>

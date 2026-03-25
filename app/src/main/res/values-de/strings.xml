@@ -286,6 +286,26 @@
     <string name="signature_clear">Signatur löschen</string>
     <string name="protected_pdf_unsupported">Bitte entsperre die PDF, bevor du sie bearbeitest</string>
     <string name="help_item_sign_pdf">Mit PDF signieren zeichnest du eine handschriftliche Signatur, wählst Zielseite und Stempelgröße und speicherst das Ergebnis als neue PDF-Kopie.</string>
+    <!-- Remove password -->
+    <string name="remove_password_screen_title">Passwort entfernen</string>
+    <string name="remove_password_description">Ungeschützte Kopie ohne Passworteingabe erstellen</string>
+    <string name="remove_password_details">Funktioniert bei PDFs, die ohne Passwort geöffnet werden können, aber Nutzungseinschränkungen haben (z.B. kein Drucken oder Kopieren). Es wird eine neue, ungeschützte Kopie erstellt. Die Originaldatei bleibt unverändert.\n\nWenn die PDF zum Öffnen ein Passwort benötigt, nutze stattdessen „PDF entsperren".</string>
+    <string name="remove_password_apply">Passwort entfernen</string>
+    <string name="remove_password_success">Passwort entfernt: %1$s</string>
+    <string name="remove_password_error">Fehler beim Entfernen des Passworts</string>
+    <string name="remove_password_requires_input">Diese PDF benötigt zum Öffnen ein Passwort. Nutze „PDF entsperren" um das Passwort einzugeben.</string>
+    <string name="action_remove_password">Passwort entfernen</string>
+    <string name="help_item_remove_password">Mit Passwort entfernen erstellst du eine ungeschützte Kopie einer PDF, die ohne Passwort geöffnet werden kann, aber Nutzungseinschränkungen hat. Wenn die PDF zum Öffnen ein Passwort benötigt, nutze stattdessen PDF entsperren.</string>
+    <!-- Remove text layer -->
+    <string name="remove_text_layer_screen_title">Textlayer entfernen</string>
+    <string name="remove_text_layer_description">Kopie ohne OCR-Textlayer erstellen</string>
+    <string name="remove_text_layer_details">Jede Seite wird neu als Bild gerendert und als neue PDF-Kopie gespeichert. Der Textlayer wird entfernt; das visuelle Erscheinungsbild bleibt unverändert. Die Originaldatei wird nicht verändert.</string>
+    <string name="remove_text_layer_apply">Textlayer entfernen</string>
+    <string name="remove_text_layer_success">Textlayer entfernt: %1$s</string>
+    <string name="remove_text_layer_error">Fehler beim Entfernen des Textlayers</string>
+    <string name="remove_text_layer_not_searchable">Dieses PDF hat keinen Textlayer</string>
+    <string name="action_remove_text_layer">Textlayer entfernen</string>
+    <string name="help_item_remove_text_layer">Mit Textlayer entfernen erstellst du eine Kopie einer durchsuchbaren PDF, bei der der unsichtbare OCR-Textlayer entfernt wird. Diese Option ist nur bei durchsuchbaren PDFs verfügbar.</string>
     <string name="help_back_to_contents">Zum Inhaltsverzeichnis</string>
     <string name="reorder_invalid_order">Bitte eine gültige Seitenreihenfolge für das gesamte PDF wählen</string>
     <string name="signature_scale_invalid">Bitte eine gültige Signaturgröße wählen</string>

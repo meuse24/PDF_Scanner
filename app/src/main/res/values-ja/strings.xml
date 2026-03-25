@@ -287,6 +287,26 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
+    <!-- Remove password -->
+    <string name="remove_password_screen_title">パスワードを削除</string>
+    <string name="remove_password_description">パスワード入力なしで保護なしのコピーを作成</string>
+    <string name="remove_password_details">パスワードなしで開けるが使用制限（印刷・コピー禁止など）があるPDFに対応しています。新しい保護なしのコピーが作成されます。元のファイルは変更されません。\n\nPDFを開くにパスワードが必要な場合は「PDFのロックを解除」を使用してください。</string>
+    <string name="remove_password_apply">パスワードを削除</string>
+    <string name="remove_password_success">パスワードを削除しました: %1$s</string>
+    <string name="remove_password_error">パスワードの削除中にエラーが発生しました</string>
+    <string name="remove_password_requires_input">このPDFを開くにはパスワードが必要です。「PDFのロックを解除」でパスワードを入力してください。</string>
+    <string name="action_remove_password">パスワードを削除</string>
+    <string name="help_item_remove_password">「パスワードを削除」を選ぶと、パスワードなしで開けるが使用制限があるPDFの保護なしコピーを作成できます。PDFを開くにパスワードが必要な場合は「PDFのロックを解除」を使用してください。</string>
+    <!-- Remove text layer -->
+    <string name="remove_text_layer_screen_title">テキストレイヤーを削除</string>
+    <string name="remove_text_layer_description">OCRテキストレイヤーなしのコピーを作成</string>
+    <string name="remove_text_layer_details">各ページを画像として再レンダリングし、新しいPDFコピーとして保存します。テキストレイヤーは削除されますが、見た目は変わりません。元のファイルは変更されません。</string>
+    <string name="remove_text_layer_apply">テキストレイヤーを削除</string>
+    <string name="remove_text_layer_success">テキストレイヤーを削除しました: %1$s</string>
+    <string name="remove_text_layer_error">テキストレイヤーの削除中にエラーが発生しました</string>
+    <string name="remove_text_layer_not_searchable">このPDFにはテキストレイヤーがありません</string>
+    <string name="action_remove_text_layer">テキストレイヤーを削除</string>
+    <string name="help_item_remove_text_layer">「テキストレイヤーを削除」を選ぶと、検索可能なPDFの非表示OCRテキストレイヤーを取り除いたコピーを作成できます。このオプションは検索可能なPDFにのみ使用できます。</string>
     <string name="help_back_to_contents">目次に戻る</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
 </resources>

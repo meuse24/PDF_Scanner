@@ -45,6 +45,7 @@ import javax.inject.Singleton
 open class PdfEditor @Inject constructor() {
 
     class WrongPasswordException(cause: Throwable? = null) : IOException("Falsches Passwort", cause)
+    class PasswordRequiredException(cause: Throwable? = null) : IOException("PDF ist mit Benutzerpasswort geschützt", cause)
 
     /**
      * Führt mehrere PDFs zu [output] zusammen.
@@ -288,6 +289,64 @@ open class PdfEditor @Inject constructor() {
                 }
             } catch (e: InvalidPasswordException) {
                 throw WrongPasswordException(e)
+            }
+        }
+    }
+
+    /**
+     * Entfernt den Textlayer, indem jede Seite als verlustfreies Bild neu gerendert wird.
+     * Das Ergebnis ist eine neue PDF-Kopie ohne OCR-Textschicht.
+     * Muss auf Dispatchers.IO aufgerufen werden.
+     */
+    open fun removeTextLayer(input: File, outputDir: File): File {
+        val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_OhneTextlayer")
+        val output = File(outputDir, "$baseName.pdf")
+        return writePdf("RemoveTextLayer", output) { target ->
+            PDDocument().use { cleaned ->
+                ParcelFileDescriptor.open(input, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                    PdfRenderer(pfd).use { renderer ->
+                        repeat(renderer.pageCount) { pageIndex ->
+                            renderer.openPage(pageIndex).use { page ->
+                                val w = page.width.takeIf { it > 0 } ?: 595
+                                val h = page.height.takeIf { it > 0 } ?: 842
+                                val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                                try {
+                                    Canvas(bitmap).drawColor(Color.WHITE)
+                                    page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                                    val pdfPage = PDPage(PDRectangle(w.toFloat(), h.toFloat()))
+                                    cleaned.addPage(pdfPage)
+                                    val image = LosslessFactory.createFromImage(cleaned, bitmap)
+                                    PDPageContentStream(cleaned, pdfPage).use { cs ->
+                                        cs.drawImage(image, 0f, 0f, pdfPage.mediaBox.width, pdfPage.mediaBox.height)
+                                    }
+                                } finally {
+                                    bitmap.recycle()
+                                }
+                            }
+                        }
+                    }
+                }
+                cleaned.save(target)
+            }
+        }
+    }
+
+    /**
+     * Entfernt den Passwortschutz ohne Passworteingabe.
+     * Funktioniert bei PDFs mit leerem Benutzerpasswort (z.B. nur Eigentümerpasswort / Nutzungseinschränkungen).
+     * Wirft [PasswordRequiredException] wenn ein echtes Benutzerpasswort gesetzt ist.
+     */
+    open fun removePassword(input: File, outputDir: File): File {
+        val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_OhneSchutz")
+        val output = File(outputDir, "$baseName.pdf")
+        return writePdf("RemovePassword", output) { target ->
+            try {
+                PDDocument.load(input, "").use { document ->
+                    document.setAllSecurityToBeRemoved(true)
+                    document.save(target)
+                }
+            } catch (e: InvalidPasswordException) {
+                throw PasswordRequiredException(e)
             }
         }
     }

@@ -65,7 +65,7 @@ internal fun BulkActionBar(
                     contentDescription = stringResource(R.string.cd_extract_text)
                 )
             }
-            IconButton(onClick = onMakeSearchable, enabled = makeSearchableEnabled) {
+            IconButton(onClick = onMakeSearchable) {
                 Icon(
                     Icons.AutoMirrored.Filled.ManageSearch,
                     contentDescription = stringResource(R.string.cd_make_searchable)

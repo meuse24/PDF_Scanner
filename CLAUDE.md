@@ -30,6 +30,8 @@ domain/
     ├── ReorderPagesUseCase.kt     # Seiten umsortieren; saveAsCopy=true/_Sortiert, false=atomar überschreiben
     ├── RotatePagesUseCase.kt      # Seiten drehen; nutzt thumbnailFile() aus PageEditUtils
     ├── DeletePdfPagesUseCase.kt   # Seiten löschen; nutzt thumbnailFile() aus PageEditUtils
+    ├── RemoveTextLayerUseCase.kt  # Seiten per PdfRenderer rendern → LosslessFactory → isSearchable=false
+    ├── RemovePasswordUseCase.kt   # removePassword() aufrufen → isSearchable erhalten
     └── PageEditUtils.kt           # thumbnailFile(): gemeinsame Hilfsfunktion für Seitenbearbeitungs-UseCases
 
 ui/
@@ -44,7 +46,7 @@ ui/
 │   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading (nur Merge)
 │   └── components/
 │       ├── ScanItem.kt            # Card mit Thumbnail, Metadaten, Auswahlzustand, MoreVert-Menü
-│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Signature)
+│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/RemoveTextLayer/RemovePassword)
 │       │                          # onAction: (ScanAction) → Unit ersetzt 12 einzelne Lambda-Parameter
 │       ├── SelectionTitleBar.kt   # ✕ · count/total · SelectAll-Icon
 │       ├── BulkActionBar.kt       # Share · Export · Merge · OCR · MakeSearchable · Delete (rot)
@@ -58,10 +60,10 @@ ui/
 ├── overlay/
 │   └── OverlayActionScreens.kt    # PageNumbersScreen, TextWatermarkScreen — nutzen DocumentEditViewModel
 ├── documentaction/
-│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature
+│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/RemoveTextLayer/RemovePassword
 │   │                              # Lädt ScanRecord per scanId, führt Workflows aus,
 │   │                              # mappt Fehler über WorkflowErrorMapper; _editLoading/_error/_success
-│   └── DocumentActionScreens.kt   # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen
+│   └── DocumentActionScreens.kt   # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen, RemovePasswordScreen, RemoveTextLayerScreen
 ├── pageedit/
 │   ├── PageSelectionViewModel.kt  # Seiten-Thumbnails, Auswahl, saveAsCopy + Rotate/Delete/Extract/Duplicate-Workflows
 │   └── PageActionScreens.kt       # RotatePagesScreen, DeletePagesScreen, ExtractPagesScreen, DuplicatePagesScreen
@@ -85,6 +87,10 @@ data/
 └── repository/ScanRepository.kt
 
 domain/workflow/WorkflowErrorMapper.kt  # @Singleton: ScanWorkflowError → lokalisierter String
+                                        # Neue Fehler: NotSearchable, RemoveTextLayerFailed, PasswordRequiredToRemove, RemovePasswordFailed
+domain/workflow/RemoveTextLayerWorkflow.kt  # Prüft: Datei existiert → RemoveTextLayerUseCase
+domain/workflow/RemovePasswordWorkflow.kt   # Prüft: Datei existiert + isPdfEncrypted → RemovePasswordUseCase
+                                            # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
 di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
 util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
@@ -93,6 +99,9 @@ util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, o
 util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePages, deletePages, getPageCount, generateThumbnail
                                    # appendTextWatermark nutzt calculateWatermarkFontSize() (internal, testbar)
                                    # buildRanges() + resolveUniqueFilename() als top-level internal (JVM-testbar)
+                                   # removeTextLayer(): Seiten per PdfRenderer → LosslessFactory neu rendern → kein OCR-Text
+                                   # removePassword(): PDDocument.load(file, "") → setAllSecurityToBeRemoved; wirft PasswordRequiredException bei echtem Benutzerpasswort
+                                   # WrongPasswordException + PasswordRequiredException als innere IOException-Subklassen
 ```
 
 ## Architektur-Regeln
@@ -122,7 +131,8 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
   - Delete: Einzel-Dialog mit Dateiname (`confirm_delete_single`) vs. Bulk-Dialog (`confirm_delete_multi`)
   - OCR: `extractTexts(records, lang)` → `ExtractTextUseCase` — Sprachauswahl-Dialog; `— filename —` Trenner nur bei >1
   - MakeSearchable: `makeSearchableScans(records, lang)` → `MakeSearchableUseCase` — bereits durchsuchbare werden übersprungen
-  - Params: `extractEnabled`, `makeSearchableEnabled` (beide `Boolean`)
+  - MakeSearchable-Button immer aktiv; Klick ohne nicht-durchsuchbare PDF → `reportError(searchable_nothing_to_do)`
+  - Params: `extractEnabled` (`Boolean`); `makeSearchableEnabled` immer `true`
 - Löschen immer mit Bestätigungs-Dialog
 
 ## Tests

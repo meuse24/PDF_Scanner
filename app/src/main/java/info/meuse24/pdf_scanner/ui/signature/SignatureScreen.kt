@@ -191,27 +191,32 @@ fun SignatureScreen(
             }
         }
         item {
-            Row(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                OutlinedButton(
-                    onClick = { selectedPageIndex = (selectedPageIndex - 1).coerceAtLeast(0) },
-                    enabled = selectedPageIndex > 0
-                ) {
-                    Text(stringResource(R.string.signature_page_previous))
-                }
                 Text(
                     text = stringResource(R.string.signature_target_page, selectedPageIndex + 1, currentRecord.pageCount),
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
-                OutlinedButton(
-                    onClick = { selectedPageIndex = (selectedPageIndex + 1).coerceAtMost(currentRecord.pageCount - 1) },
-                    enabled = selectedPageIndex < currentRecord.pageCount - 1
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(stringResource(R.string.signature_page_next))
+                    OutlinedButton(
+                        onClick = { selectedPageIndex = (selectedPageIndex - 1).coerceAtLeast(0) },
+                        enabled = selectedPageIndex > 0
+                    ) {
+                        Text(stringResource(R.string.signature_page_previous))
+                    }
+                    OutlinedButton(
+                        onClick = { selectedPageIndex = (selectedPageIndex + 1).coerceAtMost(currentRecord.pageCount - 1) },
+                        enabled = selectedPageIndex < currentRecord.pageCount - 1
+                    ) {
+                        Text(stringResource(R.string.signature_page_next))
+                    }
                 }
             }
         }

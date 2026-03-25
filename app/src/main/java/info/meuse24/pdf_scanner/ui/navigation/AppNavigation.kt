@@ -56,6 +56,8 @@ import info.meuse24.pdf_scanner.ui.home.HomeScreen
 import info.meuse24.pdf_scanner.ui.info.InfoScreen
 import info.meuse24.pdf_scanner.ui.documentaction.CompressPdfScreen
 import info.meuse24.pdf_scanner.ui.documentaction.ProtectPdfScreen
+import info.meuse24.pdf_scanner.ui.documentaction.RemovePasswordScreen
+import info.meuse24.pdf_scanner.ui.documentaction.RemoveTextLayerScreen
 import info.meuse24.pdf_scanner.ui.documentaction.UnlockPdfScreen
 import info.meuse24.pdf_scanner.ui.signature.SignatureScreen
 import info.meuse24.pdf_scanner.ui.overlay.PageNumbersScreen
@@ -186,6 +188,8 @@ fun AppNavigation() {
                                 currentRoute?.startsWith("protect-pdf/") == true -> stringResource(R.string.protect_pdf_screen_title)
                                 currentRoute?.startsWith("unlock-pdf/") == true -> stringResource(R.string.unlock_pdf_screen_title)
                                 currentRoute?.startsWith("signature/") == true -> stringResource(R.string.signature_screen_title)
+                                currentRoute?.startsWith("remove-text-layer/") == true -> stringResource(R.string.remove_text_layer_screen_title)
+                                currentRoute?.startsWith("remove-password/") == true -> stringResource(R.string.remove_password_screen_title)
                                 else                                 -> stringResource(R.string.app_name)
                             }
                         )
@@ -253,7 +257,9 @@ fun AppNavigation() {
                         onNavigateToCompressPdf = { scanId -> navController.navigate(Screen.CompressPdf.createRoute(scanId)) },
                         onNavigateToProtectPdf = { scanId -> navController.navigate(Screen.ProtectPdf.createRoute(scanId)) },
                         onNavigateToUnlockPdf = { scanId -> navController.navigate(Screen.UnlockPdf.createRoute(scanId)) },
-                        onNavigateToSignature = { scanId -> navController.navigate(Screen.Signature.createRoute(scanId)) }
+                        onNavigateToSignature = { scanId -> navController.navigate(Screen.Signature.createRoute(scanId)) },
+                        onNavigateToRemoveTextLayer = { scanId -> navController.navigate(Screen.RemoveTextLayer.createRoute(scanId)) },
+                        onNavigateToRemovePassword = { scanId -> navController.navigate(Screen.RemovePassword.createRoute(scanId)) }
                     )
                 }
                 composable(Screen.Help.route)    { HelpScreen() }
@@ -330,6 +336,18 @@ fun AppNavigation() {
                     arguments = listOf(navArgument("scanId") { type = NavType.LongType })
                 ) {
                     SignatureScreen(onNavigateBack = { navController.navigateUp() })
+                }
+                composable(
+                    route = Screen.RemoveTextLayer.route,
+                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                ) {
+                    RemoveTextLayerScreen(onNavigateBack = { navController.navigateUp() })
+                }
+                composable(
+                    route = Screen.RemovePassword.route,
+                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                ) {
+                    RemovePasswordScreen(onNavigateBack = { navController.navigateUp() })
                 }
             }
             } // Box

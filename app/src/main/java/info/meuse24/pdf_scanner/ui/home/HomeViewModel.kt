@@ -234,5 +234,9 @@ class HomeViewModel @Inject constructor(
         is ScanWorkflowError.ProtectFailed -> context.getString(R.string.protect_pdf_error)
         is ScanWorkflowError.UnlockFailed -> context.getString(R.string.unlock_pdf_error)
         is ScanWorkflowError.SignatureFailed -> context.getString(R.string.signature_error)
+        ScanWorkflowError.NotSearchable -> context.getString(R.string.remove_text_layer_not_searchable)
+        is ScanWorkflowError.RemoveTextLayerFailed -> context.getString(R.string.remove_text_layer_error)
+        ScanWorkflowError.PasswordRequiredToRemove -> context.getString(R.string.remove_password_requires_input)
+        is ScanWorkflowError.RemovePasswordFailed -> context.getString(R.string.remove_password_error)
     }
 }

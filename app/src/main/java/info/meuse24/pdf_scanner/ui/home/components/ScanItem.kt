@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.BrandingWatermark
+import androidx.compose.material.icons.automirrored.filled.ManageSearch
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.ContentCopy
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Badge
@@ -86,6 +88,8 @@ sealed interface ScanAction {
     data object ProtectPdf      : ScanAction
     data object UnlockPdf       : ScanAction
     data object Signature       : ScanAction
+    data object RemoveTextLayer : ScanAction
+    data object RemovePassword  : ScanAction
 }
 
 @Composable
@@ -275,9 +279,20 @@ internal fun ScanItem(
                             onClick     = { menuExpanded = false; onAction(ScanAction.UnlockPdf) }
                         )
                         DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_remove_password)) },
+                            leadingIcon = { Icon(Icons.Default.NoEncryption, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.RemovePassword) }
+                        )
+                        DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_sign_pdf)) },
                             leadingIcon = { Icon(Icons.Default.Draw, contentDescription = null) },
                             onClick     = { menuExpanded = false; onAction(ScanAction.Signature) }
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_remove_text_layer)) },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.ManageSearch, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.RemoveTextLayer) },
+                            enabled     = record.isSearchable
                         )
                     }
                 }

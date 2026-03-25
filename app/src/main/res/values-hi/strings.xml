@@ -287,6 +287,26 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
+    <!-- Remove password -->
+    <string name="remove_password_screen_title">पासवर्ड हटाएं</string>
+    <string name="remove_password_description">पासवर्ड दर्ज किए बिना असुरक्षित कॉपी बनाएं</string>
+    <string name="remove_password_details">ऐसी PDF के लिए काम करता है जो बिना पासवर्ड के खुलती हैं लेकिन उपयोग प्रतिबंध हैं (जैसे प्रिंटिंग या कॉपी नहीं)। एक नई असुरक्षित कॉपी बनाई जाती है। मूल फ़ाइल अपरिवर्तित रहती है।\n\nयदि PDF खोलने के लिए पासवर्ड की आवश्यकता है, तो इसके बजाय \"PDF अनलॉक करें\" का उपयोग करें।</string>
+    <string name="remove_password_apply">पासवर्ड हटाएं</string>
+    <string name="remove_password_success">पासवर्ड हटाया गया: %1$s</string>
+    <string name="remove_password_error">पासवर्ड हटाने में त्रुटि</string>
+    <string name="remove_password_requires_input">इस PDF को खोलने के लिए पासवर्ड की आवश्यकता है। पासवर्ड दर्ज करने के लिए \"PDF अनलॉक करें\" का उपयोग करें।</string>
+    <string name="action_remove_password">पासवर्ड हटाएं</string>
+    <string name="help_item_remove_password">ऐसी PDF की असुरक्षित कॉपी बनाने के लिए "पासवर्ड हटाएं" चुनें जो बिना पासवर्ड के खुलती हो लेकिन उपयोग प्रतिबंध हो। यदि PDF खोलने के लिए पासवर्ड की आवश्यकता है, तो PDF अनलॉक करें का उपयोग करें।</string>
+    <!-- Remove text layer -->
+    <string name="remove_text_layer_screen_title">टेक्स्ट लेयर हटाएं</string>
+    <string name="remove_text_layer_description">OCR टेक्स्ट लेयर के बिना एक कॉपी बनाएं</string>
+    <string name="remove_text_layer_details">प्रत्येक पृष्ठ को फिर से एक छवि के रूप में रेंडर किया जाता है और एक नई PDF कॉपी के रूप में सहेजा जाता है। टेक्स्ट लेयर हटा दी जाती है; दृश्य रूप अपरिवर्तित रहता है। मूल फ़ाइल में कोई बदलाव नहीं होता।</string>
+    <string name="remove_text_layer_apply">टेक्स्ट लेयर हटाएं</string>
+    <string name="remove_text_layer_success">टेक्स्ट लेयर हटाई गई: %1$s</string>
+    <string name="remove_text_layer_error">टेक्स्ट लेयर हटाने में त्रुटि</string>
+    <string name="remove_text_layer_not_searchable">इस PDF में कोई टेक्स्ट लेयर नहीं है</string>
+    <string name="action_remove_text_layer">टेक्स्ट लेयर हटाएं</string>
+    <string name="help_item_remove_text_layer">खोजयोग्य PDF की एक ऐसी कॉपी बनाने के लिए "टेक्स्ट लेयर हटाएं" चुनें जिसमें अदृश्य OCR टेक्स्ट लेयर हटा दी गई हो। यह विकल्प केवल खोजयोग्य PDF के लिए उपलब्ध है।</string>
     <string name="help_back_to_contents">सामग्री पर वापस जाएं</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
 </resources>

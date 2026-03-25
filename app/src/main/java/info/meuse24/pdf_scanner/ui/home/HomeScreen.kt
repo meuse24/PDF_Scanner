@@ -100,8 +100,10 @@ fun HomeScreen(
     onNavigateToCompressPdf:    (Long) -> Unit = {},
     onNavigateToProtectPdf:     (Long) -> Unit = {},
     onNavigateToUnlockPdf:      (Long) -> Unit = {},
-    onNavigateToSignature:      (Long) -> Unit = {},
-    viewModel:                  HomeViewModel  = hiltViewModel()
+    onNavigateToSignature:          (Long) -> Unit = {},
+    onNavigateToRemoveTextLayer:    (Long) -> Unit = {},
+    onNavigateToRemovePassword:     (Long) -> Unit = {},
+    viewModel:                      HomeViewModel  = hiltViewModel()
 ) {
     val scans        by viewModel.scans.collectAsState()
     val error        by viewModel.error.collectAsState()
@@ -287,6 +289,8 @@ fun HomeScreen(
                                     ScanAction.ProtectPdf     -> onNavigateToProtectPdf(record.id)
                                     ScanAction.UnlockPdf      -> onNavigateToUnlockPdf(record.id)
                                     ScanAction.Signature      -> onNavigateToSignature(record.id)
+                                    ScanAction.RemoveTextLayer -> onNavigateToRemoveTextLayer(record.id)
+                                    ScanAction.RemovePassword  -> onNavigateToRemovePassword(record.id)
                                 }
                             }
                         )
@@ -329,8 +333,14 @@ fun HomeScreen(
                 },
                 onExtractTexts        = { bulkLangForSearchable = false; showBulkLangDialog = true },
                 extractEnabled        = selectedRecords.isNotEmpty(),
-                onMakeSearchable      = { bulkLangForSearchable = true; showBulkLangDialog = true },
-                makeSearchableEnabled = selectedRecords.any { !it.isSearchable },
+                onMakeSearchable      = {
+                    if (selectedRecords.none { !it.isSearchable }) {
+                        viewModel.reportError(context.getString(R.string.searchable_nothing_to_do))
+                    } else {
+                        bulkLangForSearchable = true; showBulkLangDialog = true
+                    }
+                },
+                makeSearchableEnabled = true,
                 onMerge = {
                     val fmt = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
                     mergeFilenameInput = resources.getString(

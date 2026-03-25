@@ -287,6 +287,26 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
+    <!-- Remove password -->
+    <string name="remove_password_screen_title">删除密码</string>
+    <string name="remove_password_description">无需输入密码即可创建不受保护的副本</string>
+    <string name="remove_password_details">适用于无需密码即可打开、但有使用限制的 PDF（例如禁止打印或复制）。将创建一个新的无保护副本，原始文件保持不变。\n\n如果 PDF 需要密码才能打开，请改用"解锁 PDF"。</string>
+    <string name="remove_password_apply">删除密码</string>
+    <string name="remove_password_success">密码已删除：%1$s</string>
+    <string name="remove_password_error">删除密码时出错</string>
+    <string name="remove_password_requires_input">此 PDF 需要密码才能打开。请改用"解锁 PDF"输入密码。</string>
+    <string name="action_remove_password">删除密码</string>
+    <string name="help_item_remove_password">选择"删除密码"，可为无需密码即可打开但有使用限制的 PDF 创建无保护副本。如果 PDF 需要密码才能打开，请改用"解锁 PDF"。</string>
+    <!-- Remove text layer -->
+    <string name="remove_text_layer_screen_title">删除文字层</string>
+    <string name="remove_text_layer_description">创建不含 OCR 文字层的副本</string>
+    <string name="remove_text_layer_details">每一页将重新渲染为图像，并保存为新的 PDF 副本。文字层将被删除，视觉外观保持不变。原始文件不会被修改。</string>
+    <string name="remove_text_layer_apply">删除文字层</string>
+    <string name="remove_text_layer_success">文字层已删除：%1$s</string>
+    <string name="remove_text_layer_error">删除文字层时出错</string>
+    <string name="remove_text_layer_not_searchable">此 PDF 没有文字层</string>
+    <string name="action_remove_text_layer">删除文字层</string>
+    <string name="help_item_remove_text_layer">选择"删除文字层"，可为可搜索的 PDF 创建一个不含隐藏 OCR 文字层的副本。此选项仅适用于可搜索的 PDF。</string>
     <string name="help_back_to_contents">返回目录</string>
     <string name="signature_scale_invalid">Choose a valid signature size</string>
 </resources>

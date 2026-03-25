@@ -306,6 +306,9 @@
     <string name="remove_text_layer_not_searchable">Dieses PDF hat keinen Textlayer</string>
     <string name="action_remove_text_layer">Textlayer entfernen</string>
     <string name="help_item_remove_text_layer">Mit Textlayer entfernen erstellst du eine Kopie einer durchsuchbaren PDF, bei der der unsichtbare OCR-Textlayer entfernt wird. Diese Option ist nur bei durchsuchbaren PDFs verfügbar.</string>
+    <!-- Submenus -->
+    <string name="action_submenu_page_structure">Seitenstruktur</string>
+    <string name="action_submenu_security">Schutz &amp; Passwort</string>
     <!-- Restrict usage -->
     <string name="restrict_usage_screen_title">Nutzungsrechte einschränken</string>
     <string name="restrict_usage_description">Nutzungsrechte per Eigentümerpasswort festlegen</string>

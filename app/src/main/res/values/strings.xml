@@ -328,6 +328,9 @@
     <string name="remove_text_layer_not_searchable">This PDF does not have a text layer</string>
     <string name="action_remove_text_layer">Remove text layer</string>
     <string name="help_item_remove_text_layer">Choose Remove text layer to create a copy of a searchable PDF in which the invisible OCR text layer is stripped out. This option is only available for searchable PDFs.</string>
+    <!-- Submenus -->
+    <string name="action_submenu_page_structure">Page structure</string>
+    <string name="action_submenu_security">Security &amp; Password</string>
     <!-- Restrict usage -->
     <string name="restrict_usage_screen_title">Restrict usage rights</string>
     <string name="restrict_usage_description">Set usage rights via owner password</string>

@@ -307,6 +307,9 @@
     <string name="remove_text_layer_not_searchable">Este PDF não possui camada de texto</string>
     <string name="action_remove_text_layer">Remover camada de texto</string>
     <string name="help_item_remove_text_layer">Escolha Remover camada de texto para criar uma cópia de um PDF pesquisável em que a camada de texto OCR invisível é removida. Esta opção só está disponível para PDFs pesquisáveis.</string>
+    <!-- Submenus -->
+    <string name="action_submenu_page_structure">Page structure</string>
+    <string name="action_submenu_security">Security &amp; Password</string>
     <!-- Restrict usage -->
     <string name="restrict_usage_screen_title">Restrict usage rights</string>
     <string name="restrict_usage_description">Set usage rights via owner password</string>

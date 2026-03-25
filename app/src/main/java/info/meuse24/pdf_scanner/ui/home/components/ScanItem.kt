@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.BrandingWatermark
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.ManageSearch
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.ContentCut
@@ -34,8 +35,10 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.AdminPanelSettings
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
@@ -43,6 +46,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -105,7 +109,9 @@ internal fun ScanItem(
     onAction:         (ScanAction) -> Unit = {}
 ) {
     val context = LocalContext.current
-    var menuExpanded by remember { mutableStateOf(false) }
+    var menuExpanded        by remember { mutableStateOf(false) }
+    var subMenuPages        by remember { mutableStateOf(false) }
+    var subMenuSecurity     by remember { mutableStateOf(false) }
     val dateStr = remember(record.timestamp) {
         DateFormat.getDateTimeInstance(
             DateFormat.SHORT,
@@ -217,6 +223,8 @@ internal fun ScanItem(
                     IconButton(onClick = { menuExpanded = true }) {
                         Icon(Icons.Default.MoreVert, contentDescription = null)
                     }
+
+                    // ── Hauptmenü ────────────────────────────────────────────
                     DropdownMenu(
                         expanded         = menuExpanded,
                         onDismissRequest = { menuExpanded = false }
@@ -224,92 +232,121 @@ internal fun ScanItem(
                         val notEncrypted = !record.isEncrypted
                         DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_rotate)) },
-                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.RotateRight, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.RotateRight, null) },
                             onClick     = { menuExpanded = false; onAction(ScanAction.Rotate) },
                             enabled     = notEncrypted
                         )
                         DropdownMenuItem(
-                            text        = { Text(stringResource(R.string.action_split)) },
-                            leadingIcon = { Icon(Icons.Default.ContentCut, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.Split) },
-                            enabled     = notEncrypted && record.pageCount >= 2
-                        )
-                        DropdownMenuItem(
-                            text        = { Text(stringResource(R.string.action_reorder)) },
-                            leadingIcon = { Icon(Icons.Default.SwapVert, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.Reorder) },
-                            enabled     = notEncrypted && record.pageCount >= 2
-                        )
-                        DropdownMenuItem(
-                            text        = { Text(stringResource(R.string.action_delete_pages)) },
-                            leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.DeletePages) },
-                            enabled     = notEncrypted && record.pageCount >= 2
-                        )
-                        DropdownMenuItem(
-                            text        = { Text(stringResource(R.string.action_extract_pages)) },
-                            leadingIcon = { Icon(Icons.Default.PictureAsPdf, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.ExtractPages) },
-                            enabled     = notEncrypted && record.pageCount >= 2
-                        )
-                        DropdownMenuItem(
-                            text        = { Text(stringResource(R.string.action_duplicate_pages)) },
-                            leadingIcon = { Icon(Icons.Default.ContentCopy, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.DuplicatePages) },
-                            enabled     = notEncrypted
-                        )
-                        DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_page_numbers)) },
-                            leadingIcon = { Icon(Icons.Default.FormatListNumbered, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.Default.FormatListNumbered, null) },
                             onClick     = { menuExpanded = false; onAction(ScanAction.PageNumbers) },
                             enabled     = notEncrypted
                         )
                         DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_text_watermark)) },
-                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.BrandingWatermark, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.BrandingWatermark, null) },
                             onClick     = { menuExpanded = false; onAction(ScanAction.TextWatermark) },
                             enabled     = notEncrypted
                         )
                         DropdownMenuItem(
-                            text        = { Text(stringResource(R.string.action_compress_pdf)) },
-                            leadingIcon = { Icon(Icons.Default.Compress, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.CompressPdf) },
-                            enabled     = notEncrypted && !record.isSearchable
-                        )
-                        DropdownMenuItem(
-                            text        = { Text(stringResource(R.string.action_protect_pdf)) },
-                            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.ProtectPdf) },
-                            enabled     = notEncrypted
-                        )
-                        DropdownMenuItem(
-                            text        = { Text(stringResource(R.string.action_restrict_usage)) },
-                            leadingIcon = { Icon(Icons.Default.AdminPanelSettings, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.RestrictUsage) },
-                            enabled     = notEncrypted
-                        )
-                        DropdownMenuItem(
-                            text        = { Text(stringResource(R.string.action_unlock_pdf)) },
-                            leadingIcon = { Icon(Icons.Default.LockOpen, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.UnlockPdf) },
-                            enabled     = record.isEncrypted
-                        )
-                        DropdownMenuItem(
-                            text        = { Text(stringResource(R.string.action_remove_password)) },
-                            leadingIcon = { Icon(Icons.Default.NoEncryption, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.RemovePassword) },
-                            enabled     = record.isEncrypted
-                        )
-                        DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_sign_pdf)) },
-                            leadingIcon = { Icon(Icons.Default.Draw, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.Default.Draw, null) },
                             onClick     = { menuExpanded = false; onAction(ScanAction.Signature) },
                             enabled     = notEncrypted
                         )
                         DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_compress_pdf)) },
+                            leadingIcon = { Icon(Icons.Default.Compress, null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.CompressPdf) },
+                            enabled     = notEncrypted && !record.isSearchable
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text         = { Text(stringResource(R.string.action_submenu_page_structure)) },
+                            leadingIcon  = { Icon(Icons.Default.Layers, null) },
+                            trailingIcon = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
+                            onClick      = { menuExpanded = false; subMenuPages = true },
+                            enabled      = notEncrypted
+                        )
+                        DropdownMenuItem(
+                            text         = { Text(stringResource(R.string.action_submenu_security)) },
+                            leadingIcon  = { Icon(Icons.Default.Security, null) },
+                            trailingIcon = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
+                            onClick      = { menuExpanded = false; subMenuSecurity = true }
+                        )
+                    }
+
+                    // ── Submenu: Seitenstruktur ───────────────────────────────
+                    DropdownMenu(
+                        expanded         = subMenuPages,
+                        onDismissRequest = { subMenuPages = false }
+                    ) {
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_split)) },
+                            leadingIcon = { Icon(Icons.Default.ContentCut, null) },
+                            onClick     = { subMenuPages = false; onAction(ScanAction.Split) },
+                            enabled     = record.pageCount >= 2
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_reorder)) },
+                            leadingIcon = { Icon(Icons.Default.SwapVert, null) },
+                            onClick     = { subMenuPages = false; onAction(ScanAction.Reorder) },
+                            enabled     = record.pageCount >= 2
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_delete_pages)) },
+                            leadingIcon = { Icon(Icons.Default.Delete, null) },
+                            onClick     = { subMenuPages = false; onAction(ScanAction.DeletePages) },
+                            enabled     = record.pageCount >= 2
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_extract_pages)) },
+                            leadingIcon = { Icon(Icons.Default.PictureAsPdf, null) },
+                            onClick     = { subMenuPages = false; onAction(ScanAction.ExtractPages) },
+                            enabled     = record.pageCount >= 2
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_duplicate_pages)) },
+                            leadingIcon = { Icon(Icons.Default.ContentCopy, null) },
+                            onClick     = { subMenuPages = false; onAction(ScanAction.DuplicatePages) }
+                        )
+                    }
+
+                    // ── Submenu: Schutz & Passwort ────────────────────────────
+                    DropdownMenu(
+                        expanded         = subMenuSecurity,
+                        onDismissRequest = { subMenuSecurity = false }
+                    ) {
+                        val notEncrypted = !record.isEncrypted
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_protect_pdf)) },
+                            leadingIcon = { Icon(Icons.Default.Lock, null) },
+                            onClick     = { subMenuSecurity = false; onAction(ScanAction.ProtectPdf) },
+                            enabled     = notEncrypted
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_restrict_usage)) },
+                            leadingIcon = { Icon(Icons.Default.AdminPanelSettings, null) },
+                            onClick     = { subMenuSecurity = false; onAction(ScanAction.RestrictUsage) },
+                            enabled     = notEncrypted
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_unlock_pdf)) },
+                            leadingIcon = { Icon(Icons.Default.LockOpen, null) },
+                            onClick     = { subMenuSecurity = false; onAction(ScanAction.UnlockPdf) },
+                            enabled     = record.isEncrypted
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_remove_password)) },
+                            leadingIcon = { Icon(Icons.Default.NoEncryption, null) },
+                            onClick     = { subMenuSecurity = false; onAction(ScanAction.RemovePassword) },
+                            enabled     = record.isEncrypted
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_remove_text_layer)) },
-                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.ManageSearch, contentDescription = null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.RemoveTextLayer) },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.ManageSearch, null) },
+                            onClick     = { subMenuSecurity = false; onAction(ScanAction.RemoveTextLayer) },
                             enabled     = record.isSearchable && notEncrypted
                         )
                     }

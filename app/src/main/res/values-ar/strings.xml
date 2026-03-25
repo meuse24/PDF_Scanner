@@ -267,6 +267,7 @@
     <string name="password_required">Enter a password</string>
     <string name="password_wrong">The password is incorrect</string>
     <string name="help_item_compress_pdf">Choose Compress PDF to create a smaller copy of a non-searchable PDF. The original file remains unchanged.</string>
+    <string name="help_item_export_as_jpg">تصدير كـ JPG يحوّل كل صفحة من PDF إلى صورة JPEG (150 DPI) ويحفظها في مجلد التنزيلات. يُنتج PDF من صفحة واحدة ملفًا واحدًا؛ ويُنتج PDF متعدد الصفحات صورة لكل صفحة.</string>
     <string name="help_item_protect_pdf">Choose Set opening password to create a password-protected copy that requires the password when opening it.</string>
     <string name="help_item_unlock_pdf">Choose Remove opening password and enter the current password to save an unprotected copy.</string>
     <string name="signature_screen_title">Sign PDF</string>

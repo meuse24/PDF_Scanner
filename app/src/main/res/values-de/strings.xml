@@ -267,6 +267,7 @@
     <string name="password_required">Bitte ein Passwort eingeben</string>
     <string name="password_wrong">Das Passwort ist falsch</string>
     <string name="help_item_compress_pdf">Mit PDF komprimieren erstellst du eine kleinere Kopie eines nicht durchsuchbaren PDFs. Die Originaldatei bleibt unverändert.</string>
+    <string name="help_item_export_as_jpg">Als JPG exportieren rendert jede Seite des PDFs als JPEG-Bild (150 DPI) und speichert es in deinem Downloads-Ordner. Einseitige PDFs erzeugen eine Datei; mehrseitige PDFs erzeugen ein Bild pro Seite.</string>
     <string name="help_item_protect_pdf">Mit Öffnungspasswort setzen erstellst du eine passwortgeschützte Kopie, die beim Öffnen das Passwort verlangt.</string>
     <string name="help_item_unlock_pdf">Mit Öffnungspasswort entfernen und dem aktuellen Passwort speicherst du eine ungeschützte Kopie.</string>
     <string name="signature_screen_title">PDF signieren</string>

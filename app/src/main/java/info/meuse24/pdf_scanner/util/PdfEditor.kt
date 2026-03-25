@@ -351,6 +351,51 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
+    /**
+     * Setzt Nutzungseinschränkungen per Eigentümerpasswort.
+     * [canPrint]/[canCopy]/[canEdit]: steuern Druck-, Kopier- und Bearbeitungsrechte.
+     * Das Ergebnis ist eine neue PDF-Kopie mit Suffix „_Eingeschraenkt".
+     * Wirft [PasswordRequiredException] wenn die Eingabe-PDF ein echtes Benutzerpasswort hat.
+     */
+    open fun restrictUsage(
+        input: File,
+        outputDir: File,
+        ownerPassword: String,
+        canPrint: Boolean,
+        canCopy: Boolean,
+        canEdit: Boolean
+    ): File {
+        require(ownerPassword.isNotBlank()) { "Eigentümerpasswort darf nicht leer sein" }
+        val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_Eingeschraenkt")
+        val output = File(outputDir, "$baseName.pdf")
+        return writePdf("RestrictUsage", output) { target ->
+            try {
+                PDDocument.load(input, "").use { source ->
+                    PDDocument().use { restricted ->
+                        repeat(source.numberOfPages) { pageIdx ->
+                            restricted.importPage(source.getPage(pageIdx))
+                        }
+                        val ap = AccessPermission()
+                        ap.setCanPrint(canPrint)
+                        ap.setCanPrintDegraded(canPrint)
+                        ap.setCanExtractContent(canCopy)
+                        ap.setCanModify(canEdit)
+                        ap.setCanFillInForm(canEdit)
+                        ap.setCanModifyAnnotations(canEdit)
+                        ap.setCanAssembleDocument(canEdit)
+                        val policy = StandardProtectionPolicy(ownerPassword.trim(), "", ap)
+                        policy.setEncryptionKeyLength(128)
+                        policy.setPreferAES(true)
+                        restricted.protect(policy)
+                        restricted.save(target)
+                    }
+                }
+            } catch (e: InvalidPasswordException) {
+                throw PasswordRequiredException(e)
+            }
+        }
+    }
+
     open fun isPdfEncrypted(input: File): Boolean {
         return try {
             PDDocument.load(input).use { document -> document.isEncrypted }

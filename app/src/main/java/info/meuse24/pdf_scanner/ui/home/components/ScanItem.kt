@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.SwapVert
@@ -88,8 +89,9 @@ sealed interface ScanAction {
     data object ProtectPdf      : ScanAction
     data object UnlockPdf       : ScanAction
     data object Signature       : ScanAction
-    data object RemoveTextLayer : ScanAction
-    data object RemovePassword  : ScanAction
+    data object RemoveTextLayer  : ScanAction
+    data object RemovePassword   : ScanAction
+    data object RestrictUsage    : ScanAction
 }
 
 @Composable
@@ -282,6 +284,11 @@ internal fun ScanItem(
                             text        = { Text(stringResource(R.string.action_remove_password)) },
                             leadingIcon = { Icon(Icons.Default.NoEncryption, contentDescription = null) },
                             onClick     = { menuExpanded = false; onAction(ScanAction.RemovePassword) }
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(stringResource(R.string.action_restrict_usage)) },
+                            leadingIcon = { Icon(Icons.Default.AdminPanelSettings, contentDescription = null) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.RestrictUsage) }
                         )
                         DropdownMenuItem(
                             text        = { Text(stringResource(R.string.action_sign_pdf)) },

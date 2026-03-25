@@ -15,6 +15,7 @@ import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RemovePasswordWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RemoveTextLayerWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.RestrictUsageWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.SignatureStampWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.TextWatermarkWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
@@ -39,6 +40,7 @@ class DocumentEditViewModel @Inject constructor(
     private val signatureStampWorkflow: SignatureStampWorkflow,
     private val removeTextLayerWorkflow: RemoveTextLayerWorkflow,
     private val removePasswordWorkflow: RemovePasswordWorkflow,
+    private val restrictUsageWorkflow: RestrictUsageWorkflow,
     private val errorMapper: WorkflowErrorMapper,
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
@@ -187,6 +189,22 @@ class DocumentEditViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 when (val result = removePasswordWorkflow(record, scansDir)) {
+                    is WorkflowResult.Success -> _success.value = true
+                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun restrictUsage(ownerPassword: String, canPrint: Boolean, canCopy: Boolean, canEdit: Boolean) {
+        val record = _record.value ?: return
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = restrictUsageWorkflow(record, scansDir, ownerPassword, canPrint, canCopy, canEdit)) {
                     is WorkflowResult.Success -> _success.value = true
                     is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
                 }

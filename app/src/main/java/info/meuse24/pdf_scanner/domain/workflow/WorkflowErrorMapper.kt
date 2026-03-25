@@ -47,5 +47,6 @@ class WorkflowErrorMapper @Inject constructor(
         is ScanWorkflowError.RemoveTextLayerFailed -> context.getString(R.string.remove_text_layer_error)
         ScanWorkflowError.PasswordRequiredToRemove -> context.getString(R.string.remove_password_requires_input)
         is ScanWorkflowError.RemovePasswordFailed -> context.getString(R.string.remove_password_error)
+        is ScanWorkflowError.UsageRestrictionFailed -> context.getString(R.string.restrict_usage_error)
     }
 }

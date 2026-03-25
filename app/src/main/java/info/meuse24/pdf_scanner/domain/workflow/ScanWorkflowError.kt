@@ -39,4 +39,5 @@ sealed interface ScanWorkflowError {
     data class SignatureFailed(override val cause: Throwable) : ScanWorkflowError
     data class RemoveTextLayerFailed(override val cause: Throwable) : ScanWorkflowError
     data class RemovePasswordFailed(override val cause: Throwable) : ScanWorkflowError
+    data class UsageRestrictionFailed(override val cause: Throwable) : ScanWorkflowError
 }

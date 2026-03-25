@@ -32,6 +32,7 @@ domain/
     ├── DeletePdfPagesUseCase.kt   # Seiten löschen; nutzt thumbnailFile() aus PageEditUtils
     ├── RemoveTextLayerUseCase.kt  # Seiten per PdfRenderer rendern → LosslessFactory → isSearchable=false
     ├── RemovePasswordUseCase.kt   # removePassword() aufrufen → isSearchable erhalten
+    ├── RestrictUsageUseCase.kt    # restrictUsage() aufrufen → isSearchable=false
     └── PageEditUtils.kt           # thumbnailFile(): gemeinsame Hilfsfunktion für Seitenbearbeitungs-UseCases
 
 ui/
@@ -46,7 +47,7 @@ ui/
 │   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading (nur Merge)
 │   └── components/
 │       ├── ScanItem.kt            # Card mit Thumbnail, Metadaten, Auswahlzustand, MoreVert-Menü
-│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/RemoveTextLayer/RemovePassword)
+│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/RemoveTextLayer/RemovePassword/RestrictUsage)
 │       │                          # onAction: (ScanAction) → Unit ersetzt 12 einzelne Lambda-Parameter
 │       ├── SelectionTitleBar.kt   # ✕ · count/total · SelectAll-Icon
 │       ├── BulkActionBar.kt       # Share · Export · Merge · OCR · MakeSearchable · Delete (rot)
@@ -60,10 +61,10 @@ ui/
 ├── overlay/
 │   └── OverlayActionScreens.kt    # PageNumbersScreen, TextWatermarkScreen — nutzen DocumentEditViewModel
 ├── documentaction/
-│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/RemoveTextLayer/RemovePassword
+│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/RemoveTextLayer/RemovePassword/RestrictUsage
 │   │                              # Lädt ScanRecord per scanId, führt Workflows aus,
 │   │                              # mappt Fehler über WorkflowErrorMapper; _editLoading/_error/_success
-│   └── DocumentActionScreens.kt   # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen, RemovePasswordScreen, RemoveTextLayerScreen
+│   └── DocumentActionScreens.kt   # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen, RemovePasswordScreen, RemoveTextLayerScreen, RestrictUsageScreen
 ├── pageedit/
 │   ├── PageSelectionViewModel.kt  # Seiten-Thumbnails, Auswahl, saveAsCopy + Rotate/Delete/Extract/Duplicate-Workflows
 │   └── PageActionScreens.kt       # RotatePagesScreen, DeletePagesScreen, ExtractPagesScreen, DuplicatePagesScreen
@@ -87,9 +88,10 @@ data/
 └── repository/ScanRepository.kt
 
 domain/workflow/WorkflowErrorMapper.kt  # @Singleton: ScanWorkflowError → lokalisierter String
-                                        # Neue Fehler: NotSearchable, RemoveTextLayerFailed, PasswordRequiredToRemove, RemovePasswordFailed
 domain/workflow/RemoveTextLayerWorkflow.kt  # Prüft: Datei existiert → RemoveTextLayerUseCase
 domain/workflow/RemovePasswordWorkflow.kt   # Prüft: Datei existiert + isPdfEncrypted → RemovePasswordUseCase
+                                            # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
+domain/workflow/RestrictUsageWorkflow.kt    # Prüft: Datei existiert → RestrictUsageUseCase
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
 di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
@@ -101,6 +103,7 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
                                    # buildRanges() + resolveUniqueFilename() als top-level internal (JVM-testbar)
                                    # removeTextLayer(): Seiten per PdfRenderer → LosslessFactory neu rendern → kein OCR-Text
                                    # removePassword(): PDDocument.load(file, "") → setAllSecurityToBeRemoved; wirft PasswordRequiredException bei echtem Benutzerpasswort
+                                   # restrictUsage(ownerPwd, canPrint, canCopy, canEdit): AccessPermission + StandardProtectionPolicy(ownerPwd, "", ap); Suffix _Eingeschraenkt
                                    # WrongPasswordException + PasswordRequiredException als innere IOException-Subklassen
 ```
 

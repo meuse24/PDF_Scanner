@@ -47,4 +47,7 @@ sealed class Screen(val route: String) {
     data object RemovePassword : Screen("remove-password/{scanId}") {
         fun createRoute(scanId: Long) = "remove-password/$scanId"
     }
+    data object RestrictUsage : Screen("restrict-usage/{scanId}") {
+        fun createRoute(scanId: Long) = "restrict-usage/$scanId"
+    }
 }

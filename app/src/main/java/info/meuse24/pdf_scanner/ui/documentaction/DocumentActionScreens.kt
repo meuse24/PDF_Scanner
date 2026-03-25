@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Switch
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
@@ -329,6 +330,121 @@ fun RemoveTextLayerScreen(
                 }
             }
         )
+    }
+}
+
+@Composable
+fun RestrictUsageScreen(
+    onNavigateBack: () -> Unit,
+    viewModel: DocumentEditViewModel = hiltViewModel()
+) {
+    val record by viewModel.record.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
+    var ownerPassword by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
+    var canPrint by rememberSaveable { mutableStateOf(false) }
+    var canCopy by rememberSaveable { mutableStateOf(false) }
+    var canEdit by rememberSaveable { mutableStateOf(false) }
+    val passwordsMatch = ownerPassword.isNotBlank() && ownerPassword == confirmPassword
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
+
+    ActionScreenContent(
+        record = record,
+        title = stringResource(R.string.restrict_usage_description),
+        body = stringResource(R.string.restrict_usage_details),
+        form = {
+            OutlinedTextField(
+                value = ownerPassword,
+                onValueChange = { ownerPassword = it },
+                label = { Text(stringResource(R.string.restrict_usage_owner_password_label)) },
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text(stringResource(R.string.password_confirm_label)) },
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth()
+            )
+            if (confirmPassword.isNotEmpty() && !passwordsMatch) {
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.password_mismatch),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+            Spacer(Modifier.height(16.dp))
+            UsageRestrictionToggle(
+                label = stringResource(R.string.restrict_usage_can_print),
+                checked = canPrint,
+                onCheckedChange = { canPrint = it }
+            )
+            UsageRestrictionToggle(
+                label = stringResource(R.string.restrict_usage_can_copy),
+                checked = canCopy,
+                onCheckedChange = { canCopy = it }
+            )
+            UsageRestrictionToggle(
+                label = stringResource(R.string.restrict_usage_can_edit),
+                checked = canEdit,
+                onCheckedChange = { canEdit = it }
+            )
+        },
+        confirmLabel = stringResource(R.string.restrict_usage_apply),
+        confirmEnabled = record != null && passwordsMatch && !editLoading,
+        onConfirm = { viewModel.restrictUsage(ownerPassword, canPrint, canCopy, canEdit) }
+    )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun UsageRestrictionToggle(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = label, style = MaterialTheme.typography.bodyMedium)
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 

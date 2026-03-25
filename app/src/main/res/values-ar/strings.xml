@@ -287,16 +287,16 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
-    <!-- Remove password -->
-    <string name="remove_password_screen_title">إزالة كلمة المرور</string>
-    <string name="remove_password_description">إنشاء نسخة غير محمية دون إدخال كلمة مرور</string>
-    <string name="remove_password_details">يعمل مع ملفات PDF التي تُفتح بدون كلمة مرور ولكن لديها قيود استخدام (مثل عدم الطباعة أو النسخ). يتم إنشاء نسخة جديدة غير محمية. الملف الأصلي لا يُعدَّل.\n\nإذا كانت الـ PDF تتطلب كلمة مرور للفتح، استخدم «فتح الـ PDF» بدلاً من ذلك.</string>
-    <string name="remove_password_apply">إزالة كلمة المرور</string>
-    <string name="remove_password_success">تمت إزالة كلمة المرور: %1$s</string>
-    <string name="remove_password_error">خطأ أثناء إزالة كلمة المرور</string>
-    <string name="remove_password_requires_input">تتطلب هذه الـ PDF كلمة مرور للفتح. استخدم «فتح الـ PDF» لإدخالها.</string>
-    <string name="action_remove_password">إزالة كلمة المرور</string>
-    <string name="help_item_remove_password">اختر إزالة كلمة المرور لإنشاء نسخة غير محمية من ملف PDF يُفتح بدون كلمة مرور ولكن لديه قيود استخدام. إذا كانت الـ PDF تتطلب كلمة مرور للفتح، استخدم فتح الـ PDF بدلاً من ذلك.</string>
+    <!-- Remove password / restrictions -->
+    <string name="remove_password_screen_title">إزالة القيود</string>
+    <string name="remove_password_description">رفع قيود الاستخدام دون إدخال كلمة مرور</string>
+    <string name="remove_password_details">بعض ملفات PDF تُفتح بدون كلمة مرور لكنها تحتوي على قيود استخدام مثل عدم الطباعة أو النسخ. تقوم هذه الوظيفة برفع هذه القيود وإنشاء نسخة غير مقيّدة. الملف الأصلي لا يُعدَّل.\n\nملاحظة: لا تُزيل هذه الوظيفة كلمة مرور الفتح. إذا كانت الـ PDF تتطلب كلمة مرور للفتح، استخدم «فتح الـ PDF» بدلاً من ذلك.</string>
+    <string name="remove_password_apply">إزالة القيود</string>
+    <string name="remove_password_success">تمت إزالة القيود: %1$s</string>
+    <string name="remove_password_error">خطأ أثناء إزالة القيود</string>
+    <string name="remove_password_requires_input">هذه الـ PDF محمية بكلمة مرور فتح. استخدم «فتح الـ PDF» لإدخالها.</string>
+    <string name="action_remove_password">إزالة القيود</string>
+    <string name="help_item_remove_password">اختر إزالة القيود لرفع قيود الاستخدام (مثل عدم الطباعة أو النسخ) من ملفات PDF التي تُفتح بدون كلمة مرور. لا تُزيل هذه الوظيفة كلمة مرور الفتح الحقيقية — لذلك استخدم فتح الـ PDF.</string>
     <!-- Remove text layer -->
     <string name="remove_text_layer_screen_title">إزالة طبقة النص</string>
     <string name="remove_text_layer_description">إنشاء نسخة بدون طبقة نص OCR</string>

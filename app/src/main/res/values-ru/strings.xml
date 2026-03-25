@@ -287,16 +287,16 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
-    <!-- Remove password -->
-    <string name="remove_password_screen_title">Удалить пароль</string>
-    <string name="remove_password_description">Создать незащищённую копию без ввода пароля</string>
-    <string name="remove_password_details">Работает для PDF, которые открываются без пароля, но имеют ограничения использования (например, запрет печати или копирования). Создаётся новая незащищённая копия. Исходный файл не изменяется.\n\nЕсли PDF требует пароль для открытия, используйте «Разблокировать PDF».</string>
-    <string name="remove_password_apply">Удалить пароль</string>
-    <string name="remove_password_success">Пароль удалён: %1$s</string>
-    <string name="remove_password_error">Ошибка при удалении пароля</string>
-    <string name="remove_password_requires_input">Этот PDF требует пароль для открытия. Используйте «Разблокировать PDF» для его ввода.</string>
-    <string name="action_remove_password">Удалить пароль</string>
-    <string name="help_item_remove_password">Выберите «Удалить пароль», чтобы создать незащищённую копию PDF, который открывается без пароля, но имеет ограничения использования. Если PDF требует пароль для открытия, используйте «Разблокировать PDF».</string>
+    <!-- Remove password / restrictions -->
+    <string name="remove_password_screen_title">Снять ограничения</string>
+    <string name="remove_password_description">Снять ограничения использования без ввода пароля</string>
+    <string name="remove_password_details">Некоторые PDF открываются без пароля, но имеют ограничения использования — например, запрет печати или копирования. Эта функция снимает такие ограничения и создаёт копию без ограничений. Исходный файл не изменяется.\n\nПримечание: эта функция не удаляет пароль для открытия. Если PDF требует пароль для открытия, используйте «Разблокировать PDF».</string>
+    <string name="remove_password_apply">Снять ограничения</string>
+    <string name="remove_password_success">Ограничения сняты: %1$s</string>
+    <string name="remove_password_error">Ошибка при снятии ограничений</string>
+    <string name="remove_password_requires_input">Этот PDF защищён паролем для открытия. Используйте «Разблокировать PDF» для его ввода.</string>
+    <string name="action_remove_password">Снять ограничения</string>
+    <string name="help_item_remove_password">Выберите «Снять ограничения», чтобы убрать ограничения использования (например, запрет печати или копирования) у PDF, который открывается без пароля. Эта функция не удаляет реальный пароль для открытия — для этого используйте «Разблокировать PDF».</string>
     <!-- Remove text layer -->
     <string name="remove_text_layer_screen_title">Удалить текстовый слой</string>
     <string name="remove_text_layer_description">Создать копию без слоя текста OCR</string>

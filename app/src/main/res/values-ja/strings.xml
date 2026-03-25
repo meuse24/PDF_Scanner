@@ -287,16 +287,16 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
-    <!-- Remove password -->
-    <string name="remove_password_screen_title">パスワードを削除</string>
-    <string name="remove_password_description">パスワード入力なしで保護なしのコピーを作成</string>
-    <string name="remove_password_details">パスワードなしで開けるが使用制限（印刷・コピー禁止など）があるPDFに対応しています。新しい保護なしのコピーが作成されます。元のファイルは変更されません。\n\nPDFを開くにパスワードが必要な場合は「PDFのロックを解除」を使用してください。</string>
-    <string name="remove_password_apply">パスワードを削除</string>
-    <string name="remove_password_success">パスワードを削除しました: %1$s</string>
-    <string name="remove_password_error">パスワードの削除中にエラーが発生しました</string>
-    <string name="remove_password_requires_input">このPDFを開くにはパスワードが必要です。「PDFのロックを解除」でパスワードを入力してください。</string>
-    <string name="action_remove_password">パスワードを削除</string>
-    <string name="help_item_remove_password">「パスワードを削除」を選ぶと、パスワードなしで開けるが使用制限があるPDFの保護なしコピーを作成できます。PDFを開くにパスワードが必要な場合は「PDFのロックを解除」を使用してください。</string>
+    <!-- Remove password / restrictions -->
+    <string name="remove_password_screen_title">制限を解除</string>
+    <string name="remove_password_description">パスワード入力なしで使用制限を解除</string>
+    <string name="remove_password_details">パスワードなしで開けるが印刷やコピーなどの使用制限があるPDFに対応しています。この機能はそれらの制限を解除し、制限なしの新しいコピーを作成します。元のファイルは変更されません。\n\n注意：この機能は開くためのパスワードを削除するものではありません。PDFを開くにパスワードが必要な場合は「PDFのロックを解除」を使用してください。</string>
+    <string name="remove_password_apply">制限を解除</string>
+    <string name="remove_password_success">制限を解除しました: %1$s</string>
+    <string name="remove_password_error">制限の解除中にエラーが発生しました</string>
+    <string name="remove_password_requires_input">このPDFは開くためのパスワードで保護されています。「PDFのロックを解除」でパスワードを入力してください。</string>
+    <string name="action_remove_password">制限を解除</string>
+    <string name="help_item_remove_password">「制限を解除」を選ぶと、パスワードなしで開けるが使用制限（印刷・コピー禁止など）があるPDFの制限を解除できます。開くためのパスワードは削除されません — その場合は「PDFのロックを解除」を使用してください。</string>
     <!-- Remove text layer -->
     <string name="remove_text_layer_screen_title">テキストレイヤーを削除</string>
     <string name="remove_text_layer_description">OCRテキストレイヤーなしのコピーを作成</string>

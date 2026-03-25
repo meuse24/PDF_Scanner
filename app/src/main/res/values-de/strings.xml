@@ -286,16 +286,16 @@
     <string name="signature_clear">Signatur löschen</string>
     <string name="protected_pdf_unsupported">Bitte entsperre die PDF, bevor du sie bearbeitest</string>
     <string name="help_item_sign_pdf">Mit PDF signieren zeichnest du eine handschriftliche Signatur, wählst Zielseite und Stempelgröße und speicherst das Ergebnis als neue PDF-Kopie.</string>
-    <!-- Remove password -->
-    <string name="remove_password_screen_title">Passwort entfernen</string>
-    <string name="remove_password_description">Ungeschützte Kopie ohne Passworteingabe erstellen</string>
-    <string name="remove_password_details">Funktioniert bei PDFs, die ohne Passwort geöffnet werden können, aber Nutzungseinschränkungen haben (z.B. kein Drucken oder Kopieren). Es wird eine neue, ungeschützte Kopie erstellt. Die Originaldatei bleibt unverändert.\n\nWenn die PDF zum Öffnen ein Passwort benötigt, nutze stattdessen „PDF entsperren".</string>
-    <string name="remove_password_apply">Passwort entfernen</string>
-    <string name="remove_password_success">Passwort entfernt: %1$s</string>
-    <string name="remove_password_error">Fehler beim Entfernen des Passworts</string>
-    <string name="remove_password_requires_input">Diese PDF benötigt zum Öffnen ein Passwort. Nutze „PDF entsperren" um das Passwort einzugeben.</string>
-    <string name="action_remove_password">Passwort entfernen</string>
-    <string name="help_item_remove_password">Mit Passwort entfernen erstellst du eine ungeschützte Kopie einer PDF, die ohne Passwort geöffnet werden kann, aber Nutzungseinschränkungen hat. Wenn die PDF zum Öffnen ein Passwort benötigt, nutze stattdessen PDF entsperren.</string>
+    <!-- Remove password / restrictions -->
+    <string name="remove_password_screen_title">Einschränkungen entfernen</string>
+    <string name="remove_password_description">Nutzungseinschränkungen aufheben ohne Passworteingabe</string>
+    <string name="remove_password_details">Manche PDFs lassen sich ohne Passwort öffnen, haben aber Einschränkungen wie kein Drucken oder Kopieren. Diese Funktion hebt solche Einschränkungen auf und erstellt eine uneingeschränkte Kopie. Die Originaldatei bleibt unverändert.\n\nHinweis: Diese Funktion entfernt kein Öffnungspasswort. Wenn die PDF ein Passwort zum Öffnen benötigt, nutze stattdessen „PDF entsperren".</string>
+    <string name="remove_password_apply">Einschränkungen entfernen</string>
+    <string name="remove_password_success">Einschränkungen entfernt: %1$s</string>
+    <string name="remove_password_error">Fehler beim Entfernen der Einschränkungen</string>
+    <string name="remove_password_requires_input">Diese PDF ist mit einem Öffnungspasswort geschützt. Nutze „PDF entsperren" um das Passwort einzugeben.</string>
+    <string name="action_remove_password">Einschränkungen entfernen</string>
+    <string name="help_item_remove_password">Mit Einschränkungen entfernen hebst du Nutzungseinschränkungen (z.B. kein Drucken, kein Kopieren) bei PDFs auf, die ohne Passwort geöffnet werden können. Ein echtes Öffnungspasswort wird damit nicht entfernt — dafür nutze PDF entsperren.</string>
     <!-- Remove text layer -->
     <string name="remove_text_layer_screen_title">Textlayer entfernen</string>
     <string name="remove_text_layer_description">Kopie ohne OCR-Textlayer erstellen</string>

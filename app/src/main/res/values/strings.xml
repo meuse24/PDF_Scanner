@@ -308,16 +308,16 @@
     <string name="signature_clear">Clear signature</string>
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
-    <!-- Remove password -->
-    <string name="remove_password_screen_title">Remove password</string>
-    <string name="remove_password_description">Create an unprotected copy without entering a password</string>
-    <string name="remove_password_details">Works for PDFs that open without a password but have usage restrictions (e.g. no printing or copying). A new unprotected copy is created. The original file stays unchanged.\n\nIf the PDF requires a password to open, use \"Unlock PDF\" instead.</string>
-    <string name="remove_password_apply">Remove password</string>
-    <string name="remove_password_success">Password removed: %1$s</string>
-    <string name="remove_password_error">Error removing password</string>
-    <string name="remove_password_requires_input">This PDF requires a password to open. Use \"Unlock PDF\" to enter the password.</string>
-    <string name="action_remove_password">Remove password</string>
-    <string name="help_item_remove_password">Choose Remove password to create an unprotected copy of a PDF that opens without a password but has usage restrictions. If the PDF requires a password to open, use Unlock PDF instead.</string>
+    <!-- Remove password / restrictions -->
+    <string name="remove_password_screen_title">Remove restrictions</string>
+    <string name="remove_password_description">Lift usage restrictions without entering a password</string>
+    <string name="remove_password_details">Some PDFs open without a password but have usage restrictions such as no printing or copying. This function lifts those restrictions and creates an unrestricted copy. The original file stays unchanged.\n\nNote: This does not remove an opening password. If the PDF requires a password to open, use \"Unlock PDF\" instead.</string>
+    <string name="remove_password_apply">Remove restrictions</string>
+    <string name="remove_password_success">Restrictions removed: %1$s</string>
+    <string name="remove_password_error">Error removing restrictions</string>
+    <string name="remove_password_requires_input">This PDF is protected with an opening password. Use \"Unlock PDF\" to enter the password.</string>
+    <string name="action_remove_password">Remove restrictions</string>
+    <string name="help_item_remove_password">Choose Remove restrictions to lift usage restrictions (e.g. no printing or copying) from PDFs that open without a password. This does not crack or remove an opening password — for that, use Unlock PDF.</string>
     <!-- Remove text layer -->
     <string name="remove_text_layer_screen_title">Remove text layer</string>
     <string name="remove_text_layer_description">Create a copy without the OCR text layer</string>

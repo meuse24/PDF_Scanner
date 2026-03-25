@@ -287,16 +287,16 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
-    <!-- Remove password -->
-    <string name="remove_password_screen_title">Eliminar contraseña</string>
-    <string name="remove_password_description">Crear una copia sin protección sin introducir contraseña</string>
-    <string name="remove_password_details">Funciona con PDFs que se abren sin contraseña pero tienen restricciones de uso (p. ej. sin impresión ni copia). Se crea una nueva copia sin protección. El archivo original no se modifica.\n\nSi el PDF requiere contraseña para abrirse, usa \"Desbloquear PDF\".</string>
-    <string name="remove_password_apply">Eliminar contraseña</string>
-    <string name="remove_password_success">Contraseña eliminada: %1$s</string>
-    <string name="remove_password_error">Error al eliminar la contraseña</string>
-    <string name="remove_password_requires_input">Este PDF requiere una contraseña para abrirse. Usa \"Desbloquear PDF\" para introducirla.</string>
-    <string name="action_remove_password">Eliminar contraseña</string>
-    <string name="help_item_remove_password">Elige Eliminar contraseña para crear una copia sin protección de un PDF que se abre sin contraseña pero tiene restricciones de uso. Si el PDF requiere contraseña para abrirse, usa Desbloquear PDF.</string>
+    <!-- Remove password / restrictions -->
+    <string name="remove_password_screen_title">Eliminar restricciones</string>
+    <string name="remove_password_description">Eliminar restricciones de uso sin introducir contraseña</string>
+    <string name="remove_password_details">Algunos PDFs se abren sin contraseña pero tienen restricciones de uso como no imprimir o no copiar. Esta función elimina esas restricciones y crea una copia sin restricciones. El archivo original no se modifica.\n\nNota: Esta función no elimina una contraseña de apertura. Si el PDF requiere contraseña para abrirse, usa \"Desbloquear PDF\".</string>
+    <string name="remove_password_apply">Eliminar restricciones</string>
+    <string name="remove_password_success">Restricciones eliminadas: %1$s</string>
+    <string name="remove_password_error">Error al eliminar las restricciones</string>
+    <string name="remove_password_requires_input">Este PDF está protegido con una contraseña de apertura. Usa \"Desbloquear PDF\" para introducirla.</string>
+    <string name="action_remove_password">Eliminar restricciones</string>
+    <string name="help_item_remove_password">Elige Eliminar restricciones para suprimir restricciones de uso (p. ej. sin impresión ni copia) de PDFs que se abren sin contraseña. No elimina una contraseña de apertura real — para eso usa Desbloquear PDF.</string>
     <!-- Remove text layer -->
     <string name="remove_text_layer_screen_title">Eliminar capa de texto</string>
     <string name="remove_text_layer_description">Crear una copia sin la capa de texto OCR</string>

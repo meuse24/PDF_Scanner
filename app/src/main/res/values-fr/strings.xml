@@ -287,16 +287,16 @@
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
-    <!-- Remove password -->
-    <string name="remove_password_screen_title">Supprimer le mot de passe</string>
-    <string name="remove_password_description">Créer une copie non protégée sans saisir de mot de passe</string>
-    <string name="remove_password_details">Fonctionne avec les PDF qui s\'ouvrent sans mot de passe mais ont des restrictions d\'utilisation (p. ex. pas d\'impression ni de copie). Une nouvelle copie non protégée est créée. Le fichier original n\'est pas modifié.\n\nSi le PDF nécessite un mot de passe pour s\'ouvrir, utilisez « Déverrouiller le PDF ».</string>
-    <string name="remove_password_apply">Supprimer le mot de passe</string>
-    <string name="remove_password_success">Mot de passe supprimé : %1$s</string>
-    <string name="remove_password_error">Erreur lors de la suppression du mot de passe</string>
-    <string name="remove_password_requires_input">Ce PDF nécessite un mot de passe pour s\'ouvrir. Utilisez « Déverrouiller le PDF » pour le saisir.</string>
-    <string name="action_remove_password">Supprimer le mot de passe</string>
-    <string name="help_item_remove_password">Choisissez Supprimer le mot de passe pour créer une copie non protégée d\'un PDF qui s\'ouvre sans mot de passe mais a des restrictions d\'utilisation. Si le PDF nécessite un mot de passe pour s\'ouvrir, utilisez Déverrouiller le PDF.</string>
+    <!-- Remove password / restrictions -->
+    <string name="remove_password_screen_title">Supprimer les restrictions</string>
+    <string name="remove_password_description">Lever les restrictions d\'utilisation sans saisir de mot de passe</string>
+    <string name="remove_password_details">Certains PDF s\'ouvrent sans mot de passe mais ont des restrictions telles que l\'interdiction d\'imprimer ou de copier. Cette fonction lève ces restrictions et crée une copie sans restrictions. Le fichier original n\'est pas modifié.\n\nRemarque : cette fonction ne supprime pas un mot de passe d\'ouverture. Si le PDF nécessite un mot de passe pour s\'ouvrir, utilisez « Déverrouiller le PDF ».</string>
+    <string name="remove_password_apply">Supprimer les restrictions</string>
+    <string name="remove_password_success">Restrictions supprimées : %1$s</string>
+    <string name="remove_password_error">Erreur lors de la suppression des restrictions</string>
+    <string name="remove_password_requires_input">Ce PDF est protégé par un mot de passe d\'ouverture. Utilisez « Déverrouiller le PDF » pour le saisir.</string>
+    <string name="action_remove_password">Supprimer les restrictions</string>
+    <string name="help_item_remove_password">Choisissez Supprimer les restrictions pour lever les restrictions d\'utilisation (p. ex. interdiction d\'imprimer ou de copier) des PDF qui s\'ouvrent sans mot de passe. Cette fonction ne supprime pas un vrai mot de passe d\'ouverture — pour cela, utilisez Déverrouiller le PDF.</string>
     <!-- Remove text layer -->
     <string name="remove_text_layer_screen_title">Supprimer la couche de texte</string>
     <string name="remove_text_layer_description">Créer une copie sans la couche de texte OCR</string>

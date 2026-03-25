@@ -46,9 +46,11 @@ ui/
 │   ├── HomeViewModel.kt           # Archivkern: Liste, Auswahl, Scanner-Trigger, Bulk-Aktionen
 │   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading (nur Merge)
 │   └── components/
-│       ├── ScanItem.kt            # Card mit Thumbnail, Metadaten, Auswahlzustand, MoreVert-Menü
+│       ├── ScanItem.kt            # Card: Dateiname (maxLines=2, volle Breite) + Row(Thumbnail · Metadaten · Menü · Checkbox)
+│       │                          # MoreVert: Hauptmenü (7 Items) + Submenu Seitenstruktur (5) + Submenu Schutz&Passwort (5)
+│       │                          # encryption-aware enabled-State: notEncrypted = !record.isEncrypted
 │       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/RemoveTextLayer/RemovePassword/RestrictUsage)
-│       │                          # onAction: (ScanAction) → Unit ersetzt 12 einzelne Lambda-Parameter
+│       │                          # onAction: (ScanAction) → Unit
 │       ├── SelectionTitleBar.kt   # ✕ · count/total · SelectAll-Icon
 │       ├── BulkActionBar.kt       # Share · Export · Merge · OCR · MakeSearchable · Delete (rot)
 │       ├── EmptyStateContent.kt   # Leerarchiv-Illustration + Hint-Texte
@@ -93,7 +95,7 @@ domain/workflow/RemovePasswordWorkflow.kt   # Prüft: Datei existiert + isPdfEnc
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
 domain/workflow/RestrictUsageWorkflow.kt    # Prüft: Datei existiert → RestrictUsageUseCase
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
-di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3
+di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3 + MIGRATION_3_4
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
 util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
 util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, onProgress) — Phase1 PdfRenderer+OCR, Phase2 PdfBox

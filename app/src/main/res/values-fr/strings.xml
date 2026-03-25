@@ -122,11 +122,9 @@
     <string name="ocr_copied">Texte copié</string>
 
     <string name="info_section_credits">Crédits</string>
-    <string name="info_credits_intro">Cette app a été développée avec l\'aide de</string>
-    <string name="info_credits_by">by Anthropic</string>
-    <string name="info_credits_detail">L\'architecture, la planification, l\'implémentation, le design de l\'icône et la documentation ont été élaborés en collaboration avec l\'assistant IA Claude Code.</string>
-    <string name="info_credits_reviews_intro">Revues de code par</string>
-    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
+    <string name="info_credits_intro">Cette app a été développée avec l\'aide d\'assistants IA :</string>
+    <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
+    <string name="info_credits_detail">L\'architecture, la planification, l\'implémentation, le design de l\'icône et la documentation ont été élaborés avec l\'aide de l\'IA.</string>
 
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">PDF consultable</string>

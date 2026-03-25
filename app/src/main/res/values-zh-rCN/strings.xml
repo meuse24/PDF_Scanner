@@ -122,11 +122,9 @@
     <string name="ocr_copied">文本已复制</string>
 
     <string name="info_section_credits">致谢</string>
-    <string name="info_credits_intro">本应用在以下工具的协助下开发完成</string>
-    <string name="info_credits_by">by Anthropic</string>
-    <string name="info_credits_detail">架构设计、规划、实现、图标设计和文档均与 AI 助手 Claude Code 协作完成。</string>
-    <string name="info_credits_reviews_intro">代码审查：</string>
-    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
+    <string name="info_credits_intro">本应用在以下 AI 工具的协助下开发完成：</string>
+    <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
+    <string name="info_credits_detail">架构设计、规划、实现、图标设计和文档均借助 AI 工具完成。</string>
 
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">可搜索 PDF</string>

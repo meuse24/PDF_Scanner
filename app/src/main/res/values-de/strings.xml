@@ -134,11 +134,9 @@
     <string name="searchable_badge">Durchsuchbar</string>
 
     <string name="info_section_credits">Credits</string>
-    <string name="info_credits_intro">Diese App wurde vollständig mit Unterstützung von</string>
-    <string name="info_credits_by">by Anthropic</string>
-    <string name="info_credits_detail">Planung, Architektur, Implementierung, Icon-Design und Dokumentation wurden im Dialog mit dem KI-Assistenten Claude Code erarbeitet.</string>
-    <string name="info_credits_reviews_intro">Code-Reviews durch</string>
-    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
+    <string name="info_credits_intro">Diese App wurde mit Unterstützung von KI-Assistenten entwickelt:</string>
+    <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
+    <string name="info_credits_detail">Architektur, Planung, Implementierung, Icon-Design und Dokumentation entstanden im Dialog mit KI-Assistenten.</string>
 
     <!-- Merge -->
     <string name="cd_merge">PDFs zusammenführen</string>

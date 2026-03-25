@@ -156,11 +156,9 @@
     <string name="searchable_badge">Searchable</string>
 
     <string name="info_section_credits">Credits</string>
-    <string name="info_credits_intro">This app was developed with the assistance of</string>
-    <string name="info_credits_by">by Anthropic</string>
-    <string name="info_credits_detail">Architecture, planning, implementation, icon design, and documentation were developed in collaboration with the AI assistant Claude Code.</string>
-    <string name="info_credits_reviews_intro">Code reviews by</string>
-    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
+    <string name="info_credits_intro">This app was developed in collaboration with AI coding assistants:</string>
+    <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
+    <string name="info_credits_detail">Architecture, planning, implementation, icon design, and documentation were developed with AI assistance.</string>
 
     <!-- Merge -->
     <string name="cd_merge">Merge PDFs</string>

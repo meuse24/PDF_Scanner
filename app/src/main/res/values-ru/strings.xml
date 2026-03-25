@@ -122,11 +122,9 @@
     <string name="ocr_copied">Текст скопирован</string>
 
     <string name="info_section_credits">Благодарности</string>
-    <string name="info_credits_intro">Это приложение разработано при помощи</string>
-    <string name="info_credits_by">by Anthropic</string>
-    <string name="info_credits_detail">Архитектура, планирование, реализация, дизайн иконки и документация созданы в сотрудничестве с ИИ-ассистентом Claude Code.</string>
-    <string name="info_credits_reviews_intro">Проверка кода:</string>
-    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
+    <string name="info_credits_intro">Это приложение разработано при помощи ИИ-инструментов:</string>
+    <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
+    <string name="info_credits_detail">Архитектура, планирование, реализация, дизайн иконки и документация созданы с помощью ИИ-инструментов.</string>
 
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">PDF с поиском</string>

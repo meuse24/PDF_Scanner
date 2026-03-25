@@ -113,26 +113,14 @@ fun InfoScreen() {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.height(6.dp))
-                Text("Claude Code (claude.ai/code)",
+                Text(stringResource(R.string.info_credits_tools),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary)
-                Text(stringResource(R.string.info_credits_by),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.height(8.dp))
                 Text(stringResource(R.string.info_credits_detail),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Spacer(Modifier.height(16.dp))
-                Text(stringResource(R.string.info_credits_reviews_intro),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Spacer(Modifier.height(4.dp))
-                Text(stringResource(R.string.info_credits_reviews_tools),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary)
             }
         }
         item { Spacer(Modifier.height(8.dp)) }

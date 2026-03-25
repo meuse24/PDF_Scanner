@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -242,7 +243,7 @@ fun HomeScreen(
                         bottom = if (isSelectionMode) 80.dp else 88.dp
                     )
                 ) {
-                    items(scans, key = { it.id }) { record ->
+                    itemsIndexed(scans, key = { _, it -> it.id }) { index, record ->
                         val isSelected = record.id in selectedIds
                         val toggleSelect = {
                             selectedIds = if (isSelected) selectedIds - record.id
@@ -296,6 +297,12 @@ fun HomeScreen(
                                 }
                             }
                         )
+                        if (index < scans.lastIndex) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 28.dp),
+                                color    = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                            )
+                        }
                     }
                 }
             }
@@ -337,7 +344,7 @@ fun HomeScreen(
                 extractEnabled        = selectedRecords.isNotEmpty(),
                 onMakeSearchable      = {
                     if (selectedRecords.none { !it.isSearchable }) {
-                        viewModel.reportError(context.getString(R.string.searchable_nothing_to_do))
+                        viewModel.reportError(resources.getString(R.string.searchable_nothing_to_do))
                     } else {
                         bulkLangForSearchable = true; showBulkLangDialog = true
                     }

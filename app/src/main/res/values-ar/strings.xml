@@ -122,11 +122,9 @@
     <string name="ocr_copied">تم نسخ النص</string>
 
     <string name="info_section_credits">شكر وتقدير</string>
-    <string name="info_credits_intro">تم تطوير هذا التطبيق بمساعدة</string>
-    <string name="info_credits_by">by Anthropic</string>
-    <string name="info_credits_detail">تم تطوير البنية والتخطيط والتنفيذ وتصميم الأيقونة والتوثيق بالتعاون مع مساعد الذكاء الاصطناعي Claude Code.</string>
-    <string name="info_credits_reviews_intro">مراجعات الكود بواسطة</string>
-    <string name="info_credits_reviews_tools">OpenAI Codex · Google Gemini CLI</string>
+    <string name="info_credits_intro">تم تطوير هذا التطبيق بمساعدة أدوات الذكاء الاصطناعي:</string>
+    <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
+    <string name="info_credits_detail">تم تطوير البنية والتخطيط والتنفيذ وتصميم الأيقونة والتوثيق بمساعدة الذكاء الاصطناعي.</string>
 
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">PDF قابل للبحث</string>

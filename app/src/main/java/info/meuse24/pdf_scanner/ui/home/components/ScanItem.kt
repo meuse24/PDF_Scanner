@@ -166,10 +166,19 @@ internal fun ScanItem(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
-            modifier          = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
+            // Dateiname — volle Breite
+            Text(
+                record.filename,
+                style      = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                maxLines   = 2,
+                overflow   = TextOverflow.Ellipsis,
+                modifier   = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(4.dp))
+            // Thumbnail · Metadaten · Badge · Aktionen
+            Row(verticalAlignment = Alignment.CenterVertically) {
             val thumb = thumbnail
             if (thumb != null) {
                 Image(
@@ -177,28 +186,21 @@ internal fun ScanItem(
                     contentDescription = stringResource(R.string.cd_pdf_document),
                     contentScale       = ContentScale.Crop,
                     modifier           = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(10.dp))
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(8.dp))
                 )
             } else {
                 Icon(
                     Icons.Default.PictureAsPdf,
                     contentDescription = stringResource(R.string.cd_pdf_document),
                     tint               = MaterialTheme.colorScheme.primary,
-                    modifier           = Modifier.size(48.dp)
+                    modifier           = Modifier.size(40.dp)
                 )
             }
 
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(10.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    record.filename,
-                    style      = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
-                    maxLines   = 2,
-                    overflow   = TextOverflow.Ellipsis
-                )
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
@@ -357,6 +359,7 @@ internal fun ScanItem(
                 checked         = isSelected,
                 onCheckedChange = { onCheckboxToggle() }
             )
-        }
-    }
+            } // Row
+        } // Column
+    } // Card
 }

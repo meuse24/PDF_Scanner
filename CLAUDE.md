@@ -3,15 +3,22 @@
 ## Build
 
 ```bash
+./gradlew :app:compileDebugKotlin # Kotlin-Compile-Check
 ./gradlew assembleDebug          # Debug-APK
 ./gradlew assembleRelease        # Release-APK
 ./gradlew installDebug           # Bauen + installieren
 ./gradlew test                   # Unit-Tests
-./gradlew lintDebug              # Android Lint (Debug)
+./gradlew lint                   # Android Lint
 ./gradlew clean                  # Bereinigen
 ```
 
 ADB (Windows): `C:/Users/guent/AppData/Local/Android/Sdk/platform-tools/adb.exe`
+
+```bash
+adb devices
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell am start -n info.meuse24.pdf_scanner/.MainActivity
+```
 
 ## Projekt
 
@@ -35,6 +42,7 @@ domain/
     ├── RestrictUsageUseCase.kt    # restrictUsage() aufrufen → isSearchable=false
     ├── HighlightPdfUseCase.kt     # applyHighlight() aufrufen + Thumbnail + DB-Insert → Suffix _Markiert
     ├── HighlightStroke.kt         # data class: points List<Pair<Float,Float>> + pageIndex + strokeWidthFraction
+    ├── AutoTagUseCase.kt          # On-Device-Tagging: Keyword-Map + IBAN-Regex → kommaseparierte Tag-Keys (invoice,contract,…)
     └── PageEditUtils.kt           # thumbnailFile(): gemeinsame Hilfsfunktion für Seitenbearbeitungs-UseCases
 
 ui/
@@ -43,16 +51,17 @@ ui/
 │   └── AppNavigation.kt           # ModalNavigationDrawer + Scaffold + NavHost + Gradient-Hintergrund
 │                                  # Verwaltet scanTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
 ├── home/
-│   ├── HomeScreen.kt              # Koordinator: Scanner-Launcher, Dialoge, Listen-Routing
+│   ├── HomeScreen.kt              # Koordinator: Scanner-Launcher, Dialoge, Listen-Routing, Suchfeld
 │   │                              # ScanItem.onAction(ScanAction) → navigiert zu Edit-Screens
-│   ├── HomeViewModel.kt           # Archivkern: Liste, Auswahl, Scanner-Trigger, Bulk-Aktionen
+│   ├── HomeViewModel.kt           # Archivkern: Liste, Auswahl, Scanner-Trigger, Bulk-Aktionen, Suche
 │   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading (nur Merge)
+│   │                              # _searchQuery → filteredScans (FTS4 via flatMapLatest+debounce)
 │   └── components/
 │       ├── ScanItem.kt            # Card: Dateiname (maxLines=2, volle Breite) + Row(Thumbnail · Metadaten · Menü · Checkbox)
 │       │                          # MoreVert: Hauptmenü (7 Items) + Submenu Seitenstruktur (5) + Submenu Schutz&Passwort (5)
 │       │                          # encryption-aware enabled-State: notEncrypted = !record.isEncrypted
 │       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/RemoveTextLayer/RemovePassword/RestrictUsage/Highlight)
-│       │                          # onAction: (ScanAction) → Unit
+│       │                          # onAction: (ScanAction) → Unit; Tags als farbige Badges (tertiaryContainer)
 │       ├── SelectionTitleBar.kt   # ✕ · count/total · SelectAll-Icon
 │       ├── BulkActionBar.kt       # Share · Export · Merge · OCR · MakeSearchable · Delete (rot)
 │       ├── EmptyStateContent.kt   # Leerarchiv-Illustration + Hint-Texte
@@ -82,18 +91,25 @@ ui/
 ├── signature/
 │   └── SignatureScreen.kt         # Freihand-Zeichen-Pad + Seiten-/Größenauswahl — nutzt DocumentEditViewModel
 ├── highlight/
-│   └── HighlightScreen.kt         # Gelber-Marker-Pad: PDF-Seite als Hintergrund + Canvas-Overlay; Seiten-/Breiten-Auswahl — nutzt DocumentEditViewModel
+│   └── HighlightScreen.kt         # Gelber Marker-Workflow: PDF-Seite + Canvas-Overlay; Seiten-/Breiten-Auswahl
+│                                  # Zoom/Pan via transformable; Zeichnen mappt Touchpunkte invers aus dem Viewport in Dokumentkoordinaten
+│                                  # Zoom-UI: Badge mit Zoomfaktor + separater "Zurücksetzen"-Button in einer Zeile
 ├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
 ├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig
-└── privacy/PrivacyScreen.kt       # 4 Icon-Karten (PhoneAndroid, CloudOff, Shield, Lock)
+└── privacy/PrivacyScreen.kt       # 5 Icon-Karten (PhoneAndroid, CloudOff, Shield, Lock, Psychology)
 
 data/
 ├── local/
-│   ├── ScanRecord.kt              # Room @Entity (id, filename, filepath, thumbnailPath, pageCount, fileSize, isSearchable, isEncrypted)
-│   ├── ScanDao.kt                 # getAllScans(): Flow, insert, delete, markSearchable(id, fileSize)
-│   └── AppDatabase.kt             # Version 4, "pdf_scanner_db", MIGRATION_1_2 + _2_3 + _3_4
-└── repository/ScanRepository.kt
+│   ├── ScanRecord.kt              # Room @Entity (id, filename, filepath, thumbnailPath, pageCount, fileSize, isSearchable, isEncrypted, extracted_text, tags)
+│   ├── ScanRecordFts.kt           # @Fts4(contentEntity = ScanRecord::class) — indiziert filename + extracted_text
+│   ├── ScanDao.kt                 # getAllScans(): Flow, insert, delete, markSearchable, markSearchableWithContent(id, fileSize, text, tags), searchScansFlow(query)
+│   └── AppDatabase.kt             # Version 5, "pdf_scanner_db", MIGRATION_1_2 + _2_3 + _3_4 + _4_5
+│                                  # MIGRATION_4_5: 2× ALTER TABLE, CREATE VIRTUAL TABLE fts4, 4 Trigger, INSERT INTO fts
+└── repository/ScanRepository.kt   # searchScansFlow(query) + markSearchableWithContent(id, fileSize, text, tags)
 
+domain/usecase/AutoTagUseCase.kt   # On-device Keyword-Tagger: gibt comma-sep. englische Tag-Keys zurück ("invoice,bank")
+                                   # 6 Kategorien: invoice/contract/insurance/certificate/bank/delivery
+                                   # IBAN-Regex für "bank"-Erkennung; keine externen Abhängigkeiten
 domain/workflow/WorkflowErrorMapper.kt  # @Singleton: ScanWorkflowError → lokalisierter String
 domain/workflow/RemoveTextLayerWorkflow.kt  # Prüft: Datei existiert → RemoveTextLayerUseCase
 domain/workflow/RemovePasswordWorkflow.kt   # Prüft: Datei existiert + isPdfEncrypted → RemovePasswordUseCase
@@ -101,10 +117,11 @@ domain/workflow/RemovePasswordWorkflow.kt   # Prüft: Datei existiert + isPdfEnc
 domain/workflow/RestrictUsageWorkflow.kt    # Prüft: Datei existiert → RestrictUsageUseCase
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
 domain/workflow/HighlightPdfWorkflow.kt     # Prüft: Datei existiert + strokes nicht leer + nicht verschlüsselt → HighlightPdfUseCase
-di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3 + MIGRATION_3_4
+di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3 + MIGRATION_3_4 + MIGRATION_4_5
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
 util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
-util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, onProgress) — Phase1 PdfRenderer+OCR, Phase2 PdfBox
+util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, onProgress): String — Phase1 PdfRenderer+OCR, Phase2 PdfBox
+                                   # Rückgabe: extrahierter Volltext (für AutoTagging + DB-Speicherung)
                                    # ZH/JA NICHT als searchable PDF unterstützt (TTC/OTC-Fonts können nicht eingebettet werden)
 util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePages, deletePages, getPageCount, generateThumbnail
                                    # appendTextWatermark nutzt calculateWatermarkFontSize() (internal, testbar)
@@ -154,8 +171,9 @@ test/
 ├── domain/usecase/
 │   ├── DeleteScansUseCaseTest.kt           # Dateilöschung, Thumbnail, Fehlerpfad, Mehrfach-Delete
 │   ├── MakeSearchableUseCaseTest.kt        # Idempotenz, DB-Updates, fehlende Dateien, Progress
+│   ├── AutoTagUseCaseTest.kt               # 7 Tests: leer, dt. Invoice, engl. Contract, IBAN, Multi-Tag, irrelevant, sortiert
 │   ├── FakeScanDao (in DeleteScansUseCaseTest)          # In-Memory ScanDao-Implementierung
-│   └── FakeSearchablePdfBuilder (in MakeSearchableUseCaseTest)  # Überschreibt makeSearchable
+│   └── FakeSearchablePdfBuilder (in MakeSearchableUseCaseTest)  # Überschreibt makeSearchable → gibt String zurück
 ├── domain/workflow/
 │   ├── *WorkflowTest.kt                    # Merge/Split/Reorder/Rotate/Delete/Extract/Duplicate
 │   ├── *WorkflowTest.kt                    # PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Searchable
@@ -163,9 +181,10 @@ test/
 ├── ui/
 │   ├── split/SplitViewModelTest.kt         # editLoading-Guard, Success/Failure, clearError (5 Tests)
 │   ├── reorder/ReorderViewModelTest.kt     # editLoading-Guard, Success/Failure, clearError (4 Tests)
-│   └── documentaction/DocumentEditViewModelTest.kt  # addPageNumbers Success/Failure/Guard/clearError (4 Tests)
+│   ├── documentaction/DocumentEditViewModelTest.kt  # DocumentEdit-Aktionen: Loading-Guard + Success/Failure-Mapping
+│   └── highlight/HighlightScreenMathTest.kt         # clampPanOffset + inverse Zoom/Pan-Mathematik fürs Zeichnen
 └── util/
-    └── PdfEditorTest.kt                    # buildRanges (7 Tests) + resolveUniqueFilename (6 Tests)
+    └── PdfEditorTest.kt                    # buildRanges + resolveUniqueFilename + mapDisplayToPdfCoord
 ```
 
 ViewModel-Testmuster: `UnconfinedTestDispatcher` + reale Workflow-Instanzen mit Fake-`PdfEditor`-Subklassen;

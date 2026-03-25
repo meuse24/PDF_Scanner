@@ -369,6 +369,7 @@
     <string name="highlight_mode_draw">Draw</string>
     <string name="highlight_mode_pan">Pan / Zoom</string>
     <string name="highlight_zoom_reset">%1$s× – Reset</string>
+    <string name="highlight_zoom_reset_button">Reset</string>
     <string name="help_item_highlight_pdf">Choose Highlight PDF to draw yellow highlights over the document. Use Pan/Zoom mode to pinch-zoom and move the page, then switch back to Draw to mark text. When zoomed in, use Reset above the page to return to the full view. Navigate between pages to add highlights to multiple pages, then save as a new PDF copy.</string>
     <!-- Search -->
     <string name="search_placeholder">Search documents…</string>

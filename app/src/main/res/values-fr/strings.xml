@@ -347,6 +347,7 @@
     <string name="highlight_mode_draw">Dessiner</string>
     <string name="highlight_mode_pan">Panoramique</string>
     <string name="highlight_zoom_reset">%1$s× – Réinitialiser</string>
+    <string name="highlight_zoom_reset_button">Réinitialiser</string>
     <string name="help_item_highlight_pdf">Choisissez Surligner PDF pour dessiner des surlignages jaunes sur le document. Utilisez le mode Panoramique pour zoomer par pincement et déplacer la page, puis revenez à Dessiner pour marquer le texte. En cas de zoom, utilisez Réinitialiser au-dessus de la page pour revenir à la vue complète. Naviguez entre les pages et enregistrez en tant que nouvelle copie PDF.</string>
     <string name="search_placeholder">Rechercher des documents…</string>
     <string name="search_no_results">Aucun résultat pour « %1$s »</string>

@@ -61,7 +61,7 @@ open class SearchablePdfBuilder @Inject constructor(
         pdfFile: File,
         languageCode: String,
         onProgress: (current: Int, total: Int) -> Unit
-    ) = withContext(Dispatchers.IO) {
+    ): String = withContext(Dispatchers.IO) {
 
         val recognizer = ocrManager.getRecognizer(languageCode)
         val pageResults = mutableListOf<PageData>()
@@ -114,6 +114,11 @@ open class SearchablePdfBuilder @Inject constructor(
         } finally {
             recognizer.close()
         }
+
+        // Collect full extracted text for indexing
+        val extractedText = pageResults.joinToString("\n\n") { pd ->
+            pd.words.joinToString(" ") { it.text }
+        }.trim()
 
         // ── Phase 2: Textlayer per PdfBox einfügen ──────────────────────────────
         val tempFile = File(pdfFile.parent, "${pdfFile.nameWithoutExtension}_searchable_tmp.pdf")
@@ -178,6 +183,8 @@ open class SearchablePdfBuilder @Inject constructor(
         // Files.move mit REPLACE_EXISTING wirft IOException wenn es fehlschlägt —
         // der Aufrufer kann dann kein isSearchable setzen.
         Files.move(tempFile.toPath(), pdfFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+
+        extractedText
     }
 
     /**

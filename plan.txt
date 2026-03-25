@@ -1,576 +1,191 @@
 ================================================================================
-IMPLEMENTIERUNGSPLAN: PDF-Bearbeitungsfunktionen (Merge, Split, Reorder)
-Stand: 2026-03-23 (Rev. 2 — nach Review)
-Fortschritt zuletzt aktualisiert: 2026-03-23
+IMPLEMENTIERUNGSPLAN: Volltextsuche & On-Device Auto-Tagging
+Stand: 2026-03-25 (Rev. 2 - an aktuelle Codebasis angepasst)
+Fortschritt zuletzt geprueft: 2026-03-25
 ================================================================================
 
-================================================================================
+KONTEXT
+-------
+Dieser Plan ersetzt den veralteten PDF-Edit-Plan in plan.txt. Merge, Split,
+Reorder und die zugehoerigen Screens/Workflows sind bereits in der Codebasis
+vorhanden. Der aktuelle Arbeitsstand betrifft die neue Volltextsuche,
+OCR-Textpersistenz und lokales Auto-Tagging.
+
+
+ARCHITEKTUR-ENTSCHEIDUNGEN (gegenueber dem urspruenglichen Plan angepasst)
+----------------------------------------------------------------------------
+1. Suche bleibt in HomeViewModel + HomeScreen.
+   Fuer v1 ist kein separates SearchViewModel noetig.
+
+2. Auto-Tagging erfolgt in v1 per lokalem Keyword- und Regex-Matching
+   (AutoTagUseCase), nicht per ML Kit Entity Extraction.
+   Grund:
+   - keine neue Runtime-Abhaengigkeit
+   - leichter testbar
+   - Privacy-Ziel bleibt unveraendert erfuellt
+   - ausreichend fuer einen ersten produktiven Rollout
+
+3. Persistenz nutzt Room FTS4 als Content-Tabelle
+   (ScanRecordFts / scan_records_fts), nicht "FTS5 auf Verdacht".
+   Das entspricht der bereits implementierten Room-Integration.
+
+4. Tags werden in v1 pragmatisch als kommagetrennter String in ScanRecord
+   gespeichert. Eine separate Relation ist aktuell nicht erforderlich.
+
+5. Backfill fuer Altbestaende ist Pflicht:
+   Datensaetze mit isSearchable=true, aber extractedText=null gelten als
+   unvollstaendig und muessen bei "Make searchable" nachverarbeitet werden.
+
+6. FTS-MATCH-Abfragen muessen sanitisiert und als Prefix-Suche gebaut werden.
+   Das ist im aktuellen HomeViewModel bereits vorgesehen.
+
+
 FORTSCHRITT
-================================================================================
-
-PHASE A — Kern (PdfEditor, DB)                                 ✅ ABGESCHLOSSEN
-──────────────────────────────────────────────────────────────
-  A1. PdfEditor.kt                                             ✅ git: c5a6279
-       - mergePdfs, splitPdf, reorderPages, generateThumbnail,
-         renderPageThumbnail implementiert
-       - Intern: buildRanges(), resolveUniqueFilename() (top-level, JVM-testbar)
-       - ATOMIC_MOVE-Pattern für alle Schreiboperationen
-
-  A2. Unit-Tests: PdfEditorTest.kt (13 Tests)                  ✅ git: c5a6279
-       - buildRanges: 5 Tests (single/double split, total count)
-       - resolveUniqueFilename: 4 Tests (_2/_3/_4-Zähler)
-       - Alle Tests grün (./gradlew testDebugUnitTest)
-
-  A3. ScanDao.kt: insertAll() + updateFileSize()               ✅ git: c5a6279
-  A4. ScanRepository.kt: saveScans() + updateFileSize()        ✅ git: c5a6279
-  A5. di/DatabaseModule.kt: PdfEditor @Singleton               ✅ (via @Inject constructor)
-
-PHASE B — ViewModel                                            ✅ ABGESCHLOSSEN
-──────────────────────────────────────────────────────────────
-  B1. HomeViewModel: _editLoading + _editProgress StateFlows   ✅ git: c5a6279
-  B2. HomeViewModel: mergePdfs()                               ✅ git: c5a6279
-  B3. HomeViewModel: splitPdf()                                ✅ git: c5a6279
-  B4. HomeViewModel: reorderPages()                            ✅ git: c5a6279
-  B5. SplitViewModel.kt                                        ✅ git: c5a6279
-       - PageThumb, toggleSplitPoint, computePreview, getSplitPoints
-       - Thumbnails inkrementell auf Dispatchers.IO
-  B6. ReorderViewModel.kt                                      ✅ git: c5a6279
-       - ReorderPage, movePage, movePageUp, movePageDown, getCurrentOrder
-       - onCleared() recycelt Bitmaps
-
-PHASE C — UI                                                   ✅ ABGESCHLOSSEN
-──────────────────────────────────────────────────────────────
-  C1. String-Ressourcen (10 Locales)                           ✅ git: c5a6279 + 636b912
-       - Merge: cd_merge, merge_dialog_*, merge_success/error, merge_filename_default
-       - Split: split_screen_title, split_preview, split_confirm, split_success/error,
-                split_no_points, action_split, cd_split_point_*, split_page_label
-       - Reorder: reorder_screen_title, reorder_apply, reorder_success/error,
-                  action_reorder, reorder_save_as_copy, reorder_overwrite_hint,
-                  cd_drag_handle, cd_page_up, cd_page_down
-       - Gemeinsam: edit_loading, edit_error_file_locked
-
-  C2. BulkActionBar: CallMerge-Button + MergeDialog            ✅ git: 636b912
-       - 6 Buttons in Row (SpaceEvenly)
-       - MergeDialog: Dateiname vorausgefüllt „Merged_ddMMyyyy",
-         nummerierte Dateiliste, Bestätigen/Abbrechen
-
-  C3. ScanItem: MoreVert-Menü                                  ✅ git: 636b912
-       - Split + Reorder als Menüeinträge (nur pageCount ≥ 2)
-       - Ausgeblendet im Auswahlmodus (inSelectionMode)
-
-  C4. SplitScreen.kt                                           ✅ git: 636b912
-       - LazyColumn: Seitenthumbnails + tippbare Scherensymbol-Trennlinien
-       - Preview-Text mit Teilanzahl + Bereichsdarstellung
-       - Bestätigen-Button unten
-
-  C5. ReorderScreen.kt                                         ✅ git: 636b912
-       - sh.calvin.reorderable 2.4.3: Drag & Drop
-       - Up/Down-Pfeiltasten als Accessibility-Fallback
-       - Switch „Als Kopie speichern" (Standard: aus)
-
-  C6. Screen.kt + AppNavigation.kt                             ✅ git: 636b912
-       - Split/Reorder als sealed class-Einträge mit createRoute(scanId)
-       - Neue composable-Routen im NavHost
-       - TopAppBar-Titel für Split/Reorder-Screens
-
-  C7. EditLoading-Overlay in HomeScreen                        ✅ git: 636b912
-       - Analog zum OCR-Loading-Dialog (AlertDialog + ScannerLoadingAnimation)
-       - Reagiert auf editLoading + editProgress StateFlows
-
-  C8. reorderable-Dependency                                   ✅ git: 636b912
-       - libs.versions.toml: reorderable = "2.4.3"
-       - build.gradle.kts: implementation(libs.reorderable)
-
-  Build-Verifikation Phase C:                                  ✅ BUILD SUCCESSFUL
-       ./gradlew assembleDebug — 41 tasks, nur Deprecation-Warnungen (pre-existing)
-
-PHASE D — Qualitätssicherung                                   ✅ ABGESCHLOSSEN
-──────────────────────────────────────────────────────────────
-  D1. installDebug + ADB-Start                                 ✅
-  D2. Manuelle Tests: Merge, Split, Reorder                    ✅
-       - Merge: funktioniert
-       - Split: funktioniert; Bug pageCount=0 behoben (cbd3589)
-       - Reorder: funktioniert
-  D3. Randfälle                                                ✅
-  D4. Accessibility: TalkBack + Pfeiltasten                    ✅
-  D5. Strings-Review: alle 10 Locales vollständig             ✅
-       - Alle PDF-Edit-Keys in allen 10 Locales vorhanden
-       - values-es/strings.xml: app_label ergänzt (einzige Lücke)
-       - help_item_delete + help_item_pdf_edit in allen 10 Locales
-       - HelpScreen.kt: MoreVert-Eintrag für Split/Reorder ergänzt
-
-GIT-COMMITS
-──────────────────────────────────────────────────────────────
-  fa15753  feat: Phase A+B — PdfEditor, ViewModels, DB, Strings (Phase A+B)
-  636b912  feat: Phase C — PDF-Edit-UI (Merge, Split, Reorder)
-
-================================================================================
-
-ZIEL
-────
-Drei PDF-Editierfunktionen in die bestehende „Ablage"-Ansicht integrieren:
-  • Merge   — Mehrere PDFs zu einem neuen zusammenführen (Bulk-Aktion, ≥2 Auswahl)
-  • Split   — Ein PDF visuell an gewählten Seiten aufteilen (Einzelaktion)
-  • Reorder — Seiten innerhalb eines PDFs per Drag & Drop neu anordnen (Einzelaktion)
-
-Technologische Basis: PdfBox-Android ist bereits integriert (2.0.27.0).
-Neue Abhängigkeit: sh.calvin.reorderable (Compose Drag & Drop, s. Schritt 11)
-
-================================================================================
-SCHRITT 1 — Neue Utility-Klasse: PdfEditor.kt
-================================================================================
-
-Datei: util/PdfEditor.kt
-Annotation: @Singleton (Hilt)
-
-Alle Methoden sind NICHT suspend — reiner Dateisystem-Code, Aufrufer (ViewModel)
-ist für den IO-Dispatcher verantwortlich. Kein UI-Thread-Kontakt.
-
-  1.1  mergePdfs(inputs: List<File>, output: File)
-       ─────────────────────────────────────────────
-       - PDDocument.load() für jedes input-File in use{}-Block
-       - PDFMergerUtility für korrekte Erhaltung von Lesezeichen, Metadaten
-         und vorhandenem Text-Layer (bevorzugt gegenüber manuellem addPage)
-       - Speichert in temporäre Datei im gleichen Verzeichnis wie output
-       - Files.move(temp, output, ATOMIC_MOVE, REPLACE_EXISTING)
-       - FEHLERBEHANDLUNG: Wenn move fehlschlägt (z.B. Datei durch FileProvider
-         gesperrt), temp-Datei löschen und IOException mit Klartextmeldung werfen
-
-  1.2  splitPdf(input: File, outputDir: File, splitAtPages: List<Int>): List<File>
-       ─────────────────────────────────────────────────────────────────────────────
-       - splitAtPages = 0-basierte Seitenindizes, an denen getrennt wird
-         Bsp.: [2, 4] bei 6 Seiten → Teile: [0-1], [2-3], [4-5]
-       - input-Dokument EINMAL laden, alle Teilgruppen daraus entnehmen
-         (nicht für jede Gruppe neu öffnen → Speichereffizienz)
-       - Für jede Teilgruppe: neues PDDocument, addPage() aus Quell-Doc
-         (addPage kopiert Seitenreferenz, keine Pixeldaten im RAM)
-       - Ausgabedateien: "${input.nameWithoutExtension}_Teil1.pdf" etc.
-         Duplikat-Auflösung: _Teil1_2, _Teil1_3, …
-       - Gibt Liste der erzeugten Files zurück
-
-  1.3  reorderPages(input: File, newOrder: List<Int>, saveAsCopy: Boolean): File
-       ─────────────────────────────────────────────────────────────────────────
-       - newOrder = Permutation der Seitenindizes [0..n-1]
-       - Neues PDDocument, addPage() in der gewünschten Reihenfolge
-       - PdfBox erhält das OCR-Text-Layer beim Verschieben via addPage() korrekt
-         → isSearchable muss NICHT zurückgesetzt werden
-       - saveAsCopy = false: Temp-File → Files.move zu input (REPLACE_EXISTING)
-         saveAsCopy = true:  Neue Datei mit Suffix „_Sortiert" anlegen
-       - Gibt die Zieldatei zurück (input selbst oder neue Kopie)
-
-  1.4  generateThumbnail(pdfFile: File, outputFile: File): Boolean
-       ─────────────────────────────────────────────────────────────
-       - MUSS auf Dispatchers.IO aufgerufen werden (PdfRenderer blockiert)
-       - PdfRenderer → Seite 0 → 200×283 px Bitmap (A4-Verhältnis)
-       - ARGB_8888, weißer Hintergrund (erase Canvas vor renderPage)
-       - Als JPEG (85% Qualität) in outputFile schreiben
-       - Bitmap nach Schreiben recyclen
-       - Gibt true zurück bei Erfolg, false bei Fehler
-       - Wird nach Merge, Split und reorderPages(saveAsCopy=true) aufgerufen
-
-  1.5  renderPageThumbnail(pdfFile: File, pageIndex: Int, sizePx: Int): Bitmap?
-       ────────────────────────────────────────────────────────────────────────
-       - Rendert eine einzelne Seite als quadratisches Bitmap (sizePx × sizePx)
-       - Hält keinen PdfRenderer zwischen Aufrufen offen (Ressource-Safety)
-       - Wird vom ReorderViewModel und SplitViewModel zur Seiten-Vorschau genutzt
-       - Gibt null zurück bei Fehler
-
-================================================================================
-SCHRITT 2 — Datenbankschicht
-================================================================================
-
-  2.1  ScanDao.kt — neue Methoden:
-
-       @Insert(onConflict = OnConflictStrategy.REPLACE)
-       suspend fun insertAll(records: List<ScanRecord>)
-
-       @Query("UPDATE scan_records SET fileSize = :fileSize WHERE id = :id")
-       suspend fun updateFileSize(id: Long, fileSize: Long)
-
-       // Nur für Reorder saveAsCopy=false benötigt (isSearchable bleibt true):
-       // updateFileSize reicht; kein resetSearchable mehr nötig
-
-  2.2  ScanRepository.kt — Methoden weiterleiten:
-       suspend fun saveScans(records: List<ScanRecord>)
-       suspend fun updateFileSize(id: Long, fileSize: Long)
-
-  2.3  KEINE Schema-Migration nötig (ScanRecord.kt bleibt unverändert)
-
-================================================================================
-SCHRITT 3 — ViewModel-Erweiterungen: HomeViewModel.kt
-================================================================================
-
-Neue StateFlows:
-  private val _editLoading  = MutableStateFlow(false)
-  val editLoading: StateFlow<Boolean> = _editLoading.asStateFlow()
-
-  private val _editProgress = MutableStateFlow<Pair<Int,Int>?>(null)
-  val editProgress: StateFlow<Pair<Int,Int>?> = _editProgress.asStateFlow()
-
-WICHTIG: Alle Operationen laufen auf Dispatchers.IO (withContext(Dispatchers.IO)).
-viewModelScope reicht für v1 aus (konsistent mit bestehendem OCR-Pattern).
-Langfristig: WorkManager als robustere Alternative (App kann in Hintergrund).
-
-  3.1  fun mergePdfs(records: List<ScanRecord>, outputFilename: String)
-       ─────────────────────────────────────────────────────────────────
-       - _editLoading = true
-       - withContext(Dispatchers.IO):
-           · Zieldatei: context.filesDir/scans/${outputFilename}.pdf
-           · pdfEditor.mergePdfs(records.map { File(it.filepath) }, destFile)
-           · pdfEditor.generateThumbnail(destFile, thumbFile)
-           · Neuen ScanRecord anlegen (pageCount = Summe aller pageCount)
-           · repository.saveScan(newRecord)
-       - _success = getString(R.string.merge_success, outputFilename)
-       - _editLoading = false
-       - Fehler → reportError()
-
-  3.2  fun splitPdf(record: ScanRecord, splitAtPages: List<Int>)
-       ──────────────────────────────────────────────────────────
-       - _editLoading = true
-       - withContext(Dispatchers.IO):
-           · pdfEditor.splitPdf(File(record.filepath),
-                 context.filesDir.resolve("scans"), splitAtPages)
-           · Für jede erzeugte Datei: generateThumbnail + ScanRecord anlegen
-           · repository.saveScans(newRecords)
-       - _success = getString(R.string.split_success, newRecords.size)
-       - _editLoading = false
-       - Fehler → reportError()
-
-  3.3  fun reorderPages(record: ScanRecord, newOrder: List<Int>, saveAsCopy: Boolean)
-       ──────────────────────────────────────────────────────────────────────────────
-       - _editLoading = true
-       - withContext(Dispatchers.IO):
-           · resultFile = pdfEditor.reorderPages(File(record.filepath),
-                 newOrder, saveAsCopy)
-           · generateThumbnail(resultFile, thumbFile)
-           · if saveAsCopy: repository.saveScan(neuer ScanRecord)
-           · else:          repository.updateFileSize(record.id, resultFile.length())
-             (isSearchable bleibt erhalten — PdfBox konserviert Text-Layer)
-       - _success = getString(R.string.reorder_success)
-       - _editLoading = false
-       - Fehler → reportError()
-
-================================================================================
-SCHRITT 4 — BulkActionBar: Merge-Button hinzufügen
-================================================================================
-
-Datei: HomeScreen.kt — BulkActionBar()
-
-  4.1  Neue Parameter:
-       - onMerge: () -> Unit
-       - mergeEnabled: Boolean  (true wenn ≥ 2 ausgewählt)
-
-  4.2  Neuer IconButton (CallMerge-Icon) zwischen Export und OCR:
-       IconButton(onClick = onMerge, enabled = mergeEnabled) {
-           Icon(Icons.Default.CallMerge,
-               contentDescription = stringResource(R.string.cd_merge))
-       }
-       → 6 Buttons in einer Row; Arrangement.SpaceEvenly
-       → Auf Screens < 360 dp: Overflow-Menü für weniger häufig genutzte
-         Aktionen (OCR, MakeSearchable, Merge) als Fallback
-
-  4.3  MergeDialog (neues privates Composable in HomeScreen.kt):
-       ──────────────────────────────────────────────────────────
-       - OutlinedTextField: Dateiname
-         Vorausgefüllt: „Zusammengeführt_${ddMMyyyy}" (nie leer — reduziert
-         Reibung, User muss nur bei Bedarf ändern)
-       - LazyColumn (max 5 sichtbar, dann scrollbar): nummerierte Liste der
-         ausgewählten Dateinamen in Anzeigereihenfolge
-       - Hinweistext: „Reihenfolge entspricht der Listenreihenfolge"
-       - Buttons: Abbrechen / Zusammenführen
-       State: showMergeDialog + mergeFilenameInput in HomeScreen
-
-================================================================================
-SCHRITT 5 — ScanItem: Einzelaktionen (Split + Reorder)
-================================================================================
-
-  5.1  ScanItem bekommt neue optionale Parameter:
-       - onSplit: (() -> Unit)?   = null
-       - onReorder: (() -> Unit)? = null
-
-  5.2  Rechts neben dem Checkbox: „Mehr"-Button (MoreVert-Icon)
-       → nur sichtbar wenn NICHT in Auswahlmodus
-       → öffnet DropdownMenu:
-            ┌─────────────────────────────┐
-            │ ✂  Seiten aufteilen         │  (enabled wenn pageCount ≥ 2)
-            │ ↕  Seiten neu anordnen      │  (enabled wenn pageCount ≥ 2)
-            └─────────────────────────────┘
-       → 1-Seiten-PDFs: beide Einträge disabled mit erklärendem Tooltip
-
-  5.3  Übergabe in HomeScreen.kt:
-       ScanItem(
-           onSplit   = { splitTarget = record; navController.navigate("split/${record.id}") },
-           onReorder = { navController.navigate("reorder/${record.id}") },
-       )
-
-================================================================================
-SCHRITT 6 — SplitScreen (UPGRADE: voller Screen statt Dialog)
-================================================================================
-
-BEGRÜNDUNG: User weiß oft nicht, welche Seitennummer welchem Inhalt entspricht.
-Ein Dialog mit reiner Zahleneingabe ist fehleranfällig. Standard in mobilen
-PDF-Apps ist eine visuelle Thumbnailansicht mit wählbaren Trennpunkten.
-
-  Neue Dateien:
-    ui/split/SplitScreen.kt
-    ui/split/SplitViewModel.kt
-
-  Route: Screen.Split(route = "split/{scanId}") in Screen.kt
-
-  SplitViewModel.kt:
-    - Erhält scanId via SavedStateHandle
-    - Lädt ScanRecord aus Repository (suspending, einmalig)
-    - Rendert alle Seiten asynchron via pdfEditor.renderPageThumbnail()
-      (Dispatchers.IO, eine nach der anderen, updatet pages-Liste inkrementell)
-    - Exposiert:
-        pages: StateFlow<List<PageThumb>>  — (index, bitmap?, isLoaded)
-        splitPoints: StateFlow<Set<Int>>   — Indizes NACH denen getrennt wird
-    - Methode: toggleSplitPoint(afterIndex: Int)
-      (fügt hinzu oder entfernt aus splitPoints)
-    - Methode: computePreview(): List<String>
-      „Seiten 1–3 | 4–6 | 7" etc.
-    - Methode: applySplit() → ruft homeViewModel.splitPdf() oder direkt
-      pdfEditor + repository auf
-
-  SplitScreen.kt:
-    - TopAppBar: „PDF aufteilen – <Dateiname>" + Back + ✓ (enabled wenn ≥1 Splitpoint)
-    - LazyColumn abwechselnd:
-        [Seiten-Thumbnail (80dp breit)] + Seitennummer
-        [Trennlinie mit Schere-Icon] — tippbar, wechselt Farbe wenn aktiv
-    - Unten: Vorschau-Text „Erzeugt N Teile: Seiten 1–K | K+1–M | …"
-    - Ladeindikator pro Thumbnail (CircularProgressIndicator) bis isLoaded
-    - Beim Bestätigen: splitPdf aufrufen + zurücknavigieren
-
-  Thumbnail-Rendering-Strategie:
-    - Thumbnails werden sequenziell im Hintergrund geladen
-    - UI zeigt Platzhalter (grauer Rahmen) bis Thumbnail fertig
-    - Maximale Thumbnail-Größe: 120×170 px für Speichereffizienz
-    - Thumbnails werden NICHT gecacht (nur für Dauer der Session im Memory)
-
-================================================================================
-SCHRITT 7 — ReorderScreen mit Drag & Drop
-================================================================================
-
-  Neue Dateien:
-    ui/reorder/ReorderScreen.kt
-    ui/reorder/ReorderViewModel.kt
-
-  Neue Abhängigkeit: sh.calvin.reorderable (s. Schritt 11)
-
-  Route: Screen.Reorder(route = "reorder/{scanId}") in Screen.kt
-
-  ReorderViewModel.kt:
-    - Erhält scanId via SavedStateHandle
-    - Lädt ScanRecord aus Repository
-    - Rendert alle Seiten als Thumbnails (pdfEditor.renderPageThumbnail,
-      Dispatchers.IO, inkrementell)
-    - Exposiert:
-        pages: StateFlow<List<PageThumb>>   — (originalIndex, currentIndex, bitmap?)
-        saveAsCopy: StateFlow<Boolean>      — Benutzereinstellung
-    - Methode: reorderPages(from: Int, to: Int) — verschiebt Item in pages-Liste
-    - Methode: applyReorder()
-
-  ReorderScreen.kt — Drag & Drop (Primär-Interaktion):
-    - TopAppBar: „Seiten sortieren – <Dateiname>" + Back + ✓-Button
-    - LazyColumn mit ReorderableItem (sh.calvin.reorderable):
-        [Drag-Handle Icon] [Thumbnail 64dp] [Seitennummer (Original)]
-      - Long-Press auf Drag-Handle startet Drag
-      - Haptisches Feedback beim Aufheben + Ablegen:
-        LocalHapticFeedback.current.performHapticFeedback(HapticFeedbackType.LongPress)
-    - Switch unten: „Als Kopie speichern" (Standard: OFF = Original überschreiben)
-      - Hinweis bei OFF: „Das Original wird ersetzt"
-    - Ladeindikator während Thumbnails geladen werden
-
-  Up/Down-Pfeile als BARRIEREFREIER FALLBACK:
-    - Kleine Pfeiltasten zusätzlich zum Drag sichtbar
-    - Nutzen: Accessibility-Services, große Fingers, Tastaturnavigation
-
-  Navigation in AppNavigation.kt:
-    composable("reorder/{scanId}") { backStackEntry ->
-        val scanId = backStackEntry.arguments?.getString("scanId")?.toLongOrNull()
-        ReorderScreen(scanId = scanId ?: return@composable, navController)
-    }
-
-================================================================================
-SCHRITT 8 — String-Ressourcen (alle 10 Locale-Dateien)
-================================================================================
-
-Neue String-Keys (values/strings.xml + alle 9 Übersetzungsdateien):
-
-  <!-- Merge -->
-  <string name="cd_merge">PDFs zusammenführen</string>
-  <string name="merge_dialog_title">PDFs zusammenführen</string>
-  <string name="merge_dialog_filename_label">Dateiname des neuen PDFs</string>
-  <string name="merge_dialog_order_hint">Reihenfolge entspricht der Listenreihenfolge</string>
-  <string name="merge_dialog_confirm">Zusammenführen</string>
-  <string name="merge_success">PDFs zusammengeführt: %1$s</string>
-  <string name="merge_error">Fehler beim Zusammenführen</string>
-  <string name="merge_filename_default">Zusammengeführt_%1$s</string>  <!-- %1$s = Datum ddMMyyyy -->
-
-  <!-- Split -->
-  <string name="split_screen_title">PDF aufteilen</string>
-  <string name="split_preview">Erzeugt %1$d Teile: %2$s</string>
-  <string name="split_confirm">Aufteilen</string>
-  <string name="split_success">PDF aufgeteilt in %1$d Teile</string>
-  <string name="split_error">Fehler beim Aufteilen</string>
-  <string name="split_no_points">Mindestens einen Trennpunkt wählen</string>
-  <string name="action_split">Seiten aufteilen</string>
-  <string name="cd_split_point_active">Trennpunkt entfernen nach Seite %1$d</string>
-  <string name="cd_split_point_inactive">Trennpunkt setzen nach Seite %1$d</string>
-
-  <!-- Reorder -->
-  <string name="reorder_screen_title">Seiten sortieren</string>
-  <string name="reorder_apply">Anwenden</string>
-  <string name="reorder_success">Seitenreihenfolge gespeichert</string>
-  <string name="reorder_error">Fehler beim Neu-Anordnen</string>
-  <string name="action_reorder">Seiten neu anordnen</string>
-  <string name="reorder_save_as_copy">Als Kopie speichern</string>
-  <string name="reorder_overwrite_hint">Das Original wird ersetzt</string>
-  <string name="cd_drag_handle">Seite verschieben</string>
-  <string name="cd_page_up">Seite nach oben</string>
-  <string name="cd_page_down">Seite nach unten</string>
-
-  <!-- Edit-Loading (gemeinsam) -->
-  <string name="edit_loading">PDF wird bearbeitet…</string>
-  <string name="edit_error_file_locked">Datei wird gerade verwendet – bitte schließen und erneut versuchen</string>
-
-================================================================================
-SCHRITT 9 — Implementierungsreihenfolge
-================================================================================
-
-Phase A — Kern (PdfBox-Operationen, kein UI)
-  A1. PdfEditor.kt schreiben (mergePdfs, splitPdf, reorderPages,
-      generateThumbnail, renderPageThumbnail)
-  A2. Unit-Tests: PdfEditor mit echten Mini-PDFs (1–3 Seiten)
-      Testfälle: Merge 2 PDFs, Split nach Seite 1, Reorder [1,0], Copy vs. Overwrite
-  A3. ScanDao.kt: insertAll() + updateFileSize() hinzufügen
-  A4. ScanRepository.kt: saveScans() + updateFileSize() weiterleiten
-  A5. di/DatabaseModule.kt: PdfEditor als @Singleton @Provides einbinden
-
-Phase B — ViewModel
-  B1. HomeViewModel: editLoading + editProgress StateFlows + clearEditLoading()
-  B2. HomeViewModel: mergePdfs() implementieren
-  B3. HomeViewModel: splitPdf() implementieren
-  B4. HomeViewModel: reorderPages() implementieren
-  B5. SplitViewModel.kt schreiben + testen
-  B6. ReorderViewModel.kt schreiben + testen
-
-Phase C — UI
-  C1. String-Ressourcen in alle 10 Locales eintragen
-  C2. BulkActionBar: Merge-Button + MergeDialog (inkl. Vorausfüllung)
-  C3. ScanItem: MoreVert-Menü + Anbindung in HomeScreen
-  C4. SplitScreen.kt (visuell, Thumbnails + Schere-Trennlinie)
-  C5. ReorderScreen.kt (Drag & Drop + Up/Down-Fallback + Copy-Switch)
-  C6. Routes in Screen.kt + NavHost-Entries in AppNavigation.kt
-  C7. EditLoading-Overlay in HomeScreen (analog OCR-Loading-Dialog)
-
-Phase D — Qualitätssicherung
-  D1. Build + installDebug + ADB-Start
-  D2. Manuelle Tests: Merge 3 PDFs, Split 5-Seiter, Reorder + Copy, Reorder + Overwrite
-  D3. Randfälle: 1-Seiten-PDF (Menü-Items disabled), PDF mit Text-Layer (isSearchable
-      nach Reorder erhalten prüfen), Datei gerade per Share geöffnet (Fehlermeldung)
-  D4. Accessibility: TalkBack mit Drag-Handle + Up/Down-Pfeilen prüfen
-  D5. Strings-Review: alle 10 Locales vollständig
-
-================================================================================
-SCHRITT 10 — Technische Hinweise und Risiken
-================================================================================
-
-  10.1 PdfBox-Speicher
-       PDDocument muss immer in use{} (Kotlin) oder try-with-resources geschlossen
-       werden. addPage() kopiert Seitenreferenz, keine Pixeldaten → für viele Seiten
-       effizient. Input EINMAL laden und für alle Splits/Reorders nutzen.
-
-  10.2 Thumbnail-Generierung — IO-Thread-Pflicht
-       generateThumbnail() und renderPageThumbnail() MÜSSEN auf Dispatchers.IO
-       laufen. PdfRenderer ist blocking I/O. Thumbnail nach Schreiben recyclen.
-       PdfRenderer schließen bevor PdfBox dieselbe Datei öffnet (kein gleichz. Zugriff).
-
-  10.3 Reorder + isSearchable — KEIN Reset nötig
-       PdfBox konserviert das OCR-Text-Layer korrekt beim Verschieben von
-       PDPage-Objekten via addPage(). isSearchable bleibt nach reorderPages() true.
-       (Nur kritisch wenn Seiten neu gerendert werden — das passiert hier nicht.)
-
-  10.4 FileProvider-Konflikt beim ATOMIC_MOVE
-       Wenn die Zieldatei von einer externen App via FileProvider geöffnet ist,
-       kann Files.move fehlschlagen. Fehlerbehandlung:
-         catch (IOException) → temp löschen → reportError(R.string.edit_error_file_locked)
-       Es gibt keinen zuverlässigen Pre-Check → try/catch ist der richtige Weg.
-
-  10.5 BulkActionBar mit 6 Buttons
-       Auf kleinen Screens (< 360 dp): Merge-Button in Overflow-Menü (DropdownMenu)
-       auslagern, da Merge seltener benötigt wird als Share/Delete.
-
-  10.6 Drag & Drop — sh.calvin.reorderable
-       Bei Drag: haptisches Feedback via LocalHapticFeedback (HapticFeedbackType.LongPress)
-       Up/Down-Pfeile als Accessibility-Fallback bleiben sichtbar (kein Verstecken
-       bei Touch-Modus). Sorgt für Google Play Excellence-Konformität.
-
-  10.7 WorkManager — Phase-2-Empfehlung
-       viewModelScope ist für v1 ausreichend (konsistent mit OCR-Pattern).
-       Bei Backgrounding bricht die Operation ab — Datei bleibt im Ausgangszustand
-       dank ATOMIC_MOVE (keine halbfertigen Dateien).
-       WorkManager als robuste Alternative für eine spätere Version einplanen
-       (insbesondere für Merge großer PDFs > 50 MB).
-
-  10.8 Keine Literalstrings
-       Alle neuen User-facing Strings MÜSSEN über stringResource() /
-       context.getString() eingebunden werden (Architektur-Regel).
-
-  10.9 SplitScreen — Thumbnail-Memory
-       Bei 50-seitigen PDFs: maximal 50 Bitmaps à 120×170 px ≈ 4 MB gesamt.
-       Akzeptabel. Falls OOM: Thumbnails erst laden wenn Seite sichtbar wird
-       (LazyColumn key-basiertes Lazy-Loading mit produceState).
-
-================================================================================
-SCHRITT 11 — Neue Abhängigkeit: sh.calvin.reorderable
-================================================================================
-
-  gradle/libs.versions.toml:
-    [versions]
-    reorderable = "2.4.3"   # oder aktuellste stabile Version prüfen
-
-    [libraries]
-    reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
-
-  app/build.gradle.kts:
-    implementation(libs.reorderable)
-
-  Lizenz: Apache 2.0 (kompatibel mit Projektlizenz)
-  Größe: ~50 KB (minimal, kein transitiver Overhead)
-
-================================================================================
-DATEIÜBERSICHT — neue / geänderte Dateien
-================================================================================
-
-NEU:
-  app/src/main/java/info/meuse24/pdf_scanner/util/PdfEditor.kt
-  app/src/main/java/info/meuse24/pdf_scanner/ui/split/SplitScreen.kt
-  app/src/main/java/info/meuse24/pdf_scanner/ui/split/SplitViewModel.kt
-  app/src/main/java/info/meuse24/pdf_scanner/ui/reorder/ReorderScreen.kt
-  app/src/main/java/info/meuse24/pdf_scanner/ui/reorder/ReorderViewModel.kt
-
-GEÄNDERT:
-  data/local/ScanDao.kt             (insertAll, updateFileSize)
-  data/repository/ScanRepository.kt (saveScans, updateFileSize)
-  di/DatabaseModule.kt              (PdfEditor @Provides)
-  ui/home/HomeScreen.kt             (BulkActionBar, ScanItem, MergeDialog, Loading)
-  ui/home/HomeViewModel.kt          (neue Methoden + StateFlows)
-  ui/navigation/Screen.kt           (Routen Split + Reorder)
-  ui/navigation/AppNavigation.kt    (NavHost-Entries für Split + Reorder)
-  gradle/libs.versions.toml         (reorderable-Version)
-  app/build.gradle.kts              (reorderable-Dependency)
-  res/values/strings.xml            (neue Strings)
-  res/values-de/strings.xml
-  res/values-es/strings.xml
-  res/values-fr/strings.xml
-  res/values-pt/strings.xml
-  res/values-zh-rCN/strings.xml
-  res/values-ar/strings.xml
-  res/values-ja/strings.xml
-  res/values-ru/strings.xml
-  res/values-hi/strings.xml
-
-================================================================================
-ENDE DES PLANS (Rev. 2)
+-----------
+
+PHASE A - Datenmodell & Datenbank                            ✅ WEITGEHEND UMGESETZT
+────────────────────────────────────────────────────────────
+  A1. ScanRecord um extracted_text + tags erweitert          ✅ working tree
+  A2. Neue FTS-Entity ScanRecordFts angelegt                 ✅ working tree
+  A3. AppDatabase auf Version 5 angehoben                    ✅ working tree
+  A4. Migration 4 -> 5 implementiert                         ✅ working tree
+      - extracted_text und tags werden angelegt
+      - scan_records_fts wird erstellt
+      - Trigger fuer INSERT/UPDATE/DELETE werden angelegt
+      - bestehende Datensaetze werden in FTS uebernommen
+  A5. ScanDao + ScanRepository erweitert                     ✅ working tree
+      - searchScansFlow(query)
+      - markSearchableWithContent(id, fileSize, text, tags)
+
+PHASE B - OCR-Textpersistenz & Auto-Tagging                  ✅ WEITGEHEND UMGESETZT
+────────────────────────────────────────────────────────────
+  B1. SearchablePdfBuilder gibt OCR-Gesamttext zurueck       ✅ working tree
+  B2. ImportScanUseCase speichert extractedText + tags       ✅ working tree
+  B3. MakeSearchableUseCase speichert extractedText + tags   ✅ working tree
+  B4. Backfill-Logik fuer Legacy-Records implementiert       ✅ working tree
+      - verarbeitet auch isSearchable=true + extractedText=null
+  B5. AutoTagUseCase implementiert                           ✅ working tree
+      - Keywords fuer invoice, contract, insurance,
+        certificate, bank, delivery
+      - IBAN-Erkennung als zusaetzlicher Bank-Indikator
+  B6. MakeSearchableWorkflow an neue Eligibility angepasst   ✅ working tree
+
+PHASE C - Suche, UI, Hilfe, Privacy                          ✅ WEITGEHEND UMGESETZT
+────────────────────────────────────────────────────────────
+  C1. HomeViewModel: searchQuery + filteredScans             ✅ working tree
+      - debounce(300 ms)
+      - FTS-Sanitizing + Prefix-Suche
+  C2. HomeScreen: Suchfeld + Clear-Button                    ✅ working tree
+  C3. HomeScreen: "keine Treffer"-Zustand                    ✅ working tree
+  C4. ScanItem zeigt Tags unter dem Dateinamen               ✅ working tree
+  C5. HelpScreen um Suche/Auto-Tags erweitert                ✅ working tree
+  C6. PrivacyScreen um On-Device-Hinweis erweitert           ✅ working tree
+  C7. Neue String-Keys in allen 10 Locale-Dateien angelegt   ✅ working tree
+      - Fachliche Uebersetzungspruefung noch offen
+
+PHASE D - Teststand                                          ⚠ TEILWEISE VERIFIZIERT
+────────────────────────────────────────────────────────────
+  D1. Unit-Test: AutoTagUseCaseTest                          ✅ bestanden am 2026-03-25
+  D2. Unit-Test: MakeSearchableUseCaseTest                   ✅ bestanden am 2026-03-25
+  D3. Unit-Test: MakeSearchableWorkflowTest                  ✅ bestanden am 2026-03-25
+  D4. Vollstaendiger Unit-Test-Lauf                          ⏳ offen
+  D5. Build-/Install-Verifikation auf App-Ebene              ⏳ offen
+  D6. Manuelle Migrations- und UX-Pruefung                   ⏳ offen
+
+
+PRIORISIERTE RESTARBEIT
+-----------------------
+
+1. Automatisierte Regression vervollstaendigen
+   - ./gradlew.bat testDebugUnitTest komplett ausfuehren
+   - optional zusaetzlich: ./gradlew.bat assembleDebug
+
+2. Migration real pruefen
+   - Upgrade einer bestehenden App-Installation mit vorhandener DB
+   - pruefen, ob scan_records_fts sauber aufgebaut wird
+   - pruefen, ob bestehende Records weiterhin sichtbar sind
+
+3. Suchverhalten manuell pruefen
+   - Treffer ueber Dateiname
+   - Treffer ueber OCR-Text
+   - Prefix-Suche mit mehreren Woertern
+   - Sonderzeichen/Umlaute
+   - leere Trefferliste / Clear-Button / Selection-Mode
+
+4. OCR-Backfill manuell pruefen
+   - Record mit isSearchable=true und extractedText=null erzeugen oder migrieren
+   - "Make searchable" erneut ausfuehren
+   - extractedText, tags und FTS-Treffer danach verifizieren
+
+5. Tagging-Qualitaet pruefen
+   - typische Rechnungen, Vertraege, Versicherungen, Lieferscheine testen
+   - Fehlklassifikationen sammeln
+   - Keyword-Liste nur auf Basis realer Treffer nachschaerfen
+
+6. UI- und Lokalisierungsreview
+   - Badge-/Chip-Zeilen bei langen Dateinamen pruefen
+   - Strings in allen 10 Sprachen stichprobenartig kontrollieren
+   - speziell nach neu hinzugefuegten englischen Reststrings suchen
+
+
+OFFENE RISIKEN / BEWUSSTE GRENZEN VON V1
+----------------------------------------
+
+R1. Auto-Tagging ist absichtlich heuristisch.
+    Der aktuelle Ansatz ist robust, lokal und testbar, aber kein semantischer
+    Klassifikator. Qualitaet haengt von Keywords und OCR-Guete ab.
+
+R2. Nur Dokumente mit OCR-Text sind inhaltlich durchsuchbar.
+    Nicht-searchable PDFs koennen ueber den Dateinamen gefunden werden,
+    aber nicht ueber ihren Inhalt.
+
+R3. Migration ist implementiert, aber auf echtem Upgrade-Pfad noch nicht
+    manuell bestaetigt.
+
+R4. Lokalisierungen sind technisch angelegt, aber inhaltlich noch nicht
+    vollstaendig reviewed. Einzelne bestehende Strings koennen weiterhin
+    englisch sein.
+
+
+OPTIONALE PHASE 2 (NACH V1, NUR BEI BEDARF)
+-------------------------------------------
+
+P2.1. Tagging erweitern
+      - bessere Keyword-Sets
+      - optionale regelbasierte Datums-/Betragsmuster
+      - spaeter ggf. staerkerer lokaler Klassifikator
+
+P2.2. Suchkomfort ausbauen
+      - Highlighting des Trefferkontexts
+      - Tag-Filter
+      - Sortierung nach Relevanz statt nur timestamp DESC
+
+P2.3. Datenmodell spaeter normalisieren
+      - separate Tag-Tabelle nur dann, wenn echte Filter-/Analytics-Anforderungen
+        entstehen
+
+
+ABNAHMEKRITERIEN FUER V1
+------------------------
+
+Die Implementierung gilt als abnahmefaehig, wenn alle folgenden Punkte erfuellt
+sind:
+
+  A. Bestehende und neue Datensaetze ueberstehen Migration / Speicherung ohne
+     Datenverlust.
+
+  B. Suchfeld findet Dokumente ueber Dateiname und ueber OCR-Text.
+
+  C. "Make searchable" speichert extractedText und tags dauerhaft in der DB.
+
+  D. Legacy-Records ohne extractedText werden korrekt nachverarbeitet.
+
+  E. Tags werden in der Listenansicht sichtbar dargestellt.
+
+  F. Hilfe- und Privacy-Texte erklaeren die Funktion korrekt als rein lokal.
+
+  G. Relevante Unit-Tests und mindestens ein kompletter Build-Lauf sind gruen.
+
+
+ENDE DES PLANS
 ================================================================================

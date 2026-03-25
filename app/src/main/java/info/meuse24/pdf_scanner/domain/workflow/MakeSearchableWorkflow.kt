@@ -23,7 +23,7 @@ class MakeSearchableWorkflow @Inject constructor(
             return WorkflowResult.Failure(ScanWorkflowError.NothingSelected)
         }
 
-        val pending = records.filter { !it.isSearchable }
+        val pending = records.filter { !it.isSearchable || it.extractedText == null }
         if (pending.isEmpty()) {
             return WorkflowResult.Failure(ScanWorkflowError.NoEligibleScans)
         }

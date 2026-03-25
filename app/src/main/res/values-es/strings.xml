@@ -347,6 +347,7 @@
     <string name="highlight_mode_draw">Dibujar</string>
     <string name="highlight_mode_pan">Desplazar</string>
     <string name="highlight_zoom_reset">%1$s× – Restablecer</string>
+    <string name="highlight_zoom_reset_button">Restablecer</string>
     <string name="help_item_highlight_pdf">Elige Resaltar PDF para dibujar resaltados amarillos sobre el documento. Usa el modo Desplazar para ampliar con pellizco y mover la página, y luego vuelve a Dibujar para marcar el texto. Cuando haya zoom, usa Restablecer sobre la página para volver a la vista completa. Navega entre páginas y guarda como nueva copia PDF.</string>
     <string name="search_placeholder">Buscar documentos…</string>
     <string name="search_no_results">Sin resultados para \"%1$s\"</string>

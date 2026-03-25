@@ -28,12 +28,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -108,8 +111,10 @@ fun HomeScreen(
     onNavigateToHighlight:          (Long) -> Unit = {},
     viewModel:                      HomeViewModel  = hiltViewModel()
 ) {
-    val scans        by viewModel.scans.collectAsState()
-    val error        by viewModel.error.collectAsState()
+    val scans          by viewModel.scans.collectAsState()
+    val filteredScans  by viewModel.filteredScans.collectAsState()
+    val searchQuery    by viewModel.searchQuery.collectAsState()
+    val error          by viewModel.error.collectAsState()
     val success      by viewModel.success.collectAsState()
     val ocrText      by viewModel.ocrText.collectAsState()
     val ocrLoading   by viewModel.ocrLoading.collectAsState()
@@ -227,14 +232,47 @@ fun HomeScreen(
             if (isSelectionMode) {
                 SelectionTitleBar(
                     count            = selectedIds.size,
-                    total            = scans.size,
+                    total            = filteredScans.size,
                     onClearSelection = { selectedIds = emptySet() },
-                    onSelectAll      = { selectedIds = scans.map { it.id }.toSet() }
+                    onSelectAll      = { selectedIds = filteredScans.map { it.id }.toSet() }
+                )
+            } else {
+                // ── Suchfeld ─────────────────────────────────────────────────
+                OutlinedTextField(
+                    value         = searchQuery,
+                    onValueChange = viewModel::updateSearchQuery,
+                    placeholder   = { Text(stringResource(R.string.search_placeholder)) },
+                    leadingIcon   = { Icon(Icons.Default.Search, contentDescription = null) },
+                    trailingIcon  = if (searchQuery.isNotEmpty()) {
+                        {
+                            IconButton(onClick = { viewModel.updateSearchQuery("") }) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.cd_search_clear)
+                                )
+                            }
+                        }
+                    } else null,
+                    singleLine    = true,
+                    modifier      = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
 
             if (scans.isEmpty()) {
                 EmptyStateContent(modifier = Modifier.weight(1f))
+            } else if (filteredScans.isEmpty() && searchQuery.isNotEmpty()) {
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        stringResource(R.string.search_no_results, searchQuery),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                }
             } else {
                 LazyColumn(
                     state          = listState,
@@ -244,7 +282,7 @@ fun HomeScreen(
                         bottom = if (isSelectionMode) 80.dp else 88.dp
                     )
                 ) {
-                    itemsIndexed(scans, key = { _, it -> it.id }) { index, record ->
+                    itemsIndexed(filteredScans, key = { _, it -> it.id }) { index, record ->
                         val isSelected = record.id in selectedIds
                         val toggleSelect = {
                             selectedIds = if (isSelected) selectedIds - record.id
@@ -300,7 +338,7 @@ fun HomeScreen(
                                 }
                             }
                         )
-                        if (index < scans.lastIndex) {
+                        if (index < filteredScans.lastIndex) {
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 28.dp),
                                 color    = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
@@ -346,7 +384,7 @@ fun HomeScreen(
                 onExtractTexts        = { bulkLangForSearchable = false; showBulkLangDialog = true },
                 extractEnabled        = selectedRecords.isNotEmpty(),
                 onMakeSearchable      = {
-                    if (selectedRecords.none { !it.isSearchable }) {
+                    if (selectedRecords.none { !it.isSearchable || it.extractedText == null }) {
                         viewModel.reportError(resources.getString(R.string.searchable_nothing_to_do))
                     } else {
                         bulkLangForSearchable = true; showBulkLangDialog = true

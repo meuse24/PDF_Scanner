@@ -347,6 +347,7 @@
     <string name="highlight_mode_draw">बनाएं</string>
     <string name="highlight_mode_pan">ले जाएं/ज़ूम</string>
     <string name="highlight_zoom_reset">%1$s× – रीसेट</string>
+    <string name="highlight_zoom_reset_button">रीसेट</string>
     <string name="help_item_highlight_pdf">दस्तावेज़ पर पीले हाइलाइट बनाने के लिए PDF हाइलाइट करें चुनें। ले जाएं/ज़ूम मोड का उपयोग करके पृष्ठ को पिंच से ज़ूम करें और खिसकाएं, फिर पाठ को चिह्नित करने के लिए वापस बनाएं मोड में लौटें। ज़ूम होने पर ऊपर रीसेट बटन का उपयोग करके पूरे दृश्य पर लौटें। कई पृष्ठों पर हाइलाइट जोड़ने के लिए नेविगेट करें, फिर नई PDF कॉपी के रूप में सहेजें।</string>
     <string name="search_placeholder">दस्तावेज़ खोजें…</string>
     <string name="search_no_results">\"%1$s\" के लिए कोई परिणाम नहीं</string>

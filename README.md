@@ -11,6 +11,8 @@ A clean, privacy-focused Android app for scanning documents to PDF using Google'
 
 ### Archive & Sharing
 - Browse, open, share, export, and delete scanned PDFs
+- Full-text search across filename and extracted OCR text
+- Automatic on-device tagging for common document types such as invoices, contracts, bank documents, and certificates
 - Multi-select bulk actions: share, export to Downloads, merge, OCR, make searchable, delete
 - Tap to open in any installed PDF viewer
 
@@ -26,12 +28,15 @@ A clean, privacy-focused Android app for scanning documents to PDF using Google'
 ### PDF Marks
 - **Page numbers** — stamp sequential page numbers onto every page
 - **Text watermark** — overlay diagonal text across all pages
+- **Highlight** — draw yellow marker strokes on any page with zoom/pan support and adjustable marker width
 
 ### PDF Output
 - **Compress** — reduce file size (Low / Medium / High preset)
 - **Password protect** — encrypt with AES user password
 - **Unlock** — remove password from a protected PDF
 - **Signature** — draw a freehand signature and stamp it onto any page at adjustable size
+- **Remove text layer** — rebuild the PDF as image-only pages
+- **Restrict usage** — disable printing, copying, or editing with an owner password
 
 ### Privacy & Storage
 - **Local-only** — PDFs saved to app-internal storage, excluded from cloud backup and device transfer
@@ -47,14 +52,23 @@ A clean, privacy-focused Android app for scanning documents to PDF using Google'
 ## Build
 
 ```bash
+./gradlew :app:compileDebugKotlin # compile Kotlin sources
 ./gradlew assembleDebug          # build debug APK
 ./gradlew installDebug           # build + install on connected device
 ./gradlew assembleRelease        # build release APK
 ./gradlew test                   # run unit tests (JVM-only, no emulator needed)
-./gradlew lintDebug              # run Android lint for the debug variant
+./gradlew lint                   # run Android lint
 ```
 
 Requires Android Studio Meerkat or newer, JDK 11+.
+
+Launch on a connected Android device:
+
+```bash
+adb devices
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell am start -n info.meuse24.pdf_scanner/.MainActivity
+```
 
 ## Architecture
 
@@ -62,42 +76,28 @@ MVVM + Clean Architecture with Jetpack Compose.
 
 ```
 domain/
-├── usecase/        Use Cases — one responsibility each
-│                     ImportScan, ExportScan, DeleteScans
-│                     ExtractText, MakeSearchable
-│                     MergePdfs, SplitPdf, ReorderPages
-│                     RotatePages, DeletePdfPages
-│                     PageEditUtils (shared thumbnail helper)
-└── workflow/       Workflow layer — orchestrates use cases, maps errors
-                      to WorkflowResult<T> (Success / Failure)
+├── usecase/        Import/export/delete, OCR, searchable PDF, page editing,
+│                   highlight, remove text layer, remove password, restrict usage,
+│                   auto-tagging, shared page-thumbnail helpers
+└── workflow/       Orchestrates use cases and maps failures to WorkflowResult<T>
 
 ui/
-├── navigation/         AppNavigation — ModalNavigationDrawer + NavHost
-├── components/         Shared composables:
-│                         ScanPreviewCard, ActionScreenContent
-├── home/
-│   ├── HomeScreen.kt   Coordinator (scanner launcher, dialogs, routing)
-│   │                   ScanItem.onAction(ScanAction) → navigates to edit screens
-│   ├── HomeViewModel.kt Archive coordinator — import/export/delete/OCR/
-│   │                   make-searchable/merge state and feedback
-│   └── components/     ScanItem (+ ScanAction sealed interface), SelectionTitleBar,
-│                         BulkActionBar, EmptyStateContent, ScannerLoadingAnimation,
-│                         MergeDialog
-├── overlay/            PageNumbersScreen, TextWatermarkScreen
-├── documentaction/     CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen
-│                         + DocumentEditViewModel
-├── pageedit/           RotatePagesScreen, DeletePagesScreen,
-│                         ExtractPagesScreen, DuplicatePagesScreen
-│                         + PageSelectionViewModel
-├── split/              SplitScreen + SplitViewModel
-├── reorder/            ReorderScreen + ReorderViewModel
-├── signature/          SignatureScreen (freehand pad + page/size selector,
-│                         also backed by DocumentEditViewModel)
+├── navigation/         AppNavigation + route definitions
+├── home/               Archive screen, bulk actions, search, tags, scan item menus
+├── components/         Shared action-screen and preview composables
+├── overlay/            Page numbers, text watermark
+├── documentaction/     Compress, protect, unlock, highlight,
+│                       remove text layer, remove password, restrict usage
+├── pageedit/           Rotate, delete, extract, duplicate
+├── split/              Split screen + view model
+├── reorder/            Reorder screen + view model
+├── signature/          Freehand signature pad + stamp workflow
+├── highlight/          Marker workflow with zoom/pan-aware drawing
 └── help / info / privacy
 
 data/
-├── local/              Room entity (ScanRecord), DAO, AppDatabase (v3, 2 migrations)
-└── repository/         ScanRepository — thin DAO wrapper
+├── local/              Room entity, DAO, FTS table, AppDatabase v5 + migrations
+└── repository/         ScanRepository search + persistence wrapper
 
 di/                     Hilt modules
 util/                   FileUtil, OcrManager, SearchablePdfBuilder, PdfEditor
@@ -107,7 +107,11 @@ util/                   FileUtil, OcrManager, SearchablePdfBuilder, PdfEditor
 
 **Scanner flow:** Triggered via a `Boolean` state in `AppNavigation`, passed to `HomeScreen`, which reacts with `LaunchedEffect`. Avoids holding an Activity reference in the ViewModel.
 
-**Edit screens:** Each edit action navigates to a dedicated screen passing `scanId` as a route argument. `DocumentEditViewModel` loads the target `ScanRecord` for page numbers, text watermark, compress, protect, unlock, and signature flows and maps workflow failures through `WorkflowErrorMapper`. Page-oriented edit screens use `PageSelectionViewModel`; split and reorder use their dedicated view models.
+**Edit screens:** Each edit action navigates to a dedicated screen passing `scanId` as a route argument. `DocumentEditViewModel` loads the target `ScanRecord` for page numbers, text watermark, compress, protect, unlock, highlight, remove text layer, remove password, restrict usage, and signature flows and maps workflow failures through `WorkflowErrorMapper`. Page-oriented edit screens use `PageSelectionViewModel`; split and reorder use their dedicated view models.
+
+**Search & tags:** `ScanRecord` stores extracted OCR text and comma-separated tag keys. Room FTS4 indexes filename and extracted text for debounced archive search, while `AutoTagUseCase` derives tags locally from OCR content and heuristics such as IBAN detection.
+
+**Highlight workflow:** `HighlightScreen` renders one PDF page as a bitmap preview and draws a yellow canvas overlay on top. Zooming and panning are handled through Compose transforms, while draw gestures are inverse-mapped from the viewport back into document coordinates so highlighted strokes stay aligned even when the page is zoomed.
 
 **Help screen:** `HelpScreen` is data-driven via `HelpSection` + `HelpAction`. The table of contents is rendered as one top-level card, the detail content is rendered as grouped `ActionCard`s below it, and scroll targets are derived from that list structure instead of hard-coded item indices. A floating action button returns the user to the contents after scrolling into the detail area.
 
@@ -123,10 +127,12 @@ Unit tests run on JVM (no emulator required):
 util/PdfEditorTest.kt                          — PDF helper coverage
 domain/usecase/DeleteScansUseCaseTest.kt       — file deletion, thumbnails, error paths
 domain/usecase/MakeSearchableUseCaseTest.kt    — idempotency, DB updates, missing files
+domain/usecase/AutoTagUseCaseTest.kt           — local tagging heuristics
 domain/workflow/*.kt                           — merge, split, reorder, rotate, delete, extract,
                                                  duplicate, page numbers, watermark, compress,
-                                                 protect, unlock, signature, searchable
-ui/documentaction/DocumentEditViewModelTest.kt — edit-loading guard, success/failure mapping
+                                                 protect, unlock, signature, highlight, searchable
+ui/documentaction/DocumentEditViewModelTest.kt — document-edit action dispatch + failure mapping
+ui/highlight/HighlightScreenMathTest.kt        — zoom/pan math for highlight drawing
 ui/reorder/ReorderViewModelTest.kt             — reorder state + workflow dispatch
 ui/split/SplitViewModelTest.kt                 — split state + workflow dispatch
 ```

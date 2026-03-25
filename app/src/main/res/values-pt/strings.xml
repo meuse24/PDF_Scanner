@@ -347,6 +347,7 @@
     <string name="highlight_mode_draw">Desenhar</string>
     <string name="highlight_mode_pan">Mover</string>
     <string name="highlight_zoom_reset">%1$s× – Redefinir</string>
+    <string name="highlight_zoom_reset_button">Redefinir</string>
     <string name="help_item_highlight_pdf">Escolha Destacar PDF para desenhar destaques amarelos sobre o documento. Use o modo Mover para ampliar com gesto de pinça e deslocar a página, depois volte para Desenhar para marcar o texto. Quando houver zoom, use Redefinir acima da página para voltar à visão completa. Navegue entre as páginas para adicionar destaques a várias e salve como nova cópia PDF.</string>
     <string name="search_placeholder">Pesquisar documentos…</string>
     <string name="search_no_results">Sem resultados para \"%1$s\"</string>

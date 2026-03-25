@@ -31,6 +31,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -59,6 +60,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -200,44 +202,66 @@ fun HighlightScreen(
         }
         item {
             // Modus-Umschalter und Zoom-Steuerung
-            Row(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                FilterChip(
-                    selected = !isZoomMode,
-                    onClick = { isZoomMode = false },
-                    label = { Text(stringResource(R.string.highlight_mode_draw)) },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = null
-                        )
-                    }
-                )
-                FilterChip(
-                    selected = isZoomMode,
-                    onClick = { isZoomMode = true },
-                    label = { Text(stringResource(R.string.highlight_mode_pan)) },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.ZoomIn,
-                            contentDescription = null
-                        )
-                    }
-                )
-                if (zoomScale > 1.01f) {
-                    Spacer(Modifier.weight(1f))
-                    TextButton(
-                        onClick = resetZoom
-                    ) {
-                        Text(
-                            stringResource(
-                                R.string.highlight_zoom_reset,
-                                formatZoomScale(zoomScale)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    FilterChip(
+                        selected = !isZoomMode,
+                        onClick = { isZoomMode = false },
+                        label = { Text(stringResource(R.string.highlight_mode_draw)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = null
                             )
-                        )
+                        }
+                    )
+                    FilterChip(
+                        selected = isZoomMode,
+                        onClick = { isZoomMode = true },
+                        label = { Text(stringResource(R.string.highlight_mode_pan)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.ZoomIn,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+                if (zoomScale > 1.01f) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(
+                            space = 8.dp,
+                            alignment = Alignment.End
+                        ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(999.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh
+                        ) {
+                            Text(
+                                text = "${formatZoomScale(zoomScale)}×",
+                                style = MaterialTheme.typography.labelLarge,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                            )
+                        }
+                        OutlinedButton(onClick = resetZoom) {
+                            Text(
+                                text = stringResource(R.string.highlight_zoom_reset_button),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
             }
@@ -255,6 +279,54 @@ fun HighlightScreen(
                         shape = RoundedCornerShape(8.dp)
                     )
                     .onSizeChanged { canvasSize = it }
+                    .transformable(state = transformableState, enabled = isZoomMode)
+                    .pointerInput(isZoomMode) {
+                        if (!isZoomMode) {
+                            detectDragGestures(
+                                onDragStart = { offset ->
+                                    currentStroke = listOf(
+                                        normalizeViewportPoint(
+                                            offset = offset,
+                                            canvasSize = currentCanvasSize,
+                                            scale = currentZoomScale,
+                                            offsetX = currentZoomOffsetX,
+                                            offsetY = currentZoomOffsetY
+                                        )
+                                    )
+                                },
+                                onDrag = { change, _ ->
+                                    change.consume()
+                                    currentStroke = currentStroke + normalizeViewportPoint(
+                                        offset = change.position,
+                                        canvasSize = currentCanvasSize,
+                                        scale = currentZoomScale,
+                                        offsetX = currentZoomOffsetX,
+                                        offsetY = currentZoomOffsetY
+                                    )
+                                },
+                                onDragEnd = {
+                                    if (currentStroke.isNotEmpty()) {
+                                        allStrokes = allStrokes + HighlightStroke(
+                                            points = currentStroke,
+                                            pageIndex = currentSelectedPageIndex,
+                                            strokeWidthFraction = currentSelectedWidthFraction
+                                        )
+                                        currentStroke = emptyList()
+                                    }
+                                },
+                                onDragCancel = {
+                                    if (currentStroke.isNotEmpty()) {
+                                        allStrokes = allStrokes + HighlightStroke(
+                                            points = currentStroke,
+                                            pageIndex = currentSelectedPageIndex,
+                                            strokeWidthFraction = currentSelectedWidthFraction
+                                        )
+                                        currentStroke = emptyList()
+                                    }
+                                }
+                            )
+                        }
+                    }
             ) {
                 // Innerer Box: trägt Zoom-Transformation, Gesten und Zeichnen
                 Box(
@@ -265,45 +337,6 @@ fun HighlightScreen(
                             scaleY = zoomScale
                             translationX = zoomOffsetX
                             translationY = zoomOffsetY
-                        }
-                        .transformable(state = transformableState, enabled = isZoomMode)
-                        .pointerInput(isZoomMode) {
-                            if (!isZoomMode) {
-                                detectDragGestures(
-                                    onDragStart = { offset ->
-                                        currentStroke =
-                                            listOf(normalizePoint(offset, currentCanvasSize))
-                                    },
-                                    onDrag = { change, _ ->
-                                        change.consume()
-                                        currentStroke =
-                                            currentStroke + normalizePoint(
-                                                change.position,
-                                                currentCanvasSize
-                                            )
-                                    },
-                                    onDragEnd = {
-                                        if (currentStroke.isNotEmpty()) {
-                                            allStrokes = allStrokes + HighlightStroke(
-                                                points = currentStroke,
-                                                pageIndex = currentSelectedPageIndex,
-                                                strokeWidthFraction = currentSelectedWidthFraction
-                                            )
-                                            currentStroke = emptyList()
-                                        }
-                                    },
-                                    onDragCancel = {
-                                        if (currentStroke.isNotEmpty()) {
-                                            allStrokes = allStrokes + HighlightStroke(
-                                                points = currentStroke,
-                                                pageIndex = currentSelectedPageIndex,
-                                                strokeWidthFraction = currentSelectedWidthFraction
-                                            )
-                                            currentStroke = emptyList()
-                                        }
-                                    }
-                                )
-                            }
                         }
                 ) {
                     // Hintergrund: PDF-Seite oder Lade-Indikator
@@ -492,6 +525,44 @@ fun HighlightScreen(
             }
         )
     }
+}
+
+internal fun normalizeViewportPoint(
+    offset: Offset,
+    canvasSize: IntSize,
+    scale: Float,
+    offsetX: Float,
+    offsetY: Float
+): Pair<Float, Float> {
+    val contentOffset = mapViewportOffsetToCanvasOffset(
+        offset = offset,
+        canvasSize = canvasSize,
+        scale = scale,
+        offsetX = offsetX,
+        offsetY = offsetY
+    )
+    return normalizePoint(contentOffset, canvasSize)
+}
+
+internal fun mapViewportOffsetToCanvasOffset(
+    offset: Offset,
+    canvasSize: IntSize,
+    scale: Float,
+    offsetX: Float,
+    offsetY: Float
+): Offset {
+    if (canvasSize == IntSize.Zero) return Offset.Zero
+    val width = canvasSize.width.toFloat()
+    val height = canvasSize.height.toFloat()
+    val clampedScale = scale.coerceAtLeast(1f)
+    val centerX = width / 2f
+    val centerY = height / 2f
+    val unscaledX = centerX + ((offset.x - offsetX) - centerX) / clampedScale
+    val unscaledY = centerY + ((offset.y - offsetY) - centerY) / clampedScale
+    return Offset(
+        x = unscaledX.coerceIn(0f, width),
+        y = unscaledY.coerceIn(0f, height)
+    )
 }
 
 private fun normalizePoint(offset: Offset, canvasSize: IntSize): Pair<Float, Float> {

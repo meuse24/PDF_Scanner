@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [ScanRecord::class], version = 4, exportSchema = false)
+@Database(entities = [ScanRecord::class, ScanRecordFts::class], version = 5, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun scanDao(): ScanDao
 
@@ -25,6 +25,47 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE scan_records ADD COLUMN is_encrypted INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // New columns on main table
+                db.execSQL("ALTER TABLE scan_records ADD COLUMN extracted_text TEXT")
+                db.execSQL("ALTER TABLE scan_records ADD COLUMN tags TEXT")
+                // FTS4 virtual content table
+                db.execSQL(
+                    "CREATE VIRTUAL TABLE IF NOT EXISTS `scan_records_fts` " +
+                    "USING fts4(content=`scan_records`, `filename`, `extracted_text`)"
+                )
+                // Sync triggers (names must match what Room generates)
+                db.execSQL(
+                    "CREATE TRIGGER IF NOT EXISTS `scan_records_fts_BEFORE_UPDATE` " +
+                    "BEFORE UPDATE ON `scan_records` BEGIN " +
+                    "DELETE FROM `scan_records_fts` WHERE docid=OLD.`rowid`; END"
+                )
+                db.execSQL(
+                    "CREATE TRIGGER IF NOT EXISTS `scan_records_fts_BEFORE_DELETE` " +
+                    "BEFORE DELETE ON `scan_records` BEGIN " +
+                    "DELETE FROM `scan_records_fts` WHERE docid=OLD.`rowid`; END"
+                )
+                db.execSQL(
+                    "CREATE TRIGGER IF NOT EXISTS `scan_records_fts_AFTER_UPDATE` " +
+                    "AFTER UPDATE ON `scan_records` BEGIN " +
+                    "INSERT INTO `scan_records_fts`(docid, `filename`, `extracted_text`) " +
+                    "VALUES (NEW.`rowid`, NEW.`filename`, NEW.`extracted_text`); END"
+                )
+                db.execSQL(
+                    "CREATE TRIGGER IF NOT EXISTS `scan_records_fts_AFTER_INSERT` " +
+                    "AFTER INSERT ON `scan_records` BEGIN " +
+                    "INSERT INTO `scan_records_fts`(docid, `filename`, `extracted_text`) " +
+                    "VALUES (NEW.`rowid`, NEW.`filename`, NEW.`extracted_text`); END"
+                )
+                // Populate FTS from existing records
+                db.execSQL(
+                    "INSERT INTO `scan_records_fts`(docid, `filename`, `extracted_text`) " +
+                    "SELECT rowid, filename, extracted_text FROM scan_records"
+                )
             }
         }
     }

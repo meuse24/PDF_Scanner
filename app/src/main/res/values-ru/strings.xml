@@ -347,6 +347,7 @@
     <string name="highlight_mode_draw">Рисовать</string>
     <string name="highlight_mode_pan">Перемещение</string>
     <string name="highlight_zoom_reset">%1$s× – Сбросить</string>
+    <string name="highlight_zoom_reset_button">Сбросить</string>
     <string name="help_item_highlight_pdf">Выберите Выделить PDF, чтобы нарисовать жёлтые выделения на документе. Используйте режим Перемещение, чтобы масштабировать щипком и сдвигать страницу, затем вернитесь в Рисовать для выделения текста. При увеличении используйте кнопку Сбросить над страницей, чтобы вернуться к полному виду. Переходите между страницами для добавления выделений на несколько страниц и сохраните как новую копию PDF.</string>
     <string name="search_placeholder">Поиск документов…</string>
     <string name="search_no_results">Нет результатов для \"%1$s\"</string>

@@ -347,6 +347,7 @@
     <string name="highlight_mode_draw">描画</string>
     <string name="highlight_mode_pan">移動/ズーム</string>
     <string name="highlight_zoom_reset">%1$s× – リセット</string>
+    <string name="highlight_zoom_reset_button">リセット</string>
     <string name="help_item_highlight_pdf">PDF をハイライトを選択して、ドキュメントに黄色のハイライトを描きます。移動/ズーム モードでピンチ拡大とページ移動を行い、その後 描画 に戻ってテキストをマークします。拡大中はページ上部のリセットで全体表示に戻せます。ページ間を移動して複数のページにハイライトを追加し、新しい PDF コピーとして保存します。</string>
     <string name="search_placeholder">ドキュメントを検索…</string>
     <string name="search_no_results">\"%1$s\" の検索結果なし</string>

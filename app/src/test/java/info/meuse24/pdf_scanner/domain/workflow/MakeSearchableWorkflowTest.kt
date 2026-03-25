@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.FakeSearchablePdfBuilder
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
@@ -23,7 +24,8 @@ class MakeSearchableWorkflowTest {
         val repository = ScanRepository(FakeScanDao())
         val useCase = MakeSearchableUseCase(
             FakeSearchablePdfBuilder(onMakeSearchable),
-            repository
+            repository,
+            AutoTagUseCase()
         )
         return MakeSearchableWorkflow(useCase)
     }
@@ -31,7 +33,8 @@ class MakeSearchableWorkflowTest {
     private fun record(
         id: Long,
         isSearchable: Boolean,
-        exists: Boolean = true
+        exists: Boolean = true,
+        extractedText: String? = null
     ): ScanRecord {
         val filePath = if (exists) {
             tmpFolder.newFile("scan_$id.pdf").absolutePath
@@ -39,13 +42,14 @@ class MakeSearchableWorkflowTest {
             tmpFolder.root.resolve("missing_$id.pdf").absolutePath
         }
         return ScanRecord(
-            id = id,
-            filename = "scan_$id",
-            filepath = filePath,
-            timestamp = 0L,
-            pageCount = 1,
-            fileSize = 0L,
-            isSearchable = isSearchable
+            id            = id,
+            filename      = "scan_$id",
+            filepath      = filePath,
+            timestamp     = 0L,
+            pageCount     = 1,
+            fileSize      = 0L,
+            isSearchable  = isSearchable,
+            extractedText = extractedText
         )
     }
 
@@ -59,7 +63,8 @@ class MakeSearchableWorkflowTest {
 
     @Test
     fun `bereits durchsuchbare Auswahl liefert NoEligibleScans`() = runTest {
-        val result = workflow()(listOf(record(1L, isSearchable = true)), "de")
+        // isSearchable=true + extractedText gesetzt → vollständig verarbeitet → NoEligibleScans
+        val result = workflow()(listOf(record(1L, isSearchable = true, extractedText = "Rechnung")), "de")
 
         assertTrue(result is WorkflowResult.Failure)
         assertEquals(ScanWorkflowError.NoEligibleScans, (result as WorkflowResult.Failure).error)

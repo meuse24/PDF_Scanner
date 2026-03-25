@@ -347,6 +347,7 @@
     <string name="highlight_mode_draw">Zeichnen</string>
     <string name="highlight_mode_pan">Verschieben</string>
     <string name="highlight_zoom_reset">%1$s× – Zurücksetzen</string>
+    <string name="highlight_zoom_reset_button">Zurücksetzen</string>
     <string name="help_item_highlight_pdf">Mit PDF markieren kannst du gelbe Markierungen über das Dokument ziehen. Nutze den Modus Verschieben, um per Pinch zu zoomen und die Seite zu verschieben, und wechsle dann zurück zu Zeichnen. Bei Zoom bringt dich Zurücksetzen oberhalb der Seite wieder zur Gesamtansicht. Navigiere zwischen Seiten und speichere als neue PDF-Kopie.</string>
     <string name="search_placeholder">Dokumente durchsuchen…</string>
     <string name="search_no_results">Keine Ergebnisse für „%1$s"</string>

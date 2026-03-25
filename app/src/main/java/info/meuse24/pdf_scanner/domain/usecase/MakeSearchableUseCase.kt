@@ -9,24 +9,31 @@ import javax.inject.Inject
 /**
  * Macht eine Liste von Scans durchsuchbar (OCR-Textlayer einfügen).
  * Bereits durchsuchbare Records werden übersprungen (Idempotenz).
+ * Speichert den extrahierten Text und Auto-Tags in der Datenbank.
  * @return Anzahl der tatsächlich verarbeiteten Records
  */
 class MakeSearchableUseCase @Inject constructor(
     private val searchablePdfBuilder: SearchablePdfBuilder,
-    private val repository:           ScanRepository
+    private val repository:           ScanRepository,
+    private val autoTagUseCase:       AutoTagUseCase
 ) {
     suspend operator fun invoke(
         records:      List<ScanRecord>,
         languageCode: String,
         onProgress:   (Int, Int) -> Unit = { _, _ -> }
     ): Int {
-        val pending = records.filter { !it.isSearchable }
+        val pending = records.filter { !it.isSearchable || it.extractedText == null }
         for (record in pending) {
             val pdfFile = File(record.filepath)
             if (!pdfFile.exists()) continue
-            searchablePdfBuilder.makeSearchable(pdfFile, languageCode, onProgress)
-            // fileSize aktualisieren: PDF wächst durch Textlayer + eingebettete Fonts
-            repository.markSearchable(record.id, pdfFile.length())
+            val text = searchablePdfBuilder.makeSearchable(pdfFile, languageCode, onProgress)
+            val tags = autoTagUseCase.extractTags(text)
+            repository.markSearchableWithContent(
+                id       = record.id,
+                fileSize = pdfFile.length(),
+                text     = text.ifBlank { null },
+                tags     = tags
+            )
         }
         return pending.size
     }

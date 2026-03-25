@@ -347,6 +347,7 @@
     <string name="highlight_mode_draw">رسم</string>
     <string name="highlight_mode_pan">تحريك/تكبير</string>
     <string name="highlight_zoom_reset">%1$s× – إعادة ضبط</string>
+    <string name="highlight_zoom_reset_button">إعادة ضبط</string>
     <string name="help_item_highlight_pdf">اختر تمييز PDF لرسم تمييزات صفراء على المستند. استخدم وضع التحريك/التكبير للتكبير بإيماءة القرص وتحريك الصفحة، ثم ارجع إلى وضع الرسم لتمييز النص. عند التكبير استخدم إعادة الضبط أعلى الصفحة للعودة إلى العرض الكامل. تنقل بين الصفحات لإضافة تمييزات لصفحات متعددة، ثم احفظ كنسخة PDF جديدة.</string>
     <string name="search_placeholder">البحث في المستندات…</string>
     <string name="search_no_results">لا نتائج لـ \"%1$s\"</string>

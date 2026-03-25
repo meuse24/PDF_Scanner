@@ -10,6 +10,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -222,6 +223,23 @@ internal fun ScanItem(
                         )
                     }
                 }
+                val tagList = record.tags
+                    ?.split(",")
+                    ?.filter { it.isNotBlank() }
+                    ?.take(3)
+                if (!tagList.isNullOrEmpty()) {
+                    Spacer(Modifier.height(3.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        tagList.forEach { tagKey ->
+                            Badge(
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                contentColor   = MaterialTheme.colorScheme.onTertiaryContainer
+                            ) {
+                                Text(tagLabel(tagKey), style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                    }
+                }
             }
 
             if (!inSelectionMode && record.pageCount >= 1) {
@@ -378,4 +396,15 @@ internal fun ScanItem(
             } // Row
         } // Column
     } // Card
+}
+
+@Composable
+private fun tagLabel(tagKey: String): String = when (tagKey) {
+    "invoice"     -> stringResource(R.string.tag_invoice)
+    "contract"    -> stringResource(R.string.tag_contract)
+    "insurance"   -> stringResource(R.string.tag_insurance)
+    "certificate" -> stringResource(R.string.tag_certificate)
+    "bank"        -> stringResource(R.string.tag_bank)
+    "delivery"    -> stringResource(R.string.tag_delivery)
+    else          -> tagKey
 }

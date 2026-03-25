@@ -116,14 +116,19 @@ class FakeScanDao : ScanDao {
     val inserted  = mutableListOf<ScanRecord>()
     val deleted   = mutableListOf<ScanRecord>()
     val searchableUpdates = mutableListOf<Pair<Long, Long>>() // id to fileSize
+    val searchableWithContentUpdates = mutableListOf<Triple<Long, Long, String?>>() // id, fileSize, text
     val fileSizeUpdates   = mutableListOf<Pair<Long, Long>>()
     val pageMetricUpdates = mutableListOf<Triple<Long, Int, Long>>()
 
     override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun insert(record: ScanRecord)              { inserted.add(record) }
     override suspend fun insertAll(records: List<ScanRecord>)    { inserted.addAll(records) }
     override suspend fun delete(record: ScanRecord)              { deleted.add(record) }
     override suspend fun markSearchable(id: Long, fileSize: Long) { searchableUpdates.add(id to fileSize) }
+    override suspend fun markSearchableWithContent(id: Long, fileSize: Long, text: String?, tags: String?) {
+        searchableWithContentUpdates.add(Triple(id, fileSize, text))
+    }
     override suspend fun updateFileSize(id: Long, fileSize: Long) { fileSizeUpdates.add(id to fileSize) }
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {
         pageMetricUpdates.add(Triple(id, pageCount, fileSize))

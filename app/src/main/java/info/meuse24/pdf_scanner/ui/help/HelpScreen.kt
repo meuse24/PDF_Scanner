@@ -47,6 +47,7 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -112,6 +113,14 @@ fun HelpScreen() {
                 )
             ),
             HelpSection(
+                icon = Icons.Default.Search,
+                titleRes = R.string.help_section_search,
+                actions = listOf(
+                    HelpAction(Icons.Default.Search, R.string.help_section_search, R.string.help_item_search),
+                    HelpAction(Icons.AutoMirrored.Filled.ManageSearch, R.string.cd_make_searchable, R.string.help_item_auto_tag)
+                )
+            ),
+            HelpSection(
                 icon = Icons.Default.SwapVert,
                 titleRes = R.string.help_section_pdf_pages,
                 actions = listOf(
@@ -165,13 +174,14 @@ fun HelpScreen() {
     //   index N+1           → GroupHeader[Abschnitt 1]
     //   ...
     // Damit: nextIndex = 1 (ein Item vor dem ersten GroupHeader: das IHV-Item).
+    // Composite-Key "sectionTitleRes_actionTitleRes" verhindert Kollisionen bei gleichen titleRes
     val actionTargetIndices = remember(helpSections) {
         var nextIndex = 1
-        buildMap {
+        buildMap<String, Int> {
             helpSections.forEach { section ->
                 nextIndex += 1 // GroupHeader überspringen
                 section.actions.forEach { action ->
-                    put(action.titleRes, nextIndex++)
+                    put("${section.titleRes}_${action.titleRes}", nextIndex++)
                 }
             }
         }
@@ -181,8 +191,8 @@ fun HelpScreen() {
         derivedStateOf { lazyListState.firstVisibleItemIndex >= 1 }
     }
 
-    fun scrollTo(titleRes: Int) {
-        actionTargetIndices[titleRes]?.let { index ->
+    fun scrollTo(key: String) {
+        actionTargetIndices[key]?.let { index ->
             scope.launch { lazyListState.animateScrollToItem(index) }
         }
     }
@@ -195,7 +205,7 @@ fun HelpScreen() {
         ) {
             // ── Inhaltsverzeichnis (ein einziges Item) ────────────────────────
             item(key = "toc") {
-                TableOfContents(sections = helpSections, onActionClick = ::scrollTo)
+                TableOfContents(sections = helpSections, onSectionActionClick = ::scrollTo)
             }
 
             // ── Kapitel-Inhalt ────────────────────────────────────────────────
@@ -203,7 +213,7 @@ fun HelpScreen() {
                 item(key = "header_${section.titleRes}") {
                     GroupHeader(section.titleRes)
                 }
-                items(section.actions, key = { it.titleRes }) { action ->
+                items(section.actions, key = { "${section.titleRes}_${it.titleRes}" }) { action ->
                     ActionCard(action)
                 }
             }
@@ -229,7 +239,7 @@ fun HelpScreen() {
 @Composable
 private fun TableOfContents(
     sections: List<HelpSection>,
-    onActionClick: (Int) -> Unit
+    onSectionActionClick: (String) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -271,7 +281,7 @@ private fun TableOfContents(
 
             // Abschnitte
             sections.forEachIndexed { index, section ->
-                TocSectionBlock(section = section, onActionClick = onActionClick)
+                TocSectionBlock(section = section, onSectionActionClick = onSectionActionClick)
                 if (index < sections.size - 1) {
                     Spacer(Modifier.height(8.dp))
                     HorizontalDivider(
@@ -287,7 +297,7 @@ private fun TableOfContents(
 @Composable
 private fun TocSectionBlock(
     section: HelpSection,
-    onActionClick: (Int) -> Unit
+    onSectionActionClick: (String) -> Unit
 ) {
     Column {
         Row(
@@ -312,7 +322,7 @@ private fun TocSectionBlock(
             TocEntry(
                 icon = action.icon,
                 title = stringResource(action.titleRes),
-                onClick = { onActionClick(action.titleRes) }
+                onClick = { onSectionActionClick("${section.titleRes}_${action.titleRes}") }
             )
         }
     }

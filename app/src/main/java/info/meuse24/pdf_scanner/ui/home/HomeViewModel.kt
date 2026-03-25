@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class, kotlinx.coroutines.FlowPreview::class)
+
 package info.meuse24.pdf_scanner.ui.home
 
 import android.content.Context
@@ -24,6 +26,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
@@ -44,6 +49,18 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     val scans: StateFlow<List<ScanRecord>> = repository.getAllScans()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    val filteredScans: StateFlow<List<ScanRecord>> = _searchQuery
+        .debounce(300)
+        .flatMapLatest { raw ->
+            val query = sanitizeFtsQuery(raw)
+            if (query.isBlank()) repository.getAllScans()
+            else repository.searchScansFlow(query)
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _error = MutableStateFlow<String?>(null)
@@ -210,10 +227,20 @@ class HomeViewModel @Inject constructor(
 
     // ── Hilfsmethoden ─────────────────────────────────────────────────────────
 
+    fun updateSearchQuery(query: String) { _searchQuery.value = query }
+
     fun clearOcrText() { _ocrText.value = null }
     fun reportError(message: String) { _error.value = message }
     fun clearError() { _error.value = null }
     fun clearSuccess() { _success.value = null }
+
+    private fun sanitizeFtsQuery(raw: String): String {
+        return raw.trim()
+            .filter { it.isLetterOrDigit() || it.isWhitespace() }
+            .split("\\s+".toRegex())
+            .filter { it.isNotBlank() }
+            .joinToString(" ") { "$it*" }
+    }
 
     private fun handleWorkflowFailure(tag: String, error: ScanWorkflowError) {
         Log.e(tag, "workflow failed: $error", error.cause)

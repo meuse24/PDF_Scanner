@@ -23,7 +23,8 @@ class ProtectPdfUseCase @Inject constructor(
                 pageCount = record.pageCount,
                 fileSize = resultFile.length(),
                 thumbnailPath = thumbFile?.takeIf { it.exists() }?.absolutePath,
-                isSearchable = record.isSearchable
+                isSearchable = record.isSearchable,
+                isEncrypted  = true
             )
         )
         return resultFile.nameWithoutExtension

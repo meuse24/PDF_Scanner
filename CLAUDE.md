@@ -82,9 +82,9 @@ ui/
 
 data/
 ├── local/
-│   ├── ScanRecord.kt              # Room @Entity (id, filename, filepath, thumbnailPath, pageCount, fileSize, isSearchable)
+│   ├── ScanRecord.kt              # Room @Entity (id, filename, filepath, thumbnailPath, pageCount, fileSize, isSearchable, isEncrypted)
 │   ├── ScanDao.kt                 # getAllScans(): Flow, insert, delete, markSearchable(id, fileSize)
-│   └── AppDatabase.kt             # Version 3, "pdf_scanner_db", MIGRATION_1_2 + MIGRATION_2_3
+│   └── AppDatabase.kt             # Version 4, "pdf_scanner_db", MIGRATION_1_2 + _2_3 + _3_4
 └── repository/ScanRepository.kt
 
 domain/workflow/WorkflowErrorMapper.kt  # @Singleton: ScanWorkflowError → lokalisierter String

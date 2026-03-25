@@ -31,7 +31,8 @@ class RestrictUsageUseCase @Inject constructor(
                 pageCount     = record.pageCount,
                 fileSize      = resultFile.length(),
                 thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath,
-                isSearchable  = false
+                isSearchable  = false,
+                isEncrypted   = true
             )
         )
         return resultFile.nameWithoutExtension

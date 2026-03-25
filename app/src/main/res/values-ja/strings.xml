@@ -332,7 +332,7 @@
     <string name="action_highlight_pdf">PDF をハイライト</string>
     <string name="highlight_screen_title">PDF をハイライト</string>
     <string name="highlight_description">黄色のマーカーでテキストをマーク</string>
-    <string name="highlight_details">黄色でハイライトするエリアをドラッグします。ページ間を移動して複数のページをマークできます。新しいハイライト付き PDF コピーが作成されます。</string>
+    <string name="highlight_details">黄色でハイライトしたい部分をドラッグします。移動/ズーム モードに切り替えると、ピンチで拡大し、ドラッグでページを移動できます。その後、描画 に戻ってテキストをマークします。拡大中はページ上部にリセットが表示され、全体表示に戻せます。ページ間を移動して複数のページをマークできます。新しいハイライト付き PDF コピーが作成されます。</string>
     <string name="highlight_apply">ハイライトを保存</string>
     <string name="highlight_clear_page">ページをクリア</string>
     <string name="highlight_hint">テキスト上をドラッグしてマークします。</string>
@@ -344,5 +344,22 @@
     <string name="highlight_stroke_medium">中</string>
     <string name="highlight_stroke_thick">太い</string>
     <string name="highlight_stroke_width">マーカーの幅</string>
-    <string name="help_item_highlight_pdf">PDF をハイライトを選択して、ドキュメントに黄色のハイライトを描きます。ページ間を移動して複数のページにハイライトを追加し、新しい PDF コピーとして保存します。</string>
+    <string name="highlight_mode_draw">描画</string>
+    <string name="highlight_mode_pan">移動/ズーム</string>
+    <string name="highlight_zoom_reset">%1$s× – リセット</string>
+    <string name="help_item_highlight_pdf">PDF をハイライトを選択して、ドキュメントに黄色のハイライトを描きます。移動/ズーム モードでピンチ拡大とページ移動を行い、その後 描画 に戻ってテキストをマークします。拡大中はページ上部のリセットで全体表示に戻せます。ページ間を移動して複数のページにハイライトを追加し、新しい PDF コピーとして保存します。</string>
+    <string name="search_placeholder">ドキュメントを検索…</string>
+    <string name="search_no_results">\"%1$s\" の検索結果なし</string>
+    <string name="cd_search_clear">検索をクリア</string>
+    <string name="tag_invoice">請求書</string>
+    <string name="tag_contract">契約書</string>
+    <string name="tag_insurance">保険</string>
+    <string name="tag_certificate">証明書</string>
+    <string name="tag_bank">銀行</string>
+    <string name="tag_delivery">納品書</string>
+    <string name="help_section_search">検索と自動タグ</string>
+    <string name="help_item_search">検索フィールドをタップして、ファイル名またはOCRテキストでドキュメントを検索します。前方一致検索が使用されます。</string>
+    <string name="help_item_auto_tag">ドキュメントを検索可能にすると、キーワードに基づいて請求書や契約書などのタグが自動付与されます。タグはファイル名の下に色付きラベルで表示されます。</string>
+    <string name="privacy_keyword_5">オンデバイスAI</string>
+    <string name="privacy_point_5">自動タグ付けと全文検索は、キーワード分析とOCRテキスト層を使用してデバイス上で完全に実行されます。分類のためにドキュメントの内容がクラウドに送信されることはありません。</string>
 </resources>

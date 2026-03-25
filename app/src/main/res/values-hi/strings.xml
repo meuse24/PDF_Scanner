@@ -332,7 +332,7 @@
     <string name="action_highlight_pdf">PDF हाइलाइट करें</string>
     <string name="highlight_screen_title">PDF हाइलाइट करें</string>
     <string name="highlight_description">पीले मार्कर से टेक्स्ट चिह्नित करें</string>
-    <string name="highlight_details">क्षेत्रों को पीले रंग में हाइलाइट करने के लिए खींचें। कई पृष्ठों को चिह्नित करने के लिए पृष्ठों के बीच नेविगेट करें। एक नई हाइलाइट की गई PDF कॉपी बनाई जाएगी।</string>
+    <string name="highlight_details">क्षेत्रों को पीले रंग में हाइलाइट करने के लिए खींचें। पृष्ठ को पिंच से ज़ूम और ड्रैग से खिसकाने के लिए ले जाएं/ज़ूम मोड में जाएं, फिर पाठ को चिह्नित करने के लिए वापस बनाएं मोड में लौटें। ज़ूम होने पर ऊपर रीसेट बटन दिखता है, जिससे पूरा दृश्य वापस मिल जाता है। कई पृष्ठों को चिह्नित करने के लिए पृष्ठों के बीच नेविगेट करें। एक नई हाइलाइट की गई PDF कॉपी बनाई जाएगी।</string>
     <string name="highlight_apply">हाइलाइट सहेजें</string>
     <string name="highlight_clear_page">पृष्ठ साफ़ करें</string>
     <string name="highlight_hint">चिह्नित करने के लिए टेक्स्ट पर खींचें।</string>
@@ -344,5 +344,22 @@
     <string name="highlight_stroke_medium">मध्यम</string>
     <string name="highlight_stroke_thick">मोटा</string>
     <string name="highlight_stroke_width">मार्कर चौड़ाई</string>
-    <string name="help_item_highlight_pdf">दस्तावेज़ पर पीले हाइलाइट बनाने के लिए PDF हाइलाइट करें चुनें। कई पृष्ठों पर हाइलाइट जोड़ने के लिए नेविगेट करें, फिर नई PDF कॉपी के रूप में सहेजें।</string>
+    <string name="highlight_mode_draw">बनाएं</string>
+    <string name="highlight_mode_pan">ले जाएं/ज़ूम</string>
+    <string name="highlight_zoom_reset">%1$s× – रीसेट</string>
+    <string name="help_item_highlight_pdf">दस्तावेज़ पर पीले हाइलाइट बनाने के लिए PDF हाइलाइट करें चुनें। ले जाएं/ज़ूम मोड का उपयोग करके पृष्ठ को पिंच से ज़ूम करें और खिसकाएं, फिर पाठ को चिह्नित करने के लिए वापस बनाएं मोड में लौटें। ज़ूम होने पर ऊपर रीसेट बटन का उपयोग करके पूरे दृश्य पर लौटें। कई पृष्ठों पर हाइलाइट जोड़ने के लिए नेविगेट करें, फिर नई PDF कॉपी के रूप में सहेजें।</string>
+    <string name="search_placeholder">दस्तावेज़ खोजें…</string>
+    <string name="search_no_results">\"%1$s\" के लिए कोई परिणाम नहीं</string>
+    <string name="cd_search_clear">खोज साफ़ करें</string>
+    <string name="tag_invoice">चालान</string>
+    <string name="tag_contract">अनुबंध</string>
+    <string name="tag_insurance">बीमा</string>
+    <string name="tag_certificate">प्रमाणपत्र</string>
+    <string name="tag_bank">बैंक</string>
+    <string name="tag_delivery">डिलीवरी नोट</string>
+    <string name="help_section_search">खोज और ऑटो-टैग</string>
+    <string name="help_item_search">नाम या OCR टेक्स्ट से दस्तावेज़ खोजने के लिए खोज फ़ील्ड पर टैप करें। उपसर्ग मिलान का उपयोग किया जाता है।</string>
+    <string name="help_item_auto_tag">जब कोई दस्तावेज़ खोज योग्य बनाया जाता है, तो चालान या अनुबंध जैसे टैग स्वचालित रूप से असाइन किए जाते हैं। टैग फ़ाइल नाम के नीचे दिखाई देते हैं।</string>
+    <string name="privacy_keyword_5">ऑन-डिवाइस इंटेलिजेंस</string>
+    <string name="privacy_point_5">ऑटो-टैगिंग और फुल-टेक्स्ट सर्च पूरी तरह से आपके डिवाइस पर कीवर्ड विश्लेषण और OCR टेक्स्ट लेयर का उपयोग करके चलती है। वर्गीकरण के लिए कोई दस्तावेज़ सामग्री क्लाउड पर नहीं भेजी जाती।</string>
 </resources>

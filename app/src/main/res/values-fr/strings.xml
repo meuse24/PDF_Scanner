@@ -332,7 +332,7 @@
     <string name="action_highlight_pdf">Surligner PDF</string>
     <string name="highlight_screen_title">Surligner PDF</string>
     <string name="highlight_description">Marquez le texte avec un surligneur jaune</string>
-    <string name="highlight_details">Faites glisser sur les zones pour les surligner en jaune. Naviguez entre les pages pour surligner plusieurs pages. Une nouvelle copie PDF surlignée sera créée.</string>
+    <string name="highlight_details">Faites glisser sur les zones pour les surligner en jaune. Passez en mode Panoramique pour zoomer par pincement et déplacer la page, puis revenez à Dessiner pour marquer le texte. En cas de zoom, utilisez Réinitialiser au-dessus de la page pour revenir à la vue complète. Naviguez entre les pages pour en surligner plusieurs. Une nouvelle copie PDF surlignée sera créée.</string>
     <string name="highlight_apply">Enregistrer les surlignages</string>
     <string name="highlight_clear_page">Effacer la page</string>
     <string name="highlight_hint">Faites glisser sur le texte pour le marquer.</string>
@@ -344,5 +344,22 @@
     <string name="highlight_stroke_medium">Moyen</string>
     <string name="highlight_stroke_thick">Épais</string>
     <string name="highlight_stroke_width">Largeur du marqueur</string>
-    <string name="help_item_highlight_pdf">Choisissez Surligner PDF pour dessiner des surlignages jaunes sur le document. Naviguez entre les pages pour en surligner plusieurs, puis enregistrez en tant que nouvelle copie PDF.</string>
+    <string name="highlight_mode_draw">Dessiner</string>
+    <string name="highlight_mode_pan">Panoramique</string>
+    <string name="highlight_zoom_reset">%1$s× – Réinitialiser</string>
+    <string name="help_item_highlight_pdf">Choisissez Surligner PDF pour dessiner des surlignages jaunes sur le document. Utilisez le mode Panoramique pour zoomer par pincement et déplacer la page, puis revenez à Dessiner pour marquer le texte. En cas de zoom, utilisez Réinitialiser au-dessus de la page pour revenir à la vue complète. Naviguez entre les pages et enregistrez en tant que nouvelle copie PDF.</string>
+    <string name="search_placeholder">Rechercher des documents…</string>
+    <string name="search_no_results">Aucun résultat pour « %1$s »</string>
+    <string name="cd_search_clear">Effacer la recherche</string>
+    <string name="tag_invoice">Facture</string>
+    <string name="tag_contract">Contrat</string>
+    <string name="tag_insurance">Assurance</string>
+    <string name="tag_certificate">Certificat</string>
+    <string name="tag_bank">Banque</string>
+    <string name="tag_delivery">Bon de livraison</string>
+    <string name="help_section_search">Recherche &amp; auto-tags</string>
+    <string name="help_item_search">Appuyez sur le champ de recherche pour trouver des documents par nom ou texte OCR. La recherche utilise la correspondance par préfixe.</string>
+    <string name="help_item_auto_tag">Lorsqu\'un document est rendu consultable, l\'app attribue automatiquement des tags comme Facture ou Contrat. Les tags apparaissent sous le nom du fichier.</string>
+    <string name="privacy_keyword_5">Intelligence locale</string>
+    <string name="privacy_point_5">Le balisage automatique et la recherche plein texte s\'exécutent entièrement sur votre appareil par analyse de mots-clés et couche OCR. Aucun contenu de document n\'est transmis vers le cloud.</string>
 </resources>

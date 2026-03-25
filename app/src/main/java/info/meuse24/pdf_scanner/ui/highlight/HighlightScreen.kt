@@ -4,6 +4,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +19,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -31,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -38,6 +45,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -45,6 +53,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -56,6 +65,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModel
+import java.util.Locale
 
 private data class MarkerWidthOption(
     val fraction: Float,
@@ -92,6 +102,36 @@ fun HighlightScreen(
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
     val currentCanvasSize by rememberUpdatedState(canvasSize)
 
+    // Zoom state
+    var zoomScale by rememberSaveable { mutableFloatStateOf(1f) }
+    var zoomOffsetX by rememberSaveable { mutableFloatStateOf(0f) }
+    var zoomOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
+    var isZoomMode by rememberSaveable { mutableStateOf(false) }
+    val currentZoomScale by rememberUpdatedState(zoomScale)
+    val currentZoomOffsetX by rememberUpdatedState(zoomOffsetX)
+    val currentZoomOffsetY by rememberUpdatedState(zoomOffsetY)
+    val currentSelectedPageIndex by rememberUpdatedState(selectedPageIndex)
+    val currentSelectedWidthFraction by rememberUpdatedState(selectedWidthFraction)
+
+    val resetZoom = {
+        zoomScale = 1f
+        zoomOffsetX = 0f
+        zoomOffsetY = 0f
+    }
+
+    val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
+        val newScale = (currentZoomScale * zoomChange).coerceIn(1f, 8f)
+        zoomScale = newScale
+        val clampedOffset = clampPanOffset(
+            canvasSize = currentCanvasSize,
+            scale = newScale,
+            offsetX = currentZoomOffsetX + panChange.x,
+            offsetY = currentZoomOffsetY + panChange.y
+        )
+        zoomOffsetX = clampedOffset.x
+        zoomOffsetY = clampedOffset.y
+    }
+
     val currentRecord = record
     if (currentRecord == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -104,6 +144,8 @@ fun HighlightScreen(
 
     LaunchedEffect(selectedPageIndex, currentRecord.id) {
         viewModel.loadHighlightPage(selectedPageIndex)
+        // Zoom beim Seitenwechsel zurücksetzen
+        resetZoom()
     }
 
     val bitmap = pageBitmap
@@ -157,111 +199,172 @@ fun HighlightScreen(
             }
         }
         item {
-            // Zeichenfläche mit PDF-Seite als Hintergrund
+            // Modus-Umschalter und Zoom-Steuerung
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FilterChip(
+                    selected = !isZoomMode,
+                    onClick = { isZoomMode = false },
+                    label = { Text(stringResource(R.string.highlight_mode_draw)) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = null
+                        )
+                    }
+                )
+                FilterChip(
+                    selected = isZoomMode,
+                    onClick = { isZoomMode = true },
+                    label = { Text(stringResource(R.string.highlight_mode_pan)) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.ZoomIn,
+                            contentDescription = null
+                        )
+                    }
+                )
+                if (zoomScale > 1.01f) {
+                    Spacer(Modifier.weight(1f))
+                    TextButton(
+                        onClick = resetZoom
+                    ) {
+                        Text(
+                            stringResource(
+                                R.string.highlight_zoom_reset,
+                                formatZoomScale(zoomScale)
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        item {
+            // Äußerer Box: legt Größe + Aspect-Ratio fest und clippt den gezoomten Inhalt
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(aspectRatio)
+                    .clip(RoundedCornerShape(8.dp))
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.outlineVariant,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .onSizeChanged { canvasSize = it }
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDragStart = { offset ->
-                                currentStroke =
-                                    listOf(normalizePoint(offset, currentCanvasSize))
-                            },
-                            onDrag = { change, _ ->
-                                change.consume()
-                                currentStroke =
-                                    currentStroke + normalizePoint(
-                                        change.position,
-                                        currentCanvasSize
-                                    )
-                            },
-                            onDragEnd = {
-                                if (currentStroke.isNotEmpty()) {
-                                    allStrokes = allStrokes + HighlightStroke(
-                                        points = currentStroke,
-                                        pageIndex = selectedPageIndex,
-                                        strokeWidthFraction = selectedWidthFraction
-                                    )
-                                    currentStroke = emptyList()
-                                }
-                            },
-                            onDragCancel = {
-                                if (currentStroke.isNotEmpty()) {
-                                    allStrokes = allStrokes + HighlightStroke(
-                                        points = currentStroke,
-                                        pageIndex = selectedPageIndex,
-                                        strokeWidthFraction = selectedWidthFraction
-                                    )
-                                    currentStroke = emptyList()
-                                }
-                            }
-                        )
-                    }
             ) {
-                // Hintergrund: PDF-Seite oder Lade-Indikator
-                if (bitmap != null) {
-                    androidx.compose.foundation.Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = null,
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.surfaceContainerLow),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-
-                // Overlay: Marker-Striche
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val allForPage = pageStrokesForDisplay + if (currentStroke.isNotEmpty()) {
-                        listOf(
-                            HighlightStroke(
-                                currentStroke,
-                                selectedPageIndex,
-                                selectedWidthFraction
-                            )
-                        )
-                    } else emptyList()
-
-                    allForPage.forEach { stroke ->
-                        if (stroke.points.isEmpty()) return@forEach
-                        val strokeWidthPx =
-                            size.width * stroke.strokeWidthFraction.coerceIn(0.005f, 0.1f)
-                        val path = Path()
-                        val first = denormalizePoint(stroke.points.first(), size.width, size.height)
-                        path.moveTo(first.x, first.y)
-                        stroke.points.drop(1).forEach { (nx, ny) ->
-                            val pt = denormalizePoint(Pair(nx, ny), size.width, size.height)
-                            path.lineTo(pt.x, pt.y)
+                // Innerer Box: trägt Zoom-Transformation, Gesten und Zeichnen
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            scaleX = zoomScale
+                            scaleY = zoomScale
+                            translationX = zoomOffsetX
+                            translationY = zoomOffsetY
                         }
-                        drawPath(
-                            path = path,
-                            color = highlightYellow,
-                            style = Stroke(
-                                width = strokeWidthPx,
-                                cap = StrokeCap.Round,
-                                join = StrokeJoin.Round
-                            )
+                        .transformable(state = transformableState, enabled = isZoomMode)
+                        .pointerInput(isZoomMode) {
+                            if (!isZoomMode) {
+                                detectDragGestures(
+                                    onDragStart = { offset ->
+                                        currentStroke =
+                                            listOf(normalizePoint(offset, currentCanvasSize))
+                                    },
+                                    onDrag = { change, _ ->
+                                        change.consume()
+                                        currentStroke =
+                                            currentStroke + normalizePoint(
+                                                change.position,
+                                                currentCanvasSize
+                                            )
+                                    },
+                                    onDragEnd = {
+                                        if (currentStroke.isNotEmpty()) {
+                                            allStrokes = allStrokes + HighlightStroke(
+                                                points = currentStroke,
+                                                pageIndex = currentSelectedPageIndex,
+                                                strokeWidthFraction = currentSelectedWidthFraction
+                                            )
+                                            currentStroke = emptyList()
+                                        }
+                                    },
+                                    onDragCancel = {
+                                        if (currentStroke.isNotEmpty()) {
+                                            allStrokes = allStrokes + HighlightStroke(
+                                                points = currentStroke,
+                                                pageIndex = currentSelectedPageIndex,
+                                                strokeWidthFraction = currentSelectedWidthFraction
+                                            )
+                                            currentStroke = emptyList()
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                ) {
+                    // Hintergrund: PDF-Seite oder Lade-Indikator
+                    if (bitmap != null) {
+                        androidx.compose.foundation.Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = null,
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier.fillMaxSize()
                         )
-                        if (stroke.points.size == 1) {
-                            drawCircle(
-                                color = highlightYellow,
-                                radius = strokeWidthPx / 2f,
-                                center = first
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.surfaceContainerLow),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    // Overlay: Marker-Striche
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        val allForPage = pageStrokesForDisplay + if (currentStroke.isNotEmpty()) {
+                            listOf(
+                                HighlightStroke(
+                                    currentStroke,
+                                    selectedPageIndex,
+                                    selectedWidthFraction
+                                )
                             )
+                        } else emptyList()
+
+                        allForPage.forEach { stroke ->
+                            if (stroke.points.isEmpty()) return@forEach
+                            val strokeWidthPx =
+                                size.width * stroke.strokeWidthFraction.coerceIn(0.005f, 0.1f)
+                            val path = Path()
+                            val first =
+                                denormalizePoint(stroke.points.first(), size.width, size.height)
+                            path.moveTo(first.x, first.y)
+                            stroke.points.drop(1).forEach { (nx, ny) ->
+                                val pt = denormalizePoint(Pair(nx, ny), size.width, size.height)
+                                path.lineTo(pt.x, pt.y)
+                            }
+                            drawPath(
+                                path = path,
+                                color = highlightYellow,
+                                style = Stroke(
+                                    width = strokeWidthPx,
+                                    cap = StrokeCap.Round,
+                                    join = StrokeJoin.Round
+                                )
+                            )
+                            if (stroke.points.size == 1) {
+                                drawCircle(
+                                    color = highlightYellow,
+                                    radius = strokeWidthPx / 2f,
+                                    center = first
+                                )
+                            }
                         }
                     }
                 }
@@ -398,6 +501,22 @@ private fun normalizePoint(offset: Offset, canvasSize: IntSize): Pair<Float, Flo
         (offset.y / canvasSize.height.toFloat()).coerceIn(0f, 1f)
     )
 }
+
+internal fun clampPanOffset(
+    canvasSize: IntSize,
+    scale: Float,
+    offsetX: Float,
+    offsetY: Float
+): Offset {
+    val maxX = canvasSize.width * (scale - 1f) / 2f
+    val maxY = canvasSize.height * (scale - 1f) / 2f
+    return Offset(
+        x = offsetX.coerceIn(-maxX, maxX),
+        y = offsetY.coerceIn(-maxY, maxY)
+    )
+}
+
+internal fun formatZoomScale(scale: Float): String = String.format(Locale.US, "%.1f", scale)
 
 private fun denormalizePoint(point: Pair<Float, Float>, width: Float, height: Float): Offset {
     return Offset(point.first * width, point.second * height)

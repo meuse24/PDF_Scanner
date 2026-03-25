@@ -332,7 +332,7 @@
     <string name="action_highlight_pdf">Resaltar PDF</string>
     <string name="highlight_screen_title">Resaltar PDF</string>
     <string name="highlight_description">Marca texto con un marcador amarillo</string>
-    <string name="highlight_details">Arrastra sobre áreas para resaltarlas en amarillo. Navega entre páginas para resaltar varias. Se creará una nueva copia PDF resaltada.</string>
+    <string name="highlight_details">Arrastra sobre áreas para resaltarlas en amarillo. Cambia a Desplazar para ampliar con pellizco y mover la página, y luego vuelve a Dibujar para marcar el texto. Cuando haya zoom, usa Restablecer sobre la página para volver a la vista completa. Navega entre páginas para resaltar varias. Se creará una nueva copia PDF resaltada.</string>
     <string name="highlight_apply">Guardar resaltados</string>
     <string name="highlight_clear_page">Limpiar página</string>
     <string name="highlight_hint">Arrastra sobre el texto para marcarlo.</string>
@@ -344,5 +344,22 @@
     <string name="highlight_stroke_medium">Medio</string>
     <string name="highlight_stroke_thick">Grueso</string>
     <string name="highlight_stroke_width">Anchura del marcador</string>
-    <string name="help_item_highlight_pdf">Elige Resaltar PDF para dibujar resaltados amarillos sobre el documento. Navega entre páginas para añadir resaltados a varias páginas y guarda como nueva copia PDF.</string>
+    <string name="highlight_mode_draw">Dibujar</string>
+    <string name="highlight_mode_pan">Desplazar</string>
+    <string name="highlight_zoom_reset">%1$s× – Restablecer</string>
+    <string name="help_item_highlight_pdf">Elige Resaltar PDF para dibujar resaltados amarillos sobre el documento. Usa el modo Desplazar para ampliar con pellizco y mover la página, y luego vuelve a Dibujar para marcar el texto. Cuando haya zoom, usa Restablecer sobre la página para volver a la vista completa. Navega entre páginas y guarda como nueva copia PDF.</string>
+    <string name="search_placeholder">Buscar documentos…</string>
+    <string name="search_no_results">Sin resultados para \"%1$s\"</string>
+    <string name="cd_search_clear">Borrar búsqueda</string>
+    <string name="tag_invoice">Factura</string>
+    <string name="tag_contract">Contrato</string>
+    <string name="tag_insurance">Seguro</string>
+    <string name="tag_certificate">Certificado</string>
+    <string name="tag_bank">Banco</string>
+    <string name="tag_delivery">Albarán</string>
+    <string name="help_section_search">Búsqueda y auto-etiquetas</string>
+    <string name="help_item_search">Toca el campo de búsqueda para encontrar documentos por nombre o texto OCR. Se utiliza coincidencia de prefijos.</string>
+    <string name="help_item_auto_tag">Al hacer un documento buscable, la app asigna automáticamente etiquetas como Factura o Contrato. Las etiquetas aparecen como marcas de color bajo el nombre del archivo.</string>
+    <string name="privacy_keyword_5">Inteligencia local</string>
+    <string name="privacy_point_5">El etiquetado automático y la búsqueda de texto completo se ejecutan en tu dispositivo mediante análisis de palabras clave y la capa OCR. Ningún contenido se transmite a la nube para su clasificación.</string>
 </resources>

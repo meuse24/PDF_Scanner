@@ -332,7 +332,7 @@
     <string name="action_highlight_pdf">تمييز PDF</string>
     <string name="highlight_screen_title">تمييز PDF</string>
     <string name="highlight_description">ضع علامات على النص بقلم تمييز أصفر</string>
-    <string name="highlight_details">اسحب فوق المناطق لتمييزها باللون الأصفر. تنقل بين الصفحات لتمييز صفحات متعددة. سيتم إنشاء نسخة PDF مميزة جديدة.</string>
+    <string name="highlight_details">اسحب فوق المناطق لتمييزها باللون الأصفر. بدّل إلى وضع التحريك/التكبير للتكبير بإيماءة القرص وتحريك الصفحة، ثم ارجع إلى وضع الرسم لتمييز النص. عند التكبير يظهر زر إعادة الضبط أعلى الصفحة للعودة إلى العرض الكامل. تنقل بين الصفحات لتمييز عدة صفحات. سيتم إنشاء نسخة PDF مميزة جديدة.</string>
     <string name="highlight_apply">حفظ التمييزات</string>
     <string name="highlight_clear_page">مسح الصفحة</string>
     <string name="highlight_hint">اسحب فوق النص لتمييزه.</string>
@@ -344,5 +344,22 @@
     <string name="highlight_stroke_medium">متوسط</string>
     <string name="highlight_stroke_thick">سميك</string>
     <string name="highlight_stroke_width">عرض القلم</string>
-    <string name="help_item_highlight_pdf">اختر تمييز PDF لرسم تمييزات صفراء على المستند. تنقل بين الصفحات لإضافة تمييزات لصفحات متعددة، ثم احفظ كنسخة PDF جديدة.</string>
+    <string name="highlight_mode_draw">رسم</string>
+    <string name="highlight_mode_pan">تحريك/تكبير</string>
+    <string name="highlight_zoom_reset">%1$s× – إعادة ضبط</string>
+    <string name="help_item_highlight_pdf">اختر تمييز PDF لرسم تمييزات صفراء على المستند. استخدم وضع التحريك/التكبير للتكبير بإيماءة القرص وتحريك الصفحة، ثم ارجع إلى وضع الرسم لتمييز النص. عند التكبير استخدم إعادة الضبط أعلى الصفحة للعودة إلى العرض الكامل. تنقل بين الصفحات لإضافة تمييزات لصفحات متعددة، ثم احفظ كنسخة PDF جديدة.</string>
+    <string name="search_placeholder">البحث في المستندات…</string>
+    <string name="search_no_results">لا نتائج لـ \"%1$s\"</string>
+    <string name="cd_search_clear">مسح البحث</string>
+    <string name="tag_invoice">فاتورة</string>
+    <string name="tag_contract">عقد</string>
+    <string name="tag_insurance">تأمين</string>
+    <string name="tag_certificate">شهادة</string>
+    <string name="tag_bank">بنك</string>
+    <string name="tag_delivery">سند التسليم</string>
+    <string name="help_section_search">البحث والوسوم التلقائية</string>
+    <string name="help_item_search">اضغط على حقل البحث للعثور على المستندات بالاسم أو نص OCR. يستخدم البحث مطابقة البادئة.</string>
+    <string name="help_item_auto_tag">عند جعل المستند قابلاً للبحث، يقوم التطبيق بتعيين وسوم مثل الفاتورة أو العقد تلقائياً. تظهر الوسوم أسفل اسم الملف.</string>
+    <string name="privacy_keyword_5">الذكاء المحلي</string>
+    <string name="privacy_point_5">يعمل الوسم التلقائي والبحث في النص الكامل بالكامل على جهازك عبر تحليل الكلمات المفتاحية وطبقة OCR. لا يتم إرسال أي محتوى وثيقة إلى السحابة للتصنيف.</string>
 </resources>

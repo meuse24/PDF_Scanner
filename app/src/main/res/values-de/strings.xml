@@ -332,7 +332,7 @@
     <string name="action_highlight_pdf">PDF markieren</string>
     <string name="highlight_screen_title">PDF markieren</string>
     <string name="highlight_description">Text mit gelbem Marker hervorheben</string>
-    <string name="highlight_details">Streiche über Bereiche, um sie gelb zu markieren. Navigiere zwischen Seiten, um mehrere Seiten zu markieren. Es wird eine neue markierte PDF-Kopie erstellt.</string>
+    <string name="highlight_details">Streiche über Bereiche, um sie gelb zu markieren. Wechsle in den Modus Verschieben, um per Pinch zu zoomen und die Seite zu verschieben, und dann zurück zu Zeichnen. Wenn du gezoomt hast, bringt dich Zurücksetzen oberhalb der Seite wieder zur Gesamtansicht. Navigiere zwischen Seiten, um mehrere Seiten zu markieren. Es wird eine neue markierte PDF-Kopie erstellt.</string>
     <string name="highlight_apply">Markierungen speichern</string>
     <string name="highlight_clear_page">Seite löschen</string>
     <string name="highlight_hint">Über Text ziehen, um ihn zu markieren.</string>
@@ -344,5 +344,22 @@
     <string name="highlight_stroke_medium">Mittel</string>
     <string name="highlight_stroke_thick">Dick</string>
     <string name="highlight_stroke_width">Markierungsbreite</string>
-    <string name="help_item_highlight_pdf">Mit PDF markieren kannst du gelbe Markierungen über das Dokument ziehen. Navigiere zwischen Seiten, um mehrere Seiten zu markieren, und speichere dann als neue PDF-Kopie.</string>
+    <string name="highlight_mode_draw">Zeichnen</string>
+    <string name="highlight_mode_pan">Verschieben</string>
+    <string name="highlight_zoom_reset">%1$s× – Zurücksetzen</string>
+    <string name="help_item_highlight_pdf">Mit PDF markieren kannst du gelbe Markierungen über das Dokument ziehen. Nutze den Modus Verschieben, um per Pinch zu zoomen und die Seite zu verschieben, und wechsle dann zurück zu Zeichnen. Bei Zoom bringt dich Zurücksetzen oberhalb der Seite wieder zur Gesamtansicht. Navigiere zwischen Seiten und speichere als neue PDF-Kopie.</string>
+    <string name="search_placeholder">Dokumente durchsuchen…</string>
+    <string name="search_no_results">Keine Ergebnisse für „%1$s"</string>
+    <string name="cd_search_clear">Suche löschen</string>
+    <string name="tag_invoice">Rechnung</string>
+    <string name="tag_contract">Vertrag</string>
+    <string name="tag_insurance">Versicherung</string>
+    <string name="tag_certificate">Zeugnis</string>
+    <string name="tag_bank">Bankdokument</string>
+    <string name="tag_delivery">Lieferschein</string>
+    <string name="help_section_search">Suche &amp; Auto-Tags</string>
+    <string name="help_item_search">Tippe auf das Suchfeld oben, um Dokumente nach Name oder OCR-Text zu finden. Präfixsuche – z.B. „Rec" findet „Rechnung".</string>
+    <string name="help_item_auto_tag">Wenn ein Dokument durchsuchbar gemacht wird, werden automatisch Tags wie Rechnung oder Vertrag anhand von Schlüsselwörtern vergeben. Tags erscheinen als farbige Etiketten unter dem Dateinamen.</string>
+    <string name="privacy_keyword_5">On-Device-Intelligenz</string>
+    <string name="privacy_point_5">Auto-Tags und Volltextsuche laufen vollständig auf deinem Gerät per Schlüsselwort-Analyse und OCR-Textebene. Keine Dokumentinhalte werden zur Klassifizierung in die Cloud gesendet.</string>
 </resources>

@@ -332,7 +332,7 @@
     <string name="action_highlight_pdf">Выделить PDF</string>
     <string name="highlight_screen_title">Выделить PDF</string>
     <string name="highlight_description">Отмечайте текст жёлтым маркером</string>
-    <string name="highlight_details">Проведите по областям, чтобы выделить их жёлтым. Переходите между страницами для выделения нескольких страниц. Будет создана новая копия PDF с выделениями.</string>
+    <string name="highlight_details">Проведите по областям, чтобы выделить их жёлтым. Переключитесь в режим Перемещение, чтобы масштабировать щипком и сдвигать страницу перетаскиванием, затем вернитесь в Рисовать для выделения текста. При увеличении над страницей появляется кнопка Сбросить, чтобы вернуться к полному виду. Переходите между страницами для выделения нескольких страниц. Будет создана новая копия PDF с выделениями.</string>
     <string name="highlight_apply">Сохранить выделения</string>
     <string name="highlight_clear_page">Очистить страницу</string>
     <string name="highlight_hint">Проведите по тексту, чтобы отметить его.</string>
@@ -344,5 +344,22 @@
     <string name="highlight_stroke_medium">Средний</string>
     <string name="highlight_stroke_thick">Толстый</string>
     <string name="highlight_stroke_width">Ширина маркера</string>
-    <string name="help_item_highlight_pdf">Выберите Выделить PDF, чтобы нарисовать жёлтые выделения на документе. Переходите между страницами для добавления выделений на несколько страниц и сохраните как новую копию PDF.</string>
+    <string name="highlight_mode_draw">Рисовать</string>
+    <string name="highlight_mode_pan">Перемещение</string>
+    <string name="highlight_zoom_reset">%1$s× – Сбросить</string>
+    <string name="help_item_highlight_pdf">Выберите Выделить PDF, чтобы нарисовать жёлтые выделения на документе. Используйте режим Перемещение, чтобы масштабировать щипком и сдвигать страницу, затем вернитесь в Рисовать для выделения текста. При увеличении используйте кнопку Сбросить над страницей, чтобы вернуться к полному виду. Переходите между страницами для добавления выделений на несколько страниц и сохраните как новую копию PDF.</string>
+    <string name="search_placeholder">Поиск документов…</string>
+    <string name="search_no_results">Нет результатов для \"%1$s\"</string>
+    <string name="cd_search_clear">Очистить поиск</string>
+    <string name="tag_invoice">Счёт</string>
+    <string name="tag_contract">Договор</string>
+    <string name="tag_insurance">Страхование</string>
+    <string name="tag_certificate">Сертификат</string>
+    <string name="tag_bank">Банк</string>
+    <string name="tag_delivery">Накладная</string>
+    <string name="help_section_search">Поиск и авто-теги</string>
+    <string name="help_item_search">Нажмите на поле поиска, чтобы найти документы по имени или тексту OCR. Используется поиск по префиксу.</string>
+    <string name="help_item_auto_tag">Когда документ делается доступным для поиска, теги, такие как Счёт или Договор, присваиваются автоматически. Теги отображаются под именем файла.</string>
+    <string name="privacy_keyword_5">Локальный ИИ</string>
+    <string name="privacy_point_5">Автоматическое тегирование и полнотекстовый поиск работают полностью на вашем устройстве с помощью анализа ключевых слов и слоя OCR. Никакие данные документов не передаются в облако.</string>
 </resources>

@@ -393,13 +393,6 @@ fun AnnotateScreen(
                         )
                     }
                 }
-                if (isZoomMode) {
-                    Text(
-                        text = "${formatZoomScale(zoomScale)}×",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
             }
         }
 
@@ -681,12 +674,25 @@ fun AnnotateScreen(
 
                 when (annotateMode) {
                     AnnotateMode.ZOOM -> {
-                        OutlinedButton(
-                            onClick = resetZoom,
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(stringResource(R.string.highlight_zoom_reset_button))
+                            Text(
+                                text = "${formatZoomScale(zoomScale)}×",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.weight(0.6f)
+                            )
+                            OutlinedButton(
+                                onClick = resetZoom,
+                                modifier = Modifier.weight(1f),
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+                            ) {
+                                Text(stringResource(R.string.highlight_zoom_reset_button))
+                            }
                         }
                     }
                     AnnotateMode.WRITE -> {

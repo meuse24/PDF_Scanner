@@ -345,10 +345,10 @@
     <string name="highlight_stroke_thin">細い</string>
     <string name="highlight_stroke_medium">中</string>
     <string name="highlight_stroke_thick">太い</string>
-    <string name="highlight_stroke_width">マーカーの幅</string>
+    <string name="highlight_stroke_width">ペン</string>
     <string name="highlight_mode_draw">描画</string>
-    <string name="highlight_mode_snap">テキストに合わせる</string>
-    <string name="highlight_mode_pan">移動/ズーム</string>
+    <string name="highlight_mode_snap">Snap</string>
+    <string name="highlight_mode_pan">ズーム</string>
     <string name="highlight_undo_last">元に戻す</string>
     <string name="highlight_reset_all">全部</string>
     <string name="highlight_zoom_reset">%1$s× – リセット</string>

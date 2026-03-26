@@ -345,10 +345,10 @@
     <string name="highlight_stroke_thin">Fin</string>
     <string name="highlight_stroke_medium">Moyen</string>
     <string name="highlight_stroke_thick">Épais</string>
-    <string name="highlight_stroke_width">Largeur du marqueur</string>
-    <string name="highlight_mode_draw">Dessiner</string>
-    <string name="highlight_mode_snap">Aligner au texte</string>
-    <string name="highlight_mode_pan">Panoramique</string>
+    <string name="highlight_stroke_width">Stylo</string>
+    <string name="highlight_mode_draw">Mark.</string>
+    <string name="highlight_mode_snap">Snap</string>
+    <string name="highlight_mode_pan">Zoom</string>
     <string name="highlight_undo_last">Annuler</string>
     <string name="highlight_reset_all">Tout</string>
     <string name="highlight_zoom_reset">%1$s× – Réinitialiser</string>

@@ -345,10 +345,10 @@
     <string name="highlight_stroke_thin">رفيع</string>
     <string name="highlight_stroke_medium">متوسط</string>
     <string name="highlight_stroke_thick">سميك</string>
-    <string name="highlight_stroke_width">عرض القلم</string>
+    <string name="highlight_stroke_width">قلم</string>
     <string name="highlight_mode_draw">رسم</string>
-    <string name="highlight_mode_snap">محاذاة النص</string>
-    <string name="highlight_mode_pan">تحريك/تكبير</string>
+    <string name="highlight_mode_snap">Snap</string>
+    <string name="highlight_mode_pan">Zoom</string>
     <string name="highlight_undo_last">تراجع</string>
     <string name="highlight_reset_all">الكل</string>
     <string name="highlight_zoom_reset">%1$s× – إعادة ضبط</string>

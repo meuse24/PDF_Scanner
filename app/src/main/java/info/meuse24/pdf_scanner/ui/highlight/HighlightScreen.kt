@@ -292,81 +292,79 @@ fun HighlightScreen(
             color = MaterialTheme.colorScheme.surfaceContainerLow,
             tonalElevation = 1.dp
         ) {
-            Column(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Zeile 1: Modus-Toggle + Seite/Zoom-Info
+                // Modus-Chips: Mark. / Zoom / Snap
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        FilterChip(
-                            selected = !isZoomMode,
-                            onClick = { isZoomMode = false },
-                            label = { Text(stringResource(R.string.highlight_mode_draw)) },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                        )
-                        FilterChip(
-                            selected = isZoomMode,
-                            onClick = { isZoomMode = true },
-                            label = { Text(stringResource(R.string.highlight_mode_pan)) },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.ZoomIn,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (hasMultiplePages) {
-                            Text(
-                                text = "${selectedPageIndex + 1}/${currentRecord.pageCount}",
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        if (isZoomMode) {
-                            Text(
-                                text = "${formatZoomScale(zoomScale)}×",
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-                // Zeile 2: Snap-Chip (nur bei durchsuchbaren PDFs im Zeichenmodus)
-                if (currentRecord.isSearchable && !isZoomMode) {
                     FilterChip(
-                        selected = isSnapMode,
-                        onClick = { isSnapMode = !isSnapMode },
-                        label = { Text(stringResource(R.string.highlight_mode_snap)) },
+                        selected = !isZoomMode,
+                        onClick = { isZoomMode = false },
+                        label = { Text(stringResource(R.string.highlight_mode_draw)) },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.TextFields,
+                                imageVector = Icons.Default.Edit,
                                 contentDescription = null,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
                     )
+                    FilterChip(
+                        selected = isZoomMode,
+                        onClick = { isZoomMode = true },
+                        label = { Text(stringResource(R.string.highlight_mode_pan)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.ZoomIn,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    )
+                    // Snap-Chip: sichtbar für durchsuchbare PDFs, im Zoom-Modus ausgegraut
+                    // → Snap-Status bleibt beim Moduswechsel sichtbar erhalten
+                    if (currentRecord.isSearchable) {
+                        FilterChip(
+                            selected = isSnapMode,
+                            onClick = { isSnapMode = !isSnapMode },
+                            enabled = !isZoomMode,
+                            label = { Text(stringResource(R.string.highlight_mode_snap)) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.TextFields,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        )
+                    }
+                }
+                // Seite und Zoom-Level
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (hasMultiplePages) {
+                        Text(
+                            text = "${selectedPageIndex + 1}/${currentRecord.pageCount}",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    if (isZoomMode) {
+                        Text(
+                            text = "${formatZoomScale(zoomScale)}×",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }

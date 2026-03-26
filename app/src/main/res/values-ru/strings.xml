@@ -345,10 +345,10 @@
     <string name="highlight_stroke_thin">Тонкий</string>
     <string name="highlight_stroke_medium">Средний</string>
     <string name="highlight_stroke_thick">Толстый</string>
-    <string name="highlight_stroke_width">Ширина маркера</string>
-    <string name="highlight_mode_draw">Рисовать</string>
-    <string name="highlight_mode_snap">Привязка к тексту</string>
-    <string name="highlight_mode_pan">Перемещение</string>
+    <string name="highlight_stroke_width">Перо</string>
+    <string name="highlight_mode_draw">Рис.</string>
+    <string name="highlight_mode_snap">Snap</string>
+    <string name="highlight_mode_pan">Zoom</string>
     <string name="highlight_undo_last">Назад</string>
     <string name="highlight_reset_all">Всё</string>
     <string name="highlight_zoom_reset">%1$s× – Сбросить</string>

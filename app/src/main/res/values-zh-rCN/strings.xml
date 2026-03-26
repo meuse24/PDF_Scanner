@@ -345,10 +345,10 @@
     <string name="highlight_stroke_thin">细</string>
     <string name="highlight_stroke_medium">中</string>
     <string name="highlight_stroke_thick">粗</string>
-    <string name="highlight_stroke_width">标记宽度</string>
-    <string name="highlight_mode_draw">绘制</string>
-    <string name="highlight_mode_snap">对齐文本</string>
-    <string name="highlight_mode_pan">移动/缩放</string>
+    <string name="highlight_stroke_width">笔</string>
+    <string name="highlight_mode_draw">标记</string>
+    <string name="highlight_mode_snap">Snap</string>
+    <string name="highlight_mode_pan">缩放</string>
     <string name="highlight_undo_last">撤销</string>
     <string name="highlight_reset_all">全部</string>
     <string name="highlight_zoom_reset">%1$s× – 重置</string>

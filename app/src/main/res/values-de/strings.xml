@@ -345,10 +345,10 @@
     <string name="highlight_stroke_thin">Dünn</string>
     <string name="highlight_stroke_medium">Mittel</string>
     <string name="highlight_stroke_thick">Dick</string>
-    <string name="highlight_stroke_width">Markierungsbreite</string>
-    <string name="highlight_mode_draw">Zeichnen</string>
-    <string name="highlight_mode_snap">Text ausrichten</string>
-    <string name="highlight_mode_pan">Verschieben</string>
+    <string name="highlight_stroke_width">Stift</string>
+    <string name="highlight_mode_draw">Mark.</string>
+    <string name="highlight_mode_snap">Snap</string>
+    <string name="highlight_mode_pan">Zoom</string>
     <string name="highlight_undo_last">Zurück</string>
     <string name="highlight_reset_all">Alles</string>
     <string name="highlight_zoom_reset">%1$s× – Zurücksetzen</string>

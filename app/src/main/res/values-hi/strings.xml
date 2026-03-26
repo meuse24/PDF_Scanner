@@ -345,10 +345,10 @@
     <string name="highlight_stroke_thin">पतला</string>
     <string name="highlight_stroke_medium">मध्यम</string>
     <string name="highlight_stroke_thick">मोटा</string>
-    <string name="highlight_stroke_width">मार्कर चौड़ाई</string>
-    <string name="highlight_mode_draw">बनाएं</string>
-    <string name="highlight_mode_snap">पाठ पर संरेखित करें</string>
-    <string name="highlight_mode_pan">ले जाएं/ज़ूम</string>
+    <string name="highlight_stroke_width">पेन</string>
+    <string name="highlight_mode_draw">Mark.</string>
+    <string name="highlight_mode_snap">Snap</string>
+    <string name="highlight_mode_pan">Zoom</string>
     <string name="highlight_undo_last">पूर्ववत</string>
     <string name="highlight_reset_all">सब</string>
     <string name="highlight_zoom_reset">%1$s× – रीसेट</string>

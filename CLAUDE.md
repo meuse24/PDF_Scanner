@@ -91,6 +91,7 @@ ui/
 │                                  # Zoom/Pan via transformable; Koordinaten normalisiert (0..1) für Seitenunabhängigkeit
 │                                  # awaitEachGesture + manueller awaitPointerEvent-Loop (kein touch-slop Problem)
 │                                  # Undo/Clear behandeln Strokes + Rects + Comments gemeinsam
+│                                  # allComments via rememberSaveable (annotateCommentListSaver) → kein Datenverlust bei Rotation
 ├── pageedit/
 │   ├── PageSelectionViewModel.kt  # Seiten-Thumbnails, Auswahl, saveAsCopy + Rotate/Delete/Extract/Duplicate-Workflows
 │   └── PageActionScreens.kt       # RotatePagesScreen, DeletePagesScreen, ExtractPagesScreen, DuplicatePagesScreen

@@ -383,6 +383,7 @@
     <string name="annotate_comment_delete">Delete</string>
     <string name="annotate_write_hint">Tap on the page to place a comment.</string>
     <string name="annotate_text_size">Size</string>
+    <string name="annotate_page_content_description">पृष्ठ %1$d</string>
     <string name="annotate_no_items">Add at least one annotation first</string>
     <string name="annotate_error">Error adding annotations</string>
     <string name="help_item_annotate_pdf">Choose Annotate PDF to draw yellow highlights or place short text comments. In Write mode, tap on the page to place a comment; tap an existing comment to edit it. Snap aligns highlights to detected text lines (searchable PDFs only). Use Zoom for precise placement.</string>

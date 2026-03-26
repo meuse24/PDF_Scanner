@@ -160,6 +160,27 @@ private val annotateRectListSaver = listSaver<List<HighlightRect>, List<Float>>(
     }
 )
 
+private val annotateCommentListSaver = listSaver<List<TextCommentDraft>, List<String>>(
+    save = { comments ->
+        comments.map { c ->
+            listOf(c.pageIndex.toString(), c.anchorX.toString(), c.anchorY.toString(),
+                   c.fontSizeFraction.toString(), c.text)
+        }
+    },
+    restore = { values ->
+        values.mapNotNull { saved ->
+            if (saved.size < 5) return@mapNotNull null
+            TextCommentDraft(
+                pageIndex  = saved[0].toIntOrNull()   ?: return@mapNotNull null,
+                anchorX    = saved[1].toFloatOrNull() ?: return@mapNotNull null,
+                anchorY    = saved[2].toFloatOrNull() ?: return@mapNotNull null,
+                fontSizeFraction = saved[3].toFloatOrNull() ?: return@mapNotNull null,
+                text       = saved[4]
+            )
+        }
+    }
+)
+
 private val highlightYellow = Color(
     red = HIGHLIGHT_COLOR_RED / 255f,
     green = HIGHLIGHT_COLOR_GREEN / 255f,
@@ -199,8 +220,9 @@ fun AnnotateScreen(
     var currentStroke by rememberSaveable(stateSaver = annotatePointListSaver) {
         mutableStateOf(emptyList<Pair<Float, Float>>())
     }
-    // Kommentare: kein rememberSaveable (Text ist schwer sicher zu serialisieren im MVP)
-    var allComments by remember { mutableStateOf(emptyList<TextCommentDraft>()) }
+    var allComments by rememberSaveable(stateSaver = annotateCommentListSaver) {
+        mutableStateOf(emptyList<TextCommentDraft>())
+    }
 
     var selectedPageIndex by rememberSaveable { mutableStateOf(0) }
     var selectedWidthFraction by rememberSaveable { mutableFloatStateOf(0.025f) }
@@ -527,7 +549,10 @@ fun AnnotateScreen(
                 if (bitmap != null) {
                     Image(
                         bitmap = bitmap.asImageBitmap(),
-                        contentDescription = null,
+                        contentDescription = stringResource(
+                            R.string.annotate_page_content_description,
+                            selectedPageIndex + 1
+                        ),
                         contentScale = ContentScale.Fit,
                         modifier = Modifier.fillMaxSize()
                     )

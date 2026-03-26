@@ -97,6 +97,8 @@ ui/
 │                                  # Zoom/Pan via transformable; Zeichnen mappt Touchpunkte invers aus dem Viewport in Dokumentkoordinaten
 │                                  # Für durchsuchbare PDFs: optionaler Snap-Chip "Text ausrichten" → Strich wird zu HighlightRect(s)
 │                                  # Undo/Clear/Reset behandeln Strokes + Rects; Fallback auf Freihand wenn keine Textzeile getroffen wird
+│                                  # UI: kompakte Surface-Toolbar oben (8dp Padding); Canvas immer weißer Hintergrund + shadow(4dp);
+│                                  # kompakte Surface-Steuerleiste unten; Außenpadding 8dp; verticalSpacing 6dp
 ├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
 │                                  # Hilfe-Texte decken Suche/OCR/Auto-Tags/Highlight-Snap/Privacy-Verhalten ab
 ├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig; zusätzliche Karten für Funktionen + Privacy
@@ -219,6 +221,8 @@ Testabhängigkeiten: `junit:4.13.2` + `kotlinx-coroutines-test:1.10.1` + `mockit
 
 Versionen zentral in `gradle/libs.versions.toml`. Gradle-Besonderheiten:
 - `android.disallowKotlinSourceSets=false` in `gradle.properties` (KSP + AGP 9)
+- `ksp.workers.max=1` in `gradle.properties` — verhindert Race Condition in KSP 2.2.x (Storage already registered)
+- Builds ohne Configuration-Cache stabiler: `--no-configuration-cache` bei Problemen
 - `buildFeatures { buildConfig = true }` für `BuildConfig.VERSION_NAME` / `VERSION_CODE`
 - `org.gradle.caching=true`, `org.gradle.parallel=true`, `org.gradle.configuration-cache=true` aktiv
 - `PDFBoxResourceLoader.init(this)` in `PdfScannerApp.onCreate()` erforderlich

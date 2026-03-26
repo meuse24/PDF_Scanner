@@ -3,7 +3,6 @@ package info.meuse24.pdf_scanner.ui.highlight
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,8 +23,6 @@ import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -49,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -285,24 +282,25 @@ fun HighlightScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Card(
+        // ── Kompakte Toolbar: Modus-Chips + Seite/Zoom-Info ────────────
+        Surface(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-            )
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            tonalElevation = 1.dp
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     FilterChip(
@@ -312,7 +310,8 @@ fun HighlightScreen(
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Edit,
-                                contentDescription = null
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
                             )
                         }
                     )
@@ -323,7 +322,8 @@ fun HighlightScreen(
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.ZoomIn,
-                                contentDescription = null
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
                             )
                         }
                     )
@@ -335,7 +335,8 @@ fun HighlightScreen(
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.TextFields,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
                                 )
                             }
                         )
@@ -346,33 +347,24 @@ fun HighlightScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (hasMultiplePages) {
-                        Surface(
-                            shape = RoundedCornerShape(999.dp),
-                            color = MaterialTheme.colorScheme.surfaceContainerHigh
-                        ) {
-                            Text(
-                                text = "${selectedPageIndex + 1}/${currentRecord.pageCount}",
-                                style = MaterialTheme.typography.labelLarge,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-                            )
-                        }
+                        Text(
+                            text = "${selectedPageIndex + 1}/${currentRecord.pageCount}",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                     if (isZoomMode) {
-                        Surface(
-                            shape = RoundedCornerShape(999.dp),
-                            color = MaterialTheme.colorScheme.surfaceContainerHigh
-                        ) {
-                            Text(
-                                text = "${formatZoomScale(zoomScale)}×",
-                                style = MaterialTheme.typography.labelLarge,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-                            )
-                        }
+                        Text(
+                            text = "${formatZoomScale(zoomScale)}×",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }
         }
 
+        // ── PDF-Canvas (füllt verfügbaren Platz, weißer Hintergrund) ───
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
@@ -389,12 +381,9 @@ fun HighlightScreen(
             Box(
                 modifier = Modifier
                     .size(fittedWidthDp, fittedHeightDp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        shape = RoundedCornerShape(8.dp)
-                    )
+                    .shadow(elevation = 4.dp, shape = RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.White)
                     .onSizeChanged { canvasSize = it }
                     .transformable(state = transformableState, enabled = isZoomMode)
                     .pointerInput(isZoomMode) {
@@ -473,7 +462,7 @@ fun HighlightScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.surfaceContainerLow),
+                                .background(Color.White),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator()
@@ -538,27 +527,35 @@ fun HighlightScreen(
             }
         }
 
-        Card(
+        // ── Kompakte Steuerleiste ───────────────────────────────────────
+        Surface(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-            )
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            tonalElevation = 1.dp
         ) {
             Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                // Seitennavigation (nur bei mehrseitigen PDFs)
                 if (hasMultiplePages) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         OutlinedButton(
-                            onClick = { selectedPageIndex = (selectedPageIndex - 1).coerceAtLeast(0) },
+                            onClick = {
+                                selectedPageIndex = (selectedPageIndex - 1).coerceAtLeast(0)
+                            },
                             enabled = selectedPageIndex > 0,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
                         ) {
-                            Text(stringResource(R.string.signature_page_previous), textAlign = TextAlign.Center)
+                            Text(
+                                text = stringResource(R.string.signature_page_previous),
+                                maxLines = 1
+                            )
                         }
                         OutlinedButton(
                             onClick = {
@@ -566,32 +563,36 @@ fun HighlightScreen(
                                     (selectedPageIndex + 1).coerceAtMost(currentRecord.pageCount - 1)
                             },
                             enabled = selectedPageIndex < currentRecord.pageCount - 1,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
                         ) {
-                            Text(stringResource(R.string.signature_page_next), textAlign = TextAlign.Center)
+                            Text(
+                                text = stringResource(R.string.signature_page_next),
+                                maxLines = 1
+                            )
                         }
                     }
                 }
 
+                // Aktions-Buttons je nach Modus
                 if (isZoomMode) {
-                    Row(
+                    OutlinedButton(
+                        onClick = resetZoom,
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
                     ) {
-                        OutlinedButton(onClick = resetZoom) {
-                            Text(stringResource(R.string.highlight_zoom_reset_button))
-                        }
+                        Text(stringResource(R.string.highlight_zoom_reset_button))
                     }
                 } else {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         OutlinedButton(
                             onClick = undoLastMark,
                             enabled = hasPageMarks,
                             modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp)
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = stringResource(R.string.highlight_undo_last),
@@ -604,7 +605,7 @@ fun HighlightScreen(
                             onClick = clearCurrentPage,
                             enabled = hasPageMarks,
                             modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp)
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = stringResource(R.string.highlight_clear_page),
@@ -617,7 +618,7 @@ fun HighlightScreen(
                             onClick = resetAllMarks,
                             enabled = hasAnyMarks,
                             modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp)
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp)
                         ) {
                             Text(
                                 text = stringResource(R.string.highlight_reset_all),
@@ -628,26 +629,32 @@ fun HighlightScreen(
                         }
                     }
 
-                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    // Markierungsbreite
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
                             text = stringResource(R.string.highlight_stroke_width),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.weight(1f)
                         )
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            markerWidthOptions.forEach { option ->
-                                FilterChip(
-                                    selected = selectedWidthFraction == option.fraction,
-                                    onClick = { selectedWidthFraction = option.fraction },
-                                    label = { Text(stringResource(option.labelRes)) }
-                                )
-                            }
+                        markerWidthOptions.forEach { option ->
+                            FilterChip(
+                                selected = selectedWidthFraction == option.fraction,
+                                onClick = { selectedWidthFraction = option.fraction },
+                                label = { Text(stringResource(option.labelRes)) }
+                            )
                         }
                     }
                 }
             }
         }
 
+        // ── Speichern-Button ───────────────────────────────────────────
         Button(
             onClick = {
                 val finalStrokes = allStrokes + if (currentStroke.isNotEmpty()) {

@@ -8,7 +8,6 @@ import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -44,8 +43,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -58,7 +55,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -277,7 +273,26 @@ fun HighlightScreen(
         pageStrokesForDisplay.isNotEmpty() || pageRectsForDisplay.isNotEmpty() || currentStroke.isNotEmpty()
     val hasAnyMarks = allStrokes.isNotEmpty() || allRects.isNotEmpty() || currentStroke.isNotEmpty()
     val hasMultiplePages = currentRecord.pageCount > 1
-    val density = LocalDensity.current
+
+    // PDF-Anzeigebereich innerhalb der Canvas (ContentScale.Fit-Logik):
+    // Canvas füllt immer den gesamten verfügbaren Platz; das PDF wird eingepasst.
+    val (pdfInCanvasOrigin, pdfInCanvasSize) = remember(canvasSize, aspectRatio) {
+        val cw = canvasSize.width.toFloat()
+        val ch = canvasSize.height.toFloat()
+        if (cw <= 0f || ch <= 0f) return@remember Offset.Zero to Size.Zero
+        val ar = aspectRatio.coerceAtLeast(0.01f)
+        if (ar >= cw / ch) {
+            // PDF breiter als Canvas → an Breite anpassen
+            val h = cw / ar
+            Offset(0f, (ch - h) / 2f) to Size(cw, h)
+        } else {
+            // PDF schmaler als Canvas → an Höhe anpassen
+            val w = ch * ar
+            Offset((cw - w) / 2f, 0f) to Size(w, ch)
+        }
+    }
+    val currentPdfOrigin by rememberUpdatedState(pdfInCanvasOrigin)
+    val currentPdfSize by rememberUpdatedState(pdfInCanvasSize)
 
     Column(
         modifier = Modifier
@@ -369,163 +384,157 @@ fun HighlightScreen(
             }
         }
 
-        // ── PDF-Canvas (füllt verfügbaren Platz, weißer Hintergrund) ───
-        BoxWithConstraints(
+        // ── PDF-Canvas: füllt gesamten verfügbaren Platz ──────────────
+        // Das PDF wird via ContentScale.Fit eingepasst; Striche werden
+        // auf den PDF-Bereich (pdfInCanvasOrigin/pdfInCanvasSize) gemappt.
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
-            contentAlignment = Alignment.Center
-        ) {
-            val maxWidthPx = constraints.maxWidth.toFloat()
-            val maxHeightPx = constraints.maxHeight.toFloat()
-            val fittedWidthPx = min(maxWidthPx, maxHeightPx * aspectRatio)
-            val fittedHeightPx = fittedWidthPx / aspectRatio
-            val fittedWidthDp = with(density) { fittedWidthPx.toDp() }
-            val fittedHeightDp = with(density) { fittedHeightPx.toDp() }
-
-            Box(
-                modifier = Modifier
-                    .size(fittedWidthDp, fittedHeightDp)
-                    .shadow(elevation = 4.dp, shape = RoundedCornerShape(4.dp))
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Color.White)
-                    .onSizeChanged { canvasSize = it }
-                    .transformable(state = transformableState, enabled = isZoomMode)
-                    .pointerInput(isZoomMode) {
-                        if (!isZoomMode) {
-                            detectDragGestures(
-                                onDragStart = { offset ->
-                                    currentStroke = listOf(
-                                        normalizeViewportPoint(
-                                            offset = offset,
-                                            canvasSize = currentCanvasSize,
-                                            scale = currentZoomScale,
-                                            offsetX = currentZoomOffsetX,
-                                            offsetY = currentZoomOffsetY
-                                        )
-                                    )
-                                },
-                                onDrag = { change, _ ->
-                                    change.consume()
-                                    currentStroke = currentStroke + normalizeViewportPoint(
-                                        offset = change.position,
+                .weight(1f)
+                .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                .onSizeChanged { canvasSize = it }
+                .transformable(state = transformableState, enabled = isZoomMode)
+                .pointerInput(isZoomMode) {
+                    if (!isZoomMode) {
+                        detectDragGestures(
+                            onDragStart = { offset ->
+                                currentStroke = listOf(
+                                    normalizeViewportPoint(
+                                        offset = offset,
                                         canvasSize = currentCanvasSize,
                                         scale = currentZoomScale,
                                         offsetX = currentZoomOffsetX,
-                                        offsetY = currentZoomOffsetY
+                                        offsetY = currentZoomOffsetY,
+                                        pdfOrigin = currentPdfOrigin,
+                                        pdfDisplaySize = currentPdfSize
                                     )
-                                },
-                                onDragEnd = {
-                                    if (currentStroke.isNotEmpty()) {
-                                        val snappedRects = if (isSnapMode) {
-                                            snapStrokeToTextLines(
-                                                stroke = currentStroke,
-                                                textLines = textLines.filter {
-                                                    it.pageIndex == currentSelectedPageIndex
-                                                }
-                                            )
-                                        } else {
-                                            emptyList()
-                                        }
-                                        if (snappedRects.isNotEmpty()) {
-                                            allRects = allRects + snappedRects
-                                        } else {
-                                            allStrokes = allStrokes + HighlightStroke(
-                                                points = currentStroke,
-                                                pageIndex = currentSelectedPageIndex,
-                                                strokeWidthFraction = currentSelectedWidthFraction
-                                            )
-                                        }
-                                        currentStroke = emptyList()
+                                )
+                            },
+                            onDrag = { change, _ ->
+                                change.consume()
+                                currentStroke = currentStroke + normalizeViewportPoint(
+                                    offset = change.position,
+                                    canvasSize = currentCanvasSize,
+                                    scale = currentZoomScale,
+                                    offsetX = currentZoomOffsetX,
+                                    offsetY = currentZoomOffsetY,
+                                    pdfOrigin = currentPdfOrigin,
+                                    pdfDisplaySize = currentPdfSize
+                                )
+                            },
+                            onDragEnd = {
+                                if (currentStroke.isNotEmpty()) {
+                                    val snappedRects = if (isSnapMode) {
+                                        snapStrokeToTextLines(
+                                            stroke = currentStroke,
+                                            textLines = textLines.filter {
+                                                it.pageIndex == currentSelectedPageIndex
+                                            }
+                                        )
+                                    } else {
+                                        emptyList()
                                     }
-                                },
-                                onDragCancel = {
+                                    if (snappedRects.isNotEmpty()) {
+                                        allRects = allRects + snappedRects
+                                    } else {
+                                        allStrokes = allStrokes + HighlightStroke(
+                                            points = currentStroke,
+                                            pageIndex = currentSelectedPageIndex,
+                                            strokeWidthFraction = currentSelectedWidthFraction
+                                        )
+                                    }
                                     currentStroke = emptyList()
                                 }
-                            )
-                        }
+                            },
+                            onDragCancel = {
+                                currentStroke = emptyList()
+                            }
+                        )
+                    }
+                }
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        scaleX = zoomScale
+                        scaleY = zoomScale
+                        translationX = zoomOffsetX
+                        translationY = zoomOffsetY
                     }
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            scaleX = zoomScale
-                            scaleY = zoomScale
-                            translationX = zoomOffsetX
-                            translationY = zoomOffsetY
-                        }
-                ) {
-                    if (bitmap != null) {
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = null,
-                            contentScale = ContentScale.FillBounds,
-                            modifier = Modifier.fillMaxSize()
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val pdX = pdfInCanvasOrigin.x
+                    val pdY = pdfInCanvasOrigin.y
+                    val pdW = pdfInCanvasSize.width.coerceAtLeast(1f)
+                    val pdH = pdfInCanvasSize.height.coerceAtLeast(1f)
+
+                    val allForPage = pageStrokesForDisplay + if (currentStroke.isNotEmpty()) {
+                        listOf(
+                            HighlightStroke(
+                                points = currentStroke,
+                                pageIndex = selectedPageIndex,
+                                strokeWidthFraction = selectedWidthFraction
+                            )
                         )
                     } else {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.White),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
+                        emptyList()
                     }
 
-                    Canvas(modifier = Modifier.fillMaxSize()) {
-                        val allForPage = pageStrokesForDisplay + if (currentStroke.isNotEmpty()) {
-                            listOf(
-                                HighlightStroke(
-                                    points = currentStroke,
-                                    pageIndex = selectedPageIndex,
-                                    strokeWidthFraction = selectedWidthFraction
-                                )
+                    pageRectsForDisplay.forEach { rect ->
+                        drawRect(
+                            color = highlightRectYellow,
+                            topLeft = Offset(pdX + rect.left * pdW, pdY + rect.top * pdH),
+                            size = Size(
+                                width = (rect.right - rect.left) * pdW,
+                                height = (rect.bottom - rect.top) * pdH
                             )
-                        } else {
-                            emptyList()
-                        }
+                        )
+                    }
 
-                        pageRectsForDisplay.forEach { rect ->
-                            drawRect(
-                                color = highlightRectYellow,
-                                topLeft = Offset(rect.left * size.width, rect.top * size.height),
-                                size = Size(
-                                    width = (rect.right - rect.left) * size.width,
-                                    height = (rect.bottom - rect.top) * size.height
-                                )
+                    allForPage.forEach { stroke ->
+                        if (stroke.points.isEmpty()) return@forEach
+                        val strokeWidthPx = pdW * stroke.strokeWidthFraction.coerceIn(0.005f, 0.1f)
+                        val path = Path()
+                        val first = Offset(
+                            pdX + stroke.points.first().first * pdW,
+                            pdY + stroke.points.first().second * pdH
+                        )
+                        path.moveTo(first.x, first.y)
+                        stroke.points.drop(1).forEach { (nx, ny) ->
+                            path.lineTo(pdX + nx * pdW, pdY + ny * pdH)
+                        }
+                        drawPath(
+                            path = path,
+                            color = highlightYellow,
+                            style = Stroke(
+                                width = strokeWidthPx,
+                                cap = StrokeCap.Round,
+                                join = StrokeJoin.Round
                             )
-                        }
-
-                        allForPage.forEach { stroke ->
-                            if (stroke.points.isEmpty()) return@forEach
-                            val strokeWidthPx =
-                                size.width * stroke.strokeWidthFraction.coerceIn(0.005f, 0.1f)
-                            val path = Path()
-                            val first =
-                                denormalizePoint(stroke.points.first(), size.width, size.height)
-                            path.moveTo(first.x, first.y)
-                            stroke.points.drop(1).forEach { (nx, ny) ->
-                                val pt = denormalizePoint(Pair(nx, ny), size.width, size.height)
-                                path.lineTo(pt.x, pt.y)
-                            }
-                            drawPath(
-                                path = path,
+                        )
+                        if (stroke.points.size == 1) {
+                            drawCircle(
                                 color = highlightYellow,
-                                style = Stroke(
-                                    width = strokeWidthPx,
-                                    cap = StrokeCap.Round,
-                                    join = StrokeJoin.Round
-                                )
+                                radius = strokeWidthPx / 2f,
+                                center = first
                             )
-                            if (stroke.points.size == 1) {
-                                drawCircle(
-                                    color = highlightYellow,
-                                    radius = strokeWidthPx / 2f,
-                                    center = first
-                                )
-                            }
                         }
                     }
                 }
@@ -769,7 +778,9 @@ internal fun normalizeViewportPoint(
     canvasSize: IntSize,
     scale: Float,
     offsetX: Float,
-    offsetY: Float
+    offsetY: Float,
+    pdfOrigin: Offset = Offset.Zero,
+    pdfDisplaySize: Size = Size.Zero
 ): Pair<Float, Float> {
     val contentOffset = mapViewportOffsetToCanvasOffset(
         offset = offset,
@@ -778,7 +789,12 @@ internal fun normalizeViewportPoint(
         offsetX = offsetX,
         offsetY = offsetY
     )
-    return normalizePoint(contentOffset, canvasSize)
+    val pdW = if (pdfDisplaySize.width > 0f) pdfDisplaySize.width else canvasSize.width.toFloat()
+    val pdH = if (pdfDisplaySize.height > 0f) pdfDisplaySize.height else canvasSize.height.toFloat()
+    return Pair(
+        ((contentOffset.x - pdfOrigin.x) / pdW).coerceIn(0f, 1f),
+        ((contentOffset.y - pdfOrigin.y) / pdH).coerceIn(0f, 1f)
+    )
 }
 
 internal fun mapViewportOffsetToCanvasOffset(
@@ -802,14 +818,6 @@ internal fun mapViewportOffsetToCanvasOffset(
     )
 }
 
-private fun normalizePoint(offset: Offset, canvasSize: IntSize): Pair<Float, Float> {
-    if (canvasSize == IntSize.Zero) return Pair(0f, 0f)
-    return Pair(
-        (offset.x / canvasSize.width.toFloat()).coerceIn(0f, 1f),
-        (offset.y / canvasSize.height.toFloat()).coerceIn(0f, 1f)
-    )
-}
-
 internal fun clampPanOffset(
     canvasSize: IntSize,
     scale: Float,
@@ -825,7 +833,3 @@ internal fun clampPanOffset(
 }
 
 internal fun formatZoomScale(scale: Float): String = String.format(Locale.US, "%.1f", scale)
-
-private fun denormalizePoint(point: Pair<Float, Float>, width: Float, height: Float): Offset {
-    return Offset(point.first * width, point.second * height)
-}

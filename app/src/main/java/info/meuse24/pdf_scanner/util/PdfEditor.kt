@@ -757,9 +757,9 @@ private fun TextPosition.toNormalizedTextBox(
     if (fontSizeInPt < MIN_TEXT_FONT_SIZE_PT) return null
 
     val left = (xDirAdj / displayedWidth).coerceIn(0f, 1f)
-    val top = (yDirAdj / displayedHeight).coerceIn(0f, 1f)
+    val top = ((yDirAdj - heightDir) / displayedHeight).coerceIn(0f, 1f)
     val right = ((xDirAdj + widthDirAdj) / displayedWidth).coerceIn(0f, 1f)
-    val bottom = ((yDirAdj + heightDir) / displayedHeight).coerceIn(0f, 1f)
+    val bottom = (yDirAdj / displayedHeight).coerceIn(0f, 1f)
     if (right <= left || bottom <= top) return null
 
     return NormalizedTextBox(

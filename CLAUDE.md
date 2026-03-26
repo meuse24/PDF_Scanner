@@ -136,6 +136,7 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
                                    # removeTextLayer(): Seiten per PdfRenderer → LosslessFactory neu rendern → kein OCR-Text
                                    # removePassword(): PDDocument.load(file, "") → setAllSecurityToBeRemoved; wirft PasswordRequiredException bei echtem Benutzerpasswort
                                    # extractTextLines(file, pageIndex): PDFTextStripper/TextPosition → TextLine-Liste (Font-Filter + Zeilengruppierung)
+                                   #   Koordinaten: yDirAdj = Baseline (Screen-Y, von oben); top = yDirAdj-heightDir, bottom = yDirAdj
                                    # applyHighlight(input, outputDir, strokes, rects): Strokes + gefüllte Rects; Rects zuerst, eigenes Non-Stroking-Alpha
                                    # restrictUsage(ownerPwd, canPrint, canCopy, canEdit): AccessPermission + StandardProtectionPolicy(ownerPwd, "", ap); Suffix _Eingeschraenkt
                                    # WrongPasswordException + PasswordRequiredException als innere IOException-Subklassen

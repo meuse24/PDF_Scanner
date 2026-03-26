@@ -19,15 +19,24 @@ import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
 import com.tom_roush.pdfbox.pdmodel.graphics.image.JPEGFactory
 import com.tom_roush.pdfbox.pdmodel.graphics.image.LosslessFactory
 import com.tom_roush.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
+import com.tom_roush.pdfbox.text.PDFTextStripper
+import com.tom_roush.pdfbox.text.TextPosition
 import com.tom_roush.pdfbox.util.Matrix
+import info.meuse24.pdf_scanner.domain.usecase.HIGHLIGHT_ALPHA
+import info.meuse24.pdf_scanner.domain.usecase.HIGHLIGHT_COLOR_BLUE
+import info.meuse24.pdf_scanner.domain.usecase.HIGHLIGHT_COLOR_GREEN
+import info.meuse24.pdf_scanner.domain.usecase.HIGHLIGHT_COLOR_RED
+import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
+import info.meuse24.pdf_scanner.domain.usecase.TextLine
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.abs
 
 /**
  * Utility für PDF-Bearbeitungsoperationen: Merge, Split, Reorder.
@@ -405,6 +414,39 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
+    open fun extractTextLines(file: File, pageIndex: Int): List<TextLine> {
+        if (pageIndex < 0) return emptyList()
+
+        PDDocument.load(file).use { document ->
+            if (pageIndex >= document.numberOfPages) return emptyList()
+
+            val page = document.getPage(pageIndex)
+            val rotation = normalizeRotation(page.rotation)
+            val displayedWidth =
+                if (rotation == 90 || rotation == 270) page.mediaBox.height else page.mediaBox.width
+            val displayedHeight =
+                if (rotation == 90 || rotation == 270) page.mediaBox.width else page.mediaBox.height
+            val positions = mutableListOf<NormalizedTextBox>()
+
+            val stripper = object : PDFTextStripper() {
+                override fun writeString(text: String?, textPositions: MutableList<TextPosition>?) {
+                    textPositions.orEmpty().forEach { position ->
+                        position.toNormalizedTextBox(
+                            displayedWidth = displayedWidth,
+                            displayedHeight = displayedHeight
+                        )?.let(positions::add)
+                    }
+                }
+            }
+            stripper.startPage = pageIndex + 1
+            stripper.endPage = pageIndex + 1
+            stripper.sortByPosition = true
+            stripper.getText(document)
+
+            return mergeTextBoxesToLines(positions, pageIndex)
+        }
+    }
+
     open fun applySignatureStamp(
         input: File,
         outputDir: File,
@@ -436,29 +478,73 @@ open class PdfEditor @Inject constructor() {
     open fun applyHighlight(
         input: File,
         outputDir: File,
-        strokes: List<HighlightStroke>
+        strokes: List<HighlightStroke>,
+        rects: List<HighlightRect> = emptyList()
     ): File {
-        require(strokes.isNotEmpty()) { "Mindestens ein Strich erforderlich" }
+        require(strokes.isNotEmpty() || rects.isNotEmpty()) {
+            "Mindestens eine Markierung erforderlich"
+        }
         return writeDerivedPdf(input, outputDir, "_Markiert", "Highlight") { source, result ->
-            val gsHighlight = PDExtendedGraphicsState().apply {
-                strokingAlphaConstant = 0.4f
+            val gsStrokeHighlight = PDExtendedGraphicsState().apply {
+                strokingAlphaConstant = HIGHLIGHT_ALPHA
+            }
+            val gsRectHighlight = PDExtendedGraphicsState().apply {
+                nonStrokingAlphaConstant = HIGHLIGHT_RECT_ALPHA
             }
             repeat(source.numberOfPages) { pageIdx ->
                 val page = result.importPage(source.getPage(pageIdx))
                 val pageStrokes = strokes.filter { it.pageIndex == pageIdx }
-                if (pageStrokes.isNotEmpty()) {
-                    val pageWidth  = page.mediaBox.width
+                val pageRects = rects.filter { it.pageIndex == pageIdx }
+                if (pageStrokes.isNotEmpty() || pageRects.isNotEmpty()) {
+                    val pageWidth = page.mediaBox.width
                     val pageHeight = page.mediaBox.height
-                    val rotation   = normalizeRotation(page.rotation)
-                    // Bei 90°/270° ist die angezeigte Breite die kanonische Höhe
+                    val rotation = normalizeRotation(page.rotation)
                     val displayedWidth = if (rotation == 90 || rotation == 270) pageHeight else pageWidth
                     PDPageContentStream(
                         result, page,
                         PDPageContentStream.AppendMode.APPEND,
                         true, true
                     ).use { cs ->
-                        cs.setGraphicsStateParameters(gsHighlight)
-                        cs.setStrokingColor(255, 220, 0)
+                        if (pageRects.isNotEmpty()) {
+                            cs.setGraphicsStateParameters(gsRectHighlight)
+                            cs.setNonStrokingColor(
+                                HIGHLIGHT_COLOR_RED,
+                                HIGHLIGHT_COLOR_GREEN,
+                                HIGHLIGHT_COLOR_BLUE
+                            )
+                            pageRects.forEach { rect ->
+                                val topLeft = mapDisplayToPdfCoord(
+                                    rect.left,
+                                    rect.top,
+                                    pageWidth,
+                                    pageHeight,
+                                    rotation
+                                )
+                                val bottomRight = mapDisplayToPdfCoord(
+                                    rect.right,
+                                    rect.bottom,
+                                    pageWidth,
+                                    pageHeight,
+                                    rotation
+                                )
+                                val rectLeft = minOf(topLeft.first, bottomRight.first)
+                                val rectBottom = minOf(topLeft.second, bottomRight.second)
+                                cs.addRect(
+                                    rectLeft,
+                                    rectBottom,
+                                    abs(bottomRight.first - topLeft.first),
+                                    abs(bottomRight.second - topLeft.second)
+                                )
+                                cs.fill()
+                            }
+                        }
+
+                        cs.setGraphicsStateParameters(gsStrokeHighlight)
+                        cs.setStrokingColor(
+                            HIGHLIGHT_COLOR_RED,
+                            HIGHLIGHT_COLOR_GREEN,
+                            HIGHLIGHT_COLOR_BLUE
+                        )
                         pageStrokes.forEach { stroke ->
                             val strokeWidthPt =
                                 (displayedWidth * stroke.strokeWidthFraction).coerceIn(3f, 36f)
@@ -609,6 +695,79 @@ internal fun mapDisplayToPdfCoord(
     180 -> (1f - nx) * pageWidth to (1f - ny) * pageHeight
     270 -> (1f - ny) * pageWidth to (1f - nx) * pageHeight
     else -> nx * pageWidth to (1f - ny) * pageHeight  // R=0
+}
+
+private const val MIN_TEXT_FONT_SIZE_PT = 4f
+private const val LINE_VERTICAL_MERGE_FACTOR = 0.6f
+private const val HIGHLIGHT_RECT_ALPHA = 0.3f
+
+internal data class NormalizedTextBox(
+    val left: Float,
+    val top: Float,
+    val right: Float,
+    val bottom: Float
+) {
+    val centerY: Float get() = (top + bottom) / 2f
+    val height: Float get() = bottom - top
+}
+
+internal fun mergeTextBoxesToLines(
+    boxes: List<NormalizedTextBox>,
+    pageIndex: Int
+): List<TextLine> {
+    if (boxes.isEmpty()) return emptyList()
+
+    val sorted = boxes.sortedWith(compareBy<NormalizedTextBox> { it.centerY }.thenBy { it.left })
+    val groups = mutableListOf<MutableList<NormalizedTextBox>>()
+    var currentGroup = mutableListOf(sorted.first())
+    var currentCenterY = sorted.first().centerY
+    var currentHeight = sorted.first().height
+
+    sorted.drop(1).forEach { box ->
+        val tolerance = maxOf(currentHeight, box.height) * LINE_VERTICAL_MERGE_FACTOR
+        if (abs(box.centerY - currentCenterY) <= tolerance) {
+            currentGroup += box
+            currentCenterY = currentGroup.map { it.centerY }.average().toFloat()
+            currentHeight = currentGroup.maxOf { it.height }
+        } else {
+            groups += currentGroup
+            currentGroup = mutableListOf(box)
+            currentCenterY = box.centerY
+            currentHeight = box.height
+        }
+    }
+    groups += currentGroup
+
+    return groups.map { lineBoxes ->
+        TextLine(
+            left = lineBoxes.minOf { it.left },
+            top = lineBoxes.minOf { it.top },
+            right = lineBoxes.maxOf { it.right },
+            bottom = lineBoxes.maxOf { it.bottom },
+            pageIndex = pageIndex
+        )
+    }.sortedBy { it.top }
+}
+
+private fun TextPosition.toNormalizedTextBox(
+    displayedWidth: Float,
+    displayedHeight: Float
+): NormalizedTextBox? {
+    if (displayedWidth <= 0f || displayedHeight <= 0f) return null
+    if (fontSizeInPt < MIN_TEXT_FONT_SIZE_PT) return null
+
+    val left = (xDirAdj / displayedWidth).coerceIn(0f, 1f)
+    val top = (yDirAdj / displayedHeight).coerceIn(0f, 1f)
+    val right = ((xDirAdj + widthDirAdj) / displayedWidth).coerceIn(0f, 1f)
+    val bottom = ((yDirAdj + heightDir) / displayedHeight).coerceIn(0f, 1f)
+    if (right <= left || bottom <= top) return null
+
+    return NormalizedTextBox(
+        left = left,
+        top = top,
+        right = right,
+        bottom = bottom
+    )
 }
 
 private inline fun PdfEditor.editPdf(

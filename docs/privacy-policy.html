@@ -230,7 +230,7 @@
                 </div>
                 <div class="card">
                     <strong>Last updated</strong>
-                    March 22, 2026
+                    March 26, 2026
                 </div>
             </div>
         </div>
@@ -255,7 +255,7 @@
                 </div>
                 <div class="card">
                     <strong>Stand</strong>
-                    22. Maerz 2026
+                    26. Maerz 2026
                 </div>
             </div>
         </div>
@@ -280,6 +280,11 @@
                 The optional OCR (text extraction) feature uses <strong>ML Kit Text Recognition</strong>,
                 which runs entirely on-device. No document content or extracted text is transmitted
                 to any server.
+            </p>
+            <p>
+                If the user creates a searchable PDF, the app may store the extracted OCR text and
+                automatically derived tags locally in its database so the archive search and on-device
+                auto-tagging work.
             </p>
             <p>
                 The app uses the <strong>DM Sans</strong> font via the <strong>Google Fonts API</strong>,
@@ -311,6 +316,11 @@
                 an Server uebertragen.
             </p>
             <p>
+                Wenn der Nutzer eine durchsuchbare PDF erstellt, kann die App den erkannten OCR-Text
+                sowie automatisch abgeleitete Tags lokal in ihrer Datenbank speichern, damit
+                Archivsuche und Auto-Tagging auf dem Geraet funktionieren.
+            </p>
+            <p>
                 Die App verwendet die Schriftart <strong>DM Sans</strong> ueber die
                 <strong>Google Fonts API</strong>, die ueber Google Play Services bereitgestellt wird.
                 Die App selbst stellt keine direkten Internetanfragen fuer Schriftarten.
@@ -334,6 +344,8 @@
                 <li>creation timestamp</li>
                 <li>page count</li>
                 <li>file size</li>
+                <li>optional extracted OCR text for searchable PDFs</li>
+                <li>optional automatically derived local tags</li>
             </ul>
             <p>
                 This information is stored locally in app storage and in a local database on the device
@@ -341,8 +353,9 @@
             </p>
             <p>
                 When the OCR feature is used, the document image is processed locally by ML Kit Text
-                Recognition. The extracted text is displayed on-screen only and is never stored
-                persistently by the app or transmitted to any server.
+                Recognition. If the user creates a searchable PDF, the extracted text and derived tags
+                may be stored locally in the app database for archive search and auto-tagging. They are
+                not transmitted to any server.
             </p>
         </div>
         <div data-lang-content="de">
@@ -356,6 +369,8 @@
                 <li>Erstellungszeitpunkt</li>
                 <li>Seitenanzahl</li>
                 <li>Dateigroesse</li>
+                <li>optional erkannter OCR-Text bei durchsuchbaren PDFs</li>
+                <li>optional automatisch abgeleitete lokale Tags</li>
             </ul>
             <p>
                 Diese Informationen werden lokal im App-Speicher und in einer lokalen Datenbank auf dem
@@ -364,8 +379,9 @@
             </p>
             <p>
                 Bei Verwendung der OCR-Funktion wird das Dokumentbild lokal durch ML Kit Text Recognition
-                verarbeitet. Der erkannte Text wird nur auf dem Bildschirm angezeigt und von der App
-                weder dauerhaft gespeichert noch an Server uebertragen.
+                verarbeitet. Wenn der Nutzer eine durchsuchbare PDF erstellt, kann der erkannte Text
+                zusammen mit abgeleiteten Tags lokal in der App-Datenbank fuer Archivsuche und
+                Auto-Tagging gespeichert werden. An Server wird er nicht uebertragen.
             </p>
         </div>
     </section>
@@ -378,6 +394,10 @@
                 Metadata is additionally stored in a local Room database.
             </p>
             <p>
+                The local database may also contain OCR text and automatically derived tags for
+                searchable PDFs.
+            </p>
+            <p>
                 In the current implementation, scanned PDFs and the local database are also explicitly
                 excluded from Android cloud backups and device-to-device transfer.
             </p>
@@ -387,6 +407,10 @@
             <p>
                 Gescannte PDFs und Vorschaubilder werden im app-internen Speicher gespeichert.
                 Zusaetzlich speichert die App Metadaten in einer lokalen Room-Datenbank.
+            </p>
+            <p>
+                Die lokale Datenbank kann bei durchsuchbaren PDFs ausserdem OCR-Text und automatisch
+                abgeleitete Tags enthalten.
             </p>
             <p>
                 Nach der aktuellen Implementierung sind die gescannten PDFs und die lokale Datenbank
@@ -445,8 +469,9 @@
             <p>
                 The app includes an optional <strong>text extraction (OCR)</strong> feature powered by
                 <strong>ML Kit Text Recognition</strong>. All text recognition runs entirely on-device
-                using a bundled Latin model. Document images and extracted text are never transmitted
-                to Google servers or any other external service.
+                using a bundled Latin model. Document images are never transmitted to Google servers or
+                any other external service. Extracted text can optionally be stored locally in the app
+                database when the user creates a searchable PDF.
             </p>
             <p>
                 The same ML Kit update and metrics conditions described above also apply to this component.
@@ -496,8 +521,9 @@
                 Die App bietet eine optionale <strong>Texterkennungs-Funktion (OCR)</strong> auf Basis
                 von <strong>ML Kit Text Recognition</strong>. Die gesamte Texterkennung laeuft
                 vollstaendig auf dem Geraet unter Verwendung eines mitgelieferten Lateinmodells.
-                Dokumentbilder und erkannter Text werden weder an Google-Server noch an sonstige
-                externe Dienste uebertragen.
+                Dokumentbilder werden weder an Google-Server noch an sonstige externe Dienste uebertragen.
+                Erkannter Text kann optional lokal in der App-Datenbank gespeichert werden, wenn der
+                Nutzer eine durchsuchbare PDF erstellt.
             </p>
             <p>
                 Die oben beschriebenen ML-Kit-Bedingungen fuer Updates und Metriken gelten gleichermassen
@@ -642,8 +668,8 @@
     </section>
 
     <footer>
-        <span data-lang-content="en">M24 PDF-Scanner Privacy Policy, last updated March 22, 2026.</span>
-        <span data-lang-content="de">M24 PDF-Scanner Datenschutzerklaerung, Stand 22. Maerz 2026.</span>
+        <span data-lang-content="en">M24 PDF-Scanner Privacy Policy, last updated March 26, 2026.</span>
+        <span data-lang-content="de">M24 PDF-Scanner Datenschutzerklaerung, Stand 26. Maerz 2026.</span>
     </footer>
 </main>
 
@@ -708,3 +734,5 @@
 </script>
 </body>
 </html>
+
+

@@ -83,6 +83,40 @@ class PdfEditorTest {
         assertEquals(listOf(0, 2), normalized)
     }
 
+    @Test
+    fun `mergeTextBoxesToLines fasst boxes derselben zeile zusammen`() {
+        val lines = mergeTextBoxesToLines(
+            boxes = listOf(
+                NormalizedTextBox(left = 0.10f, top = 0.10f, right = 0.20f, bottom = 0.18f),
+                NormalizedTextBox(left = 0.22f, top = 0.11f, right = 0.35f, bottom = 0.19f),
+                NormalizedTextBox(left = 0.40f, top = 0.10f, right = 0.52f, bottom = 0.18f)
+            ),
+            pageIndex = 2
+        )
+
+        assertEquals(1, lines.size)
+        assertEquals(0.10f, lines.single().left, 0.001f)
+        assertEquals(0.10f, lines.single().top, 0.001f)
+        assertEquals(0.52f, lines.single().right, 0.001f)
+        assertEquals(0.19f, lines.single().bottom, 0.001f)
+        assertEquals(2, lines.single().pageIndex)
+    }
+
+    @Test
+    fun `mergeTextBoxesToLines trennt boxes auf unterschiedlichen zeilen`() {
+        val lines = mergeTextBoxesToLines(
+            boxes = listOf(
+                NormalizedTextBox(left = 0.10f, top = 0.10f, right = 0.20f, bottom = 0.18f),
+                NormalizedTextBox(left = 0.10f, top = 0.30f, right = 0.25f, bottom = 0.38f)
+            ),
+            pageIndex = 0
+        )
+
+        assertEquals(2, lines.size)
+        assertEquals(0.10f, lines[0].top, 0.001f)
+        assertEquals(0.30f, lines[1].top, 0.001f)
+    }
+
     // ── resolveUniqueFilename ────────────────────────────────────────────────
 
     @Test

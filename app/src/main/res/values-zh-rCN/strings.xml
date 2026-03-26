@@ -76,7 +76,7 @@
     <string name="help_item_delete">使用删除可将选中的 PDF 从文件库中移除。应用也会删除已保存的文件和缩略图。</string>
     <string name="help_section_ocr">OCR 与文本提取</string>
     <string name="help_item_extract_text">文本提取（OCR）会读取全部页面，并在面板中显示识别出的文本，你可以复制或分享这些内容。</string>
-    <string name="help_item_make_searchable">设为可搜索会为 PDF 添加一层不可见文本层，这样就能在 PDF 查看器中搜索文本。</string>
+    <string name="help_item_make_searchable">设为可搜索会为 PDF 添加不可见文本层，将提取出的 OCR 文本本地保存用于档案搜索，并为文档启用自动标签。</string>
     <string name="help_item_ocr_language">在执行 OCR 或设为可搜索之前，请先选择文档语言。印地语模型会在首次使用时下载。</string>
     <string name="help_section_navigation">导航</string>
     <string name="help_nav_text">通过左上角的汉堡菜单可访问文件库、扫描仪、帮助和关于页面。</string>
@@ -97,22 +97,24 @@
     <string name="info_label_async">异步处理</string>
     <string name="info_label_platform">平台</string>
     <string name="info_label_ocr_languages">OCR 支持语言</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR（离线）+ HI（首次使用时下载）</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR（离线）+ ZH · JA · HI（首次使用时下载）</string>
     <string name="info_section_libraries">依赖库</string>
     <string name="info_section_source">源代码</string>
     <string name="info_repository_label">GitHub 仓库</string>
     <string name="info_section_privacy">隐私</string>
-    <string name="info_privacy_body">本应用不含广告、不收集任何数据，也没有订阅模式。不会请求相机、联系人或网络权限。所有扫描文件仅存储在您的设备本地，永不离开设备。</string>
+    <string name="info_section_features">功能</string>
+    <string name="info_features_body">本应用可将文档扫描为 PDF，在设备本地执行 OCR，并将可搜索 OCR 文本与自动标签保存在本地以供档案搜索，同时提供页面编辑、保护、签名、高亮以及针对可搜索 PDF 的文本对齐吸附功能。</string>
+    <string name="info_privacy_body">无广告、无需账号、没有自有后端。PDF、缩略图、OCR 文本和自动标签都会保留在您设备上的应用存储中。分享和导出仅在您主动触发时发生。扫描、OCR 以及模型和字体下载依赖 Google Play 服务；本应用不会上传文档内容。</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">本地</string>
     <string name="privacy_keyword_2">离线</string>
     <string name="privacy_keyword_3">安全</string>
     <string name="privacy_keyword_4">私密</string>
-    <string name="privacy_point_1">本应用不含广告，所有扫描文件仅存储在您的设备本地。</string>
-    <string name="privacy_point_2">不会将任何文档或内容主动传输至外部服务器。</string>
-    <string name="privacy_point_3">扫描功能使用 Google Play 服务。可能会传输技术诊断数据（例如用于错误分析）。您扫描文档的内容不会被发送。</string>
-    <string name="privacy_point_4">应用本身不收集任何个人数据，也不需要自身的网络权限。</string>
-    <string name="privacy_footer">更新时间：2026年3月</string>
+    <string name="privacy_point_1">本应用会将 PDF、预览图、可搜索 OCR 文本和自动标签保存在您的设备本地。</string>
+    <string name="privacy_point_2">不会自动上传任何文档或内容。只有在您明确触发时才会进行分享或导出。</string>
+    <string name="privacy_point_3">扫描和 OCR 功能使用 Google Play 服务。为进行错误分析，可能会传输技术诊断数据。中文、日文和印地语语言模型以及可下载字体，可能会在首次使用时通过 Play Services 获取；本应用不会发送您的文档内容。</string>
+    <string name="privacy_point_4">应用本身不收集个人数据，不使用自有分析服务，也不请求自有网络权限。</string>
+    <string name="privacy_footer">更新时间：2026年3月26日</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">提取文本</string>
@@ -128,7 +130,7 @@
     <string name="info_section_credits">致谢</string>
     <string name="info_credits_intro">本应用在以下 AI 工具的协助下开发完成：</string>
     <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
-    <string name="info_credits_detail">架构设计、规划、实现、图标设计和文档均借助 AI 工具完成。</string>
+    <string name="info_credits_detail">架构设计、规划、实现、图标设计、翻译审校和文档均借助 AI 工具完成。</string>
 
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">可搜索 PDF</string>
@@ -309,7 +311,7 @@
     <string name="remove_text_layer_error">删除文字层时出错</string>
     <string name="remove_text_layer_not_searchable">此 PDF 没有文字层</string>
     <string name="action_remove_text_layer">删除文字层</string>
-    <string name="help_item_remove_text_layer">选择"删除文字层"，可为可搜索的 PDF 创建一个不含隐藏 OCR 文字层的副本。此选项仅适用于可搜索的 PDF。</string>
+    <string name="help_item_remove_text_layer">选择“删除文字层”可创建一个不含隐藏 OCR 文字层的可搜索 PDF 副本。生成后的副本将不再可搜索，也不再为搜索或自动标签提供 OCR 文本。</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>
@@ -332,9 +334,9 @@
     <string name="action_highlight_pdf">高亮 PDF</string>
     <string name="highlight_screen_title">高亮 PDF</string>
     <string name="highlight_description">用黄色荧光笔标记文本</string>
-    <string name="highlight_details">拖动可用黄色高亮区域。切换到移动/缩放模式后，可双指缩放并拖动页面，然后切回绘制模式进行标记。放大后，页面上方会显示重置按钮，可恢复整页视图。在页面之间切换可标记多页。将创建新的高亮 PDF 副本。</string>
+    <string name="highlight_details">拖动可用黄色高亮区域。切换到移动/缩放模式后，可缩放并拖动页面，然后切回绘制模式进行标记。在页面之间切换可标记多页。将创建新的高亮 PDF 副本。</string>
     <string name="highlight_apply">保存高亮</string>
-    <string name="highlight_clear_page">清除页面</string>
+    <string name="highlight_clear_page">页面</string>
     <string name="highlight_hint">拖动文本以标记。</string>
     <string name="highlight_target_page">第 %1$d 页，共 %2$d 页</string>
     <string name="highlight_success">已创建高亮 PDF：%1$s</string>
@@ -345,10 +347,13 @@
     <string name="highlight_stroke_thick">粗</string>
     <string name="highlight_stroke_width">标记宽度</string>
     <string name="highlight_mode_draw">绘制</string>
+    <string name="highlight_mode_snap">对齐文本</string>
     <string name="highlight_mode_pan">移动/缩放</string>
+    <string name="highlight_undo_last">撤销</string>
+    <string name="highlight_reset_all">全部</string>
     <string name="highlight_zoom_reset">%1$s× – 重置</string>
     <string name="highlight_zoom_reset_button">重置</string>
-    <string name="help_item_highlight_pdf">选择高亮 PDF，在文档上绘制黄色高亮。使用移动/缩放模式可双指缩放并拖动页面，然后切回绘制模式标记文本。放大后，可使用页面上方的重置按钮恢复整页视图。在页面间导航以添加多页高亮，然后保存为新的 PDF 副本。</string>
+    <string name="help_item_highlight_pdf">选择高亮 PDF，可在文档上绘制黄色高亮。可搜索 PDF 还支持“对齐文本”，可将笔画吸附到检测到的文本行。移动/缩放可放大并移动页面；如果没有匹配到文本行，应用会保留普通手绘高亮。</string>
     <string name="search_placeholder">搜索文档…</string>
     <string name="search_no_results">"%1$s"无结果</string>
     <string name="cd_search_clear">清除搜索</string>
@@ -359,8 +364,9 @@
     <string name="tag_bank">银行</string>
     <string name="tag_delivery">送货单</string>
     <string name="help_section_search">搜索与自动标签</string>
-    <string name="help_item_search">点击搜索栏，通过文件名或OCR文本查找文档，支持前缀匹配。</string>
-    <string name="help_item_auto_tag">将文档设为可搜索时，应用会根据关键词自动分配发票、合同等标签，显示在文件名下方。</string>
+    <string name="help_item_search">点击顶部搜索栏，可按文件名或已保存的 OCR 文本查找文档。搜索会在您的设备本地执行，并支持前缀匹配，因此输入“Rec”也可以找到“Receipt”。</string>
+    <string name="help_item_auto_tag">将文档设为可搜索时，应用会根据 OCR 文本和关键词在本地自动分配发票、合同等标签，并显示在文件名下方。</string>
     <string name="privacy_keyword_5">本地智能</string>
-    <string name="privacy_point_5">自动标签和全文搜索完全在您的设备上通过关键词分析和OCR文本层运行，不会将任何文档内容传输到云端进行分类。</string>
+    <string name="privacy_point_5">全文搜索、自动标签、可搜索 PDF 生成以及文本对齐高亮都会基于 OCR 文本和 PDF 元数据在您的设备本地运行。</string>
 </resources>
+

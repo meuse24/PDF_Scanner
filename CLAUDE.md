@@ -40,8 +40,10 @@ domain/
     ├── RemoveTextLayerUseCase.kt  # Seiten per PdfRenderer rendern → LosslessFactory → isSearchable=false
     ├── RemovePasswordUseCase.kt   # removePassword() aufrufen → isSearchable erhalten
     ├── RestrictUsageUseCase.kt    # restrictUsage() aufrufen → isSearchable=false
-    ├── HighlightPdfUseCase.kt     # applyHighlight() aufrufen + Thumbnail + DB-Insert → Suffix _Markiert
-    ├── HighlightStroke.kt         # data class: points List<Pair<Float,Float>> + pageIndex + strokeWidthFraction
+    ├── HighlightPdfUseCase.kt     # applyHighlight() für Strokes + Rects + Thumbnail + DB-Insert → Suffix _Markiert
+    ├── HighlightStroke.kt         # data class: Freihand-Markierung mit points + pageIndex + strokeWidthFraction
+    ├── HighlightRect.kt           # data class: textausgerichtetes Highlight-Rechteck (left/top/right/bottom/pageIndex)
+    ├── TextLine.kt                # data class: extrahierte Textzeile in normalisierten Anzeige-Koordinaten
     ├── AutoTagUseCase.kt          # On-Device-Tagging: Keyword-Map + IBAN-Regex → kommaseparierte Tag-Keys (invoice,contract,…)
     └── PageEditUtils.kt           # thumbnailFile(): gemeinsame Hilfsfunktion für Seitenbearbeitungs-UseCases
 
@@ -77,7 +79,7 @@ ui/
 │   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Highlight/RemoveTextLayer/RemovePassword/RestrictUsage
 │   │                              # Lädt ScanRecord per scanId, führt Workflows aus,
 │   │                              # mappt Fehler über WorkflowErrorMapper; _editLoading/_error/_success
-│   │                              # loadHighlightPage(pageIndex): lädt Bitmap → _highlightPageBitmap für HighlightScreen
+│   │                              # Highlight: _highlightPageBitmap + _textLines; seitenweiser TextLine-Cache für Snap-Modus
 │   └── DocumentActionScreens.kt   # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen, RemovePasswordScreen, RemoveTextLayerScreen, RestrictUsageScreen
 ├── pageedit/
 │   ├── PageSelectionViewModel.kt  # Seiten-Thumbnails, Auswahl, saveAsCopy + Rotate/Delete/Extract/Duplicate-Workflows
@@ -93,10 +95,12 @@ ui/
 ├── highlight/
 │   └── HighlightScreen.kt         # Gelber Marker-Workflow: PDF-Seite + Canvas-Overlay; Seiten-/Breiten-Auswahl
 │                                  # Zoom/Pan via transformable; Zeichnen mappt Touchpunkte invers aus dem Viewport in Dokumentkoordinaten
-│                                  # Zoom-UI: Badge mit Zoomfaktor + separater "Zurücksetzen"-Button in einer Zeile
+│                                  # Für durchsuchbare PDFs: optionaler Snap-Chip "Text ausrichten" → Strich wird zu HighlightRect(s)
+│                                  # Undo/Clear/Reset behandeln Strokes + Rects; Fallback auf Freihand wenn keine Textzeile getroffen wird
 ├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
-├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig
-└── privacy/PrivacyScreen.kt       # 5 Icon-Karten (PhoneAndroid, CloudOff, Shield, Lock, Psychology)
+│                                  # Hilfe-Texte decken Suche/OCR/Auto-Tags/Highlight-Snap/Privacy-Verhalten ab
+├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig; zusätzliche Karten für Funktionen + Privacy
+└── privacy/PrivacyScreen.kt       # Privacy-Übersicht; Texte betonen lokale Speicherung, OCR-Text, Auto-Tags und Play-Services-Abhängigkeit
 
 data/
 ├── local/
@@ -116,19 +120,21 @@ domain/workflow/RemovePasswordWorkflow.kt   # Prüft: Datei existiert + isPdfEnc
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
 domain/workflow/RestrictUsageWorkflow.kt    # Prüft: Datei existiert → RestrictUsageUseCase
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
-domain/workflow/HighlightPdfWorkflow.kt     # Prüft: Datei existiert + strokes nicht leer + nicht verschlüsselt → HighlightPdfUseCase
+domain/workflow/HighlightPdfWorkflow.kt     # Prüft: Datei existiert + (strokes oder rects) + nicht verschlüsselt → HighlightPdfUseCase
+docs/privacy-policy.html            # Veröffentlichtes Privacy-Dokument (EN/DE) muss mit In-App-Privacy konsistent bleiben
 di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3 + MIGRATION_3_4 + MIGRATION_4_5
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
 util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
 util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, onProgress): String — Phase1 PdfRenderer+OCR, Phase2 PdfBox
-                                   # Rückgabe: extrahierter Volltext (für AutoTagging + DB-Speicherung)
+                                   # Rückgabe: extrahierter Volltext (für AutoTagging + lokale DB-Speicherung)
                                    # ZH/JA NICHT als searchable PDF unterstützt (TTC/OTC-Fonts können nicht eingebettet werden)
 util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePages, deletePages, getPageCount, generateThumbnail
                                    # appendTextWatermark nutzt calculateWatermarkFontSize() (internal, testbar)
                                    # buildRanges() + resolveUniqueFilename() als top-level internal (JVM-testbar)
                                    # removeTextLayer(): Seiten per PdfRenderer → LosslessFactory neu rendern → kein OCR-Text
                                    # removePassword(): PDDocument.load(file, "") → setAllSecurityToBeRemoved; wirft PasswordRequiredException bei echtem Benutzerpasswort
-                                   # applyHighlight(input, outputDir, strokes): normalisierte Strokes → PDPageContentStream (APPEND) mit strokingAlpha=0.4; Suffix _Markiert
+                                   # extractTextLines(file, pageIndex): PDFTextStripper/TextPosition → TextLine-Liste (Font-Filter + Zeilengruppierung)
+                                   # applyHighlight(input, outputDir, strokes, rects): Strokes + gefüllte Rects; Rects zuerst, eigenes Non-Stroking-Alpha
                                    # restrictUsage(ownerPwd, canPrint, canCopy, canEdit): AccessPermission + StandardProtectionPolicy(ownerPwd, "", ap); Suffix _Eingeschraenkt
                                    # WrongPasswordException + PasswordRequiredException als innere IOException-Subklassen
 ```
@@ -138,6 +144,7 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
 - **Schichtenregel:** ViewModel koordiniert State + ruft Use Cases/Workflows auf → Use Cases verarbeiten → Repository persistiert
 - **Keine Literal-Strings im Kotlin-Code** — ausschließlich `context.getString(R.string.*)` oder `stringResource()`
 - **Neue Strings** immer in alle 10 Locale-Dateien eintragen (values/, -de, -es, -fr, -pt, -zh-rCN, -ar, -ja, -ru, -hi)
+- **Privacy-/Help-/Info-Texte** immer auch gegen `docs/privacy-policy.html` und reale Datenflüsse prüfen
 - **Fehler in HomeScreen** → `viewModel.reportError(String)` → `_error: StateFlow` → AlertDialog
 - **Fehler in Edit-Screens** → eigener `_error: StateFlow<String?>` im jeweiligen ViewModel → AlertDialog im Screen
 - **Erfolg in HomeScreen** → `_success: StateFlow<String?>` → Toast + `clearSuccess()`
@@ -177,14 +184,14 @@ test/
 ├── domain/workflow/
 │   ├── *WorkflowTest.kt                    # Merge/Split/Reorder/Rotate/Delete/Extract/Duplicate
 │   ├── *WorkflowTest.kt                    # PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Searchable
-│   └── HighlightPdfWorkflowTest.kt         # leere Strokes, fehlende Datei, verschlüsselt, IO-Fehler, Erfolg (6 Tests)
+│   └── HighlightPdfWorkflowTest.kt         # leer, Rect-only, gemischt, fehlende Datei, verschlüsselt, IO-Fehler, Erfolg
 ├── ui/
 │   ├── split/SplitViewModelTest.kt         # editLoading-Guard, Success/Failure, clearError (5 Tests)
 │   ├── reorder/ReorderViewModelTest.kt     # editLoading-Guard, Success/Failure, clearError (4 Tests)
 │   ├── documentaction/DocumentEditViewModelTest.kt  # DocumentEdit-Aktionen: Loading-Guard + Success/Failure-Mapping
-│   └── highlight/HighlightScreenMathTest.kt         # clampPanOffset + inverse Zoom/Pan-Mathematik fürs Zeichnen
+│   └── highlight/HighlightScreenMathTest.kt         # clampPanOffset + inverse Zoom/Pan-Mathematik + Snap-/Rect-Hilfsfunktionen
 └── util/
-    └── PdfEditorTest.kt                    # buildRanges + resolveUniqueFilename + mapDisplayToPdfCoord
+    └── PdfEditorTest.kt                    # buildRanges + resolveUniqueFilename + mapDisplayToPdfCoord + mergeTextBoxesToLines
 ```
 
 ViewModel-Testmuster: `UnconfinedTestDispatcher` + reale Workflow-Instanzen mit Fake-`PdfEditor`-Subklassen;

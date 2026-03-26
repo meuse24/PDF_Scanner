@@ -76,7 +76,7 @@
     <string name="help_item_delete">Utilise Supprimer pour retirer des PDF sélectionnés des archives. L\'application supprime aussi le fichier enregistré et la miniature.</string>
     <string name="help_section_ocr">OCR et extraction de texte</string>
     <string name="help_item_extract_text">L\'extraction de texte (OCR) lit toutes les pages et affiche le texte reconnu dans un panneau où tu peux le copier ou le partager.</string>
-    <string name="help_item_make_searchable">Rendre consultable ajoute une couche de texte invisible au PDF afin que le texte puisse être trouvé dans les visionneurs PDF.</string>
+    <string name="help_item_make_searchable">Rendre consultable ajoute une couche de texte invisible au PDF, enregistre localement le texte OCR extrait pour la recherche dans l’archive et active les tags automatiques du document.</string>
     <string name="help_item_ocr_language">Choisis la langue du document avant l\'OCR ou Rendre consultable. Le modèle hindi est téléchargé lors de la première utilisation.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Utilise le menu hamburger (en haut à gauche) pour accéder aux Archives, au Scanner, à l\'Aide et à l\'Info.</string>
@@ -97,22 +97,24 @@
     <string name="info_label_async">Asynchronie</string>
     <string name="info_label_platform">Plateforme</string>
     <string name="info_label_ocr_languages">Langues OCR</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (hors ligne) + HI (tél. 1re utilisation)</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (hors ligne) + ZH · JA · HI (tél. 1re utilisation)</string>
     <string name="info_section_libraries">Bibliothèques</string>
     <string name="info_section_source">Code source</string>
     <string name="info_repository_label">Dépôt GitHub</string>
     <string name="info_section_privacy">Confidentialité</string>
-    <string name="info_privacy_body">Cette app ne contient aucune publicité, ne collecte aucune donnée et n\'a pas de modèle d\'abonnement. Aucune autorisation caméra, contacts ou réseau n\'est demandée. Tous les scans sont stockés exclusivement sur votre appareil et ne le quittent jamais.</string>
+    <string name="info_section_features">Fonctions</string>
+    <string name="info_features_body">L’app numérise des documents en PDF, exécute l’OCR sur l’appareil, stocke localement le texte OCR consultable et les tags automatiques pour la recherche dans l’archive, et propose l’édition de pages, la protection, les signatures, le surlignage et l’alignement au texte pour les PDF consultables.</string>
+    <string name="info_privacy_body">Pas de publicité, pas de compte et pas de backend propre. Les PDF, miniatures, texte OCR et tags automatiques restent dans le stockage de l’app sur votre appareil. Le partage et l’export n’ont lieu que lorsque vous les déclenchez. La numérisation, l’OCR et les téléchargements de modèles ou de polices dépendent de Google Play Services ; cette app ne téléverse pas le contenu de vos documents.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
     <string name="privacy_keyword_2">Hors ligne</string>
     <string name="privacy_keyword_3">Sécurisé</string>
     <string name="privacy_keyword_4">Privé</string>
-    <string name="privacy_point_1">Cette app ne contient aucune publicité et stocke tous les scans exclusivement sur votre appareil.</string>
-    <string name="privacy_point_2">Aucun document ni contenu n\'est transmis à des serveurs externes.</string>
-    <string name="privacy_point_3">Les fonctions de numérisation et d\'OCR utilisent Google Play Services. Des données de diagnostic techniques peuvent être transmises pour l\'analyse d\'erreurs. Les modèles de langue pour le chinois, le japonais et l\'hindi sont téléchargés via Play Services lors de la première utilisation — le contenu de vos documents n\'est pas envoyé.</string>
-    <string name="privacy_point_4">L\'app elle-même ne collecte aucune donnée personnelle et ne nécessite pas ses propres autorisations réseau.</string>
-    <string name="privacy_footer">Mise à jour : mars 2026</string>
+    <string name="privacy_point_1">Cette app stocke localement sur votre appareil les PDF, les aperçus, le texte OCR consultable et les tags automatiques.</string>
+    <string name="privacy_point_2">Aucun document ni contenu n’est téléversé automatiquement. Le partage ou l’export n’ont lieu que lorsque vous les déclenchez explicitement.</string>
+    <string name="privacy_point_3">Les fonctions de numérisation et d’OCR utilisent Google Play Services. Des données techniques de diagnostic peuvent être transmises pour l’analyse d’erreurs. Les modèles de langue pour le chinois, le japonais et l’hindi, ainsi que les polices téléchargeables, peuvent être récupérés via Play Services lors de la première utilisation ; le contenu de vos documents n’est pas envoyé par cette app.</string>
+    <string name="privacy_point_4">L’app ne collecte aucune donnée personnelle, n’utilise pas d’analytique propre et ne demande pas sa propre autorisation réseau.</string>
+    <string name="privacy_footer">Mise à jour : 26 mars 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Extraire le texte</string>
@@ -128,7 +130,7 @@
     <string name="info_section_credits">Crédits</string>
     <string name="info_credits_intro">Cette app a été développée avec l\'aide d\'assistants IA :</string>
     <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
-    <string name="info_credits_detail">L\'architecture, la planification, l\'implémentation, le design de l\'icône et la documentation ont été élaborés avec l\'aide de l\'IA.</string>
+    <string name="info_credits_detail">L’architecture, la planification, l’implémentation, le design de l’icône, la révision des traductions et la documentation ont été élaborés avec l’aide de l’IA.</string>
 
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">PDF consultable</string>
@@ -309,7 +311,7 @@
     <string name="remove_text_layer_error">Erreur lors de la suppression de la couche de texte</string>
     <string name="remove_text_layer_not_searchable">Ce PDF ne possède pas de couche de texte</string>
     <string name="action_remove_text_layer">Supprimer la couche de texte</string>
-    <string name="help_item_remove_text_layer">Choisissez Supprimer la couche de texte pour créer une copie d\'un PDF consultable dont la couche de texte OCR invisible est supprimée. Cette option n\'est disponible que pour les PDF consultables.</string>
+    <string name="help_item_remove_text_layer">Choisissez Supprimer la couche de texte pour créer une copie d’un PDF consultable sans la couche OCR invisible. La copie obtenue n’est plus consultable et n’alimente plus la recherche ni les tags automatiques avec du texte OCR.</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>
@@ -332,9 +334,9 @@
     <string name="action_highlight_pdf">Surligner PDF</string>
     <string name="highlight_screen_title">Surligner PDF</string>
     <string name="highlight_description">Marquez le texte avec un surligneur jaune</string>
-    <string name="highlight_details">Faites glisser sur les zones pour les surligner en jaune. Passez en mode Panoramique pour zoomer par pincement et déplacer la page, puis revenez à Dessiner pour marquer le texte. En cas de zoom, utilisez Réinitialiser au-dessus de la page pour revenir à la vue complète. Naviguez entre les pages pour en surligner plusieurs. Une nouvelle copie PDF surlignée sera créée.</string>
+    <string name="highlight_details">Faites glisser sur les zones pour les surligner en jaune. Passez en mode Panoramique pour zoomer et déplacer la page, puis revenez à Dessiner pour marquer le texte. Naviguez entre les pages pour en surligner plusieurs. Une nouvelle copie PDF surlignée sera créée.</string>
     <string name="highlight_apply">Enregistrer les surlignages</string>
-    <string name="highlight_clear_page">Effacer la page</string>
+    <string name="highlight_clear_page">Page</string>
     <string name="highlight_hint">Faites glisser sur le texte pour le marquer.</string>
     <string name="highlight_target_page">Page : %1$d sur %2$d</string>
     <string name="highlight_success">PDF surligné créé : %1$s</string>
@@ -345,10 +347,13 @@
     <string name="highlight_stroke_thick">Épais</string>
     <string name="highlight_stroke_width">Largeur du marqueur</string>
     <string name="highlight_mode_draw">Dessiner</string>
+    <string name="highlight_mode_snap">Aligner au texte</string>
     <string name="highlight_mode_pan">Panoramique</string>
+    <string name="highlight_undo_last">Annuler</string>
+    <string name="highlight_reset_all">Tout</string>
     <string name="highlight_zoom_reset">%1$s× – Réinitialiser</string>
     <string name="highlight_zoom_reset_button">Réinitialiser</string>
-    <string name="help_item_highlight_pdf">Choisissez Surligner PDF pour dessiner des surlignages jaunes sur le document. Utilisez le mode Panoramique pour zoomer par pincement et déplacer la page, puis revenez à Dessiner pour marquer le texte. En cas de zoom, utilisez Réinitialiser au-dessus de la page pour revenir à la vue complète. Naviguez entre les pages et enregistrez en tant que nouvelle copie PDF.</string>
+    <string name="help_item_highlight_pdf">Choisissez Surligner PDF pour dessiner des surlignages jaunes sur le document. Les PDF consultables proposent aussi Aligner au texte, qui aligne un tracé sur les lignes de texte détectées. Panoramique/zoom permet de déplacer et d’agrandir la page ; si aucune ligne de texte ne correspond, l’app conserve le surlignage normal à main levée.</string>
     <string name="search_placeholder">Rechercher des documents…</string>
     <string name="search_no_results">Aucun résultat pour « %1$s »</string>
     <string name="cd_search_clear">Effacer la recherche</string>
@@ -359,8 +364,9 @@
     <string name="tag_bank">Banque</string>
     <string name="tag_delivery">Bon de livraison</string>
     <string name="help_section_search">Recherche &amp; auto-tags</string>
-    <string name="help_item_search">Appuyez sur le champ de recherche pour trouver des documents par nom ou texte OCR. La recherche utilise la correspondance par préfixe.</string>
-    <string name="help_item_auto_tag">Lorsqu\'un document est rendu consultable, l\'app attribue automatiquement des tags comme Facture ou Contrat. Les tags apparaissent sous le nom du fichier.</string>
+    <string name="help_item_search">Appuyez sur le champ de recherche en haut pour trouver des documents par nom de fichier ou par texte OCR enregistré. La recherche s’exécute localement sur votre appareil et utilise une correspondance par préfixe, ainsi « Rec » peut trouver « Reçu ».</string>
+    <string name="help_item_auto_tag">Lorsqu’un document est rendu consultable, l’app attribue localement des tags comme Facture ou Contrat à partir du texte OCR et de mots-clés. Les tags apparaissent sous le nom du fichier.</string>
     <string name="privacy_keyword_5">Intelligence locale</string>
-    <string name="privacy_point_5">Le balisage automatique et la recherche plein texte s\'exécutent entièrement sur votre appareil par analyse de mots-clés et couche OCR. Aucun contenu de document n\'est transmis vers le cloud.</string>
+    <string name="privacy_point_5">La recherche plein texte, les tags automatiques, la création de PDF consultables et les surlignages alignés au texte fonctionnent localement sur votre appareil à partir du texte OCR et des métadonnées PDF.</string>
 </resources>
+

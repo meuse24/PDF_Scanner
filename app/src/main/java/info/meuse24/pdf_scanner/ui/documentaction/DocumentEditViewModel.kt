@@ -9,8 +9,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
+import info.meuse24.pdf_scanner.domain.usecase.TextLine
 import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.HighlightPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
@@ -71,16 +73,33 @@ class DocumentEditViewModel @Inject constructor(
     private val _highlightPageBitmap = MutableStateFlow<Bitmap?>(null)
     val highlightPageBitmap: StateFlow<Bitmap?> = _highlightPageBitmap.asStateFlow()
 
+    private val _textLines = MutableStateFlow<List<TextLine>>(emptyList())
+    val textLines: StateFlow<List<TextLine>> = _textLines.asStateFlow()
+
     private var highlightPageJob: Job? = null
+    private val highlightTextLineCache = mutableMapOf<Int, List<TextLine>>()
+    private var cachedHighlightFilepath: String? = null
 
     fun loadHighlightPage(pageIndex: Int) {
         val record = _record.value ?: return
+        if (cachedHighlightFilepath != record.filepath) {
+            cachedHighlightFilepath = record.filepath
+            highlightTextLineCache.clear()
+        }
         highlightPageJob?.cancel()
         _highlightPageBitmap.value = null
+        _textLines.value = emptyList()
         highlightPageJob = viewModelScope.launch(Dispatchers.IO) {
-            _highlightPageBitmap.value = pdfEditor.renderPageThumbnail(
-                File(record.filepath), pageIndex, 1024
-            )
+            val inputFile = File(record.filepath)
+            _highlightPageBitmap.value = pdfEditor.renderPageThumbnail(inputFile, pageIndex, 1024)
+            if (!record.isSearchable) return@launch
+            highlightTextLineCache[pageIndex]?.let { cachedLines ->
+                _textLines.value = cachedLines
+                return@launch
+            }
+            val lines = pdfEditor.extractTextLines(inputFile, pageIndex)
+            highlightTextLineCache[pageIndex] = lines
+            _textLines.value = lines
         }
     }
 
@@ -236,13 +255,16 @@ class DocumentEditViewModel @Inject constructor(
         }
     }
 
-    fun applyHighlight(strokes: List<HighlightStroke>) {
+    fun applyHighlight(
+        strokes: List<HighlightStroke>,
+        rects: List<HighlightRect> = emptyList()
+    ) {
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                when (val result = highlightPdfWorkflow(record, strokes, scansDir)) {
+                when (val result = highlightPdfWorkflow(record, strokes, rects, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
                     is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
                 }

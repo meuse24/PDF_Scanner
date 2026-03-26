@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.domain.usecase.HighlightPdfUseCase
+import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.util.PdfEditor
 import java.io.File
@@ -17,13 +18,14 @@ class HighlightPdfWorkflow @Inject constructor(
     suspend operator fun invoke(
         record: ScanRecord,
         strokes: List<HighlightStroke>,
+        rects: List<HighlightRect>,
         scansDir: File
     ): WorkflowResult<HighlightPdfWorkflowResult> {
         val input = File(record.filepath)
         if (!input.exists()) {
             return WorkflowResult.Failure(ScanWorkflowError.MissingFiles(listOf(record.filename)))
         }
-        if (strokes.isEmpty()) {
+        if (strokes.isEmpty() && rects.isEmpty()) {
             return WorkflowResult.Failure(ScanWorkflowError.NoHighlightStrokes)
         }
         if (pdfEditor.isPdfEncrypted(input)) {
@@ -33,7 +35,7 @@ class HighlightPdfWorkflow @Inject constructor(
         return try {
             WorkflowResult.Success(
                 HighlightPdfWorkflowResult(
-                    outputFilename = highlightPdfUseCase(record, strokes, scansDir)
+                    outputFilename = highlightPdfUseCase(record, strokes, rects, scansDir)
                 )
             )
         } catch (e: IOException) {

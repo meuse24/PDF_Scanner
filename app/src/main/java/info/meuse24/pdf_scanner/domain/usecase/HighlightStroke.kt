@@ -11,3 +11,8 @@ data class HighlightStroke(
     val pageIndex: Int,
     val strokeWidthFraction: Float = 0.025f
 )
+
+const val HIGHLIGHT_COLOR_RED = 255
+const val HIGHLIGHT_COLOR_GREEN = 220
+const val HIGHLIGHT_COLOR_BLUE = 0
+const val HIGHLIGHT_ALPHA = 0.4f

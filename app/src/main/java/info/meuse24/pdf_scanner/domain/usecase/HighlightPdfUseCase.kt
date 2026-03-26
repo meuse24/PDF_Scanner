@@ -13,12 +13,14 @@ class HighlightPdfUseCase @Inject constructor(
     suspend operator fun invoke(
         record: ScanRecord,
         strokes: List<HighlightStroke>,
+        rects: List<HighlightRect>,
         scansDir: File
     ): String {
         val resultFile = pdfEditor.applyHighlight(
             input = File(record.filepath),
             outputDir = scansDir,
-            strokes = strokes
+            strokes = strokes,
+            rects = rects
         )
         val thumbFile = File(scansDir, "${resultFile.nameWithoutExtension}.jpg")
         pdfEditor.generateThumbnail(resultFile, thumbFile)
@@ -30,7 +32,8 @@ class HighlightPdfUseCase @Inject constructor(
                 pageCount = record.pageCount,
                 fileSize = resultFile.length(),
                 thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath,
-                isSearchable = record.isSearchable
+                isSearchable = record.isSearchable,
+                tags = record.tags
             )
         )
         return resultFile.nameWithoutExtension

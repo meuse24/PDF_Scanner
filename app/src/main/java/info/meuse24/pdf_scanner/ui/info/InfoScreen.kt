@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -87,6 +88,15 @@ fun InfoScreen() {
             }
         }
         item {
+            SectionCard(Icons.Default.AutoAwesome, stringResource(R.string.info_section_features)) {
+                Text(
+                    stringResource(R.string.info_features_body),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        item {
             SectionCard(Icons.AutoMirrored.Filled.LibraryBooks, stringResource(R.string.info_section_libraries)) {
                 InfoRow("Google ML Kit Document Scanner",    "16.0.0")
                 InfoRow("Google ML Kit Text Recognition",   "16.0.1")
@@ -104,6 +114,15 @@ fun InfoScreen() {
                 RepositoryLink(
                     label = stringResource(R.string.info_repository_label),
                     url   = "https://github.com/meuse24/PDF_Scanner"
+                )
+            }
+        }
+        item {
+            SectionCard(Icons.Default.PrivacyTip, stringResource(R.string.info_section_privacy)) {
+                Text(
+                    stringResource(R.string.info_privacy_body),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

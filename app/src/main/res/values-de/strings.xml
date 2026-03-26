@@ -76,7 +76,7 @@
     <string name="help_item_delete">Mit Löschen entfernst du ausgewählte PDFs aus der Ablage. Die App löscht dabei auch die gespeicherte Datei und das Thumbnail.</string>
     <string name="help_section_ocr">OCR und Textextraktion</string>
     <string name="help_item_extract_text">Textextraktion (OCR) liest alle Seiten und zeigt den erkannten Text in einem Bereich an, aus dem du ihn kopieren oder teilen kannst.</string>
-    <string name="help_item_make_searchable">Durchsuchbar machen ergänzt eine unsichtbare Textebene im PDF, damit Text in PDF-Viewern gefunden werden kann.</string>
+    <string name="help_item_make_searchable">Durchsuchbar machen ergänzt eine unsichtbare Textebene im PDF, speichert den erkannten OCR-Text lokal für die Suche in der Ablage und aktiviert Auto-Tags für das Dokument.</string>
     <string name="help_item_ocr_language">Vor OCR oder Durchsuchbar machen wählst du die Sprache des Dokuments. Das Hindi-Modell wird beim ersten Einsatz heruntergeladen.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Über das Hamburger-Menü (oben links) erreichst du die Ablage, den Scanner, die Hilfe und den Info-Screen.</string>
@@ -97,22 +97,24 @@
     <string name="info_label_async">Asynchronität</string>
     <string name="info_label_platform">Plattform</string>
     <string name="info_label_ocr_languages">OCR-Sprachen</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (offline) + HI (beim 1. Aufruf download)</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (offline) + ZH · JA · HI (Download beim 1. Aufruf)</string>
     <string name="info_section_libraries">Bibliotheken</string>
     <string name="info_section_source">Quellcode</string>
     <string name="info_repository_label">GitHub-Repository</string>
     <string name="info_section_privacy">Datenschutz</string>
-    <string name="info_privacy_body">Diese App enthält keine Werbung, erhebt keine Daten und hat kein Abo-Modell. Es werden keine Kamera-, Kontakt- oder Netzwerkberechtigungen angefragt. Alle Scans werden ausschließlich auf Ihrem Gerät gespeichert und verlassen es nie.</string>
+    <string name="info_section_features">Funktionen</string>
+    <string name="info_features_body">Die App scannt Dokumente zu PDF, führt OCR direkt auf dem Gerät aus, speichert durchsuchbaren OCR-Text und Auto-Tags lokal für die Suche in der Ablage und bietet Seitenbearbeitung, Schutz, Signaturen, Markierungen sowie textausgerichtetes Einrasten bei durchsuchbaren PDFs.</string>
+    <string name="info_privacy_body">Keine Werbung, kein Konto und kein eigenes Backend. PDFs, Vorschaubilder, OCR-Text und Auto-Tags bleiben lokal im App-Speicher auf Ihrem Gerät. Teilen und Exportieren erfolgen nur auf Ihre Aktion. Scan, OCR sowie Modell- und Schriftart-Downloads nutzen Google Play Services; Dokumentinhalte werden von der App nicht hochgeladen.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Lokal</string>
     <string name="privacy_keyword_2">Offline</string>
     <string name="privacy_keyword_3">Sicher</string>
     <string name="privacy_keyword_4">Privat</string>
-    <string name="privacy_point_1">Diese App enthält keine Werbung und speichert alle erstellten Scans ausschließlich lokal auf Ihrem Gerät.</string>
-    <string name="privacy_point_2">Es werden keine Dokumente oder Inhalte aktiv an externe Server übertragen.</string>
-    <string name="privacy_point_3">Für die Scan-Funktion werden Google Play Services verwendet. Dabei können technische Diagnosedaten (z. B. zur Fehleranalyse) übertragen werden. Inhalte Ihrer gescannten Dokumente werden dabei nicht übermittelt.</string>
-    <string name="privacy_point_4">Die App selbst erhebt keine personenbezogenen Daten und benötigt keine eigenen Netzwerkberechtigungen.</string>
-    <string name="privacy_footer">Stand: März 2026</string>
+    <string name="privacy_point_1">Die App speichert PDFs, Vorschaubilder, durchsuchbaren OCR-Text und Auto-Tags lokal auf Ihrem Gerät.</string>
+    <string name="privacy_point_2">Dokumente oder Inhalte werden nicht automatisch hochgeladen. Teilen oder Exportieren erfolgt nur, wenn Sie es ausdrücklich auslösen.</string>
+    <string name="privacy_point_3">Scan- und OCR-Funktionen nutzen Google Play Services. Für die Fehleranalyse können technische Diagnosedaten übertragen werden. Sprachmodelle für Chinesisch, Japanisch und Hindi sowie herunterladbare Schriftarten können beim ersten Einsatz über Play Services geladen werden; Dokumentinhalte werden von der App nicht gesendet.</string>
+    <string name="privacy_point_4">Die App selbst erhebt keine personenbezogenen Daten, nutzt kein eigenes Analytics-System und fordert keine eigene Netzwerkberechtigung an.</string>
+    <string name="privacy_footer">Stand: 26. März 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Text extrahieren</string>
@@ -140,7 +142,7 @@
     <string name="info_section_credits">Credits</string>
     <string name="info_credits_intro">Diese App wurde mit Unterstützung von KI-Assistenten entwickelt:</string>
     <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
-    <string name="info_credits_detail">Architektur, Planung, Implementierung, Icon-Design und Dokumentation entstanden im Dialog mit KI-Assistenten.</string>
+    <string name="info_credits_detail">Architektur, Planung, Implementierung, Icon-Design, Übersetzungsreview und Dokumentation entstanden im Dialog mit KI-Assistenten.</string>
 
     <!-- Merge -->
     <string name="cd_merge">PDFs zusammenführen</string>
@@ -308,7 +310,7 @@
     <string name="remove_text_layer_error">Fehler beim Entfernen des Textlayers</string>
     <string name="remove_text_layer_not_searchable">Dieses PDF hat keinen Textlayer</string>
     <string name="action_remove_text_layer">Textlayer entfernen</string>
-    <string name="help_item_remove_text_layer">Mit Textlayer entfernen erstellst du eine Kopie einer durchsuchbaren PDF, bei der der unsichtbare OCR-Textlayer entfernt wird. Diese Option ist nur bei durchsuchbaren PDFs verfügbar.</string>
+    <string name="help_item_remove_text_layer">Mit Textlayer entfernen erstellst du eine Kopie einer durchsuchbaren PDF ohne unsichtbaren OCR-Textlayer. Die resultierende Kopie ist nicht mehr durchsuchbar und liefert keinen OCR-Text mehr für Suche oder Auto-Tags.</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Seitenstruktur</string>
     <string name="action_submenu_security">Schutz &amp; Passwort</string>
@@ -332,9 +334,9 @@
     <string name="action_highlight_pdf">PDF markieren</string>
     <string name="highlight_screen_title">PDF markieren</string>
     <string name="highlight_description">Text mit gelbem Marker hervorheben</string>
-    <string name="highlight_details">Streiche über Bereiche, um sie gelb zu markieren. Wechsle in den Modus Verschieben, um per Pinch zu zoomen und die Seite zu verschieben, und dann zurück zu Zeichnen. Wenn du gezoomt hast, bringt dich Zurücksetzen oberhalb der Seite wieder zur Gesamtansicht. Navigiere zwischen Seiten, um mehrere Seiten zu markieren. Es wird eine neue markierte PDF-Kopie erstellt.</string>
+    <string name="highlight_details">Streiche über Bereiche, um sie gelb zu markieren. Wechsle in den Modus Verschieben, um zu zoomen und die Seite zu verschieben, und dann zurück zu Zeichnen. Navigiere zwischen Seiten, um mehrere Seiten zu markieren. Es wird eine neue markierte PDF-Kopie erstellt.</string>
     <string name="highlight_apply">Markierungen speichern</string>
-    <string name="highlight_clear_page">Seite löschen</string>
+    <string name="highlight_clear_page">Seite</string>
     <string name="highlight_hint">Über Text ziehen, um ihn zu markieren.</string>
     <string name="highlight_target_page">Seite: %1$d von %2$d</string>
     <string name="highlight_success">Markiertes PDF erstellt: %1$s</string>
@@ -345,10 +347,13 @@
     <string name="highlight_stroke_thick">Dick</string>
     <string name="highlight_stroke_width">Markierungsbreite</string>
     <string name="highlight_mode_draw">Zeichnen</string>
+    <string name="highlight_mode_snap">Text ausrichten</string>
     <string name="highlight_mode_pan">Verschieben</string>
+    <string name="highlight_undo_last">Zurück</string>
+    <string name="highlight_reset_all">Alles</string>
     <string name="highlight_zoom_reset">%1$s× – Zurücksetzen</string>
     <string name="highlight_zoom_reset_button">Zurücksetzen</string>
-    <string name="help_item_highlight_pdf">Mit PDF markieren kannst du gelbe Markierungen über das Dokument ziehen. Nutze den Modus Verschieben, um per Pinch zu zoomen und die Seite zu verschieben, und wechsle dann zurück zu Zeichnen. Bei Zoom bringt dich Zurücksetzen oberhalb der Seite wieder zur Gesamtansicht. Navigiere zwischen Seiten und speichere als neue PDF-Kopie.</string>
+    <string name="help_item_highlight_pdf">Mit PDF markieren kannst du gelbe Markierungen über das Dokument ziehen. Durchsuchbare PDFs bieten zusätzlich Text ausrichten, das einen Strich an erkannte Textzeilen anlegt. Verschieben/Zoom vergrößert und verschiebt die Seite; wenn keine Textzeile passt, bleibt die normale Freihand-Markierung erhalten.</string>
     <string name="search_placeholder">Dokumente durchsuchen…</string>
     <string name="search_no_results">Keine Ergebnisse für „%1$s"</string>
     <string name="cd_search_clear">Suche löschen</string>
@@ -359,8 +364,9 @@
     <string name="tag_bank">Bankdokument</string>
     <string name="tag_delivery">Lieferschein</string>
     <string name="help_section_search">Suche &amp; Auto-Tags</string>
-    <string name="help_item_search">Tippe auf das Suchfeld oben, um Dokumente nach Name oder OCR-Text zu finden. Präfixsuche – z.B. „Rec" findet „Rechnung".</string>
-    <string name="help_item_auto_tag">Wenn ein Dokument durchsuchbar gemacht wird, werden automatisch Tags wie Rechnung oder Vertrag anhand von Schlüsselwörtern vergeben. Tags erscheinen als farbige Etiketten unter dem Dateinamen.</string>
+    <string name="help_item_search">Tippe oben in das Suchfeld, um Dokumente nach Dateiname oder gespeichertem OCR-Text zu finden. Die Suche läuft lokal auf deinem Gerät und nutzt Präfixabgleich, sodass "Rec" zum Beispiel "Rechnung" finden kann.</string>
+    <string name="help_item_auto_tag">Wenn ein Dokument durchsuchbar gemacht wird, vergibt die App Tags wie Rechnung oder Vertrag lokal aus OCR-Text und Schlüsselwörtern. Tags erscheinen als farbige Etiketten unter dem Dateinamen.</string>
     <string name="privacy_keyword_5">On-Device-Intelligenz</string>
-    <string name="privacy_point_5">Auto-Tags und Volltextsuche laufen vollständig auf deinem Gerät per Schlüsselwort-Analyse und OCR-Textebene. Keine Dokumentinhalte werden zur Klassifizierung in die Cloud gesendet.</string>
+    <string name="privacy_point_5">Volltextsuche, Auto-Tags, die Erzeugung durchsuchbarer PDFs und textausgerichtete Markierungen arbeiten lokal auf Ihrem Gerät mit OCR-Text und PDF-Metadaten.</string>
 </resources>
+

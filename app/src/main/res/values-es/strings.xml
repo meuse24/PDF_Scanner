@@ -76,7 +76,7 @@
     <string name="help_item_delete">Usa Eliminar para quitar PDFs seleccionados del archivo. La aplicación también elimina el archivo guardado y la miniatura.</string>
     <string name="help_section_ocr">OCR y extracción de texto</string>
     <string name="help_item_extract_text">Extracción de texto (OCR) lee todas las páginas y muestra el texto reconocido en un panel donde puedes copiarlo o compartirlo.</string>
-    <string name="help_item_make_searchable">Hacer buscable añade una capa de texto invisible al PDF para poder buscar texto en visores PDF.</string>
+    <string name="help_item_make_searchable">Hacer buscable añade una capa de texto invisible al PDF, guarda localmente el texto OCR extraído para la búsqueda del archivo y activa las autoetiquetas del documento.</string>
     <string name="help_item_ocr_language">Antes de OCR o Hacer buscable, elige el idioma del documento. El modelo hindi se descarga en el primer uso.</string>
     <string name="help_section_navigation">Navegación</string>
     <string name="help_nav_text">Usa el menú hamburguesa (arriba a la izquierda) para acceder al Archivo, Escáner, Ayuda e Info.</string>
@@ -97,22 +97,24 @@
     <string name="info_label_async">Asincronía</string>
     <string name="info_label_platform">Plataforma</string>
     <string name="info_label_ocr_languages">Idiomas OCR</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (sin conexión) + HI (descarga 1.er uso)</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (sin conexión) + ZH · JA · HI (descarga en el 1.er uso)</string>
     <string name="info_section_libraries">Bibliotecas</string>
     <string name="info_section_source">Código fuente</string>
     <string name="info_repository_label">Repositorio GitHub</string>
     <string name="info_section_privacy">Privacidad</string>
-    <string name="info_privacy_body">Esta app no contiene publicidad, no recopila datos y no tiene modelo de suscripción. No se solicitan permisos de cámara, contactos ni red. Todos los escaneos se almacenan exclusivamente en su dispositivo y nunca lo abandonan.</string>
+    <string name="info_section_features">Funciones</string>
+    <string name="info_features_body">La app escanea documentos a PDF, realiza OCR en el dispositivo, guarda localmente texto OCR buscable y autoetiquetas para la búsqueda del archivo, y ofrece edición de páginas, protección, firmas, resaltado y ajuste al texto en PDFs buscables.</string>
+    <string name="info_privacy_body">Sin anuncios, sin cuenta y sin backend propio. Los PDF, miniaturas, texto OCR y autoetiquetas permanecen en el almacenamiento de la app en tu dispositivo. Compartir y exportar solo ocurren cuando tú lo activas. El escaneo, el OCR y las descargas de modelos y fuentes dependen de Google Play Services; esta app no sube el contenido de tus documentos.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
     <string name="privacy_keyword_2">Sin conexión</string>
     <string name="privacy_keyword_3">Seguro</string>
     <string name="privacy_keyword_4">Privado</string>
-    <string name="privacy_point_1">Esta app no contiene publicidad y almacena todos los escaneos exclusivamente en tu dispositivo.</string>
-    <string name="privacy_point_2">No se transmiten documentos ni contenidos a servidores externos.</string>
-    <string name="privacy_point_3">La función de escaneo utiliza Google Play Services. Pueden transmitirse datos de diagnóstico técnicos (p. ej. para análisis de errores). Los contenidos de tus documentos escaneados no se envían.</string>
-    <string name="privacy_point_4">La app no recopila datos personales y no requiere permisos de red propios.</string>
-    <string name="privacy_footer">Actualizado: marzo de 2026</string>
+    <string name="privacy_point_1">Esta app almacena localmente en tu dispositivo los PDF, las imágenes de vista previa, el texto OCR buscable y las autoetiquetas.</string>
+    <string name="privacy_point_2">Ningún documento ni contenido se sube automáticamente. Compartir o exportar solo ocurre cuando lo activas explícitamente.</string>
+    <string name="privacy_point_3">Las funciones de escaneo y OCR usan Google Play Services. Pueden transmitirse datos técnicos de diagnóstico para el análisis de errores. Los modelos de idioma para chino, japonés e hindi, así como las fuentes descargables, pueden obtenerse mediante Play Services en el primer uso; el contenido de tus documentos no es enviado por esta app.</string>
+    <string name="privacy_point_4">La app no recopila datos personales, no usa analítica propia y no solicita un permiso de red propio.</string>
+    <string name="privacy_footer">Actualizado: 26 de marzo de 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Extraer texto</string>
@@ -128,7 +130,7 @@
     <string name="info_section_credits">Créditos</string>
     <string name="info_credits_intro">Esta app fue desarrollada con la ayuda de asistentes de IA:</string>
     <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
-    <string name="info_credits_detail">La arquitectura, planificación, implementación, diseño del icono y documentación se desarrollaron con asistencia de IA.</string>
+    <string name="info_credits_detail">La arquitectura, planificación, implementación, diseño del icono, revisión de traducciones y documentación se desarrollaron con asistencia de IA.</string>
 
     <!-- Searchable PDF -->
     <string name="dialog_searchable_pdf">PDF con búsqueda</string>
@@ -309,7 +311,7 @@
     <string name="remove_text_layer_error">Error al eliminar la capa de texto</string>
     <string name="remove_text_layer_not_searchable">Este PDF no tiene capa de texto</string>
     <string name="action_remove_text_layer">Eliminar capa de texto</string>
-    <string name="help_item_remove_text_layer">Elige Eliminar capa de texto para crear una copia de un PDF con capacidad de búsqueda en la que se elimina la capa de texto OCR invisible. Esta opción solo está disponible para PDFs con capacidad de búsqueda.</string>
+    <string name="help_item_remove_text_layer">Elige Eliminar capa de texto para crear una copia de un PDF buscable sin la capa OCR invisible. La copia resultante deja de ser buscable y ya no aporta texto OCR a la búsqueda ni a las autoetiquetas.</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>
@@ -332,9 +334,9 @@
     <string name="action_highlight_pdf">Resaltar PDF</string>
     <string name="highlight_screen_title">Resaltar PDF</string>
     <string name="highlight_description">Marca texto con un marcador amarillo</string>
-    <string name="highlight_details">Arrastra sobre áreas para resaltarlas en amarillo. Cambia a Desplazar para ampliar con pellizco y mover la página, y luego vuelve a Dibujar para marcar el texto. Cuando haya zoom, usa Restablecer sobre la página para volver a la vista completa. Navega entre páginas para resaltar varias. Se creará una nueva copia PDF resaltada.</string>
+    <string name="highlight_details">Arrastra sobre áreas para resaltarlas en amarillo. Cambia a Desplazar para ampliar y mover la página, y luego vuelve a Dibujar para marcar el texto. Navega entre páginas para resaltar varias. Se creará una nueva copia PDF resaltada.</string>
     <string name="highlight_apply">Guardar resaltados</string>
-    <string name="highlight_clear_page">Limpiar página</string>
+    <string name="highlight_clear_page">Página</string>
     <string name="highlight_hint">Arrastra sobre el texto para marcarlo.</string>
     <string name="highlight_target_page">Página: %1$d de %2$d</string>
     <string name="highlight_success">PDF resaltado creado: %1$s</string>
@@ -345,10 +347,13 @@
     <string name="highlight_stroke_thick">Grueso</string>
     <string name="highlight_stroke_width">Anchura del marcador</string>
     <string name="highlight_mode_draw">Dibujar</string>
+    <string name="highlight_mode_snap">Ajustar al texto</string>
     <string name="highlight_mode_pan">Desplazar</string>
+    <string name="highlight_undo_last">Deshacer</string>
+    <string name="highlight_reset_all">Todo</string>
     <string name="highlight_zoom_reset">%1$s× – Restablecer</string>
     <string name="highlight_zoom_reset_button">Restablecer</string>
-    <string name="help_item_highlight_pdf">Elige Resaltar PDF para dibujar resaltados amarillos sobre el documento. Usa el modo Desplazar para ampliar con pellizco y mover la página, y luego vuelve a Dibujar para marcar el texto. Cuando haya zoom, usa Restablecer sobre la página para volver a la vista completa. Navega entre páginas y guarda como nueva copia PDF.</string>
+    <string name="help_item_highlight_pdf">Elige Resaltar PDF para dibujar resaltados amarillos sobre el documento. Los PDFs buscables también ofrecen Ajustar al texto, que alinea un trazo con las líneas de texto detectadas. Desplazar/zoom te permite ampliar y mover la página; si no hay coincidencia de texto, la app conserva el resaltado normal a mano alzada.</string>
     <string name="search_placeholder">Buscar documentos…</string>
     <string name="search_no_results">Sin resultados para \"%1$s\"</string>
     <string name="cd_search_clear">Borrar búsqueda</string>
@@ -359,8 +364,9 @@
     <string name="tag_bank">Banco</string>
     <string name="tag_delivery">Albarán</string>
     <string name="help_section_search">Búsqueda y auto-etiquetas</string>
-    <string name="help_item_search">Toca el campo de búsqueda para encontrar documentos por nombre o texto OCR. Se utiliza coincidencia de prefijos.</string>
-    <string name="help_item_auto_tag">Al hacer un documento buscable, la app asigna automáticamente etiquetas como Factura o Contrato. Las etiquetas aparecen como marcas de color bajo el nombre del archivo.</string>
+    <string name="help_item_search">Toca el campo de búsqueda de arriba para encontrar documentos por nombre de archivo o por el texto OCR guardado. La búsqueda se ejecuta localmente en tu dispositivo y usa coincidencia por prefijo, así que "Rec" puede encontrar "Recibo".</string>
+    <string name="help_item_auto_tag">Cuando un documento se hace buscable, la app asigna localmente etiquetas como Factura o Contrato a partir del texto OCR y palabras clave. Las etiquetas aparecen como marcas de color bajo el nombre del archivo.</string>
     <string name="privacy_keyword_5">Inteligencia local</string>
-    <string name="privacy_point_5">El etiquetado automático y la búsqueda de texto completo se ejecutan en tu dispositivo mediante análisis de palabras clave y la capa OCR. Ningún contenido se transmite a la nube para su clasificación.</string>
+    <string name="privacy_point_5">La búsqueda de texto completo, las autoetiquetas, la creación de PDF buscables y los resaltados alineados al texto se ejecutan localmente en tu dispositivo usando texto OCR y metadatos PDF.</string>
 </resources>
+

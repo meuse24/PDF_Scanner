@@ -381,7 +381,7 @@
     <string name="annotate_comment_edit_title">Edit Comment</string>
     <string name="annotate_comment_add">Add</string>
     <string name="annotate_comment_delete">Delete</string>
-    <string name="annotate_write_hint">Tap on the page to place a comment.</string>
+    <string name="annotate_write_hint">点击页面添加评论。</string>
     <string name="annotate_text_size">Size</string>
     <string name="annotate_page_content_description">第 %1$d 页</string>
     <string name="annotate_page_indicator">第 %1$d / %2$d 页</string>

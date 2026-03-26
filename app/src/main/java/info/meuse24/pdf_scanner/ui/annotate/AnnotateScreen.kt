@@ -393,24 +393,12 @@ fun AnnotateScreen(
                         )
                     }
                 }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (hasMultiplePages) {
-                        Text(
-                            text = "${selectedPageIndex + 1}/${currentRecord.pageCount}",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    if (isZoomMode) {
-                        Text(
-                            text = "${formatZoomScale(zoomScale)}×",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                if (isZoomMode) {
+                    Text(
+                        text = "${formatZoomScale(zoomScale)}×",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
@@ -658,7 +646,8 @@ fun AnnotateScreen(
                 if (hasMultiplePages) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         OutlinedButton(
                             onClick = { selectedPageIndex = (selectedPageIndex - 1).coerceAtLeast(0) },
@@ -666,15 +655,26 @@ fun AnnotateScreen(
                             modifier = Modifier.weight(1f),
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
                         ) {
-                            Text(stringResource(R.string.signature_page_previous), maxLines = 1)
+                            Text(stringResource(R.string.annotate_page_previous_short), maxLines = 1)
                         }
+                        Text(
+                            text = stringResource(
+                                R.string.annotate_page_indicator,
+                                selectedPageIndex + 1,
+                                currentRecord.pageCount
+                            ),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.weight(0.8f)
+                        )
                         OutlinedButton(
                             onClick = { selectedPageIndex = (selectedPageIndex + 1).coerceAtMost(currentRecord.pageCount - 1) },
                             enabled = selectedPageIndex < currentRecord.pageCount - 1,
                             modifier = Modifier.weight(1f),
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
                         ) {
-                            Text(stringResource(R.string.signature_page_next), maxLines = 1)
+                            Text(stringResource(R.string.annotate_page_next_short), maxLines = 1)
                         }
                     }
                 }

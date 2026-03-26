@@ -81,7 +81,7 @@
     <string name="help_section_pdf_edit">Edit PDFs</string>
     <string name="help_section_pdf_pages">Pages and structure</string>
     <string name="help_section_pdf_page_changes">Page changes</string>
-    <string name="help_section_pdf_marks">Marks and numbering</string>
+    <string name="help_section_pdf_marks">Marks and Editing</string>
     <string name="help_section_pdf_output">Output and protection</string>
     <string name="help_desc_archive">Opens the archive with your saved PDFs. From there you can open documents, select them, and start further actions.</string>
     <string name="help_desc_start_scanner">Starts the document scanner so you can capture one or more pages and save them as a PDF.</string>
@@ -394,5 +394,23 @@
     <!-- Privacy: On-Device Intelligence -->
     <string name="privacy_keyword_5">On-Device Intelligence</string>
     <string name="privacy_point_5">Full-text search, auto-tagging, searchable PDF generation, and text-aligned highlights operate locally on your device using OCR text and PDF metadata.</string>
+    <!-- Annotate PDF -->
+    <string name="action_annotate_pdf">Mark / Comment PDF</string>
+    <string name="annotate_screen_title">Annotate PDF</string>
+    <string name="annotate_description">Add highlights and text comments to this PDF</string>
+    <string name="annotate_details">Draw yellow highlights or place short text comments on pages. Switch to Write mode and tap on the page to place a comment. Use Zoom for precise placement. The result is saved as a new annotated PDF copy.</string>
+    <string name="annotate_apply">Save annotations</string>
+    <string name="annotate_mode_mark">Mark.</string>
+    <string name="annotate_mode_write">Write</string>
+    <string name="annotate_comment_hint">Enter your comment…</string>
+    <string name="annotate_comment_title">Comment</string>
+    <string name="annotate_comment_edit_title">Edit Comment</string>
+    <string name="annotate_comment_add">Add</string>
+    <string name="annotate_comment_delete">Delete</string>
+    <string name="annotate_write_hint">Tap on the page to place a comment.</string>
+    <string name="annotate_text_size">Size</string>
+    <string name="annotate_no_items">Add at least one annotation first</string>
+    <string name="annotate_error">Error adding annotations</string>
+    <string name="help_item_annotate_pdf">Choose Annotate PDF to draw yellow highlights or place short text comments. In Write mode, tap on the page to place a comment; tap an existing comment to edit it. Snap aligns highlights to detected text lines (searchable PDFs only). Use Zoom for precise placement.</string>
 </resources>
 

@@ -61,7 +61,7 @@
     <string name="help_section_pdf_edit">PDFs bearbeiten</string>
     <string name="help_section_pdf_pages">Seiten und Struktur</string>
     <string name="help_section_pdf_page_changes">Seiten ändern</string>
-    <string name="help_section_pdf_marks">Markierungen und Nummerierung</string>
+    <string name="help_section_pdf_marks">Markierungen und Bearbeiten</string>
     <string name="help_section_pdf_output">Ausgabe und Schutz</string>
     <string name="help_desc_archive">Öffnet die Ablage mit deinen gespeicherten PDFs. Von dort aus kannst du Dokumente öffnen, auswählen und weitere Aktionen starten.</string>
     <string name="help_desc_start_scanner">Startet den Dokumentenscanner, damit du eine oder mehrere Seiten erfassen und als PDF speichern kannst.</string>
@@ -368,5 +368,23 @@
     <string name="help_item_auto_tag">Wenn ein Dokument durchsuchbar gemacht wird, vergibt die App Tags wie Rechnung oder Vertrag lokal aus OCR-Text und Schlüsselwörtern. Tags erscheinen als farbige Etiketten unter dem Dateinamen.</string>
     <string name="privacy_keyword_5">On-Device-Intelligenz</string>
     <string name="privacy_point_5">Volltextsuche, Auto-Tags, die Erzeugung durchsuchbarer PDFs und textausgerichtete Markierungen arbeiten lokal auf Ihrem Gerät mit OCR-Text und PDF-Metadaten.</string>
+    <!-- PDF annotieren -->
+    <string name="action_annotate_pdf">PDF Markieren/Kommentieren</string>
+    <string name="annotate_screen_title">PDF annotieren</string>
+    <string name="annotate_description">Markierungen und Textkommentare zu diesem PDF hinzufügen</string>
+    <string name="annotate_details">Zeichne gelbe Markierungen oder platziere kurze Textkommentare auf Seiten. Wechsle in den Schreibmodus und tippe auf die Seite, um einen Kommentar zu setzen. Der Zoommodus hilft bei präziser Platzierung. Das Ergebnis wird als neue annotierte PDF-Kopie gespeichert.</string>
+    <string name="annotate_apply">Annotationen speichern</string>
+    <string name="annotate_mode_mark">Mark.</string>
+    <string name="annotate_mode_write">Schreiben</string>
+    <string name="annotate_comment_hint">Kommentar eingeben…</string>
+    <string name="annotate_comment_title">Kommentar</string>
+    <string name="annotate_comment_edit_title">Kommentar bearbeiten</string>
+    <string name="annotate_comment_add">Übernehmen</string>
+    <string name="annotate_comment_delete">Löschen</string>
+    <string name="annotate_write_hint">Auf die Seite tippen, um einen Kommentar zu platzieren.</string>
+    <string name="annotate_text_size">Größe</string>
+    <string name="annotate_no_items">Zuerst mindestens eine Annotation hinzufügen</string>
+    <string name="annotate_error">Fehler beim Hinzufügen der Annotationen</string>
+    <string name="help_item_annotate_pdf">Mit PDF annotieren kannst du gelbe Markierungen zeichnen oder kurze Textkommentare auf Seiten platzieren. Im Schreibmodus tippst du auf die Seite, um einen Kommentar zu setzen; tippe auf einen vorhandenen Kommentar, um ihn zu bearbeiten. Snap richtet Markierungen an Textzeilen aus (nur bei durchsuchbaren PDFs). Der Zoommodus hilft bei präziser Platzierung.</string>
 </resources>
 

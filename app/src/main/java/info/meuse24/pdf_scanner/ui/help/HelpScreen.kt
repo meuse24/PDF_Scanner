@@ -143,7 +143,9 @@ fun HelpScreen() {
                 titleRes = R.string.help_section_pdf_marks,
                 actions = listOf(
                     HelpAction(Icons.Default.FormatListNumbered, R.string.action_page_numbers, R.string.help_item_page_numbers),
-                    HelpAction(Icons.AutoMirrored.Filled.BrandingWatermark, R.string.action_text_watermark, R.string.help_item_watermark)
+                    HelpAction(Icons.AutoMirrored.Filled.BrandingWatermark, R.string.action_text_watermark, R.string.help_item_watermark),
+                    HelpAction(Icons.Default.Draw, R.string.action_sign_pdf, R.string.help_item_sign_pdf),
+                    HelpAction(Icons.Default.BorderColor, R.string.action_annotate_pdf, R.string.help_item_annotate_pdf)
                 )
             ),
             HelpSection(
@@ -156,8 +158,6 @@ fun HelpScreen() {
                     HelpAction(Icons.Default.LockOpen, R.string.action_unlock_pdf, R.string.help_item_unlock_pdf),
                     HelpAction(Icons.Default.NoEncryption, R.string.action_remove_password, R.string.help_item_remove_password),
                     HelpAction(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage, R.string.help_item_restrict_usage),
-                    HelpAction(Icons.Default.Draw, R.string.action_sign_pdf, R.string.help_item_sign_pdf),
-                    HelpAction(Icons.Default.BorderColor, R.string.action_highlight_pdf, R.string.help_item_highlight_pdf),
                     HelpAction(Icons.AutoMirrored.Filled.ManageSearch, R.string.action_remove_text_layer, R.string.help_item_remove_text_layer)
                 )
             )

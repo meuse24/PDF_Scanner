@@ -101,6 +101,7 @@ sealed interface ScanAction {
     data object RestrictUsage    : ScanAction
     data object ExportAsJpg      : ScanAction
     data object Highlight        : ScanAction
+    data object Annotate         : ScanAction
 }
 
 @Composable
@@ -279,9 +280,9 @@ internal fun ScanItem(
                             enabled     = notEncrypted
                         )
                         DropdownMenuItem(
-                            text        = { Text(stringResource(R.string.action_highlight_pdf)) },
+                            text        = { Text(stringResource(R.string.action_annotate_pdf)) },
                             leadingIcon = { Icon(Icons.Default.BorderColor, null) },
-                            onClick     = { menuExpanded = false; onAction(ScanAction.Highlight) },
+                            onClick     = { menuExpanded = false; onAction(ScanAction.Annotate) },
                             enabled     = notEncrypted
                         )
                         DropdownMenuItem(

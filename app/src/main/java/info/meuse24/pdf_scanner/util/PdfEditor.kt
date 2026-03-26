@@ -582,6 +582,117 @@ open class PdfEditor @Inject constructor() {
     }
 
     /**
+     * Schreibt Markierungen (Strokes + Rects) und Textkommentare auf die Seiten von [input]
+     * und speichert das Ergebnis mit Suffix "_Annotiert" in [outputDir].
+     */
+    open fun applyAnnotations(
+        input: File,
+        outputDir: File,
+        strokes: List<HighlightStroke>,
+        rects: List<HighlightRect> = emptyList(),
+        comments: List<info.meuse24.pdf_scanner.domain.usecase.TextComment> = emptyList()
+    ): File {
+        require(strokes.isNotEmpty() || rects.isNotEmpty() || comments.isNotEmpty()) {
+            "Mindestens eine Annotation erforderlich"
+        }
+        return writeDerivedPdf(input, outputDir, "_Annotiert", "Annotate") { source, result ->
+            val gsStrokeHighlight = PDExtendedGraphicsState().apply {
+                strokingAlphaConstant = HIGHLIGHT_ALPHA
+            }
+            val gsRectHighlight = PDExtendedGraphicsState().apply {
+                nonStrokingAlphaConstant = HIGHLIGHT_RECT_ALPHA
+            }
+            val font = loadOverlayFont(result)
+            repeat(source.numberOfPages) { pageIdx ->
+                val page = result.importPage(source.getPage(pageIdx))
+                val pageStrokes = strokes.filter { it.pageIndex == pageIdx }
+                val pageRects = rects.filter { it.pageIndex == pageIdx }
+                val pageComments = comments.filter { it.pageIndex == pageIdx }
+                if (pageStrokes.isNotEmpty() || pageRects.isNotEmpty() || pageComments.isNotEmpty()) {
+                    val pageWidth = page.mediaBox.width
+                    val pageHeight = page.mediaBox.height
+                    val rotation = normalizeRotation(page.rotation)
+                    val displayedWidth = if (rotation == 90 || rotation == 270) pageHeight else pageWidth
+                    PDPageContentStream(
+                        result, page,
+                        PDPageContentStream.AppendMode.APPEND,
+                        true, true
+                    ).use { cs ->
+                        if (pageRects.isNotEmpty()) {
+                            cs.setGraphicsStateParameters(gsRectHighlight)
+                            cs.setNonStrokingColor(
+                                HIGHLIGHT_COLOR_RED,
+                                HIGHLIGHT_COLOR_GREEN,
+                                HIGHLIGHT_COLOR_BLUE
+                            )
+                            pageRects.forEach { rect ->
+                                val topLeft = mapDisplayToPdfCoord(
+                                    rect.left, rect.top, pageWidth, pageHeight, rotation
+                                )
+                                val bottomRight = mapDisplayToPdfCoord(
+                                    rect.right, rect.bottom, pageWidth, pageHeight, rotation
+                                )
+                                val rectLeft = minOf(topLeft.first, bottomRight.first)
+                                val rectBottom = minOf(topLeft.second, bottomRight.second)
+                                cs.addRect(
+                                    rectLeft, rectBottom,
+                                    abs(bottomRight.first - topLeft.first),
+                                    abs(bottomRight.second - topLeft.second)
+                                )
+                                cs.fill()
+                            }
+                        }
+
+                        if (pageStrokes.isNotEmpty()) {
+                            cs.setGraphicsStateParameters(gsStrokeHighlight)
+                            cs.setStrokingColor(
+                                HIGHLIGHT_COLOR_RED,
+                                HIGHLIGHT_COLOR_GREEN,
+                                HIGHLIGHT_COLOR_BLUE
+                            )
+                            pageStrokes.forEach { stroke ->
+                                val strokeWidthPt =
+                                    (displayedWidth * stroke.strokeWidthFraction).coerceIn(3f, 36f)
+                                cs.setLineWidth(strokeWidthPt)
+                                cs.setLineCapStyle(1)
+                                cs.setLineJoinStyle(1)
+                                if (stroke.points.size == 1) {
+                                    val (px, py) = mapDisplayToPdfCoord(
+                                        stroke.points[0].first, stroke.points[0].second,
+                                        pageWidth, pageHeight, rotation
+                                    )
+                                    cs.moveTo(px - 0.5f, py)
+                                    cs.lineTo(px + 0.5f, py)
+                                    cs.stroke()
+                                } else {
+                                    val first = stroke.points.first()
+                                    val (fx, fy) = mapDisplayToPdfCoord(
+                                        first.first, first.second, pageWidth, pageHeight, rotation
+                                    )
+                                    cs.moveTo(fx, fy)
+                                    stroke.points.drop(1).forEach { (nx, ny) ->
+                                        val (px, py) = mapDisplayToPdfCoord(
+                                            nx, ny, pageWidth, pageHeight, rotation
+                                        )
+                                        cs.lineTo(px, py)
+                                    }
+                                    cs.stroke()
+                                }
+                            }
+                        }
+                    }
+                    // pageComments NACH dem use-Block schreiben, da appendTextComment selbst einen neuen Stream öffnet
+                    if (pageComments.isNotEmpty()) {
+                        pageComments.forEach { comment ->
+                            appendTextComment(page, result, font, comment, pageWidth, pageHeight, rotation, displayedWidth)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Gibt die Seitenanzahl von [pdfFile] zurück, 0 bei Fehler.
      * Muss auf Dispatchers.IO aufgerufen werden.
      */
@@ -914,6 +1025,91 @@ private fun PdfEditor.appendTextWatermark(
         contentStream.showText(text)
         contentStream.endText()
     }
+}
+
+private fun PdfEditor.appendTextComment(
+    page: PDPage,
+    document: PDDocument,
+    font: PDFont,
+    comment: info.meuse24.pdf_scanner.domain.usecase.TextComment,
+    pageWidth: Float,
+    pageHeight: Float,
+    rotation: Int,
+    displayedWidth: Float
+) {
+    val rawText = sanitizeCommentText(comment.text, font)
+    if (rawText.isBlank()) return
+
+    val fontSizePt = (displayedWidth * comment.fontSizeFraction).coerceIn(10f, 28f)
+    val maxWidthPt = displayedWidth * 0.40f
+
+    // Anker in PDF-Koordinaten
+    val (anchorPdfX, anchorPdfY) = mapDisplayToPdfCoord(
+        comment.anchorX, comment.anchorY, pageWidth, pageHeight, rotation
+    )
+
+    // Zeilenumbruch: explizite \n + Wortumbruch
+    val allLines = mutableListOf<String>()
+    rawText.split("\n").forEach { paragraph ->
+        val words = paragraph.split(" ")
+        var currentLine = StringBuilder()
+        for (word in words) {
+            val testLine = if (currentLine.isEmpty()) word else "${currentLine} $word"
+            val lineWidthPt = try {
+                font.getStringWidth(testLine) / 1000f * fontSizePt
+            } catch (_: Exception) { 0f }
+            if (lineWidthPt > maxWidthPt && currentLine.isNotEmpty()) {
+                allLines += currentLine.toString()
+                currentLine = StringBuilder(word)
+            } else {
+                currentLine = StringBuilder(testLine)
+            }
+        }
+        if (currentLine.isNotEmpty()) allLines += currentLine.toString()
+    }
+    if (allLines.isEmpty()) return
+
+    val lineHeight = fontSizePt * 1.2f
+
+    // Text-Ausrichtungsvektoren je nach Rotation
+    data class TextVecs(val a: Float, val b: Float, val c: Float, val d: Float,
+                        val lineDX: Float, val lineDY: Float)
+    val vecs = when (rotation) {
+        90  -> TextVecs(0f, 1f, -1f, 0f, -lineHeight, 0f)
+        180 -> TextVecs(-1f, 0f, 0f, -1f, 0f, lineHeight)
+        270 -> TextVecs(0f, -1f, 1f, 0f, lineHeight, 0f)
+        else -> TextVecs(1f, 0f, 0f, 1f, 0f, -lineHeight)
+    }
+
+    PDPageContentStream(
+        document, page,
+        PDPageContentStream.AppendMode.APPEND,
+        true, true
+    ).use { cs ->
+        cs.setNonStrokingColor(40, 40, 40)
+        cs.setFont(font, fontSizePt)
+        allLines.forEachIndexed { lineIdx, line ->
+            val x = anchorPdfX + vecs.lineDX * lineIdx
+            val y = anchorPdfY + vecs.lineDY * lineIdx
+            cs.beginText()
+            cs.setTextMatrix(Matrix(vecs.a, vecs.b, vecs.c, vecs.d, x, y))
+            cs.showText(line)
+            cs.endText()
+        }
+    }
+}
+
+private fun sanitizeCommentText(text: String, font: PDFont): String {
+    if (font is PDType1Font) {
+        return text
+            .replace("\t", "  ")
+            .filter { it.code in 32..126 || it == '\n' }
+            .trim()
+    }
+    return text
+        .replace("\t", "  ")
+        .replace("\r", "")
+        .trim()
 }
 
 internal fun calculateWatermarkFontSize(pageWidth: Float, textLength: Int): Float {

@@ -61,7 +61,7 @@
     <string name="help_section_pdf_edit">PDF संपादित करें</string>
     <string name="help_section_pdf_pages">पेज और संरचना</string>
     <string name="help_section_pdf_page_changes">पेज परिवर्तन</string>
-    <string name="help_section_pdf_marks">चिह्न और क्रमांकन</string>
+    <string name="help_section_pdf_marks">चिह्न और संपादन</string>
     <string name="help_section_pdf_output">आउटपुट और सुरक्षा</string>
     <string name="help_desc_archive">आपके सहेजे गए PDF के साथ संग्रह खोलता है। वहाँ से आप दस्तावेज़ खोल सकते हैं, उन्हें चुन सकते हैं और अधिक क्रियाएं प्रारंभ कर सकते हैं।</string>
     <string name="help_desc_start_scanner">दस्तावेज़ स्कैनर शुरू करता है ताकि आप एक या अधिक पृष्ठों को कैप्चर कर सकें और उन्हें PDF के रूप में सहेज सकें।</string>
@@ -368,5 +368,23 @@
     <string name="help_item_auto_tag">जब कोई दस्तावेज़ खोज योग्य बनाया जाता है, तो ऐप OCR टेक्स्ट और कीवर्ड के आधार पर चालान या अनुबंध जैसे टैग स्थानीय रूप से असाइन करता है। टैग फ़ाइल नाम के नीचे दिखते हैं।</string>
     <string name="privacy_keyword_5">ऑन-डिवाइस इंटेलिजेंस</string>
     <string name="privacy_point_5">फुल-टेक्स्ट सर्च, ऑटो-टैगिंग, खोजयोग्य PDF निर्माण और टेक्स्ट-अलाइन हाइलाइट आपके डिवाइस पर OCR टेक्स्ट और PDF मेटाडेटा का उपयोग करके स्थानीय रूप से चलते हैं।</string>
+    <!-- Annotate PDF -->
+    <string name="action_annotate_pdf">PDF मार्क/टिप्पणी</string>
+    <string name="annotate_screen_title">Annotate PDF</string>
+    <string name="annotate_description">Add highlights and text comments to this PDF</string>
+    <string name="annotate_details">Draw yellow highlights or place short text comments on pages. Switch to Write mode and tap on the page to place a comment. Use Zoom for precise placement. The result is saved as a new annotated PDF copy.</string>
+    <string name="annotate_apply">Save annotations</string>
+    <string name="annotate_mode_mark">Mark.</string>
+    <string name="annotate_mode_write">Write</string>
+    <string name="annotate_comment_hint">Enter your comment…</string>
+    <string name="annotate_comment_title">Comment</string>
+    <string name="annotate_comment_edit_title">Edit Comment</string>
+    <string name="annotate_comment_add">Add</string>
+    <string name="annotate_comment_delete">Delete</string>
+    <string name="annotate_write_hint">Tap on the page to place a comment.</string>
+    <string name="annotate_text_size">Size</string>
+    <string name="annotate_no_items">Add at least one annotation first</string>
+    <string name="annotate_error">Error adding annotations</string>
+    <string name="help_item_annotate_pdf">Choose Annotate PDF to draw yellow highlights or place short text comments. In Write mode, tap on the page to place a comment; tap an existing comment to edit it. Snap aligns highlights to detected text lines (searchable PDFs only). Use Zoom for precise placement.</string>
 </resources>
 

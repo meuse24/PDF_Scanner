@@ -108,7 +108,7 @@ fun HomeScreen(
     onNavigateToRemoveTextLayer:    (Long) -> Unit = {},
     onNavigateToRemovePassword:     (Long) -> Unit = {},
     onNavigateToRestrictUsage:      (Long) -> Unit = {},
-    onNavigateToHighlight:          (Long) -> Unit = {},
+    onNavigateToAnnotate:           (Long) -> Unit = {},
     viewModel:                      HomeViewModel  = hiltViewModel()
 ) {
     val scans          by viewModel.scans.collectAsState()
@@ -334,7 +334,8 @@ fun HomeScreen(
                                     ScanAction.RemovePassword  -> onNavigateToRemovePassword(record.id)
                                     ScanAction.RestrictUsage   -> onNavigateToRestrictUsage(record.id)
                                     ScanAction.ExportAsJpg     -> viewModel.exportAsJpg(record)
-                                    ScanAction.Highlight       -> onNavigateToHighlight(record.id)
+                                    ScanAction.Highlight       -> {}
+                                    ScanAction.Annotate        -> onNavigateToAnnotate(record.id)
                                 }
                             }
                         )

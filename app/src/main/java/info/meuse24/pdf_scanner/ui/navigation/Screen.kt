@@ -53,4 +53,7 @@ sealed class Screen(val route: String) {
     data object Highlight : Screen("highlight/{scanId}") {
         fun createRoute(scanId: Long) = "highlight/$scanId"
     }
+    data object Annotate : Screen("annotate/{scanId}") {
+        fun createRoute(scanId: Long) = "annotate/$scanId"
+    }
 }

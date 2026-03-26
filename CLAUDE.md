@@ -41,9 +41,11 @@ domain/
     ├── RemovePasswordUseCase.kt   # removePassword() aufrufen → isSearchable erhalten
     ├── RestrictUsageUseCase.kt    # restrictUsage() aufrufen → isSearchable=false
     ├── HighlightPdfUseCase.kt     # applyHighlight() für Strokes + Rects + Thumbnail + DB-Insert → Suffix _Markiert
+    ├── AnnotatePdfUseCase.kt      # applyAnnotations() für Strokes + Rects + TextComments + Thumbnail + DB-Insert → Suffix _Annotiert
     ├── HighlightStroke.kt         # data class: Freihand-Markierung mit points + pageIndex + strokeWidthFraction
     ├── HighlightRect.kt           # data class: textausgerichtetes Highlight-Rechteck (left/top/right/bottom/pageIndex)
     ├── TextLine.kt                # data class: extrahierte Textzeile in normalisierten Anzeige-Koordinaten
+    ├── TextComment.kt             # data class: Textkommentar (pageIndex, anchorX, anchorY, text, fontSizeFraction)
     ├── AutoTagUseCase.kt          # On-Device-Tagging: Keyword-Map + IBAN-Regex → kommaseparierte Tag-Keys (invoice,contract,…)
     └── PageEditUtils.kt           # thumbnailFile(): gemeinsame Hilfsfunktion für Seitenbearbeitungs-UseCases
 
@@ -62,7 +64,7 @@ ui/
 │       ├── ScanItem.kt            # Card: Dateiname (maxLines=2, volle Breite) + Row(Thumbnail · Metadaten · Menü · Checkbox)
 │       │                          # MoreVert: Hauptmenü (7 Items) + Submenu Seitenstruktur (5) + Submenu Schutz&Passwort (5)
 │       │                          # encryption-aware enabled-State: notEncrypted = !record.isEncrypted
-│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/RemoveTextLayer/RemovePassword/RestrictUsage/Highlight)
+│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/RemoveTextLayer/RemovePassword/RestrictUsage/Annotate)
 │       │                          # onAction: (ScanAction) → Unit; Tags als farbige Badges (tertiaryContainer)
 │       ├── SelectionTitleBar.kt   # ✕ · count/total · SelectAll-Icon
 │       ├── BulkActionBar.kt       # Share · Export · Merge · OCR · MakeSearchable · Delete (rot)
@@ -76,11 +78,19 @@ ui/
 ├── overlay/
 │   └── OverlayActionScreens.kt    # PageNumbersScreen, TextWatermarkScreen — nutzen DocumentEditViewModel
 ├── documentaction/
-│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Highlight/RemoveTextLayer/RemovePassword/RestrictUsage
+│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Highlight/Annotate/RemoveTextLayer/RemovePassword/RestrictUsage
 │   │                              # Lädt ScanRecord per scanId, führt Workflows aus,
 │   │                              # mappt Fehler über WorkflowErrorMapper; _editLoading/_error/_success
-│   │                              # Highlight: _highlightPageBitmap + _textLines; seitenweiser TextLine-Cache für Snap-Modus
+│   │                              # Highlight/Annotate: _highlightPageBitmap + _textLines; seitenweiser TextLine-Cache für Snap-Modus
+│   │                              # applyAnnotations(strokes, rects, comments) → AnnotatePdfWorkflow
 │   └── DocumentActionScreens.kt   # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen, RemovePasswordScreen, RemoveTextLayerScreen, RestrictUsageScreen
+├── annotate/
+│   └── AnnotateScreen.kt          # Vollbild-Annotieren: 3 Modi (Markieren/Schreiben/Zoom)
+│                                  # Markieren: Freihand-Strokes + Snap auf Textzeilen → HighlightRect
+│                                  # Schreiben: Textkommentare per Tap platzieren, per Drag am Ankerpunkt verschieben
+│                                  # Zoom/Pan via transformable; Koordinaten normalisiert (0..1) für Seitenunabhängigkeit
+│                                  # awaitEachGesture + manueller awaitPointerEvent-Loop (kein touch-slop Problem)
+│                                  # Undo/Clear behandeln Strokes + Rects + Comments gemeinsam
 ├── pageedit/
 │   ├── PageSelectionViewModel.kt  # Seiten-Thumbnails, Auswahl, saveAsCopy + Rotate/Delete/Extract/Duplicate-Workflows
 │   └── PageActionScreens.kt       # RotatePagesScreen, DeletePagesScreen, ExtractPagesScreen, DuplicatePagesScreen
@@ -123,6 +133,8 @@ domain/workflow/RemovePasswordWorkflow.kt   # Prüft: Datei existiert + isPdfEnc
 domain/workflow/RestrictUsageWorkflow.kt    # Prüft: Datei existiert → RestrictUsageUseCase
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
 domain/workflow/HighlightPdfWorkflow.kt     # Prüft: Datei existiert + (strokes oder rects) + nicht verschlüsselt → HighlightPdfUseCase
+domain/workflow/AnnotatePdfWorkflow.kt      # Prüft: Datei existiert + (strokes|rects|comments nicht leer) + nicht verschlüsselt → AnnotatePdfUseCase
+                                            # fängt IOException → StorageWriteFailed; Throwable → AnnotateFailed
 docs/privacy-policy.html            # Veröffentlichtes Privacy-Dokument (EN/DE) muss mit In-App-Privacy konsistent bleiben
 di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3 + MIGRATION_3_4 + MIGRATION_4_5
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
@@ -138,6 +150,9 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
                                    # extractTextLines(file, pageIndex): PDFTextStripper/TextPosition → TextLine-Liste (Font-Filter + Zeilengruppierung)
                                    #   Koordinaten: yDirAdj = Baseline (Screen-Y, von oben); top = yDirAdj-heightDir, bottom = yDirAdj
                                    # applyHighlight(input, outputDir, strokes, rects): Strokes + gefüllte Rects; Rects zuerst, eigenes Non-Stroking-Alpha
+                                   # applyAnnotations(input, outputDir, strokes, rects, comments): wie applyHighlight + Textkommentare; Suffix _Annotiert
+                                   #   appendTextComment(): rotationsawarere Textmatrix (0°/90°/180°/270°); eigener PDPageContentStream nach Highlight-Stream
+                                   #   sanitizeCommentText(): entfernt Sonderzeichen, die PDFBox nicht encodieren kann
                                    # restrictUsage(ownerPwd, canPrint, canCopy, canEdit): AccessPermission + StandardProtectionPolicy(ownerPwd, "", ap); Suffix _Eingeschraenkt
                                    # WrongPasswordException + PasswordRequiredException als innere IOException-Subklassen
 ```
@@ -187,7 +202,8 @@ test/
 ├── domain/workflow/
 │   ├── *WorkflowTest.kt                    # Merge/Split/Reorder/Rotate/Delete/Extract/Duplicate
 │   ├── *WorkflowTest.kt                    # PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Searchable
-│   └── HighlightPdfWorkflowTest.kt         # leer, Rect-only, gemischt, fehlende Datei, verschlüsselt, IO-Fehler, Erfolg
+│   ├── HighlightPdfWorkflowTest.kt         # leer, Rect-only, gemischt, fehlende Datei, verschlüsselt, IO-Fehler, Erfolg
+│   └── AnnotatePdfWorkflowTest.kt          # (analog zu Highlight) fehlende Datei, verschlüsselt, keine Annotations, Erfolg
 ├── ui/
 │   ├── split/SplitViewModelTest.kt         # editLoading-Guard, Success/Failure, clearError (5 Tests)
 │   ├── reorder/ReorderViewModelTest.kt     # editLoading-Guard, Success/Failure, clearError (4 Tests)

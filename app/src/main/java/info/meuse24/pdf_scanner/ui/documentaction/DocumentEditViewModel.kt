@@ -12,7 +12,9 @@ import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
+import info.meuse24.pdf_scanner.domain.usecase.TextComment
 import info.meuse24.pdf_scanner.domain.usecase.TextLine
+import info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.HighlightPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
@@ -48,6 +50,7 @@ class DocumentEditViewModel @Inject constructor(
     private val removePasswordWorkflow: RemovePasswordWorkflow,
     private val restrictUsageWorkflow: RestrictUsageWorkflow,
     private val highlightPdfWorkflow: HighlightPdfWorkflow,
+    private val annotatePdfWorkflow: AnnotatePdfWorkflow,
     private val pdfEditor: PdfEditor,
     private val errorMapper: WorkflowErrorMapper,
     @ApplicationContext private val context: Context,
@@ -265,6 +268,26 @@ class DocumentEditViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 when (val result = highlightPdfWorkflow(record, strokes, rects, scansDir)) {
+                    is WorkflowResult.Success -> _success.value = true
+                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun applyAnnotations(
+        strokes: List<HighlightStroke>,
+        rects: List<HighlightRect> = emptyList(),
+        comments: List<TextComment> = emptyList()
+    ) {
+        val record = _record.value ?: return
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = annotatePdfWorkflow(record, strokes, rects, comments, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
                     is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
                 }

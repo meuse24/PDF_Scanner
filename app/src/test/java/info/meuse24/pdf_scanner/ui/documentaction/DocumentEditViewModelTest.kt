@@ -7,6 +7,7 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.AddPageNumbersUseCase
 import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.HighlightPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
@@ -101,6 +102,7 @@ class DocumentEditViewModelTest {
         val removePasswordWorkflow   = mock(RemovePasswordWorkflow::class.java)
         val restrictUsageWorkflow    = mock(RestrictUsageWorkflow::class.java)
         val highlightPdfWorkflow     = mock(HighlightPdfWorkflow::class.java)
+        val annotatePdfWorkflow      = mock(AnnotatePdfWorkflow::class.java)
 
         val context = mock(Context::class.java)
         `when`(context.filesDir).thenReturn(tmpFolder.root)
@@ -118,6 +120,7 @@ class DocumentEditViewModelTest {
             removePasswordWorkflow = removePasswordWorkflow,
             restrictUsageWorkflow = restrictUsageWorkflow,
             highlightPdfWorkflow = highlightPdfWorkflow,
+            annotatePdfWorkflow = annotatePdfWorkflow,
             pdfEditor = pdfEditor,
             errorMapper = errorMapper,
             context = context,

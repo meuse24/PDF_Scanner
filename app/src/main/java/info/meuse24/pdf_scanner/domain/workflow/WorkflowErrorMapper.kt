@@ -50,5 +50,7 @@ class WorkflowErrorMapper @Inject constructor(
         is ScanWorkflowError.UsageRestrictionFailed -> context.getString(R.string.restrict_usage_error)
         ScanWorkflowError.NoHighlightStrokes -> context.getString(R.string.highlight_no_strokes)
         is ScanWorkflowError.HighlightFailed -> context.getString(R.string.highlight_error)
+        ScanWorkflowError.NoAnnotations -> context.getString(R.string.annotate_no_items)
+        is ScanWorkflowError.AnnotateFailed -> context.getString(R.string.annotate_error)
     }
 }

@@ -42,4 +42,6 @@ sealed interface ScanWorkflowError {
     data class UsageRestrictionFailed(override val cause: Throwable) : ScanWorkflowError
     data object NoHighlightStrokes : ScanWorkflowError
     data class HighlightFailed(override val cause: Throwable) : ScanWorkflowError
+    data object NoAnnotations : ScanWorkflowError
+    data class AnnotateFailed(override val cause: Throwable) : ScanWorkflowError
 }

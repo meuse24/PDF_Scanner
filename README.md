@@ -9,10 +9,10 @@ A clean, privacy-focused Android app for scanning documents to PDF using Google'
 - **Multi-page PDFs** — photograph multiple pages in one session
 - **OCR / searchable PDFs** — extract text from scans or embed an invisible text layer for full-text search in any PDF viewer
 
-### Archive & Sharing
+### Archive & Search
 - Browse, open, share, export, and delete scanned PDFs
-- Full-text search across filename and extracted OCR text
-- Automatic on-device tagging for common document types such as invoices, contracts, bank documents, and certificates
+- **Full-text search** across filename and extracted OCR text (Room FTS4)
+- **Automatic on-device tagging** — derives tags such as invoice, contract, bank, insurance, certificate, or delivery from OCR content using keyword heuristics and IBAN detection; no cloud required
 - Multi-select bulk actions: share, export to Downloads, merge, OCR, make searchable, delete
 - Tap to open in any installed PDF viewer
 
@@ -25,16 +25,23 @@ A clean, privacy-focused Android app for scanning documents to PDF using Google'
 - **Extract pages** — pull selected pages into a new PDF
 - **Duplicate pages** — copy selected pages within the document
 
-### PDF Marks
+### PDF Marks & Annotations
+- **Annotate (mark / comment)** — full-screen annotation editor with three modes:
+  - *Mark mode* — draw freehand yellow highlight strokes; for searchable PDFs, an optional snap mode aligns strokes to detected text lines and converts them to precise highlight rectangles
+  - *Write mode* — tap anywhere on the page to place a short text comment; tap an existing comment to edit or delete it; drag the blue anchor dot to reposition a comment
+  - *Zoom mode* — pinch-to-zoom and pan for precise placement; zoom factor shown next to the reset button
+  - Page navigation with previous/next buttons and page indicator in one row
+  - Undo last annotation, clear current page, or reset all marks
+  - All annotations (strokes, rectangles, comments) persist across screen rotation
+  - Saves as a new annotated PDF copy (suffix `_Annotiert`)
 - **Page numbers** — stamp sequential page numbers onto every page
 - **Text watermark** — overlay diagonal text across all pages
-- **Highlight** — draw yellow marker strokes on any page with zoom/pan support and adjustable marker width
+- **Signature** — draw a freehand signature and stamp it onto any page at adjustable size
 
-### PDF Output
+### PDF Output & Protection
 - **Compress** — reduce file size (Low / Medium / High preset)
 - **Password protect** — encrypt with AES user password
 - **Unlock** — remove password from a protected PDF
-- **Signature** — draw a freehand signature and stamp it onto any page at adjustable size
 - **Remove text layer** — rebuild the PDF as image-only pages
 - **Restrict usage** — disable printing, copying, or editing with an owner password
 
@@ -77,17 +84,25 @@ MVVM + Clean Architecture with Jetpack Compose.
 ```
 domain/
 ├── usecase/        Import/export/delete, OCR, searchable PDF, page editing,
-│                   highlight, remove text layer, remove password, restrict usage,
-│                   auto-tagging, shared page-thumbnail helpers
-└── workflow/       Orchestrates use cases and maps failures to WorkflowResult<T>
+│                   highlight, annotate (AnnotatePdfUseCase), remove text layer,
+│                   remove password, restrict usage, auto-tagging,
+│                   shared page-thumbnail helpers
+│                   Data classes: HighlightStroke, HighlightRect, TextLine, TextComment
+└── workflow/       Orchestrates use cases and maps failures to WorkflowResult<T>;
+                    includes AnnotatePdfWorkflow, HighlightPdfWorkflow
 
 ui/
 ├── navigation/         AppNavigation + route definitions
+│                       Drawer gesture disabled on AnnotateScreen
 ├── home/               Archive screen, bulk actions, search, tags, scan item menus
 ├── components/         Shared action-screen and preview composables
 ├── overlay/            Page numbers, text watermark
-├── documentaction/     Compress, protect, unlock, highlight,
-│                       remove text layer, remove password, restrict usage
+├── documentaction/     DocumentEditViewModel handles compress, protect, unlock,
+│                       highlight, annotate, remove text layer,
+│                       remove password, restrict usage
+├── annotate/           AnnotateScreen — 3-mode annotation editor
+│                       (Mark / Write / Zoom) with zoom-aware drawing,
+│                       text comment placement and drag-to-reposition
 ├── pageedit/           Rotate, delete, extract, duplicate
 ├── split/              Split screen + view model
 ├── reorder/            Reorder screen + view model
@@ -107,13 +122,16 @@ util/                   FileUtil, OcrManager, SearchablePdfBuilder, PdfEditor
 
 **Scanner flow:** Triggered via a `Boolean` state in `AppNavigation`, passed to `HomeScreen`, which reacts with `LaunchedEffect`. Avoids holding an Activity reference in the ViewModel.
 
-**Edit screens:** Each edit action navigates to a dedicated screen passing `scanId` as a route argument. `DocumentEditViewModel` loads the target `ScanRecord` for page numbers, text watermark, compress, protect, unlock, highlight, remove text layer, remove password, restrict usage, and signature flows and maps workflow failures through `WorkflowErrorMapper`. Page-oriented edit screens use `PageSelectionViewModel`; split and reorder use their dedicated view models.
+**Edit screens:** Each edit action navigates to a dedicated screen passing `scanId` as a route argument. `DocumentEditViewModel` loads the target `ScanRecord` and dispatches to the appropriate workflow, mapping failures through `WorkflowErrorMapper`. Page-oriented edit screens use `PageSelectionViewModel`; split and reorder use their own dedicated view models.
 
-**Search & tags:** `ScanRecord` stores extracted OCR text and comma-separated tag keys. Room FTS4 indexes filename and extracted text for debounced archive search, while `AutoTagUseCase` derives tags locally from OCR content and heuristics such as IBAN detection.
+**Annotation workflow:** `AnnotateScreen` renders one PDF page as a bitmap preview and overlays a Compose `Canvas` for drawing. Three interaction modes are managed via `pointerInput` keyed on mode:
+- *Mark*: `detectDragGestures` maps touch points inverse from viewport into normalised document coordinates (0–1). For snap mode, finished strokes are matched against extracted `TextLine` objects and converted to precise `HighlightRect` entries.
+- *Write*: `awaitEachGesture` with a manual `awaitPointerEvent` loop (avoids touch-slop cancellation for taps). Hit-tests anchor points; short gestures open a comment dialog, long drags reposition the comment.
+- *Zoom*: `transformable` + `clampPanOffset`. Zoom factor displayed inline next to the reset button.
 
-**Highlight workflow:** `HighlightScreen` renders one PDF page as a bitmap preview and draws a yellow canvas overlay on top. Zooming and panning are handled through Compose transforms, while draw gestures are inverse-mapped from the viewport back into document coordinates so highlighted strokes stay aligned even when the page is zoomed.
+All annotation state (`HighlightStroke`, `HighlightRect`, `TextCommentDraft`) is persisted across screen rotation via `rememberSaveable` with custom `listSaver` implementations. `PdfEditor.applyAnnotations()` writes highlight strokes, snap rectangles, and text comments (rotation-aware text matrix for 0°/90°/180°/270° pages) into a new PDF copy.
 
-**Help screen:** `HelpScreen` is data-driven via `HelpSection` + `HelpAction`. The table of contents is rendered as one top-level card, the detail content is rendered as grouped `ActionCard`s below it, and scroll targets are derived from that list structure instead of hard-coded item indices. A floating action button returns the user to the contents after scrolling into the detail area.
+**Search & tags:** `ScanRecord` stores extracted OCR text and comma-separated tag keys. Room FTS4 indexes filename and extracted text for debounced archive search. `AutoTagUseCase` uses word-start boundary regex (`(?<!\p{L})`) against a curated list of unambiguous compound keywords (e.g. `Rechnungsnummer` rather than `Rechnung`) plus IBAN detection to avoid false positives from generic words appearing in non-target documents.
 
 **OCR / searchable PDFs:** Two-phase process — Phase 1: `PdfRenderer` renders each page to a bitmap (150 DPI), ML Kit OCR extracts text with bounding boxes, bitmap is immediately recycled. Phase 2: PdfBox appends an invisible text layer to the original PDF. Only one bitmap in RAM at a time, safe for large documents. CJK (ZH/JA) is supported for text extraction only; searchable PDF generation is not supported due to TTC/OTC font embedding limitations in PdfBox.
 
@@ -127,12 +145,13 @@ Unit tests run on JVM (no emulator required):
 util/PdfEditorTest.kt                          — PDF helper coverage
 domain/usecase/DeleteScansUseCaseTest.kt       — file deletion, thumbnails, error paths
 domain/usecase/MakeSearchableUseCaseTest.kt    — idempotency, DB updates, missing files
-domain/usecase/AutoTagUseCaseTest.kt           — local tagging heuristics
+domain/usecase/AutoTagUseCaseTest.kt           — local tagging heuristics incl. false-positive cases
 domain/workflow/*.kt                           — merge, split, reorder, rotate, delete, extract,
                                                  duplicate, page numbers, watermark, compress,
-                                                 protect, unlock, signature, highlight, searchable
+                                                 protect, unlock, signature, highlight,
+                                                 annotate, searchable
 ui/documentaction/DocumentEditViewModelTest.kt — document-edit action dispatch + failure mapping
-ui/highlight/HighlightScreenMathTest.kt        — zoom/pan math for highlight drawing
+ui/highlight/HighlightScreenMathTest.kt        — zoom/pan math, snap and rect helpers
 ui/reorder/ReorderViewModelTest.kt             — reorder state + workflow dispatch
 ui/split/SplitViewModelTest.kt                 — split state + workflow dispatch
 ```

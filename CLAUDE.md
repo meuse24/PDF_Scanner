@@ -127,6 +127,9 @@ data/
 domain/usecase/AutoTagUseCase.kt   # On-device Keyword-Tagger: gibt comma-sep. englische Tag-Keys zurück ("invoice,bank")
                                    # 6 Kategorien: invoice/contract/insurance/certificate/bank/delivery
                                    # IBAN-Regex für "bank"-Erkennung; keine externen Abhängigkeiten
+                                   # Nur spezifische Komposita (z.B. "Rechnungsnummer" statt "Rechnung"),
+                                   # wordStartPattern() verhindert Substring-Matches ("Berechnung" → kein invoice)
+                                   # Entfernt: "Rechnung","MwSt","VAT","Vertrag","Contract","Police","BIC","Tracking","Lieferung"
 domain/workflow/WorkflowErrorMapper.kt  # @Singleton: ScanWorkflowError → lokalisierter String
 domain/workflow/RemoveTextLayerWorkflow.kt  # Prüft: Datei existiert → RemoveTextLayerUseCase
 domain/workflow/RemovePasswordWorkflow.kt   # Prüft: Datei existiert + isPdfEncrypted → RemovePasswordUseCase

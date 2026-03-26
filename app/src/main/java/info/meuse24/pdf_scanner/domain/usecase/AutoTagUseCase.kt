@@ -14,7 +14,7 @@ class AutoTagUseCase @Inject constructor() {
         val found = mutableSetOf<String>()
 
         for ((tagKey, keywords) in TAG_KEYWORDS) {
-            if (keywords.any { kw -> text.contains(kw, ignoreCase = true) }) {
+            if (keywords.any { kw -> wordStartPattern(kw).containsMatchIn(text) }) {
                 found.add(tagKey)
             }
         }
@@ -27,31 +27,41 @@ class AutoTagUseCase @Inject constructor() {
         // IBAN: 2-letter country code + 2 digits + up to 30 alphanumeric chars (spaces allowed)
         private val IBAN_REGEX = Regex("""[A-Z]{2}\d{2}[\s]?(?:[A-Z0-9]{4}[\s]?){3,7}""")
 
+        // Matches keyword only at the start of a word (not inside a longer word like "Berechnung").
+        // \p{L} covers all Unicode letters including German umlauts.
+        private fun wordStartPattern(kw: String) =
+            Regex("""(?<!\p{L})${Regex.escape(kw)}""", RegexOption.IGNORE_CASE)
+
         val TAG_KEYWORDS: Map<String, List<String>> = mapOf(
+            // Generic "Rechnung"/"MwSt"/"VAT" removed — too common in any financial text.
             "invoice" to listOf(
-                "Rechnung", "Invoice", "Faktura", "MwSt", "VAT",
-                "Rechnungsbetrag", "Zahlungsziel", "Nettobetrag", "Bruttobetrag",
-                "Rechnungsnummer", "Rechnungsdatum"
+                "Invoice", "Faktura",
+                "Rechnungsnummer", "Rechnungsdatum", "Rechnungsbetrag",
+                "Nettobetrag", "Bruttobetrag", "Zahlungsziel"
             ),
+            // Generic "Vertrag"/"Contract" removed — "vertragen" etc. cause false positives.
             "contract" to listOf(
-                "Vertrag", "Vereinbarung", "Contract", "Agreement",
-                "Mietvertrag", "Arbeitsvertrag", "Kaufvertrag", "Dienstleistungsvertrag"
+                "Mietvertrag", "Arbeitsvertrag", "Kaufvertrag", "Dienstleistungsvertrag",
+                "Vereinbarung", "Agreement"
             ),
+            // "Police" removed — matches English texts about the police.
             "insurance" to listOf(
-                "Versicherung", "Insurance", "Versicherungsschein",
-                "Schadensfall", "Versicherungsbeitrag", "Police"
+                "Versicherungsschein", "Versicherungsbeitrag", "Schadensfall",
+                "Insurance", "Versicherung"
             ),
             "certificate" to listOf(
-                "Zeugnis", "Certificate", "Diploma", "Diplom",
+                "Zeugnis", "Certificate", "Diplom", "Diploma",
                 "Bescheinigung", "Zertifikat", "Urkunde", "Abschlusszeugnis"
             ),
+            // "BIC" (too short) and "Tracking" removed.
             "bank" to listOf(
-                "Kontoauszug", "Bank statement", "Kontonummer", "BIC",
+                "Kontoauszug", "Bank statement", "Kontonummer",
                 "Sparkasse", "Volksbank", "Commerzbank", "Deutsche Bank", "Girokonto"
             ),
+            // "Tracking" and generic "Lieferung" removed.
             "delivery" to listOf(
                 "Lieferschein", "Delivery note", "Frachtbrief",
-                "Sendungsnummer", "Tracking", "Wareneingang", "Lieferung"
+                "Sendungsnummer", "Wareneingang"
             )
         )
     }

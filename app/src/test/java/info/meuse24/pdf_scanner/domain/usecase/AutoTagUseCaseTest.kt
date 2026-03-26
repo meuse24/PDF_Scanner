@@ -15,7 +15,7 @@ class AutoTagUseCaseTest {
 
     @Test
     fun `invoice keyword detected in German`() {
-        val tags = useCase.extractTags("Rechnung Nr. 2024-001 über 100 EUR inkl. MwSt.")
+        val tags = useCase.extractTags("Rechnungsnummer: 2024-001, Zahlungsziel: 14 Tage, Nettobetrag: 100 EUR")
         assertNotNull(tags)
         assertTrue(tags!!.split(",").contains("invoice"))
     }
@@ -36,7 +36,7 @@ class AutoTagUseCaseTest {
 
     @Test
     fun `multiple tags detected`() {
-        val tags = useCase.extractTags("Rechnung für Versicherungsbeitrag, IBAN DE89 3704 0044 0532 0130 00")
+        val tags = useCase.extractTags("Rechnungsnummer 001, Versicherungsbeitrag fällig, IBAN DE89 3704 0044 0532 0130 00")
         assertNotNull(tags)
         val tagList = tags!!.split(",")
         assertTrue(tagList.contains("invoice"))
@@ -50,8 +50,18 @@ class AutoTagUseCaseTest {
     }
 
     @Test
+    fun `generic words no longer trigger false positives`() {
+        // "Rechnung" alone (e.g. in a novel) must not tag as invoice
+        assertNull(useCase.extractTags("Er bezahlte die Rechnung und verließ das Restaurant."))
+        // "Berechnung" (calculation) must not tag as invoice
+        assertNull(useCase.extractTags("Die Berechnung des Ergebnisses ergab 42."))
+        // "Police" (English police) must not tag as insurance
+        assertNull(useCase.extractTags("The police arrived at the scene quickly."))
+    }
+
+    @Test
     fun `tags are comma separated and sorted`() {
-        val tags = useCase.extractTags("Vertrag und Versicherungsschein und Rechnung")
+        val tags = useCase.extractTags("Mietvertrag, Versicherungsschein, Rechnungsnummer 42")
         assertNotNull(tags)
         val tagList = tags!!.split(",")
         assertEquals(tagList.sorted(), tagList)

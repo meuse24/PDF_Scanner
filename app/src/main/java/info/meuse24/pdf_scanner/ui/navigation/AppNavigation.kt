@@ -92,6 +92,7 @@ fun AppNavigation() {
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = currentRoute?.startsWith("annotate/") != true,
         drawerContent = {
             ModalDrawerSheet(
             drawerContainerColor = MaterialTheme.colorScheme.surfaceContainerLow

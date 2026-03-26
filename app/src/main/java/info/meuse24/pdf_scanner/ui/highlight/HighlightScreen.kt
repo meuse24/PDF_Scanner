@@ -43,6 +43,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -302,7 +303,7 @@ fun HighlightScreen(
     ) {
         // ── Kompakte Toolbar: Modus-Chips + Seite/Zoom-Info ────────────
         Surface(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().zIndex(1f),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colorScheme.surfaceContainerLow,
             tonalElevation = 1.dp
@@ -461,6 +462,7 @@ fun HighlightScreen(
                         scaleY = zoomScale
                         translationX = zoomOffsetX
                         translationY = zoomOffsetY
+                        clip = true  // verhindert Overflow über Canvas-Grenzen hinaus
                     }
             ) {
                 if (bitmap != null) {

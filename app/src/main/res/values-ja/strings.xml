@@ -403,5 +403,15 @@
     <string name="label_bulk_extract">テキスト</string>
     <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">削除</string>
+
+    <!-- Rename -->
+    <string name="action_rename">PDF の名前を変更</string>
+    <string name="rename_dialog_title">PDF の名前を変更</string>
+    <string name="rename_hint">新しいファイル名（.pdf なし）</string>
+    <string name="rename_confirm">変更する</string>
+    <string name="rename_success">次に変更しました: %1$s</string>
+    <string name="rename_error_exists">同じ名前のファイルが既に存在します</string>
+    <string name="rename_error_failed">名前の変更に失敗しました</string>
+    <string name="help_item_rename">「PDF の名前を変更」を選択すると、ドキュメントに新しい名前を付けられます。ファイル名はアーカイブ内で一意である必要があり、.pdf 拡張子は自動的に付加されます。</string>
 </resources>
 

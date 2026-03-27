@@ -133,4 +133,5 @@ class FakeScanDao : ScanDao {
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {
         pageMetricUpdates.add(Triple(id, pageCount, fileSize))
     }
+    override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
 }

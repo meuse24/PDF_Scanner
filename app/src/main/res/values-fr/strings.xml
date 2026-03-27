@@ -403,4 +403,14 @@
     <string name="label_bulk_extract">Texte</string>
     <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">Supprimer</string>
+
+    <!-- Rename -->
+    <string name="action_rename">Renommer le PDF</string>
+    <string name="rename_dialog_title">Renommer le PDF</string>
+    <string name="rename_hint">Nouveau nom de fichier (sans .pdf)</string>
+    <string name="rename_confirm">Renommer</string>
+    <string name="rename_success">Renommé en : %1$s</string>
+    <string name="rename_error_exists">Un fichier portant ce nom existe déjà</string>
+    <string name="rename_error_failed">Le renommage a échoué</string>
+    <string name="help_item_rename">Choisissez Renommer le PDF pour attribuer un nouveau nom à un document. Le nom doit être unique dans l\'archive. L\'extension .pdf est ajoutée automatiquement.</string>
 </resources>

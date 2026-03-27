@@ -35,4 +35,7 @@ interface ScanDao {
 
     @Query("UPDATE scan_records SET pageCount = :pageCount, fileSize = :fileSize WHERE id = :id")
     suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long)
+
+    @Query("UPDATE scan_records SET filename = :filename, filepath = :filepath, thumbnail_path = :thumbnailPath WHERE id = :id")
+    suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?)
 }

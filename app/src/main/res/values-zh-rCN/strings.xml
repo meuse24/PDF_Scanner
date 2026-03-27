@@ -403,5 +403,15 @@
     <string name="label_bulk_extract">文字</string>
     <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">删除</string>
+
+    <!-- Rename -->
+    <string name="action_rename">重命名 PDF</string>
+    <string name="rename_dialog_title">重命名 PDF</string>
+    <string name="rename_hint">新文件名（不含 .pdf）</string>
+    <string name="rename_confirm">重命名</string>
+    <string name="rename_success">已重命名为：%1$s</string>
+    <string name="rename_error_exists">已存在同名文件</string>
+    <string name="rename_error_failed">重命名失败</string>
+    <string name="help_item_rename">选择"重命名 PDF"可为文档指定新名称。文件名在档案中必须唯一，.pdf 扩展名将自动添加。</string>
 </resources>
 

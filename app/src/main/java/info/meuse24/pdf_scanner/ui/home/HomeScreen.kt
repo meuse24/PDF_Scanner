@@ -153,6 +153,10 @@ fun HomeScreen(
     var showMergeDialog    by remember { mutableStateOf(false) }
     var mergeFilenameInput by rememberSaveable { mutableStateOf("") }
 
+    // ── Rename-Dialog-State ───────────────────────────────────────────────────
+    var recordToRename   by remember { mutableStateOf<ScanRecord?>(null) }
+    var renameInput      by rememberSaveable { mutableStateOf("") }
+
     // ── Bulk-OCR-Sprachdialog ─────────────────────────────────────────────────
     var showBulkLangDialog    by remember { mutableStateOf(false) }
     var bulkLangForSearchable by remember { mutableStateOf(false) }
@@ -335,6 +339,10 @@ fun HomeScreen(
                                     ScanAction.RestrictUsage   -> onNavigateToRestrictUsage(record.id)
                                     ScanAction.ExportAsJpg     -> viewModel.exportAsJpg(record)
                                     ScanAction.Annotate        -> onNavigateToAnnotate(record.id)
+                                    ScanAction.Rename          -> {
+                                        renameInput    = record.filename
+                                        recordToRename = record
+                                    }
                                 }
                             }
                         )
@@ -467,6 +475,37 @@ fun HomeScreen(
                 }
             },
             onDismiss = { showMergeDialog = false }
+        )
+    }
+
+    // ── Rename-Dialog ─────────────────────────────────────────────────────────
+    recordToRename?.let { record ->
+        AlertDialog(
+            onDismissRequest = { recordToRename = null },
+            title   = { Text(stringResource(R.string.rename_dialog_title)) },
+            text    = {
+                OutlinedTextField(
+                    value         = renameInput,
+                    onValueChange = { renameInput = it },
+                    label         = { Text(stringResource(R.string.rename_hint)) },
+                    singleLine    = true,
+                    modifier      = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick  = {
+                        viewModel.renameScan(record, renameInput)
+                        recordToRename = null
+                    },
+                    enabled  = renameInput.isNotBlank()
+                ) { Text(stringResource(R.string.rename_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { recordToRename = null }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
         )
     }
 

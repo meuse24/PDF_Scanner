@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Draw
@@ -139,7 +140,8 @@ fun HelpScreen() {
                 icon = Icons.Default.FormatListNumbered,
                 titleRes = R.string.help_section_pdf_marks,
                 actions = listOf(
-                    HelpAction(Icons.Default.FormatListNumbered, R.string.action_page_numbers, R.string.help_item_page_numbers),
+                    HelpAction(Icons.Default.DriveFileRenameOutline, R.string.action_rename,       R.string.help_item_rename),
+                    HelpAction(Icons.Default.FormatListNumbered,    R.string.action_page_numbers, R.string.help_item_page_numbers),
                     HelpAction(Icons.AutoMirrored.Filled.BrandingWatermark, R.string.action_text_watermark, R.string.help_item_watermark),
                     HelpAction(Icons.Default.BorderColor,  R.string.action_annotate_pdf,   R.string.help_item_annotate_pdf),
                     HelpAction(Icons.Default.Draw,         R.string.action_sign_pdf,       R.string.help_item_sign_pdf)

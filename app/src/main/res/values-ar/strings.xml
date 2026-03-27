@@ -403,5 +403,15 @@
     <string name="label_bulk_extract">نص</string>
     <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">حذف</string>
+
+    <!-- Rename -->
+    <string name="action_rename">إعادة تسمية ملف PDF</string>
+    <string name="rename_dialog_title">إعادة تسمية ملف PDF</string>
+    <string name="rename_hint">اسم الملف الجديد (بدون .pdf)</string>
+    <string name="rename_confirm">إعادة تسمية</string>
+    <string name="rename_success">تمت إعادة التسمية إلى: %1$s</string>
+    <string name="rename_error_exists">يوجد ملف بهذا الاسم بالفعل</string>
+    <string name="rename_error_failed">فشلت إعادة التسمية</string>
+    <string name="help_item_rename">اختر إعادة تسمية ملف PDF لإعطاء المستند اسمًا جديدًا. يجب أن يكون الاسم فريدًا في الأرشيف، ويُضاف الامتداد .pdf تلقائيًا.</string>
 </resources>
 

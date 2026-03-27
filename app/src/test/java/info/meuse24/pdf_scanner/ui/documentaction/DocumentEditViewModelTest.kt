@@ -200,6 +200,7 @@ private class TestScanDao(
     override suspend fun markSearchable(id: Long, fileSize: Long) {}
     override suspend fun updateFileSize(id: Long, fileSize: Long) {}
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {}
+    override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
 }
 
 // ── Fake PdfEditors ───────────────────────────────────────────────────────────

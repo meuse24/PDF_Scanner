@@ -59,7 +59,7 @@ ui/
 │                                  # Verwaltet scanTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
 ├── home/
 │   ├── HomeScreen.kt              # Koordinator: Scanner-Launcher, Dialoge, Listen-Routing, Suchfeld
-│   │                              # ScanItem.onAction(ScanAction) → navigiert zu Edit-Screens
+│   │                              # ScanItem.onAction(ScanAction) → navigiert zu Edit-Screens; Rename-Dialog inline
 │   ├── HomeViewModel.kt           # Archivkern: Liste, Auswahl, Scanner-Trigger, Bulk-Aktionen, Suche
 │   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading (nur Merge)
 │   │                              # _searchQuery → filteredScans (FTS4 via flatMapLatest+debounce)
@@ -68,7 +68,7 @@ ui/
 │       │                          # MoreVert öffnet ModalBottomSheet (skipPartiallyExpanded=true) statt Dropdown
 │       │                          # Sheet-Sektionen: Bearbeiten · Seiten · Ausgabe · Schutz · OCR (nur wenn searchable)
 │       │                          # SheetItem: enabled = alpha 0.38f + clickable(enabled=false); icon FindInPage für Textebene entfernen
-│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Annotate/RemoveTextLayer/…)
+│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Rename/Annotate/RemoveTextLayer/…)
 │       │                          # onAction: (ScanAction) → Unit; Tags als farbige Badges (tertiaryContainer)
 │       ├── SelectionTitleBar.kt   # ✕ · „X ausgewählt" (selection_count) · SelectAll-Icon
 │       ├── BulkActionBar.kt       # Icon+Label: Teilen · Export · Merge (MergeType) · Text (TextSnippet) · OCR (FindInPage) · Löschen (rot)

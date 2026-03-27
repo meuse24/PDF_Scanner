@@ -403,5 +403,15 @@
     <string name="label_bulk_extract">पाठ</string>
     <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">हटाएं</string>
+
+    <!-- Rename -->
+    <string name="action_rename">PDF का नाम बदलें</string>
+    <string name="rename_dialog_title">PDF का नाम बदलें</string>
+    <string name="rename_hint">नया फ़ाइल नाम (.pdf के बिना)</string>
+    <string name="rename_confirm">नाम बदलें</string>
+    <string name="rename_success">नाम बदलकर किया: %1$s</string>
+    <string name="rename_error_exists">इस नाम की फ़ाइल पहले से मौजूद है</string>
+    <string name="rename_error_failed">नाम बदलना विफल</string>
+    <string name="help_item_rename">किसी दस्तावेज़ को नया नाम देने के लिए "PDF का नाम बदलें" चुनें। फ़ाइल का नाम आर्काइव में अद्वितीय होना चाहिए। .pdf एक्सटेंशन स्वतः जुड़ जाता है।</string>
 </resources>
 

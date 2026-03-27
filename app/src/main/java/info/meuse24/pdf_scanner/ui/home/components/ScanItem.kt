@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.FormatListNumbered
@@ -104,6 +105,7 @@ sealed interface ScanAction {
     data object RestrictUsage    : ScanAction
     data object ExportAsJpg      : ScanAction
     data object Annotate         : ScanAction
+    data object Rename           : ScanAction
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -321,7 +323,8 @@ private fun PdfActionSheet(
 
         // ── BEARBEITEN ───────────────────────────────────────────────────────
         SheetSection(R.string.sheet_section_edit)
-        SheetItem(Icons.Default.BorderColor, R.string.action_annotate_pdf,  notEncrypted) { onAction(ScanAction.Annotate) }
+        SheetItem(Icons.Default.DriveFileRenameOutline, R.string.action_rename, true)      { onAction(ScanAction.Rename) }
+        SheetItem(Icons.Default.BorderColor,            R.string.action_annotate_pdf, notEncrypted) { onAction(ScanAction.Annotate) }
         SheetItem(Icons.Default.Draw,        R.string.action_sign_pdf,      notEncrypted) { onAction(ScanAction.Signature) }
 
         // ── SEITEN ───────────────────────────────────────────────────────────

@@ -227,6 +227,32 @@ class HomeViewModel @Inject constructor(
 
     // ── Hilfsmethoden ─────────────────────────────────────────────────────────
 
+    fun renameScan(record: ScanRecord, newName: String) {
+        val trimmed = newName.trim()
+        if (trimmed.isBlank()) return
+        viewModelScope.launch(Dispatchers.IO) {
+            val scansDir = File(context.filesDir, "scans")
+            val newFile  = File(scansDir, "$trimmed.pdf")
+            if (newFile.exists()) {
+                _error.value = context.getString(R.string.rename_error_exists)
+                return@launch
+            }
+            val oldFile = File(record.filepath)
+            if (!oldFile.renameTo(newFile)) {
+                _error.value = context.getString(R.string.rename_error_failed)
+                return@launch
+            }
+            val newThumbPath = record.thumbnailPath?.let { oldThumb ->
+                val thumbFile = File(oldThumb)
+                val newThumb  = File(scansDir, "$trimmed.jpg")
+                if (thumbFile.exists()) thumbFile.renameTo(newThumb)
+                newThumb.absolutePath
+            }
+            repository.updateFilenameAndPath(record.id, trimmed, newFile.absolutePath, newThumbPath)
+            _success.value = context.getString(R.string.rename_success, trimmed)
+        }
+    }
+
     fun updateSearchQuery(query: String) { _searchQuery.value = query }
 
     fun clearOcrText() { _ocrText.value = null }

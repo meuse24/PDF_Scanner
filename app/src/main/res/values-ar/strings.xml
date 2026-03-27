@@ -414,6 +414,10 @@
     <string name="rename_error_failed">فشلت إعادة التسمية</string>
     <string name="help_item_rename">اختر إعادة تسمية ملف PDF لإعطاء المستند اسمًا جديدًا. يجب أن يكون الاسم فريدًا في الأرشيف، ويُضاف الامتداد .pdf تلقائيًا.</string>
 
+    <!-- Print -->
+    <string name="action_print_pdf">طباعة PDF</string>
+    <string name="help_item_print_pdf">اختر «طباعة PDF» لإرسال المستند إلى طابعة. تفتح نافذة طباعة النظام لتحديد الطابعة ونطاق الصفحات وعدد النسخ.</string>
+
     <!-- Grayscale -->
     <string name="action_grayscale_pdf">تحويل إلى تدرج رمادي</string>
     <string name="grayscale_screen_title">تدرج رمادي</string>

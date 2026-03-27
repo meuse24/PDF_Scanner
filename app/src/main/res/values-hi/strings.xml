@@ -414,6 +414,10 @@
     <string name="rename_error_failed">नाम बदलना विफल</string>
     <string name="help_item_rename">किसी दस्तावेज़ को नया नाम देने के लिए "PDF का नाम बदलें" चुनें। फ़ाइल का नाम आर्काइव में अद्वितीय होना चाहिए। .pdf एक्सटेंशन स्वतः जुड़ जाता है।</string>
 
+    <!-- Print -->
+    <string name="action_print_pdf">PDF प्रिंट करें</string>
+    <string name="help_item_print_pdf">दस्तावेज़ को प्रिंटर पर भेजने के लिए "PDF प्रिंट करें" चुनें। सिस्टम प्रिंट डायलॉग खुलेगा जहाँ आप प्रिंटर, पेज रेंज और प्रतियों की संख्या चुन सकते हैं।</string>
+
     <!-- Grayscale -->
     <string name="action_grayscale_pdf">ग्रेस्केल में बदलें</string>
     <string name="grayscale_screen_title">ग्रेस्केल</string>

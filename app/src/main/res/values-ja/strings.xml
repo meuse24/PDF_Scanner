@@ -414,6 +414,10 @@
     <string name="rename_error_failed">名前の変更に失敗しました</string>
     <string name="help_item_rename">「PDF の名前を変更」を選択すると、ドキュメントに新しい名前を付けられます。ファイル名はアーカイブ内で一意である必要があり、.pdf 拡張子は自動的に付加されます。</string>
 
+    <!-- Print -->
+    <string name="action_print_pdf">PDF を印刷</string>
+    <string name="help_item_print_pdf">「PDF を印刷」を選択すると、ドキュメントをプリンターに送信します。システムの印刷ダイアログが開き、プリンター、ページ範囲、部数を選択できます。</string>
+
     <!-- Grayscale -->
     <string name="action_grayscale_pdf">グレースケールに変換</string>
     <string name="grayscale_screen_title">グレースケール</string>

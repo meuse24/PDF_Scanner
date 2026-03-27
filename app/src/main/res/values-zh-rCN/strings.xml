@@ -414,6 +414,10 @@
     <string name="rename_error_failed">重命名失败</string>
     <string name="help_item_rename">选择"重命名 PDF"可为文档指定新名称。文件名在档案中必须唯一，.pdf 扩展名将自动添加。</string>
 
+    <!-- Print -->
+    <string name="action_print_pdf">打印 PDF</string>
+    <string name="help_item_print_pdf">选择"打印 PDF"将文档发送到打印机。系统打印对话框将打开，您可以选择打印机、页面范围和份数。</string>
+
     <!-- Grayscale -->
     <string name="action_grayscale_pdf">转换为灰度</string>
     <string name="grayscale_screen_title">灰度</string>

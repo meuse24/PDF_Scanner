@@ -408,6 +408,10 @@
     <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">Löschen</string>
 
+    <!-- Print -->
+    <string name="action_print_pdf">PDF drucken</string>
+    <string name="help_item_print_pdf">Wähle PDF drucken, um das Dokument an einen Drucker zu senden. Der System-Druckdialog öffnet sich, in dem du Drucker, Seitenbereich und Kopienanzahl auswählen kannst.</string>
+
     <!-- Grayscale -->
     <string name="action_grayscale_pdf">In Graustufen umwandeln</string>
     <string name="grayscale_screen_title">Graustufen</string>

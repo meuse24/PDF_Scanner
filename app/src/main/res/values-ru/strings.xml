@@ -414,6 +414,10 @@
     <string name="rename_error_failed">Ошибка переименования</string>
     <string name="help_item_rename">Выберите «Переименовать PDF», чтобы присвоить документу новое имя. Имя должно быть уникальным в архиве. Расширение .pdf добавляется автоматически.</string>
 
+    <!-- Print -->
+    <string name="action_print_pdf">Печать PDF</string>
+    <string name="help_item_print_pdf">Выберите «Печать PDF», чтобы отправить документ на принтер. Откроется системный диалог печати, где можно выбрать принтер, диапазон страниц и количество копий.</string>
+
     <!-- Grayscale -->
     <string name="action_grayscale_pdf">Преобразовать в оттенки серого</string>
     <string name="grayscale_screen_title">Оттенки серого</string>

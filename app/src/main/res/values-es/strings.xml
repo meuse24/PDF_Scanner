@@ -414,6 +414,10 @@
     <string name="rename_error_failed">Error al renombrar</string>
     <string name="help_item_rename">Elige Renombrar PDF para asignar un nuevo nombre a un documento. El nombre debe ser único en el archivo. La extensión .pdf se añade automáticamente.</string>
 
+    <!-- Print -->
+    <string name="action_print_pdf">Imprimir PDF</string>
+    <string name="help_item_print_pdf">Elige Imprimir PDF para enviar el documento a una impresora. Se abre el diálogo de impresión del sistema donde puedes seleccionar la impresora, el rango de páginas y el número de copias.</string>
+
     <!-- Grayscale -->
     <string name="action_grayscale_pdf">Convertir a escala de grises</string>
     <string name="grayscale_screen_title">Escala de grises</string>

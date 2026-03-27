@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.InvertColors
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.SwapVert
@@ -110,6 +111,7 @@ sealed interface ScanAction {
     data object Rename           : ScanAction
     data object Grayscale        : ScanAction
     data object PdfMetadata      : ScanAction
+    data object Print            : ScanAction
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -345,6 +347,7 @@ private fun PdfActionSheet(
         SheetSection(R.string.sheet_section_output)
         SheetItem(Icons.Default.FormatListNumbered,              R.string.action_page_numbers,  notEncrypted)                         { onAction(ScanAction.PageNumbers) }
         SheetItem(Icons.AutoMirrored.Filled.BrandingWatermark,   R.string.action_text_watermark, notEncrypted)                        { onAction(ScanAction.TextWatermark) }
+        SheetItem(Icons.Default.Print,                           R.string.action_print_pdf,     notEncrypted)                         { onAction(ScanAction.Print) }
         SheetItem(Icons.Default.Image,                           R.string.action_export_as_jpg, notEncrypted)                         { onAction(ScanAction.ExportAsJpg) }
         SheetItem(Icons.Default.InvertColors,                    R.string.action_grayscale_pdf, notEncrypted)                         { onAction(ScanAction.Grayscale) }
         SheetItem(Icons.Default.Compress,                        R.string.action_compress_pdf,  notEncrypted && !record.isSearchable) { onAction(ScanAction.CompressPdf) }

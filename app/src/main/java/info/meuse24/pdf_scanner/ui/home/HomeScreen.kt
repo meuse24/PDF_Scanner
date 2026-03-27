@@ -67,8 +67,10 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import android.print.PrintManager
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import info.meuse24.pdf_scanner.util.PdfPrintAdapter
 import com.google.mlkit.common.MlKitException
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
@@ -343,6 +345,18 @@ fun HomeScreen(
                                     ScanAction.Annotate        -> onNavigateToAnnotate(record.id)
                                     ScanAction.Grayscale       -> onNavigateToGrayscale(record.id)
                                     ScanAction.PdfMetadata     -> onNavigateToPdfMetadata(record.id)
+                                    ScanAction.Print           -> {
+                                        val printManager = context.getSystemService(PrintManager::class.java)
+                                        printManager?.print(
+                                            record.filename,
+                                            PdfPrintAdapter(
+                                                file      = java.io.File(record.filepath),
+                                                jobName   = record.filename,
+                                                pageCount = record.pageCount
+                                            ),
+                                            null
+                                        )
+                                    }
                                     ScanAction.Rename          -> {
                                         renameInput    = record.filename
                                         recordToRename = record

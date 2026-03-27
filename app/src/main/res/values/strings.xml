@@ -434,6 +434,10 @@
     <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">Delete</string>
 
+    <!-- Print -->
+    <string name="action_print_pdf">Print PDF</string>
+    <string name="help_item_print_pdf">Choose Print PDF to send the document to a printer. The system print dialog opens where you can select the printer, page range, and number of copies.</string>
+
     <!-- Grayscale -->
     <string name="action_grayscale_pdf">Convert to Grayscale</string>
     <string name="grayscale_screen_title">Grayscale</string>

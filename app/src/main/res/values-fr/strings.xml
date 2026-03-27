@@ -414,6 +414,10 @@
     <string name="rename_error_failed">Le renommage a échoué</string>
     <string name="help_item_rename">Choisissez Renommer le PDF pour attribuer un nouveau nom à un document. Le nom doit être unique dans l\'archive. L\'extension .pdf est ajoutée automatiquement.</string>
 
+    <!-- Print -->
+    <string name="action_print_pdf">Imprimer le PDF</string>
+    <string name="help_item_print_pdf">Choisissez Imprimer le PDF pour envoyer le document à une imprimante. La boîte de dialogue d\'impression du système s\'ouvre pour sélectionner l\'imprimante, la plage de pages et le nombre de copies.</string>
+
     <!-- Grayscale -->
     <string name="action_grayscale_pdf">Convertir en niveaux de gris</string>
     <string name="grayscale_screen_title">Niveaux de gris</string>

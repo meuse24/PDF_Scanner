@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.InvertColors
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Draw
@@ -154,6 +155,7 @@ fun HelpScreen() {
                 icon = Icons.Default.PictureAsPdf,
                 titleRes = R.string.help_section_pdf_output,
                 actions = listOf(
+                    HelpAction(Icons.Default.Print, R.string.action_print_pdf, R.string.help_item_print_pdf),
                     HelpAction(Icons.Default.Compress, R.string.action_compress_pdf, R.string.help_item_compress_pdf),
                     HelpAction(Icons.Default.InvertColors, R.string.action_grayscale_pdf, R.string.help_item_grayscale_pdf),
                     HelpAction(Icons.Default.Image, R.string.action_export_as_jpg, R.string.help_item_export_as_jpg),

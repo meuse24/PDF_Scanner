@@ -46,7 +46,7 @@ domain/
     ├── HighlightRect.kt           # data class: textausgerichtetes Highlight-Rechteck (left/top/right/bottom/pageIndex)
     ├── TextLine.kt                # data class: extrahierte Textzeile in normalisierten Anzeige-Koordinaten
     ├── TextComment.kt             # data class: Textkommentar (pageIndex, anchorX, anchorY, text, fontSizeFraction)
-    ├── AutoTagUseCase.kt          # On-Device-Tagging: Keyword-Map + IBAN-Regex → kommaseparierte Tag-Keys (invoice,contract,…)
+    ├── AutoTagUseCase.kt          # On-Device-Tagger (inaktiv — nicht mehr aufgerufen; nur noch für Tests vorhanden)
     └── PageEditUtils.kt           # thumbnailFile(): gemeinsame Hilfsfunktion für Seitenbearbeitungs-UseCases
 
 ui/
@@ -63,6 +63,7 @@ ui/
 │   ├── HomeViewModel.kt           # Archivkern: Liste, Auswahl, Scanner-Trigger, Bulk-Aktionen, Suche
 │   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading (nur Merge)
 │   │                              # _searchQuery → filteredScans (FTS4 via flatMapLatest+debounce)
+│   │                              # renameScan(record, newName): PDF + Thumbnail umbenennen + updateFilenameAndPath
 │   └── components/
 │       ├── ScanItem.kt            # Card: Dateiname (maxLines=2, volle Breite) + Row(Thumbnail · Metadaten · Menü · Checkbox)
 │       │                          # MoreVert öffnet ModalBottomSheet (skipPartiallyExpanded=true) statt Dropdown
@@ -108,32 +109,24 @@ ui/
 ├── signature/
 │   └── SignatureScreen.kt         # Freihand-Zeichen-Pad + Seiten-/Größenauswahl — nutzt DocumentEditViewModel
 ├── highlight/
-│   └── HighlightScreen.kt         # Gelber Marker-Workflow: PDF-Seite + Canvas-Overlay; Seiten-/Breiten-Auswahl
-│                                  # Zoom/Pan via transformable; Zeichnen mappt Touchpunkte invers aus dem Viewport in Dokumentkoordinaten
-│                                  # Für durchsuchbare PDFs: optionaler Snap-Chip "Text ausrichten" → Strich wird zu HighlightRect(s)
-│                                  # Undo/Clear/Reset behandeln Strokes + Rects; Fallback auf Freihand wenn keine Textzeile getroffen wird
-│                                  # UI: kompakte Surface-Toolbar oben (8dp Padding); Canvas immer weißer Hintergrund + shadow(4dp);
-│                                  # kompakte Surface-Steuerleiste unten; Außenpadding 8dp; verticalSpacing 6dp
+│   └── HighlightScreen.kt         # INAKTIV (keine Nav-Route mehr; Funktionalität in AnnotateScreen enthalten)
+│                                  # Datei vorhanden, aber nicht erreichbar — HighlightPdfWorkflow + UseCase bleiben für Tests
 ├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
 │                                  # Hilfe-Texte decken Suche/OCR/Highlight-Snap/Privacy-Verhalten ab
 ├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig; zusätzliche Karten für Funktionen + Privacy
-└── privacy/PrivacyScreen.kt       # Privacy-Übersicht; Texte betonen lokale Speicherung, OCR-Text, Auto-Tags und Play-Services-Abhängigkeit
+└── privacy/PrivacyScreen.kt       # Privacy-Übersicht; Texte betonen lokale Speicherung, OCR-Text und Play-Services-Abhängigkeit
 
 data/
 ├── local/
 │   ├── ScanRecord.kt              # Room @Entity (id, filename, filepath, thumbnailPath, pageCount, fileSize, isSearchable, isEncrypted, extracted_text, tags)
 │   ├── ScanRecordFts.kt           # @Fts4(contentEntity = ScanRecord::class) — indiziert filename + extracted_text
-│   ├── ScanDao.kt                 # getAllScans(): Flow, insert, delete, markSearchable, markSearchableWithContent(id, fileSize, text, tags), searchScansFlow(query)
+│   ├── ScanDao.kt                 # getAllScans(): Flow, insert, delete, markSearchable, markSearchableWithContent(id, fileSize, text, tags), searchScansFlow(query), updateFilenameAndPath(id, filename, filepath, thumbnailPath)
 │   └── AppDatabase.kt             # Version 5, "pdf_scanner_db", MIGRATION_1_2 + _2_3 + _3_4 + _4_5
 │                                  # MIGRATION_4_5: 2× ALTER TABLE, CREATE VIRTUAL TABLE fts4, 4 Trigger, INSERT INTO fts
-└── repository/ScanRepository.kt   # searchScansFlow(query) + markSearchableWithContent(id, fileSize, text, tags)
+└── repository/ScanRepository.kt   # searchScansFlow(query) + markSearchableWithContent(id, fileSize, text, tags) + updateFilenameAndPath(id, filename, filepath, thumbnailPath)
 
-domain/usecase/AutoTagUseCase.kt   # On-device Keyword-Tagger: gibt comma-sep. englische Tag-Keys zurück ("invoice,bank")
-                                   # 6 Kategorien: invoice/contract/insurance/certificate/bank/delivery
-                                   # IBAN-Regex für "bank"-Erkennung; keine externen Abhängigkeiten
-                                   # Nur spezifische Komposita (z.B. "Rechnungsnummer" statt "Rechnung"),
-                                   # wordStartPattern() verhindert Substring-Matches ("Berechnung" → kein invoice)
-                                   # Entfernt: "Rechnung","MwSt","VAT","Vertrag","Contract","Police","BIC","Tracking","Lieferung"
+domain/usecase/AutoTagUseCase.kt   # INAKTIV — nicht mehr in ImportScanUseCase/MakeSearchableUseCase eingebunden
+                                   # Klasse + Tests (AutoTagUseCaseTest.kt) bleiben erhalten; tags-Spalte bleibt in DB (immer null)
 domain/workflow/WorkflowErrorMapper.kt  # @Singleton: ScanWorkflowError → lokalisierter String
 domain/workflow/RemoveTextLayerWorkflow.kt  # Prüft: Datei existiert → RemoveTextLayerUseCase
 domain/workflow/RemovePasswordWorkflow.kt   # Prüft: Datei existiert + isPdfEncrypted → RemovePasswordUseCase

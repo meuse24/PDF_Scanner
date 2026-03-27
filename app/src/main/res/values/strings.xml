@@ -416,5 +416,22 @@
     <string name="annotate_no_items">Add at least one annotation first</string>
     <string name="annotate_error">Error adding annotations</string>
     <string name="help_item_annotate_pdf">Choose Annotate PDF to draw yellow highlights or place short text comments. In Write mode, tap on the page to place a comment; tap an existing comment to edit it. Snap aligns highlights to detected text lines (searchable PDFs only). Use Zoom for precise placement.</string>
+    <!-- Navigation Drawer header -->
+    <string name="drawer_version">Version %1$s</string>
+    <!-- PDF Action Bottom Sheet: section headers -->
+    <string name="sheet_section_edit">Edit</string>
+    <string name="sheet_section_pages">Pages</string>
+    <string name="sheet_section_output">Output</string>
+    <string name="sheet_section_security">Security</string>
+    <string name="sheet_section_ocr">OCR</string>
+    <!-- PDF Action Bottom Sheet: document header -->
+    <string name="sheet_header_meta">%1$d pages · %2$s</string>
+    <!-- Bulk action bar: compact labels -->
+    <string name="label_bulk_share">Share</string>
+    <string name="label_bulk_export">Export</string>
+    <string name="label_bulk_merge">Merge</string>
+    <string name="label_bulk_extract">Text</string>
+    <string name="label_bulk_searchable">Searchable</string>
+    <string name="label_bulk_delete">Delete</string>
 </resources>
 

@@ -390,5 +390,18 @@
     <string name="annotate_no_items">Add at least one annotation first</string>
     <string name="annotate_error">Error adding annotations</string>
     <string name="help_item_annotate_pdf">Choose Annotate PDF to draw yellow highlights or place short text comments. In Write mode, tap on the page to place a comment; tap an existing comment to edit it. Snap aligns highlights to detected text lines (searchable PDFs only). Use Zoom for precise placement.</string>
+    <string name="drawer_version">版本 %1$s</string>
+    <string name="sheet_section_edit">编辑</string>
+    <string name="sheet_section_pages">页面</string>
+    <string name="sheet_section_output">输出</string>
+    <string name="sheet_section_security">安全</string>
+    <string name="sheet_section_ocr">OCR</string>
+    <string name="sheet_header_meta">%1$d 页 · %2$s</string>
+    <string name="label_bulk_share">分享</string>
+    <string name="label_bulk_export">导出</string>
+    <string name="label_bulk_merge">合并</string>
+    <string name="label_bulk_extract">文字</string>
+    <string name="label_bulk_searchable">可搜索</string>
+    <string name="label_bulk_delete">删除</string>
 </resources>
 

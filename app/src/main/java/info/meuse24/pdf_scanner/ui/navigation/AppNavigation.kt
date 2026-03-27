@@ -1,11 +1,18 @@
 package info.meuse24.pdf_scanner.ui.navigation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -14,7 +21,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,16 +44,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import info.meuse24.pdf_scanner.BuildConfig
 import info.meuse24.pdf_scanner.R
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -90,17 +99,53 @@ fun AppNavigation() {
     fun closeDrawer() = scope.launch { drawerState.close() }
     fun openDrawer()  = scope.launch { drawerState.open() }
 
+    // Drawer-Geste nur auf Top-Level-Screens erlauben
+    val drawerGesturesEnabled = currentRoute == Screen.Ablage.route
+        || currentRoute == Screen.Help.route
+        || currentRoute == Screen.Info.route
+        || currentRoute == Screen.Privacy.route
+        || currentRoute == null
+
     ModalNavigationDrawer(
-        drawerState = drawerState,
-        gesturesEnabled = currentRoute?.startsWith("annotate/") != true,
+        drawerState     = drawerState,
+        gesturesEnabled = drawerGesturesEnabled,
         drawerContent = {
             ModalDrawerSheet(
-            drawerContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        ) {
-                Spacer(Modifier.height(8.dp))
+                drawerContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
+            ) {
+                // ── App-Header ───────────────────────────────────────────────
+                Row(
+                    modifier          = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter            = painterResource(R.drawable.app_icon),
+                        contentDescription = null,
+                        modifier           = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            text       = stringResource(R.string.app_label),
+                            style      = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color      = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text  = stringResource(R.string.drawer_version, BuildConfig.VERSION_NAME),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline
+                        )
+                    }
+                }
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(Modifier.height(8.dp))
 
+                // ── Primäre Navigation ───────────────────────────────────────
                 DrawerItem(
                     icon     = Icons.Default.FolderOpen,
                     label    = stringResource(R.string.nav_archive),
@@ -112,32 +157,16 @@ fun AppNavigation() {
                     closeDrawer()
                 }
 
-                DrawerItem(
-                    icon     = Icons.Default.PhotoCamera,
-                    label    = stringResource(R.string.nav_start_scanner),
-                    selected = false
-                ) {
-                    if (currentRoute != Screen.Ablage.route) {
-                        navController.navigate(Screen.Ablage.route) {
-                            popUpTo(Screen.Ablage.route) { inclusive = true }
-                        }
-                    }
-                    scanTrigger = true
-                    closeDrawer()
-                }
-
                 Spacer(Modifier.height(8.dp))
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(Modifier.height(8.dp))
 
+                // ── Sekundäre Navigation ─────────────────────────────────────
                 DrawerItem(
                     icon     = Icons.AutoMirrored.Filled.Help,
                     label    = stringResource(R.string.nav_help),
                     selected = currentRoute == Screen.Help.route
                 ) {
-                    // popUpTo ensures Help/Info are always directly above Ablage — no cross-
-                    // stacking (e.g. Help→Info→Help). launchSingleTop avoids a duplicate when
-                    // the target is already on top. (#7)
                     navController.navigate(Screen.Help.route) {
                         popUpTo(Screen.Ablage.route)
                         launchSingleTop = true
@@ -196,6 +225,7 @@ fun AppNavigation() {
                                 currentRoute?.startsWith("remove-password/") == true -> stringResource(R.string.remove_password_screen_title)
                                 currentRoute?.startsWith("restrict-usage/") == true -> stringResource(R.string.restrict_usage_screen_title)
                                 currentRoute?.startsWith("annotate/") == true -> stringResource(R.string.annotate_screen_title)
+                                currentRoute?.startsWith("highlight/") == true -> stringResource(R.string.highlight_screen_title)
                                 else                                 -> stringResource(R.string.app_name)
                             }
                         )
@@ -242,140 +272,141 @@ fun AppNavigation() {
                         )
                     )
             ) {
-            NavHost(
-                navController    = navController,
-                startDestination = Screen.Ablage.route,
-                modifier         = Modifier.padding(innerPadding)
-            ) {
-                composable(Screen.Ablage.route) {
-                    HomeScreen(
-                        scanTrigger           = scanTrigger,
-                        onScanTriggered       = { scanTrigger = false },
-                        onSelectionModeChange = { isSelectionMode = it },
-                        onNavigateToSplit     = { scanId -> navController.navigate(Screen.Split.createRoute(scanId)) },
-                        onNavigateToReorder   = { scanId -> navController.navigate(Screen.Reorder.createRoute(scanId)) },
-                        onNavigateToRotate    = { scanId -> navController.navigate(Screen.RotatePages.createRoute(scanId)) },
-                        onNavigateToDeletePages = { scanId -> navController.navigate(Screen.DeletePages.createRoute(scanId)) },
-                        onNavigateToExtractPages = { scanId -> navController.navigate(Screen.ExtractPages.createRoute(scanId)) },
-                        onNavigateToDuplicatePages = { scanId -> navController.navigate(Screen.DuplicatePages.createRoute(scanId)) },
-                        onNavigateToPageNumbers = { scanId -> navController.navigate(Screen.PageNumbers.createRoute(scanId)) },
-                        onNavigateToTextWatermark = { scanId -> navController.navigate(Screen.TextWatermark.createRoute(scanId)) },
-                        onNavigateToCompressPdf = { scanId -> navController.navigate(Screen.CompressPdf.createRoute(scanId)) },
-                        onNavigateToProtectPdf = { scanId -> navController.navigate(Screen.ProtectPdf.createRoute(scanId)) },
-                        onNavigateToUnlockPdf = { scanId -> navController.navigate(Screen.UnlockPdf.createRoute(scanId)) },
-                        onNavigateToSignature = { scanId -> navController.navigate(Screen.Signature.createRoute(scanId)) },
-                        onNavigateToRemoveTextLayer = { scanId -> navController.navigate(Screen.RemoveTextLayer.createRoute(scanId)) },
-                        onNavigateToRemovePassword = { scanId -> navController.navigate(Screen.RemovePassword.createRoute(scanId)) },
-                        onNavigateToRestrictUsage = { scanId -> navController.navigate(Screen.RestrictUsage.createRoute(scanId)) },
-                        onNavigateToAnnotate = { scanId -> navController.navigate(Screen.Annotate.createRoute(scanId)) }
-                    )
-                }
-                composable(Screen.Help.route)    { HelpScreen() }
-                composable(Screen.Info.route)    { InfoScreen() }
-                composable(Screen.Privacy.route) { PrivacyScreen() }
-                composable(
-                    route     = Screen.Split.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                NavHost(
+                    navController    = navController,
+                    startDestination = Screen.Ablage.route,
+                    modifier         = Modifier.padding(innerPadding)
                 ) {
-                    SplitScreen(onNavigateBack = { navController.navigateUp() })
+                    composable(Screen.Ablage.route) {
+                        HomeScreen(
+                            scanTrigger                = scanTrigger,
+                            onScanTriggered            = { scanTrigger = false },
+                            onSelectionModeChange      = { isSelectionMode = it },
+                            onNavigateToSplit          = { scanId -> navController.navigate(Screen.Split.createRoute(scanId)) },
+                            onNavigateToReorder        = { scanId -> navController.navigate(Screen.Reorder.createRoute(scanId)) },
+                            onNavigateToRotate         = { scanId -> navController.navigate(Screen.RotatePages.createRoute(scanId)) },
+                            onNavigateToDeletePages    = { scanId -> navController.navigate(Screen.DeletePages.createRoute(scanId)) },
+                            onNavigateToExtractPages   = { scanId -> navController.navigate(Screen.ExtractPages.createRoute(scanId)) },
+                            onNavigateToDuplicatePages = { scanId -> navController.navigate(Screen.DuplicatePages.createRoute(scanId)) },
+                            onNavigateToPageNumbers    = { scanId -> navController.navigate(Screen.PageNumbers.createRoute(scanId)) },
+                            onNavigateToTextWatermark  = { scanId -> navController.navigate(Screen.TextWatermark.createRoute(scanId)) },
+                            onNavigateToCompressPdf    = { scanId -> navController.navigate(Screen.CompressPdf.createRoute(scanId)) },
+                            onNavigateToProtectPdf     = { scanId -> navController.navigate(Screen.ProtectPdf.createRoute(scanId)) },
+                            onNavigateToUnlockPdf      = { scanId -> navController.navigate(Screen.UnlockPdf.createRoute(scanId)) },
+                            onNavigateToSignature      = { scanId -> navController.navigate(Screen.Signature.createRoute(scanId)) },
+                            onNavigateToRemoveTextLayer = { scanId -> navController.navigate(Screen.RemoveTextLayer.createRoute(scanId)) },
+                            onNavigateToRemovePassword  = { scanId -> navController.navigate(Screen.RemovePassword.createRoute(scanId)) },
+                            onNavigateToRestrictUsage   = { scanId -> navController.navigate(Screen.RestrictUsage.createRoute(scanId)) },
+                            onNavigateToAnnotate        = { scanId -> navController.navigate(Screen.Annotate.createRoute(scanId)) },
+                            onNavigateToHighlight       = { scanId -> navController.navigate(Screen.Highlight.createRoute(scanId)) }
+                        )
+                    }
+                    composable(Screen.Help.route)    { HelpScreen() }
+                    composable(Screen.Info.route)    { InfoScreen() }
+                    composable(Screen.Privacy.route) { PrivacyScreen() }
+                    composable(
+                        route     = Screen.Split.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        SplitScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route     = Screen.Reorder.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        ReorderScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.RotatePages.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        RotatePagesScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.DeletePages.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        DeletePagesScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.ExtractPages.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        ExtractPagesScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.DuplicatePages.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        DuplicatePagesScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.PageNumbers.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        PageNumbersScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.TextWatermark.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        TextWatermarkScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.CompressPdf.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        CompressPdfScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.ProtectPdf.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        ProtectPdfScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.UnlockPdf.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        UnlockPdfScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.Signature.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        SignatureScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.RemoveTextLayer.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        RemoveTextLayerScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.RemovePassword.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        RemovePasswordScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.RestrictUsage.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        RestrictUsageScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.Highlight.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        HighlightScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.Annotate.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        AnnotateScreen(onNavigateBack = { navController.navigateUp() })
+                    }
                 }
-                composable(
-                    route     = Screen.Reorder.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    ReorderScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.RotatePages.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    RotatePagesScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.DeletePages.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    DeletePagesScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.ExtractPages.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    ExtractPagesScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.DuplicatePages.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    DuplicatePagesScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.PageNumbers.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    PageNumbersScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.TextWatermark.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    TextWatermarkScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.CompressPdf.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    CompressPdfScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.ProtectPdf.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    ProtectPdfScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.UnlockPdf.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    UnlockPdfScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.Signature.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    SignatureScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.RemoveTextLayer.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    RemoveTextLayerScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.RemovePassword.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    RemovePasswordScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.RestrictUsage.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    RestrictUsageScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.Highlight.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    HighlightScreen(onNavigateBack = { navController.navigateUp() })
-                }
-                composable(
-                    route = Screen.Annotate.route,
-                    arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                ) {
-                    AnnotateScreen(onNavigateBack = { navController.navigateUp() })
-                }
-            }
             } // Box
         }
     }

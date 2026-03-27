@@ -390,5 +390,22 @@
     <string name="annotate_no_items">Zuerst mindestens eine Annotation hinzufügen</string>
     <string name="annotate_error">Fehler beim Hinzufügen der Annotationen</string>
     <string name="help_item_annotate_pdf">Mit PDF annotieren kannst du gelbe Markierungen zeichnen oder kurze Textkommentare auf Seiten platzieren. Im Schreibmodus tippst du auf die Seite, um einen Kommentar zu setzen; tippe auf einen vorhandenen Kommentar, um ihn zu bearbeiten. Snap richtet Markierungen an Textzeilen aus (nur bei durchsuchbaren PDFs). Der Zoommodus hilft bei präziser Platzierung.</string>
+    <!-- Navigation Drawer header -->
+    <string name="drawer_version">Version %1$s</string>
+    <!-- PDF Action Bottom Sheet: Abschnittsüberschriften -->
+    <string name="sheet_section_edit">Bearbeiten</string>
+    <string name="sheet_section_pages">Seiten</string>
+    <string name="sheet_section_output">Ausgabe</string>
+    <string name="sheet_section_security">Schutz</string>
+    <string name="sheet_section_ocr">OCR</string>
+    <!-- PDF Action Bottom Sheet: Dokumentkopf -->
+    <string name="sheet_header_meta">%1$d Seiten · %2$s</string>
+    <!-- Bulk-Aktionsleiste: kompakte Labels -->
+    <string name="label_bulk_share">Teilen</string>
+    <string name="label_bulk_export">Export</string>
+    <string name="label_bulk_merge">Merge</string>
+    <string name="label_bulk_extract">Text</string>
+    <string name="label_bulk_searchable">Durchsuchbar</string>
+    <string name="label_bulk_delete">Löschen</string>
 </resources>
 

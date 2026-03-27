@@ -21,9 +21,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.BrandingWatermark
-import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.automirrored.filled.ManageSearch
+import androidx.compose.material.icons.automirrored.filled.MergeType
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
 import androidx.compose.material.icons.filled.Compress
@@ -32,6 +31,8 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.FindInPage
+import androidx.compose.material.icons.filled.Highlight
 import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.FolderOpen
@@ -43,7 +44,6 @@ import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Share
@@ -94,7 +94,6 @@ fun HelpScreen() {
                 titleRes = R.string.help_group_drawer_menu,
                 actions = listOf(
                     HelpAction(Icons.Default.FolderOpen, R.string.nav_archive, R.string.help_desc_archive),
-                    HelpAction(Icons.Default.PhotoCamera, R.string.nav_start_scanner, R.string.help_desc_start_scanner),
                     HelpAction(Icons.AutoMirrored.Filled.Help, R.string.nav_help, R.string.help_desc_help),
                     HelpAction(Icons.Default.Info, R.string.nav_info, R.string.help_desc_info),
                     HelpAction(Icons.Default.PrivacyTip, R.string.nav_privacy, R.string.help_desc_privacy)
@@ -106,9 +105,9 @@ fun HelpScreen() {
                 actions = listOf(
                     HelpAction(Icons.Default.Share, R.string.cd_share, R.string.help_desc_share),
                     HelpAction(Icons.Default.Download, R.string.action_export, R.string.help_desc_export),
-                    HelpAction(Icons.AutoMirrored.Filled.CallMerge, R.string.cd_merge, R.string.help_item_merge),
+                    HelpAction(Icons.AutoMirrored.Filled.MergeType, R.string.cd_merge, R.string.help_item_merge),
                     HelpAction(Icons.AutoMirrored.Filled.TextSnippet, R.string.cd_extract_text, R.string.help_item_extract_text),
-                    HelpAction(Icons.AutoMirrored.Filled.ManageSearch, R.string.cd_make_searchable, R.string.help_item_make_searchable),
+                    HelpAction(Icons.Default.FindInPage, R.string.cd_make_searchable, R.string.help_item_make_searchable),
                     HelpAction(Icons.Default.Delete, R.string.cd_delete, R.string.help_item_delete)
                 )
             ),
@@ -117,7 +116,7 @@ fun HelpScreen() {
                 titleRes = R.string.help_section_search,
                 actions = listOf(
                     HelpAction(Icons.Default.Search, R.string.help_section_search, R.string.help_item_search),
-                    HelpAction(Icons.AutoMirrored.Filled.ManageSearch, R.string.cd_make_searchable, R.string.help_item_auto_tag)
+                    HelpAction(Icons.Default.FindInPage, R.string.cd_make_searchable, R.string.help_item_auto_tag)
                 )
             ),
             HelpSection(
@@ -144,8 +143,9 @@ fun HelpScreen() {
                 actions = listOf(
                     HelpAction(Icons.Default.FormatListNumbered, R.string.action_page_numbers, R.string.help_item_page_numbers),
                     HelpAction(Icons.AutoMirrored.Filled.BrandingWatermark, R.string.action_text_watermark, R.string.help_item_watermark),
-                    HelpAction(Icons.Default.Draw, R.string.action_sign_pdf, R.string.help_item_sign_pdf),
-                    HelpAction(Icons.Default.BorderColor, R.string.action_annotate_pdf, R.string.help_item_annotate_pdf)
+                    HelpAction(Icons.Default.Highlight,    R.string.action_highlight_pdf,  R.string.help_item_highlight_pdf),
+                    HelpAction(Icons.Default.BorderColor,  R.string.action_annotate_pdf,   R.string.help_item_annotate_pdf),
+                    HelpAction(Icons.Default.Draw,         R.string.action_sign_pdf,       R.string.help_item_sign_pdf)
                 )
             ),
             HelpSection(
@@ -158,7 +158,7 @@ fun HelpScreen() {
                     HelpAction(Icons.Default.LockOpen, R.string.action_unlock_pdf, R.string.help_item_unlock_pdf),
                     HelpAction(Icons.Default.NoEncryption, R.string.action_remove_password, R.string.help_item_remove_password),
                     HelpAction(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage, R.string.help_item_restrict_usage),
-                    HelpAction(Icons.AutoMirrored.Filled.ManageSearch, R.string.action_remove_text_layer, R.string.help_item_remove_text_layer)
+                    HelpAction(Icons.Default.FindInPage, R.string.action_remove_text_layer, R.string.help_item_remove_text_layer)
                 )
             )
         )

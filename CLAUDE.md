@@ -53,6 +53,9 @@ ui/
 ├── navigation/
 │   ├── Screen.kt                  # Route-Definitionen (Ablage, Help, Info, Privacy + alle Edit-Screens)
 │   └── AppNavigation.kt           # ModalNavigationDrawer + Scaffold + NavHost + Gradient-Hintergrund
+│                                  # Drawer: App-Header (Icon + Name + Version) + Ablage + Hilfe/Info/Datenschutz
+│                                  # „Scanner starten" entfernt — FAB ist der primäre Scan-Einstieg
+│                                  # gesturesEnabled nur auf Top-Level-Screens (Ablage/Help/Info/Privacy)
 │                                  # Verwaltet scanTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
 ├── home/
 │   ├── HomeScreen.kt              # Koordinator: Scanner-Launcher, Dialoge, Listen-Routing, Suchfeld
@@ -62,12 +65,13 @@ ui/
 │   │                              # _searchQuery → filteredScans (FTS4 via flatMapLatest+debounce)
 │   └── components/
 │       ├── ScanItem.kt            # Card: Dateiname (maxLines=2, volle Breite) + Row(Thumbnail · Metadaten · Menü · Checkbox)
-│       │                          # MoreVert: Hauptmenü (7 Items) + Submenu Seitenstruktur (5) + Submenu Schutz&Passwort (5)
-│       │                          # encryption-aware enabled-State: notEncrypted = !record.isEncrypted
-│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/RemoveTextLayer/RemovePassword/RestrictUsage/Annotate)
+│       │                          # MoreVert öffnet ModalBottomSheet (skipPartiallyExpanded=true) statt Dropdown
+│       │                          # Sheet-Sektionen: Bearbeiten · Seiten · Ausgabe · Schutz · OCR (nur wenn searchable)
+│       │                          # SheetItem: enabled = alpha 0.38f + clickable(enabled=false); icon FindInPage für Textebene entfernen
+│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Highlight/Annotate/RemoveTextLayer/…)
 │       │                          # onAction: (ScanAction) → Unit; Tags als farbige Badges (tertiaryContainer)
-│       ├── SelectionTitleBar.kt   # ✕ · count/total · SelectAll-Icon
-│       ├── BulkActionBar.kt       # Share · Export · Merge · OCR · MakeSearchable · Delete (rot)
+│       ├── SelectionTitleBar.kt   # ✕ · „X ausgewählt" (selection_count) · SelectAll-Icon
+│       ├── BulkActionBar.kt       # Icon+Label: Teilen · Export · Merge (MergeType) · Text (TextSnippet) · Durchsuchbar (FindInPage) · Löschen (rot)
 │       ├── EmptyStateContent.kt   # Leerarchiv-Illustration + Hint-Texte
 │       ├── ScannerLoadingAnimation.kt  # Canvas-Animation (Dokument + Scan-Strahl)
 │       └── MergeDialog.kt         # Dateiname-Eingabe + Reihenfolge-Vorschau
@@ -183,8 +187,8 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
 
 - **Checkbox** (rechts an jedem Eintrag) → Auswahlmodus; weiteres Antippen togglet; Back/✕ beendet
 - Ausgewählte Cards: `primaryContainer`; keine Einzel-Action-Buttons
-- **SelectionTitleBar** (top, erscheint ab 1 Auswahl): ✕ deselektieren · `count/total` · SelectAll-Icon
-- **BulkActionBar** (bottom): Share · Export · Merge · OCR (TextSnippet) · MakeSearchable (ManageSearch) · Delete (rot)
+- **SelectionTitleBar** (top, erscheint ab 1 Auswahl): ✕ deselektieren · `selection_count` („X ausgewählt") · SelectAll-Icon
+- **BulkActionBar** (bottom): Icon+Label-Buttons — Teilen · Export · Merge (MergeType) · Text · Durchsuchbar (FindInPage) · Löschen (rot)
   - Share: `ACTION_SEND` (1 Item) vs. `ACTION_SEND_MULTIPLE` (mehrere)
   - Delete: Einzel-Dialog mit Dateiname (`confirm_delete_single`) vs. Bulk-Dialog (`confirm_delete_multi`)
   - OCR: `extractTexts(records, lang)` → `ExtractTextUseCase` — Sprachauswahl-Dialog; `— filename —` Trenner nur bei >1

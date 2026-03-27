@@ -390,5 +390,18 @@
     <string name="annotate_no_items">Add at least one annotation first</string>
     <string name="annotate_error">Error adding annotations</string>
     <string name="help_item_annotate_pdf">Choose Annotate PDF to draw yellow highlights or place short text comments. In Write mode, tap on the page to place a comment; tap an existing comment to edit it. Snap aligns highlights to detected text lines (searchable PDFs only). Use Zoom for precise placement.</string>
+    <string name="drawer_version">संस्करण %1$s</string>
+    <string name="sheet_section_edit">संपादन</string>
+    <string name="sheet_section_pages">पृष्ठ</string>
+    <string name="sheet_section_output">आउटपुट</string>
+    <string name="sheet_section_security">सुरक्षा</string>
+    <string name="sheet_section_ocr">OCR</string>
+    <string name="sheet_header_meta">%1$d पृष्ठ · %2$s</string>
+    <string name="label_bulk_share">साझा करें</string>
+    <string name="label_bulk_export">निर्यात</string>
+    <string name="label_bulk_merge">मर्ज</string>
+    <string name="label_bulk_extract">पाठ</string>
+    <string name="label_bulk_searchable">खोजने योग्य</string>
+    <string name="label_bulk_delete">हटाएं</string>
 </resources>
 

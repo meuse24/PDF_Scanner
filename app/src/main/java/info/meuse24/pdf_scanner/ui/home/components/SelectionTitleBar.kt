@@ -43,8 +43,8 @@ internal fun SelectionTitleBar(
                 Icon(Icons.Default.Close, contentDescription = null)
             }
             Text(
-                stringResource(R.string.selection_count_fraction, count, total),
-                style      = MaterialTheme.typography.titleLarge,
+                stringResource(R.string.selection_count, count),
+                style      = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
             IconButton(onClick = onSelectAll) {

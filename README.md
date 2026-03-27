@@ -12,8 +12,8 @@ A clean, privacy-focused Android app for scanning documents to PDF using Google'
 ### Archive & Search
 - Browse, open, share, export, and delete scanned PDFs
 - **Full-text search** across filename and extracted OCR text (Room FTS4)
-- **Automatic on-device tagging** — derives tags such as invoice, contract, bank, insurance, certificate, or delivery from OCR content using keyword heuristics and IBAN detection; no cloud required
-- Multi-select bulk actions: share, export to Downloads, merge, OCR, make searchable, delete
+- **Rename PDF** — give any document a new name directly from the archive; file and thumbnail are renamed atomically
+- Multi-select bulk actions: share, export to Downloads, merge, text extraction, OCR / make searchable, delete
 - Tap to open in any installed PDF viewer
 
 ### PDF Editing — Pages
@@ -83,9 +83,9 @@ MVVM + Clean Architecture with Jetpack Compose.
 
 ```
 domain/
-├── usecase/        Import/export/delete, OCR, searchable PDF, page editing,
-│                   highlight, annotate (AnnotatePdfUseCase), remove text layer,
-│                   remove password, restrict usage, auto-tagging,
+├── usecase/        Import/export/delete/rename, OCR, searchable PDF, page editing,
+│                   highlight (inactive, kept for tests), annotate (AnnotatePdfUseCase),
+│                   remove text layer, remove password, restrict usage,
 │                   shared page-thumbnail helpers
 │                   Data classes: HighlightStroke, HighlightRect, TextLine, TextComment
 └── workflow/       Orchestrates use cases and maps failures to WorkflowResult<T>;
@@ -94,7 +94,7 @@ domain/
 ui/
 ├── navigation/         AppNavigation + route definitions
 │                       Drawer gesture disabled on AnnotateScreen
-├── home/               Archive screen, bulk actions, search, tags, scan item menus
+├── home/               Archive screen, bulk actions, search, rename dialog, scan item menus
 ├── components/         Shared action-screen and preview composables
 ├── overlay/            Page numbers, text watermark
 ├── documentaction/     DocumentEditViewModel handles compress, protect, unlock,
@@ -107,7 +107,7 @@ ui/
 ├── split/              Split screen + view model
 ├── reorder/            Reorder screen + view model
 ├── signature/          Freehand signature pad + stamp workflow
-├── highlight/          Marker workflow with zoom/pan-aware drawing
+├── highlight/          Marker workflow (inactive — no nav route; functionality covered by AnnotateScreen)
 └── help / info / privacy
 
 data/
@@ -131,7 +131,7 @@ util/                   FileUtil, OcrManager, SearchablePdfBuilder, PdfEditor
 
 All annotation state (`HighlightStroke`, `HighlightRect`, `TextCommentDraft`) is persisted across screen rotation via `rememberSaveable` with custom `listSaver` implementations. `PdfEditor.applyAnnotations()` writes highlight strokes, snap rectangles, and text comments (rotation-aware text matrix for 0°/90°/180°/270° pages) into a new PDF copy.
 
-**Search & tags:** `ScanRecord` stores extracted OCR text and comma-separated tag keys. Room FTS4 indexes filename and extracted text for debounced archive search. `AutoTagUseCase` uses word-start boundary regex (`(?<!\p{L})`) against a curated list of unambiguous compound keywords (e.g. `Rechnungsnummer` rather than `Rechnung`) plus IBAN detection to avoid false positives from generic words appearing in non-target documents.
+**Search:** `ScanRecord` stores extracted OCR text. Room FTS4 indexes filename and extracted text for debounced archive search. `AutoTagUseCase` exists in the codebase (with tests) but is no longer invoked; the `tags` column is retained in the database schema and always written as `null`.
 
 **OCR / searchable PDFs:** Two-phase process — Phase 1: `PdfRenderer` renders each page to a bitmap (150 DPI), ML Kit OCR extracts text with bounding boxes, bitmap is immediately recycled. Phase 2: PdfBox appends an invisible text layer to the original PDF. Only one bitmap in RAM at a time, safe for large documents. CJK (ZH/JA) is supported for text extraction only; searchable PDF generation is not supported due to TTC/OTC font embedding limitations in PdfBox.
 

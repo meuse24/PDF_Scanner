@@ -16,6 +16,7 @@ import info.meuse24.pdf_scanner.domain.usecase.TextComment
 import info.meuse24.pdf_scanner.domain.usecase.TextLine
 import info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.ConvertToGrayscaleWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.HighlightPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
@@ -28,6 +29,7 @@ import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.util.PdfMetadata
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,6 +53,7 @@ class DocumentEditViewModel @Inject constructor(
     private val restrictUsageWorkflow: RestrictUsageWorkflow,
     private val highlightPdfWorkflow: HighlightPdfWorkflow,
     private val annotatePdfWorkflow: AnnotatePdfWorkflow,
+    private val convertToGrayscaleWorkflow: ConvertToGrayscaleWorkflow,
     private val pdfEditor: PdfEditor,
     private val errorMapper: WorkflowErrorMapper,
     @ApplicationContext private val context: Context,
@@ -75,6 +78,9 @@ class DocumentEditViewModel @Inject constructor(
 
     private val _highlightPageBitmap = MutableStateFlow<Bitmap?>(null)
     val highlightPageBitmap: StateFlow<Bitmap?> = _highlightPageBitmap.asStateFlow()
+
+    private val _metadata = MutableStateFlow<PdfMetadata?>(null)
+    val metadata: StateFlow<PdfMetadata?> = _metadata.asStateFlow()
 
     private val _textLines = MutableStateFlow<List<TextLine>>(emptyList())
     val textLines: StateFlow<List<TextLine>> = _textLines.asStateFlow()
@@ -294,6 +300,29 @@ class DocumentEditViewModel @Inject constructor(
             } finally {
                 _editLoading.value = false
             }
+        }
+    }
+
+    fun convertToGrayscale() {
+        val record = _record.value ?: return
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = convertToGrayscaleWorkflow(record, scansDir)) {
+                    is WorkflowResult.Success -> _success.value = true
+                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun loadMetadata() {
+        val record = _record.value ?: return
+        viewModelScope.launch(Dispatchers.IO) {
+            _metadata.value = pdfEditor.readMetadata(File(record.filepath))
         }
     }
 

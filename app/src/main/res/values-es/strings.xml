@@ -413,5 +413,28 @@
     <string name="rename_error_exists">Ya existe un archivo con ese nombre</string>
     <string name="rename_error_failed">Error al renombrar</string>
     <string name="help_item_rename">Elige Renombrar PDF para asignar un nuevo nombre a un documento. El nombre debe ser único en el archivo. La extensión .pdf se añade automáticamente.</string>
+
+    <!-- Grayscale -->
+    <string name="action_grayscale_pdf">Convertir a escala de grises</string>
+    <string name="grayscale_screen_title">Escala de grises</string>
+    <string name="grayscale_description">Crear una copia en escala de grises de este PDF</string>
+    <string name="grayscale_details">Cada página se renderiza de nuevo sin color y se guarda como una nueva copia PDF con el sufijo _SW. El archivo original no se modifica. La capa de texto no se transfiere: el resultado es un PDF solo de imagen.</string>
+    <string name="grayscale_apply">Convertir a escala de grises</string>
+    <string name="grayscale_success">PDF en escala de grises creado: %1$s</string>
+    <string name="grayscale_error">Error al convertir a escala de grises</string>
+    <string name="help_item_grayscale_pdf">Elige Convertir a escala de grises para guardar una copia en blanco y negro del PDF. Cada página se renderiza de nuevo sin color. El original no se modifica.</string>
+
+    <!-- PDF Metadata -->
+    <string name="action_pdf_metadata">Info del PDF</string>
+    <string name="metadata_screen_title">Info del PDF</string>
+    <string name="metadata_title">Título</string>
+    <string name="metadata_author">Autor</string>
+    <string name="metadata_creator">Creador</string>
+    <string name="metadata_subject">Asunto</string>
+    <string name="metadata_keywords">Palabras clave</string>
+    <string name="metadata_creation_date">Creado</string>
+    <string name="metadata_mod_date">Modificado</string>
+    <string name="metadata_empty">—</string>
+    <string name="help_item_pdf_metadata">Toca Info del PDF para ver los metadatos integrados de un documento: título, autor, aplicación creadora, asunto, palabras clave y fechas de creación y modificación. Estos campos provienen de la aplicación de origen que creó el PDF.</string>
 </resources>
 

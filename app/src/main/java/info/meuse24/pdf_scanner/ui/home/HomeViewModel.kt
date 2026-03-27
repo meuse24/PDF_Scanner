@@ -315,5 +315,6 @@ class HomeViewModel @Inject constructor(
         is ScanWorkflowError.HighlightFailed -> context.getString(R.string.highlight_error)
         ScanWorkflowError.NoAnnotations -> context.getString(R.string.annotate_no_items)
         is ScanWorkflowError.AnnotateFailed -> context.getString(R.string.annotate_error)
+        is ScanWorkflowError.GrayscaleFailed -> context.getString(R.string.grayscale_error)
     }
 }

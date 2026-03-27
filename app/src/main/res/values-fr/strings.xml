@@ -413,4 +413,27 @@
     <string name="rename_error_exists">Un fichier portant ce nom existe déjà</string>
     <string name="rename_error_failed">Le renommage a échoué</string>
     <string name="help_item_rename">Choisissez Renommer le PDF pour attribuer un nouveau nom à un document. Le nom doit être unique dans l\'archive. L\'extension .pdf est ajoutée automatiquement.</string>
+
+    <!-- Grayscale -->
+    <string name="action_grayscale_pdf">Convertir en niveaux de gris</string>
+    <string name="grayscale_screen_title">Niveaux de gris</string>
+    <string name="grayscale_description">Créer une copie en niveaux de gris de ce PDF</string>
+    <string name="grayscale_details">Chaque page est rendue à nouveau sans couleur et enregistrée comme nouvelle copie PDF avec le suffixe _SW. Le fichier original reste inchangé. La couche de texte n\'est pas transférée : le résultat est un PDF uniquement image.</string>
+    <string name="grayscale_apply">Convertir en niveaux de gris</string>
+    <string name="grayscale_success">PDF en niveaux de gris créé : %1$s</string>
+    <string name="grayscale_error">Erreur lors de la conversion en niveaux de gris</string>
+    <string name="help_item_grayscale_pdf">Choisissez Convertir en niveaux de gris pour enregistrer une copie en noir et blanc du PDF. Chaque page est rendue à nouveau sans couleur. L\'original reste inchangé.</string>
+
+    <!-- PDF Metadata -->
+    <string name="action_pdf_metadata">Infos PDF</string>
+    <string name="metadata_screen_title">Infos PDF</string>
+    <string name="metadata_title">Titre</string>
+    <string name="metadata_author">Auteur</string>
+    <string name="metadata_creator">Créateur</string>
+    <string name="metadata_subject">Sujet</string>
+    <string name="metadata_keywords">Mots-clés</string>
+    <string name="metadata_creation_date">Créé</string>
+    <string name="metadata_mod_date">Modifié</string>
+    <string name="metadata_empty">—</string>
+    <string name="help_item_pdf_metadata">Touchez Infos PDF pour voir les métadonnées intégrées d\'un document : titre, auteur, application créatrice, sujet, mots-clés et dates de création et de modification. Ces champs proviennent de l\'application source qui a créé le PDF.</string>
 </resources>

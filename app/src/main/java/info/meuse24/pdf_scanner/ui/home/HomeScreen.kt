@@ -109,6 +109,8 @@ fun HomeScreen(
     onNavigateToRemovePassword:     (Long) -> Unit = {},
     onNavigateToRestrictUsage:      (Long) -> Unit = {},
     onNavigateToAnnotate:           (Long) -> Unit = {},
+    onNavigateToGrayscale:          (Long) -> Unit = {},
+    onNavigateToPdfMetadata:        (Long) -> Unit = {},
     viewModel:                      HomeViewModel  = hiltViewModel()
 ) {
     val scans          by viewModel.scans.collectAsState()
@@ -339,6 +341,8 @@ fun HomeScreen(
                                     ScanAction.RestrictUsage   -> onNavigateToRestrictUsage(record.id)
                                     ScanAction.ExportAsJpg     -> viewModel.exportAsJpg(record)
                                     ScanAction.Annotate        -> onNavigateToAnnotate(record.id)
+                                    ScanAction.Grayscale       -> onNavigateToGrayscale(record.id)
+                                    ScanAction.PdfMetadata     -> onNavigateToPdfMetadata(record.id)
                                     ScanAction.Rename          -> {
                                         renameInput    = record.filename
                                         recordToRename = record

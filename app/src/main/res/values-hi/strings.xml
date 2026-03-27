@@ -413,5 +413,28 @@
     <string name="rename_error_exists">इस नाम की फ़ाइल पहले से मौजूद है</string>
     <string name="rename_error_failed">नाम बदलना विफल</string>
     <string name="help_item_rename">किसी दस्तावेज़ को नया नाम देने के लिए "PDF का नाम बदलें" चुनें। फ़ाइल का नाम आर्काइव में अद्वितीय होना चाहिए। .pdf एक्सटेंशन स्वतः जुड़ जाता है।</string>
+
+    <!-- Grayscale -->
+    <string name="action_grayscale_pdf">ग्रेस्केल में बदलें</string>
+    <string name="grayscale_screen_title">ग्रेस्केल</string>
+    <string name="grayscale_description">इस PDF की ग्रेस्केल प्रतिलिपि बनाएं</string>
+    <string name="grayscale_details">प्रत्येक पेज को बिना रंग के पुनः रेंडर किया जाता है और _SW प्रत्यय के साथ नई PDF प्रति के रूप में सहेजा जाता है। मूल फ़ाइल अपरिवर्तित रहती है। टेक्स्ट लेयर स्थानांतरित नहीं होती — परिणाम केवल-छवि PDF है।</string>
+    <string name="grayscale_apply">ग्रेस्केल में बदलें</string>
+    <string name="grayscale_success">ग्रेस्केल PDF बनाई गई: %1$s</string>
+    <string name="grayscale_error">ग्रेस्केल में बदलने में त्रुटि</string>
+    <string name="help_item_grayscale_pdf">PDF की काले और सफेद प्रति सहेजने के लिए "ग्रेस्केल में बदलें" चुनें। प्रत्येक पेज बिना रंग के पुनः रेंडर होता है। मूल फ़ाइल अपरिवर्तित रहती है।</string>
+
+    <!-- PDF Metadata -->
+    <string name="action_pdf_metadata">PDF जानकारी</string>
+    <string name="metadata_screen_title">PDF जानकारी</string>
+    <string name="metadata_title">शीर्षक</string>
+    <string name="metadata_author">लेखक</string>
+    <string name="metadata_creator">निर्माता</string>
+    <string name="metadata_subject">विषय</string>
+    <string name="metadata_keywords">कीवर्ड</string>
+    <string name="metadata_creation_date">बनाया गया</string>
+    <string name="metadata_mod_date">संशोधित</string>
+    <string name="metadata_empty">—</string>
+    <string name="help_item_pdf_metadata">किसी दस्तावेज़ के एम्बेडेड मेटाडेटा — शीर्षक, लेखक, निर्माता एप्लिकेशन, विषय, कीवर्ड और निर्माण व संशोधन तिथियां — देखने के लिए "PDF जानकारी" पर टैप करें। ये फ़ील्ड उस स्रोत एप्लिकेशन से आते हैं जिसने PDF बनाया था।</string>
 </resources>
 

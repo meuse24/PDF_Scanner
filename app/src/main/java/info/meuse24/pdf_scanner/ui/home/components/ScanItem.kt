@@ -41,6 +41,8 @@ import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.SwapVert
@@ -106,6 +108,8 @@ sealed interface ScanAction {
     data object ExportAsJpg      : ScanAction
     data object Annotate         : ScanAction
     data object Rename           : ScanAction
+    data object Grayscale        : ScanAction
+    data object PdfMetadata      : ScanAction
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -324,6 +328,7 @@ private fun PdfActionSheet(
         // ── BEARBEITEN ───────────────────────────────────────────────────────
         SheetSection(R.string.sheet_section_edit)
         SheetItem(Icons.Default.DriveFileRenameOutline, R.string.action_rename, true)      { onAction(ScanAction.Rename) }
+        SheetItem(Icons.Default.Info,                   R.string.action_pdf_metadata, true) { onAction(ScanAction.PdfMetadata) }
         SheetItem(Icons.Default.BorderColor,            R.string.action_annotate_pdf, notEncrypted) { onAction(ScanAction.Annotate) }
         SheetItem(Icons.Default.Draw,        R.string.action_sign_pdf,      notEncrypted) { onAction(ScanAction.Signature) }
 
@@ -341,6 +346,7 @@ private fun PdfActionSheet(
         SheetItem(Icons.Default.FormatListNumbered,              R.string.action_page_numbers,  notEncrypted)                         { onAction(ScanAction.PageNumbers) }
         SheetItem(Icons.AutoMirrored.Filled.BrandingWatermark,   R.string.action_text_watermark, notEncrypted)                        { onAction(ScanAction.TextWatermark) }
         SheetItem(Icons.Default.Image,                           R.string.action_export_as_jpg, notEncrypted)                         { onAction(ScanAction.ExportAsJpg) }
+        SheetItem(Icons.Default.InvertColors,                    R.string.action_grayscale_pdf, notEncrypted)                         { onAction(ScanAction.Grayscale) }
         SheetItem(Icons.Default.Compress,                        R.string.action_compress_pdf,  notEncrypted && !record.isSearchable) { onAction(ScanAction.CompressPdf) }
 
         // ── SCHUTZ ───────────────────────────────────────────────────────────

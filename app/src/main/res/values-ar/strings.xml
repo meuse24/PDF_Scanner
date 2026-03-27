@@ -413,5 +413,28 @@
     <string name="rename_error_exists">يوجد ملف بهذا الاسم بالفعل</string>
     <string name="rename_error_failed">فشلت إعادة التسمية</string>
     <string name="help_item_rename">اختر إعادة تسمية ملف PDF لإعطاء المستند اسمًا جديدًا. يجب أن يكون الاسم فريدًا في الأرشيف، ويُضاف الامتداد .pdf تلقائيًا.</string>
+
+    <!-- Grayscale -->
+    <string name="action_grayscale_pdf">تحويل إلى تدرج رمادي</string>
+    <string name="grayscale_screen_title">تدرج رمادي</string>
+    <string name="grayscale_description">إنشاء نسخة رمادية من ملف PDF هذا</string>
+    <string name="grayscale_details">يتم إعادة عرض كل صفحة بدون ألوان وحفظها كنسخة PDF جديدة بلاحقة _SW. يظل الملف الأصلي دون تغيير. لا يتم نقل طبقة النص — والنتيجة ملف PDF صوري بحت.</string>
+    <string name="grayscale_apply">تحويل إلى تدرج رمادي</string>
+    <string name="grayscale_success">تم إنشاء ملف PDF بتدرج رمادي: %1$s</string>
+    <string name="grayscale_error">خطأ أثناء التحويل إلى تدرج رمادي</string>
+    <string name="help_item_grayscale_pdf">اختر «تحويل إلى تدرج رمادي» لحفظ نسخة بالأبيض والأسود من ملف PDF. يُعاد عرض كل صفحة بدون ألوان. يظل الملف الأصلي دون تغيير.</string>
+
+    <!-- PDF Metadata -->
+    <string name="action_pdf_metadata">معلومات PDF</string>
+    <string name="metadata_screen_title">معلومات PDF</string>
+    <string name="metadata_title">العنوان</string>
+    <string name="metadata_author">المؤلف</string>
+    <string name="metadata_creator">المُنشئ</string>
+    <string name="metadata_subject">الموضوع</string>
+    <string name="metadata_keywords">الكلمات المفتاحية</string>
+    <string name="metadata_creation_date">تاريخ الإنشاء</string>
+    <string name="metadata_mod_date">تاريخ التعديل</string>
+    <string name="metadata_empty">—</string>
+    <string name="help_item_pdf_metadata">اضغط على «معلومات PDF» لعرض البيانات الوصفية المضمّنة في المستند — العنوان والمؤلف وتطبيق الإنشاء والموضوع والكلمات المفتاحية وتواريخ الإنشاء والتعديل. تأتي هذه الحقول من التطبيق المصدر الذي أنشأ ملف PDF.</string>
 </resources>
 

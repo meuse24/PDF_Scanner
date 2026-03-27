@@ -46,6 +46,7 @@ domain/
     ├── HighlightRect.kt           # data class: textausgerichtetes Highlight-Rechteck (left/top/right/bottom/pageIndex)
     ├── TextLine.kt                # data class: extrahierte Textzeile in normalisierten Anzeige-Koordinaten
     ├── TextComment.kt             # data class: Textkommentar (pageIndex, anchorX, anchorY, text, fontSizeFraction)
+    ├── ConvertToGrayscaleUseCase.kt # Seiten per PdfRenderer + ColorMatrix(saturation=0) → LosslessFactory → isSearchable=false → Suffix _SW
     ├── AutoTagUseCase.kt          # On-Device-Tagger (inaktiv — nicht mehr aufgerufen; nur noch für Tests vorhanden)
     └── PageEditUtils.kt           # thumbnailFile(): gemeinsame Hilfsfunktion für Seitenbearbeitungs-UseCases
 
@@ -69,7 +70,7 @@ ui/
 │       │                          # MoreVert öffnet ModalBottomSheet (skipPartiallyExpanded=true) statt Dropdown
 │       │                          # Sheet-Sektionen: Bearbeiten · Seiten · Ausgabe · Schutz · OCR (nur wenn searchable)
 │       │                          # SheetItem: enabled = alpha 0.38f + clickable(enabled=false); icon FindInPage für Textebene entfernen
-│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Rename/Annotate/RemoveTextLayer/…)
+│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Rename/Annotate/RemoveTextLayer/Grayscale/PdfMetadata/…)
 │       │                          # onAction: (ScanAction) → Unit; Tags als farbige Badges (tertiaryContainer)
 │       ├── SelectionTitleBar.kt   # ✕ · „X ausgewählt" (selection_count) · SelectAll-Icon
 │       ├── BulkActionBar.kt       # Icon+Label: Teilen · Export · Merge (MergeType) · Text (TextSnippet) · OCR (FindInPage) · Löschen (rot)
@@ -83,12 +84,14 @@ ui/
 ├── overlay/
 │   └── OverlayActionScreens.kt    # PageNumbersScreen, TextWatermarkScreen — nutzen DocumentEditViewModel
 ├── documentaction/
-│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Highlight/Annotate/RemoveTextLayer/RemovePassword/RestrictUsage
+│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Highlight/Annotate/RemoveTextLayer/RemovePassword/RestrictUsage/Grayscale/PdfMetadata
 │   │                              # Lädt ScanRecord per scanId, führt Workflows aus,
 │   │                              # mappt Fehler über WorkflowErrorMapper; _editLoading/_error/_success
 │   │                              # Highlight/Annotate: _highlightPageBitmap + _textLines; seitenweiser TextLine-Cache für Snap-Modus
 │   │                              # applyAnnotations(strokes, rects, comments) → AnnotatePdfWorkflow
+│   │                              # convertToGrayscale() → ConvertToGrayscaleWorkflow; loadMetadata() → _metadata: StateFlow<PdfMetadata?>
 │   └── DocumentActionScreens.kt   # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen, RemovePasswordScreen, RemoveTextLayerScreen, RestrictUsageScreen
+│                                  # ConvertToGrayscaleScreen, PdfMetadataScreen (read-only Metadaten-Karte)
 ├── annotate/
 │   └── AnnotateScreen.kt          # Vollbild-Annotieren: 3 Modi (Markieren/Schreiben/Zoom)
 │                                  # Markieren: Freihand-Strokes + Snap auf Textzeilen → HighlightRect
@@ -147,6 +150,8 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
                                    # appendTextWatermark nutzt calculateWatermarkFontSize() (internal, testbar)
                                    # buildRanges() + resolveUniqueFilename() als top-level internal (JVM-testbar)
                                    # removeTextLayer(): Seiten per PdfRenderer → LosslessFactory neu rendern → kein OCR-Text
+                                   # convertToGrayscale(): wie removeTextLayer, aber mit ColorMatrix(saturation=0) → Suffix _SW; isSearchable=false
+                                   # readMetadata(): PDDocument.load(file, "") → PDDocumentInformation → PdfMetadata; Exception → leere PdfMetadata
                                    # removePassword(): PDDocument.load(file, "") → setAllSecurityToBeRemoved; wirft PasswordRequiredException bei echtem Benutzerpasswort
                                    # extractTextLines(file, pageIndex): PDFTextStripper/TextPosition → TextLine-Liste (Font-Filter + Zeilengruppierung)
                                    #   Koordinaten: yDirAdj = Baseline (Screen-Y, von oben); top = yDirAdj-heightDir, bottom = yDirAdj

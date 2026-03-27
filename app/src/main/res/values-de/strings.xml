@@ -408,6 +408,29 @@
     <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">Löschen</string>
 
+    <!-- Grayscale -->
+    <string name="action_grayscale_pdf">In Graustufen umwandeln</string>
+    <string name="grayscale_screen_title">Graustufen</string>
+    <string name="grayscale_description">Graustufenkopie dieses PDFs erstellen</string>
+    <string name="grayscale_details">Jede Seite wird ohne Farbe neu gerendert und als neue PDF-Kopie mit dem Suffix _SW gespeichert. Die Originaldatei bleibt unverändert. Der Textlayer wird nicht übertragen — das Ergebnis ist ein reines Bild-PDF.</string>
+    <string name="grayscale_apply">In Graustufen umwandeln</string>
+    <string name="grayscale_success">Graustufen-PDF erstellt: %1$s</string>
+    <string name="grayscale_error">Fehler bei der Graustufenkonvertierung</string>
+    <string name="help_item_grayscale_pdf">Wähle In Graustufen umwandeln, um eine Schwarzweiß-Kopie des PDFs zu speichern. Jede Seite wird ohne Farbe neu gerendert. Das Original bleibt unverändert.</string>
+
+    <!-- PDF Metadata -->
+    <string name="action_pdf_metadata">PDF-Info</string>
+    <string name="metadata_screen_title">PDF-Info</string>
+    <string name="metadata_title">Titel</string>
+    <string name="metadata_author">Autor</string>
+    <string name="metadata_creator">Ersteller</string>
+    <string name="metadata_subject">Betreff</string>
+    <string name="metadata_keywords">Schlüsselwörter</string>
+    <string name="metadata_creation_date">Erstellt</string>
+    <string name="metadata_mod_date">Geändert</string>
+    <string name="metadata_empty">—</string>
+    <string name="help_item_pdf_metadata">Tippe auf PDF-Info, um die eingebetteten Metadaten eines Dokuments anzuzeigen — Titel, Autor, Ersteller-App, Betreff, Schlüsselwörter sowie Erstellungs- und Änderungsdatum. Diese Felder stammen aus der Ursprungsanwendung, die das PDF erstellt hat.</string>
+
     <!-- Rename -->
     <string name="action_rename">PDF umbenennen</string>
     <string name="rename_dialog_title">PDF umbenennen</string>

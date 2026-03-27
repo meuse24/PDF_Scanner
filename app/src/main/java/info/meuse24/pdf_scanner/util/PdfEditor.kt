@@ -3,6 +3,9 @@ package info.meuse24.pdf_scanner.util
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.Paint
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import com.tom_roush.pdfbox.multipdf.PDFMergerUtility
@@ -34,9 +37,24 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.abs
+
+/**
+ * PDF-Metadaten aus PDDocumentInformation.
+ * Alle Felder sind nullable — die meisten PDFs enthalten nur einen Teil davon.
+ */
+data class PdfMetadata(
+    val title: String?,
+    val author: String?,
+    val creator: String?,
+    val subject: String?,
+    val keywords: String?,
+    val creationDate: Calendar?,
+    val modificationDate: Calendar?
+)
 
 /**
  * Utility für PDF-Bearbeitungsoperationen: Merge, Split, Reorder.
@@ -338,6 +356,78 @@ open class PdfEditor @Inject constructor() {
                 }
                 cleaned.save(target)
             }
+        }
+    }
+
+    /**
+     * Konvertiert alle Seiten eines PDFs in Graustufen.
+     * Jede Seite wird per PdfRenderer gerendert, die Sättigung auf 0 gesetzt
+     * und via LosslessFactory als neues PDF gespeichert. Der Textlayer wird dabei
+     * nicht übertragen — das Ergebnis ist ein reines Bild-PDF mit Suffix „_SW".
+     */
+    open fun convertToGrayscale(input: File, outputDir: File): File {
+        val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_SW")
+        val output = File(outputDir, "$baseName.pdf")
+        return writePdf("ConvertToGrayscale", output) { target ->
+            PDDocument().use { cleaned ->
+                ParcelFileDescriptor.open(input, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                    PdfRenderer(pfd).use { renderer ->
+                        repeat(renderer.pageCount) { pageIndex ->
+                            renderer.openPage(pageIndex).use { page ->
+                                val w = page.width.takeIf { it > 0 } ?: 595
+                                val h = page.height.takeIf { it > 0 } ?: 842
+                                val colorBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                                try {
+                                    Canvas(colorBitmap).drawColor(Color.WHITE)
+                                    page.render(colorBitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                                    val grayBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                                    try {
+                                        val paint = Paint()
+                                        val cm = ColorMatrix()
+                                        cm.setSaturation(0f)
+                                        paint.colorFilter = ColorMatrixColorFilter(cm)
+                                        Canvas(grayBitmap).drawBitmap(colorBitmap, 0f, 0f, paint)
+                                        val pdfPage = PDPage(PDRectangle(w.toFloat(), h.toFloat()))
+                                        cleaned.addPage(pdfPage)
+                                        val image = LosslessFactory.createFromImage(cleaned, grayBitmap)
+                                        PDPageContentStream(cleaned, pdfPage).use { cs ->
+                                            cs.drawImage(image, 0f, 0f, pdfPage.mediaBox.width, pdfPage.mediaBox.height)
+                                        }
+                                    } finally {
+                                        grayBitmap.recycle()
+                                    }
+                                } finally {
+                                    colorBitmap.recycle()
+                                }
+                            }
+                        }
+                    }
+                }
+                cleaned.save(target)
+            }
+        }
+    }
+
+    /**
+     * Liest PDF-Metadaten aus PDDocumentInformation.
+     * Gibt bei verschlüsselten oder fehlerhaften PDFs ein leeres [PdfMetadata] zurück.
+     */
+    open fun readMetadata(input: File): PdfMetadata {
+        return try {
+            PDDocument.load(input, "").use { doc ->
+                val info = doc.documentInformation
+                PdfMetadata(
+                    title            = info.title?.takeIf { it.isNotBlank() },
+                    author           = info.author?.takeIf { it.isNotBlank() },
+                    creator          = info.creator?.takeIf { it.isNotBlank() },
+                    subject          = info.subject?.takeIf { it.isNotBlank() },
+                    keywords         = info.keywords?.takeIf { it.isNotBlank() },
+                    creationDate     = runCatching { info.creationDate }.getOrNull(),
+                    modificationDate = runCatching { info.modificationDate }.getOrNull()
+                )
+            }
+        } catch (_: Exception) {
+            PdfMetadata(null, null, null, null, null, null, null)
         }
     }
 

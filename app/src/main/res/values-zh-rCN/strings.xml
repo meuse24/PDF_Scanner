@@ -413,5 +413,28 @@
     <string name="rename_error_exists">已存在同名文件</string>
     <string name="rename_error_failed">重命名失败</string>
     <string name="help_item_rename">选择"重命名 PDF"可为文档指定新名称。文件名在档案中必须唯一，.pdf 扩展名将自动添加。</string>
+
+    <!-- Grayscale -->
+    <string name="action_grayscale_pdf">转换为灰度</string>
+    <string name="grayscale_screen_title">灰度</string>
+    <string name="grayscale_description">创建此 PDF 的灰度副本</string>
+    <string name="grayscale_details">每页重新渲染为无色版本，并以后缀 _SW 保存为新的 PDF 副本。原始文件保持不变。文本层不会传输——结果是纯图像 PDF。</string>
+    <string name="grayscale_apply">转换为灰度</string>
+    <string name="grayscale_success">已创建灰度 PDF：%1$s</string>
+    <string name="grayscale_error">转换为灰度时出错</string>
+    <string name="help_item_grayscale_pdf">选择"转换为灰度"可保存 PDF 的黑白副本。每页重新渲染为无色版本，原文件不变。</string>
+
+    <!-- PDF Metadata -->
+    <string name="action_pdf_metadata">PDF 信息</string>
+    <string name="metadata_screen_title">PDF 信息</string>
+    <string name="metadata_title">标题</string>
+    <string name="metadata_author">作者</string>
+    <string name="metadata_creator">创建者</string>
+    <string name="metadata_subject">主题</string>
+    <string name="metadata_keywords">关键词</string>
+    <string name="metadata_creation_date">创建时间</string>
+    <string name="metadata_mod_date">修改时间</string>
+    <string name="metadata_empty">—</string>
+    <string name="help_item_pdf_metadata">点击"PDF 信息"可查看文档的嵌入元数据——标题、作者、创建应用、主题、关键词以及创建和修改日期。这些字段来自创建该 PDF 的源应用程序。</string>
 </resources>
 

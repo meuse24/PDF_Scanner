@@ -53,4 +53,10 @@ sealed class Screen(val route: String) {
     data object Annotate : Screen("annotate/{scanId}") {
         fun createRoute(scanId: Long) = "annotate/$scanId"
     }
+    data object Grayscale : Screen("grayscale/{scanId}") {
+        fun createRoute(scanId: Long) = "grayscale/$scanId"
+    }
+    data object PdfMetadata : Screen("pdf-metadata/{scanId}") {
+        fun createRoute(scanId: Long) = "pdf-metadata/$scanId"
+    }
 }

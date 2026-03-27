@@ -5,12 +5,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Switch
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -32,6 +39,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import info.meuse24.pdf_scanner.ui.components.ActionScreenContent
+import java.text.DateFormat
+import java.util.Date
 
 @Composable
 fun CompressPdfScreen(
@@ -445,6 +454,144 @@ private fun UsageRestrictionToggle(
     ) {
         Text(text = label, style = MaterialTheme.typography.bodyMedium)
         Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
+}
+
+@Composable
+fun ConvertToGrayscaleScreen(
+    onNavigateBack: () -> Unit,
+    viewModel: DocumentEditViewModel = hiltViewModel()
+) {
+    val record by viewModel.record.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
+
+    ActionScreenContent(
+        record = record,
+        title = stringResource(R.string.grayscale_description),
+        body = stringResource(R.string.grayscale_details),
+        form = {},
+        confirmLabel = stringResource(R.string.grayscale_apply),
+        confirmEnabled = record != null && !editLoading,
+        onConfirm = { viewModel.convertToGrayscale() }
+    )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text  = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title            = { Text(stringResource(R.string.error_title)) },
+            text             = { Text(msg) },
+            confirmButton    = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun PdfMetadataScreen(
+    onNavigateBack: () -> Unit,
+    viewModel: DocumentEditViewModel = hiltViewModel()
+) {
+    val record by viewModel.record.collectAsState()
+    val metadata by viewModel.metadata.collectAsState()
+
+    LaunchedEffect(record) {
+        if (record != null) viewModel.loadMetadata()
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
+        record?.let { rec ->
+            Text(
+                text = rec.filename,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(Modifier.height(16.dp))
+        }
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+            )
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                val m = metadata
+                if (m == null) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().height(80.dp),
+                        contentAlignment = Alignment.Center
+                    ) { CircularProgressIndicator() }
+                } else {
+                    MetadataRow(stringResource(R.string.metadata_title),    m.title)
+                    MetadataRow(stringResource(R.string.metadata_author),   m.author)
+                    MetadataRow(stringResource(R.string.metadata_creator),  m.creator)
+                    MetadataRow(stringResource(R.string.metadata_subject),  m.subject)
+                    MetadataRow(stringResource(R.string.metadata_keywords), m.keywords)
+                    val dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                    MetadataRow(
+                        stringResource(R.string.metadata_creation_date),
+                        m.creationDate?.let { dateFmt.format(Date(it.timeInMillis)) }
+                    )
+                    MetadataRow(
+                        stringResource(R.string.metadata_mod_date),
+                        m.modificationDate?.let { dateFmt.format(Date(it.timeInMillis)) },
+                        divider = false
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MetadataRow(label: String, value: String?, divider: Boolean = true) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.weight(0.38f)
+            )
+            Text(
+                text = value ?: stringResource(R.string.metadata_empty),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(0.62f)
+            )
+        }
+        if (divider) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 

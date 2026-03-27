@@ -64,6 +64,8 @@ import info.meuse24.pdf_scanner.ui.help.HelpScreen
 import info.meuse24.pdf_scanner.ui.home.HomeScreen
 import info.meuse24.pdf_scanner.ui.info.InfoScreen
 import info.meuse24.pdf_scanner.ui.documentaction.CompressPdfScreen
+import info.meuse24.pdf_scanner.ui.documentaction.ConvertToGrayscaleScreen
+import info.meuse24.pdf_scanner.ui.documentaction.PdfMetadataScreen
 import info.meuse24.pdf_scanner.ui.documentaction.ProtectPdfScreen
 import info.meuse24.pdf_scanner.ui.documentaction.RemovePasswordScreen
 import info.meuse24.pdf_scanner.ui.documentaction.RemoveTextLayerScreen
@@ -224,6 +226,8 @@ fun AppNavigation() {
                                 currentRoute?.startsWith("remove-password/") == true -> stringResource(R.string.remove_password_screen_title)
                                 currentRoute?.startsWith("restrict-usage/") == true -> stringResource(R.string.restrict_usage_screen_title)
                                 currentRoute?.startsWith("annotate/") == true -> stringResource(R.string.annotate_screen_title)
+                                currentRoute?.startsWith("grayscale/") == true -> stringResource(R.string.grayscale_screen_title)
+                                currentRoute?.startsWith("pdf-metadata/") == true -> stringResource(R.string.metadata_screen_title)
                                 else                                 -> stringResource(R.string.app_name)
                             }
                         )
@@ -295,7 +299,9 @@ fun AppNavigation() {
                             onNavigateToRemoveTextLayer = { scanId -> navController.navigate(Screen.RemoveTextLayer.createRoute(scanId)) },
                             onNavigateToRemovePassword  = { scanId -> navController.navigate(Screen.RemovePassword.createRoute(scanId)) },
                             onNavigateToRestrictUsage   = { scanId -> navController.navigate(Screen.RestrictUsage.createRoute(scanId)) },
-                            onNavigateToAnnotate        = { scanId -> navController.navigate(Screen.Annotate.createRoute(scanId)) }
+                            onNavigateToAnnotate        = { scanId -> navController.navigate(Screen.Annotate.createRoute(scanId)) },
+                            onNavigateToGrayscale       = { scanId -> navController.navigate(Screen.Grayscale.createRoute(scanId)) },
+                            onNavigateToPdfMetadata     = { scanId -> navController.navigate(Screen.PdfMetadata.createRoute(scanId)) }
                         )
                     }
                     composable(Screen.Help.route)    { HelpScreen() }
@@ -396,6 +402,18 @@ fun AppNavigation() {
                         arguments = listOf(navArgument("scanId") { type = NavType.LongType })
                     ) {
                         AnnotateScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.Grayscale.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        ConvertToGrayscaleScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.PdfMetadata.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        PdfMetadataScreen(onNavigateBack = { navController.navigateUp() })
                     }
                 }
             } // Box

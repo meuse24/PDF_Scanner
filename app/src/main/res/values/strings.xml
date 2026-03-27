@@ -434,6 +434,29 @@
     <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">Delete</string>
 
+    <!-- Grayscale -->
+    <string name="action_grayscale_pdf">Convert to Grayscale</string>
+    <string name="grayscale_screen_title">Grayscale</string>
+    <string name="grayscale_description">Create a grayscale copy of this PDF</string>
+    <string name="grayscale_details">Each page is re-rendered without colour and saved as a new PDF copy with the suffix _SW. The original file stays unchanged. The text layer is not carried over — the result is an image-only PDF.</string>
+    <string name="grayscale_apply">Convert to Grayscale</string>
+    <string name="grayscale_success">Grayscale PDF created: %1$s</string>
+    <string name="grayscale_error">Error converting to grayscale</string>
+    <string name="help_item_grayscale_pdf">Choose Convert to Grayscale to save a black-and-white copy of the PDF. Each page is re-rendered without colour. The original stays unchanged.</string>
+
+    <!-- PDF Metadata -->
+    <string name="action_pdf_metadata">PDF Info</string>
+    <string name="metadata_screen_title">PDF Info</string>
+    <string name="metadata_title">Title</string>
+    <string name="metadata_author">Author</string>
+    <string name="metadata_creator">Creator</string>
+    <string name="metadata_subject">Subject</string>
+    <string name="metadata_keywords">Keywords</string>
+    <string name="metadata_creation_date">Created</string>
+    <string name="metadata_mod_date">Modified</string>
+    <string name="metadata_empty">—</string>
+    <string name="help_item_pdf_metadata">Tap PDF Info to view the embedded metadata of a document — title, author, creator application, subject, keywords, and creation and modification dates. These fields originate from the source application that created the PDF.</string>
+
     <!-- Rename -->
     <string name="action_rename">Rename PDF</string>
     <string name="rename_dialog_title">Rename PDF</string>

@@ -413,5 +413,28 @@
     <string name="rename_error_exists">同じ名前のファイルが既に存在します</string>
     <string name="rename_error_failed">名前の変更に失敗しました</string>
     <string name="help_item_rename">「PDF の名前を変更」を選択すると、ドキュメントに新しい名前を付けられます。ファイル名はアーカイブ内で一意である必要があり、.pdf 拡張子は自動的に付加されます。</string>
+
+    <!-- Grayscale -->
+    <string name="action_grayscale_pdf">グレースケールに変換</string>
+    <string name="grayscale_screen_title">グレースケール</string>
+    <string name="grayscale_description">この PDF のグレースケールコピーを作成</string>
+    <string name="grayscale_details">各ページを色なしで再レンダリングし、サフィックス _SW を付けた新しい PDF コピーとして保存します。元のファイルは変更されません。テキストレイヤーは引き継がれません — 結果は画像のみの PDF です。</string>
+    <string name="grayscale_apply">グレースケールに変換</string>
+    <string name="grayscale_success">グレースケール PDF を作成しました: %1$s</string>
+    <string name="grayscale_error">グレースケールへの変換中にエラーが発生しました</string>
+    <string name="help_item_grayscale_pdf">「グレースケールに変換」を選択すると、PDF の白黒コピーが保存されます。各ページは色なしで再レンダリングされます。元のファイルは変更されません。</string>
+
+    <!-- PDF Metadata -->
+    <string name="action_pdf_metadata">PDF 情報</string>
+    <string name="metadata_screen_title">PDF 情報</string>
+    <string name="metadata_title">タイトル</string>
+    <string name="metadata_author">著者</string>
+    <string name="metadata_creator">作成アプリ</string>
+    <string name="metadata_subject">件名</string>
+    <string name="metadata_keywords">キーワード</string>
+    <string name="metadata_creation_date">作成日</string>
+    <string name="metadata_mod_date">更新日</string>
+    <string name="metadata_empty">—</string>
+    <string name="help_item_pdf_metadata">「PDF 情報」をタップすると、ドキュメントに埋め込まれたメタデータ（タイトル、著者、作成アプリ、件名、キーワード、作成日、更新日）を確認できます。これらのフィールドは PDF を作成したアプリケーションに由来します。</string>
 </resources>
 

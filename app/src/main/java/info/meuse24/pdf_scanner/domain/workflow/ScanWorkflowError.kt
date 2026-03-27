@@ -44,4 +44,5 @@ sealed interface ScanWorkflowError {
     data class HighlightFailed(override val cause: Throwable) : ScanWorkflowError
     data object NoAnnotations : ScanWorkflowError
     data class AnnotateFailed(override val cause: Throwable) : ScanWorkflowError
+    data class GrayscaleFailed(override val cause: Throwable) : ScanWorkflowError
 }

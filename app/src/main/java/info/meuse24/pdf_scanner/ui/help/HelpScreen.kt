@@ -32,6 +32,8 @@ import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Draw
@@ -141,6 +143,7 @@ fun HelpScreen() {
                 titleRes = R.string.help_section_pdf_marks,
                 actions = listOf(
                     HelpAction(Icons.Default.DriveFileRenameOutline, R.string.action_rename,       R.string.help_item_rename),
+                    HelpAction(Icons.Default.Info,                   R.string.action_pdf_metadata, R.string.help_item_pdf_metadata),
                     HelpAction(Icons.Default.FormatListNumbered,    R.string.action_page_numbers, R.string.help_item_page_numbers),
                     HelpAction(Icons.AutoMirrored.Filled.BrandingWatermark, R.string.action_text_watermark, R.string.help_item_watermark),
                     HelpAction(Icons.Default.BorderColor,  R.string.action_annotate_pdf,   R.string.help_item_annotate_pdf),
@@ -152,6 +155,7 @@ fun HelpScreen() {
                 titleRes = R.string.help_section_pdf_output,
                 actions = listOf(
                     HelpAction(Icons.Default.Compress, R.string.action_compress_pdf, R.string.help_item_compress_pdf),
+                    HelpAction(Icons.Default.InvertColors, R.string.action_grayscale_pdf, R.string.help_item_grayscale_pdf),
                     HelpAction(Icons.Default.Image, R.string.action_export_as_jpg, R.string.help_item_export_as_jpg),
                     HelpAction(Icons.Default.Lock, R.string.action_protect_pdf, R.string.help_item_protect_pdf),
                     HelpAction(Icons.Default.LockOpen, R.string.action_unlock_pdf, R.string.help_item_unlock_pdf),

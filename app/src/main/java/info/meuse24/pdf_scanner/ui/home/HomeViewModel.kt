@@ -245,8 +245,8 @@ class HomeViewModel @Inject constructor(
             val newThumbPath = record.thumbnailPath?.let { oldThumb ->
                 val thumbFile = File(oldThumb)
                 val newThumb  = File(scansDir, "$trimmed.jpg")
-                if (thumbFile.exists()) thumbFile.renameTo(newThumb)
-                newThumb.absolutePath
+                val renamed   = !thumbFile.exists() || thumbFile.renameTo(newThumb)
+                if (renamed) newThumb.absolutePath else oldThumb
             }
             repository.updateFilenameAndPath(record.id, trimmed, newFile.absolutePath, newThumbPath)
             _success.value = context.getString(R.string.rename_success, trimmed)

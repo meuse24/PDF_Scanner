@@ -36,7 +36,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.FormatListNumbered
-import androidx.compose.material.icons.filled.Highlight
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
@@ -104,7 +103,6 @@ sealed interface ScanAction {
     data object RemovePassword   : ScanAction
     data object RestrictUsage    : ScanAction
     data object ExportAsJpg      : ScanAction
-    data object Highlight        : ScanAction
     data object Annotate         : ScanAction
 }
 
@@ -323,7 +321,6 @@ private fun PdfActionSheet(
 
         // ── BEARBEITEN ───────────────────────────────────────────────────────
         SheetSection(R.string.sheet_section_edit)
-        SheetItem(Icons.Default.Highlight,   R.string.action_highlight_pdf, notEncrypted) { onAction(ScanAction.Highlight) }
         SheetItem(Icons.Default.BorderColor, R.string.action_annotate_pdf,  notEncrypted) { onAction(ScanAction.Annotate) }
         SheetItem(Icons.Default.Draw,        R.string.action_sign_pdf,      notEncrypted) { onAction(ScanAction.Signature) }
 

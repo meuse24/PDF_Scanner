@@ -70,7 +70,6 @@ import info.meuse24.pdf_scanner.ui.documentaction.RemoveTextLayerScreen
 import info.meuse24.pdf_scanner.ui.documentaction.RestrictUsageScreen
 import info.meuse24.pdf_scanner.ui.documentaction.UnlockPdfScreen
 import info.meuse24.pdf_scanner.ui.annotate.AnnotateScreen
-import info.meuse24.pdf_scanner.ui.highlight.HighlightScreen
 import info.meuse24.pdf_scanner.ui.signature.SignatureScreen
 import info.meuse24.pdf_scanner.ui.overlay.PageNumbersScreen
 import info.meuse24.pdf_scanner.ui.overlay.TextWatermarkScreen
@@ -225,7 +224,6 @@ fun AppNavigation() {
                                 currentRoute?.startsWith("remove-password/") == true -> stringResource(R.string.remove_password_screen_title)
                                 currentRoute?.startsWith("restrict-usage/") == true -> stringResource(R.string.restrict_usage_screen_title)
                                 currentRoute?.startsWith("annotate/") == true -> stringResource(R.string.annotate_screen_title)
-                                currentRoute?.startsWith("highlight/") == true -> stringResource(R.string.highlight_screen_title)
                                 else                                 -> stringResource(R.string.app_name)
                             }
                         )
@@ -297,8 +295,7 @@ fun AppNavigation() {
                             onNavigateToRemoveTextLayer = { scanId -> navController.navigate(Screen.RemoveTextLayer.createRoute(scanId)) },
                             onNavigateToRemovePassword  = { scanId -> navController.navigate(Screen.RemovePassword.createRoute(scanId)) },
                             onNavigateToRestrictUsage   = { scanId -> navController.navigate(Screen.RestrictUsage.createRoute(scanId)) },
-                            onNavigateToAnnotate        = { scanId -> navController.navigate(Screen.Annotate.createRoute(scanId)) },
-                            onNavigateToHighlight       = { scanId -> navController.navigate(Screen.Highlight.createRoute(scanId)) }
+                            onNavigateToAnnotate        = { scanId -> navController.navigate(Screen.Annotate.createRoute(scanId)) }
                         )
                     }
                     composable(Screen.Help.route)    { HelpScreen() }
@@ -393,12 +390,6 @@ fun AppNavigation() {
                         arguments = listOf(navArgument("scanId") { type = NavType.LongType })
                     ) {
                         RestrictUsageScreen(onNavigateBack = { navController.navigateUp() })
-                    }
-                    composable(
-                        route = Screen.Highlight.route,
-                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
-                    ) {
-                        HighlightScreen(onNavigateBack = { navController.navigateUp() })
                     }
                     composable(
                         route = Screen.Annotate.route,

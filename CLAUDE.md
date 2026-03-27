@@ -68,10 +68,10 @@ ui/
 │       │                          # MoreVert öffnet ModalBottomSheet (skipPartiallyExpanded=true) statt Dropdown
 │       │                          # Sheet-Sektionen: Bearbeiten · Seiten · Ausgabe · Schutz · OCR (nur wenn searchable)
 │       │                          # SheetItem: enabled = alpha 0.38f + clickable(enabled=false); icon FindInPage für Textebene entfernen
-│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Highlight/Annotate/RemoveTextLayer/…)
+│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Annotate/RemoveTextLayer/…)
 │       │                          # onAction: (ScanAction) → Unit; Tags als farbige Badges (tertiaryContainer)
 │       ├── SelectionTitleBar.kt   # ✕ · „X ausgewählt" (selection_count) · SelectAll-Icon
-│       ├── BulkActionBar.kt       # Icon+Label: Teilen · Export · Merge (MergeType) · Text (TextSnippet) · Durchsuchbar (FindInPage) · Löschen (rot)
+│       ├── BulkActionBar.kt       # Icon+Label: Teilen · Export · Merge (MergeType) · Text (TextSnippet) · OCR (FindInPage) · Löschen (rot)
 │       ├── EmptyStateContent.kt   # Leerarchiv-Illustration + Hint-Texte
 │       ├── ScannerLoadingAnimation.kt  # Canvas-Animation (Dokument + Scan-Strahl)
 │       └── MergeDialog.kt         # Dateiname-Eingabe + Reihenfolge-Vorschau
@@ -115,7 +115,7 @@ ui/
 │                                  # UI: kompakte Surface-Toolbar oben (8dp Padding); Canvas immer weißer Hintergrund + shadow(4dp);
 │                                  # kompakte Surface-Steuerleiste unten; Außenpadding 8dp; verticalSpacing 6dp
 ├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
-│                                  # Hilfe-Texte decken Suche/OCR/Auto-Tags/Highlight-Snap/Privacy-Verhalten ab
+│                                  # Hilfe-Texte decken Suche/OCR/Highlight-Snap/Privacy-Verhalten ab
 ├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig; zusätzliche Karten für Funktionen + Privacy
 └── privacy/PrivacyScreen.kt       # Privacy-Übersicht; Texte betonen lokale Speicherung, OCR-Text, Auto-Tags und Play-Services-Abhängigkeit
 
@@ -148,7 +148,7 @@ di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
 util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
 util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, onProgress): String — Phase1 PdfRenderer+OCR, Phase2 PdfBox
-                                   # Rückgabe: extrahierter Volltext (für AutoTagging + lokale DB-Speicherung)
+                                   # Rückgabe: extrahierter Volltext (für lokale DB-Speicherung)
                                    # ZH/JA NICHT als searchable PDF unterstützt (TTC/OTC-Fonts können nicht eingebettet werden)
 util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePages, deletePages, getPageCount, generateThumbnail
                                    # appendTextWatermark nutzt calculateWatermarkFontSize() (internal, testbar)
@@ -188,7 +188,7 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
 - **Checkbox** (rechts an jedem Eintrag) → Auswahlmodus; weiteres Antippen togglet; Back/✕ beendet
 - Ausgewählte Cards: `primaryContainer`; keine Einzel-Action-Buttons
 - **SelectionTitleBar** (top, erscheint ab 1 Auswahl): ✕ deselektieren · `selection_count` („X ausgewählt") · SelectAll-Icon
-- **BulkActionBar** (bottom): Icon+Label-Buttons — Teilen · Export · Merge (MergeType) · Text · Durchsuchbar (FindInPage) · Löschen (rot)
+- **BulkActionBar** (bottom): Icon+Label-Buttons — Teilen · Export · Merge (MergeType) · Text · OCR (FindInPage) · Löschen (rot)
   - Share: `ACTION_SEND` (1 Item) vs. `ACTION_SEND_MULTIPLE` (mehrere)
   - Delete: Einzel-Dialog mit Dateiname (`confirm_delete_single`) vs. Bulk-Dialog (`confirm_delete_multi`)
   - OCR: `extractTexts(records, lang)` → `ExtractTextUseCase` — Sprachauswahl-Dialog; `— filename —` Trenner nur bei >1

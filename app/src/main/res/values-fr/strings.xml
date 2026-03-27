@@ -1,373 +1,373 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">M24 PDF-Scanner</string>
-    <string name="app_label">Scan PDF</string>
-    <string name="nav_archive">Archives</string>
-    <string name="nav_start_scanner">Lancer le scanner</string>
-    <string name="nav_help">Aide</string>
-    <string name="nav_info">Info</string>
-    <string name="nav_privacy">Confidentialité</string>
-    <string name="cd_open_menu">Ouvrir le menu</string>
-    <string name="cd_navigate_back">Retour</string>
-    <string name="cd_new_scan">Nouveau scan</string>
-    <string name="cd_share">Partager</string>
-    <string name="cd_delete">Supprimer</string>
-    <string name="cd_pdf_document">Document PDF</string>
-    <string name="home_empty_title">Aucun scan disponible</string>
-    <string name="home_empty_hint">Appuie sur + pour commencer</string>
-    <string name="home_stat_doc_count">Documents</string>
-    <string name="home_stat_last_scan">Dernier scan</string>
-    <string name="dialog_save_title">Enregistrer le document</string>
-    <string name="scan_filename_default">Scan_%1$s</string>
-    <string name="dialog_filename_label">Nom du fichier</string>
-    <string name="action_save">Enregistrer</string>
-    <string name="action_cancel">Annuler</string>
-    <string name="action_ok">OK</string>
-    <string name="confirm_delete_title">Supprimer&#160;?</string>
-    <string name="confirm_delete_single">Supprimer %1$s&#160;?</string>
-    <string name="confirm_delete_multi">Supprimer %1$d documents&#160;?</string>
-    <string name="selection_count_fraction">%1$d/%2$d</string>
-    <string name="selection_count">%1$d sélectionné(s)</string>
-    <string name="action_select_all">Tout sélectionner</string>
-    <string name="error_title">Erreur</string>
-    <string name="error_no_pdf_viewer">Aucun lecteur PDF installé</string>
-    <string name="error_scanner_unavailable">Scanner non disponible</string>
-    <string name="error_source_unavailable">Impossible d\'ouvrir la source PDF</string>
-    <string name="error_pdf_empty">Le PDF enregistré est vide</string>
-    <string name="error_delete_failed">Impossible de supprimer le fichier</string>
-    <string name="error_save_failed">Erreur lors de l\'enregistrement</string>
-    <string name="action_export">Exporter</string>
-    <string name="export_success">Enregistré dans Téléchargements : %1$s</string>
-    <string name="error_export_failed">Échec de l\'exportation</string>
-    <string name="action_export_as_jpg">Exporter en JPG</string>
-    <string name="export_jpg_success">Enregistré dans Téléchargements : %1$s.jpg</string>
-    <string name="export_jpg_success_multi">%1$d pages exportées en JPEG dans Téléchargements</string>
-    <string name="error_export_jpg_failed">Échec de l\'export JPEG</string>
-    <string name="error_device_unsupported">Scanner non pris en charge sur cet appareil</string>
-    <string name="share_pdf_title">Partager le PDF</string>
-    <string name="scan_item_subtitle">%1$s · %2$d p. · %3$s</string>
-    <string name="help_screen_title">Instructions</string>
-    <string name="help_section_contents">Sommaire</string>
-    <string name="help_group_drawer_menu">Menu hamburger</string>
-    <string name="help_group_selection_menu">Barre de sélection</string>
-    <string name="help_section_scan">Scanner un document</string>
-    <string name="help_step1">Appuie sur le bouton + (en bas à droite) ou choisis Lancer le scanner dans le menu.</string>
-    <string name="help_step2">Le Google Document Scanner s\'ouvre. Photographie une ou plusieurs pages : les bords et la perspective sont corrigés automatiquement.</string>
-    <string name="help_step3">Après le scan, une boîte de dialogue s\'affiche. Saisis un nom de fichier et appuie sur Enregistrer. Le PDF est stocké localement sur ton appareil.</string>
-    <string name="help_section_archive">Gérer les archives</string>
-    <string name="help_item_open">Appuie sur un élément de la liste pour ouvrir le PDF dans un visionneur externe.</string>
-    <string name="help_item_select">Appuie sur la case d\'un élément pour sélectionner une ou plusieurs entrées. La barre de titre affiche le nombre et permet de tout sélectionner.</string>
-    <string name="help_item_share_export">Utilise Partager pour envoyer des PDF à d\'autres applications. Utilise Exporter pour copier les fichiers dans Téléchargements.</string>
-    <string name="help_section_pdf_edit">Modifier les PDF</string>
-    <string name="help_section_pdf_pages">Pages et structure</string>
-    <string name="help_section_pdf_page_changes">Modifier les pages</string>
-    <string name="help_section_pdf_marks">Marques et édition</string>
-    <string name="help_section_pdf_output">Sortie et protection</string>
-    <string name="help_desc_archive">Ouvre l\'archive avec vos PDFs enregistrés. De là, vous pouvez ouvrir, sélectionner des documents et lancer d\'autres actions.</string>
-    <string name="help_desc_start_scanner">Lance le scanner de documents pour capturer une ou plusieurs pages et les enregistrer en PDF.</string>
-    <string name="help_desc_help">Ouvre cet écran d\'aide avec les principales fonctions et symboles utilisés dans l\'application.</string>
-    <string name="help_desc_info">Affiche la version de l\'application, les licences, la pile technique et les crédits du projet.</string>
-    <string name="help_desc_privacy">Explique comment l\'application fonctionne localement sur votre appareil et quelles données ne sont pas transmises.</string>
-    <string name="help_desc_share">Partage les PDFs sélectionnés avec d\'autres applications.</string>
-    <string name="help_desc_export">Exporte les PDFs sélectionnés dans votre dossier Téléchargements.</string>
-    <string name="help_item_merge">Sélectionne au moins deux PDF puis appuie sur Fusionner pour les combiner dans un nouveau document.</string>
-    <string name="help_item_split">Ouvre le menu à trois points d\'un PDF de plusieurs pages et choisis Fractionner les pages pour créer plusieurs PDF aux points sélectionnés.</string>
-    <string name="help_item_reorder">Ouvre le menu à trois points et choisis Réorganiser les pages pour changer l\'ordre par glisser-déposer ou avec les boutons haut et bas.</string>
-    <string name="help_item_delete">Utilise Supprimer pour retirer des PDF sélectionnés des archives. L\'application supprime aussi le fichier enregistré et la miniature.</string>
-    <string name="help_section_ocr">OCR et extraction de texte</string>
-    <string name="help_item_extract_text">L\'extraction de texte (OCR) lit toutes les pages et affiche le texte reconnu dans un panneau où tu peux le copier ou le partager.</string>
-    <string name="help_item_make_searchable">Rendre consultable ajoute une couche de texte invisible au PDF, enregistre localement le texte OCR extrait pour la recherche dans l’archive et active les tags automatiques du document.</string>
-    <string name="help_item_ocr_language">Choisis la langue du document avant l\'OCR ou Rendre consultable. Le modèle hindi est téléchargé lors de la première utilisation.</string>
-    <string name="help_section_navigation">Navigation</string>
-    <string name="help_nav_text">Utilise le menu hamburger (en haut à gauche) pour accéder aux Archives, au Scanner, à l\'Aide et à l\'Info.</string>
-    <string name="help_section_notes">Remarques</string>
-    <string name="help_note1">L\'app ne nécessite pas d\'accès direct à la caméra : le ML Kit Document Scanner s\'exécute comme un processus système séparé.</string>
-    <string name="help_note2">Tous les PDFs sont stockés localement dans le répertoire de l\'app et ne quittent pas l\'appareil.</string>
-    <string name="help_note3">Pour les documents multi-pages, photographie les pages en séquence : le scanner les combine automatiquement en un seul PDF.</string>
-    <string name="help_note4">L\'OCR et l\'édition PDF s\'exécutent localement sur l\'appareil. L\'application ne téléverse pas tes documents.</string>
-    <string name="info_version">Version %1$s (%2$d)</string>
-    <string name="info_section_copyright">Copyright &amp; Licence</string>
-    <string name="info_copyright">© 2026 Günther Meusburger</string>
-    <string name="info_license_title">MIT License</string>
-    <string name="info_license_body">Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so.</string>
-    <string name="info_section_techstack">Tech Stack</string>
-    <string name="info_label_language">Langage</string>
-    <string name="info_label_ui">Framework UI</string>
-    <string name="info_label_architecture">Architecture</string>
-    <string name="info_label_async">Asynchronie</string>
-    <string name="info_label_platform">Plateforme</string>
-    <string name="info_label_ocr_languages">Langues OCR</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (hors ligne) + ZH · JA · HI (tél. 1re utilisation)</string>
-    <string name="info_section_libraries">Bibliothèques</string>
-    <string name="info_section_source">Code source</string>
-    <string name="info_repository_label">Dépôt GitHub</string>
-    <string name="info_section_privacy">Confidentialité</string>
-    <string name="info_section_features">Fonctions</string>
-    <string name="info_features_body">L’app numérise des documents en PDF, exécute l’OCR sur l’appareil, stocke localement le texte OCR consultable et les tags automatiques pour la recherche dans l’archive, et propose l’édition de pages, la protection, les signatures, le surlignage et l’alignement au texte pour les PDF consultables.</string>
-    <string name="info_privacy_body">Pas de publicité, pas de compte et pas de backend propre. Les PDF, miniatures, texte OCR et tags automatiques restent dans le stockage de l’app sur votre appareil. Le partage et l’export n’ont lieu que lorsque vous les déclenchez. La numérisation, l’OCR et les téléchargements de modèles ou de polices dépendent de Google Play Services ; cette app ne téléverse pas le contenu de vos documents.</string>
-    <!-- Privacy screen -->
-    <string name="privacy_keyword_1">Local</string>
-    <string name="privacy_keyword_2">Hors ligne</string>
-    <string name="privacy_keyword_3">Sécurisé</string>
-    <string name="privacy_keyword_4">Privé</string>
-    <string name="privacy_point_1">Cette app stocke localement sur votre appareil les PDF, les aperçus, le texte OCR consultable et les tags automatiques.</string>
-    <string name="privacy_point_2">Aucun document ni contenu n’est téléversé automatiquement. Le partage ou l’export n’ont lieu que lorsque vous les déclenchez explicitement.</string>
-    <string name="privacy_point_3">Les fonctions de numérisation et d’OCR utilisent Google Play Services. Des données techniques de diagnostic peuvent être transmises pour l’analyse d’erreurs. Les modèles de langue pour le chinois, le japonais et l’hindi, ainsi que les polices téléchargeables, peuvent être récupérés via Play Services lors de la première utilisation ; le contenu de vos documents n’est pas envoyé par cette app.</string>
-    <string name="privacy_point_4">L’app ne collecte aucune donnée personnelle, n’utilise pas d’analytique propre et ne demande pas sa propre autorisation réseau.</string>
-    <string name="privacy_footer">Mise à jour : 26 mars 2026</string>
-
-    <!-- OCR -->
-    <string name="cd_extract_text">Extraire le texte</string>
-    <string name="ocr_result_title">Texte extrait</string>
-    <string name="ocr_bulk_separator">— %1$s —</string>
-    <string name="ocr_no_image">Aucune image disponible pour l\'extraction de texte</string>
-    <string name="ocr_no_text_found">Aucun texte trouvé dans ce document</string>
-    <string name="ocr_failed">Échec de l\'extraction de texte</string>
-    <string name="action_copy">Copier</string>
-    <string name="action_share_text">Partager le texte</string>
-    <string name="ocr_copied">Texte copié</string>
-
-    <string name="info_section_credits">Crédits</string>
-    <string name="info_credits_intro">Cette app a été développée avec l\'aide d\'assistants IA :</string>
-    <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
-    <string name="info_credits_detail">L’architecture, la planification, l’implémentation, le design de l’icône, la révision des traductions et la documentation ont été élaborés avec l’aide de l’IA.</string>
-
-    <!-- Searchable PDF -->
-    <string name="dialog_searchable_pdf">PDF consultable</string>
-    <string name="dialog_searchable_hint">Couche de texte ajoutée par OCR (modèle de langue téléchargé si nécessaire)</string>
-    <string name="dialog_ocr_language">Langue OCR</string>
-    <string name="cd_make_searchable">Rendre consultable</string>
-    <string name="searchable_progress">Page %1$d sur %2$d</string>
-    <string name="searchable_success">Le PDF est désormais consultable : %1$s</string>
-    <string name="searchable_success_multi">%1$d PDFs sont désormais consultables</string>
-    <string name="searchable_failed">Impossible de créer le PDF consultable</string>
-    <string name="searchable_nothing_to_do">Les PDF sélectionnés sont déjà consultables</string>
-    <string name="searchable_badge">Consultable</string>
-
-    <!-- Merge -->
-    <string name="cd_merge">Fusionner les PDF</string>
-    <string name="merge_dialog_title">Fusionner les PDF</string>
-    <string name="merge_dialog_filename_label">Nom du nouveau PDF</string>
-    <string name="merge_dialog_order_hint">L\'ordre suit l\'ordre de la liste</string>
-    <string name="merge_dialog_confirm">Fusionner</string>
-    <string name="merge_success">PDF fusionnés : %1$s</string>
-    <string name="merge_error">Erreur lors de la fusion des PDF</string>
-    <string name="merge_not_enough_scans">Sélectionnez au moins deux PDF à fusionner</string>
-    <string name="merge_filename_default">Fusionné_%1$s</string>
-    <!-- Split -->
-    <string name="split_screen_title">Fractionner le PDF</string>
-    <string name="split_preview">Crée %1$d parties : %2$s</string>
-    <string name="split_confirm">Fractionner</string>
-    <string name="split_success">PDF fractionné en %1$d parties</string>
-    <string name="split_error">Erreur lors du fractionnement</string>
-    <string name="split_no_points">Sélectionnez au moins un point de division</string>
-    <string name="action_split">Fractionner les pages</string>
-    <string name="cd_split_point_active">Supprimer le point de division après la page %1$d</string>
-    <string name="cd_split_point_inactive">Ajouter un point de division après la page %1$d</string>
-    <!-- Reorder -->
-    <string name="reorder_screen_title">Réorganiser les pages</string>
-    <string name="reorder_apply">Appliquer</string>
-    <string name="reorder_success">Ordre des pages enregistré</string>
-    <string name="reorder_error">Erreur lors de la réorganisation</string>
-    <string name="action_reorder">Réorganiser les pages</string>
-    <string name="reorder_save_as_copy">Enregistrer comme copie</string>
-    <string name="reorder_overwrite_hint">L\'original sera remplacé</string>
-    <string name="split_page_label">Page %1$d</string>
-    <string name="cd_drag_handle">Déplacer la page</string>
-    <string name="cd_page_up">Monter la page</string>
-    <string name="cd_page_down">Descendre la page</string>
-    <!-- Edit loading -->
-    <string name="edit_loading">Traitement du PDF…</string>
-    <string name="edit_error_file_locked">Le fichier est en cours d\'utilisation – fermez-le et réessayez</string>
-    <string name="workflow_nothing_selected">Sélectionnez au moins un document</string>
-    <string name="workflow_missing_files">Un ou plusieurs fichiers sélectionnés sont introuvables</string>
-    <string name="workflow_storage_failed">Impossible d\'écrire le fichier PDF</string>
-    <string name="rotate_screen_title">Rotate pages</string>
-    <string name="rotate_apply">Rotate pages</string>
-    <string name="rotate_success">Pages rotated</string>
-    <string name="rotate_success_copy">Rotated pages saved as copy</string>
-    <string name="rotate_error">Error rotating pages</string>
-    <string name="action_rotate">Rotate pages</string>
-    <string name="rotate_option_90">90°</string>
-    <string name="rotate_option_180">180°</string>
-    <string name="rotate_option_270">270°</string>
-    <string name="delete_pages_screen_title">Delete pages</string>
-    <string name="delete_pages_apply">Delete pages</string>
-    <string name="delete_pages_success">Pages deleted</string>
-    <string name="delete_pages_success_copy">Pages deleted and saved as copy</string>
-    <string name="delete_pages_error">Error deleting pages</string>
-    <string name="delete_pages_all_error">At least one page must remain in the PDF</string>
-    <string name="delete_pages_all_hint">Leave at least one page in the PDF</string>
-    <string name="action_delete_pages">Delete pages</string>
-    <string name="extract_pages_screen_title">Extract pages</string>
-    <string name="extract_pages_apply">Extract pages</string>
-    <string name="extract_pages_success">Pages extracted: %1$s</string>
-    <string name="extract_pages_error">Error extracting pages</string>
-    <string name="action_extract_pages">Extract pages</string>
-    <string name="duplicate_pages_screen_title">Duplicate pages</string>
-    <string name="duplicate_pages_apply">Duplicate pages</string>
-    <string name="duplicate_pages_success">Pages duplicated: %1$s</string>
-    <string name="duplicate_pages_error">Error duplicating pages</string>
-    <string name="action_duplicate_pages">Duplicate pages</string>
-    <string name="page_selection_invalid">Select at least one valid page</string>
-    <string name="help_item_rotate">Ouvre le menu à trois points et choisis Faire pivoter les pages. Sélectionne les pages, choisis 90°, 180° ou 270°, puis applique la modification.</string>
-    <string name="help_item_delete_pages">Utilise Supprimer des pages pour retirer les pages sélectionnées du PDF choisi. Au moins une page doit rester dans le document.</string>
-    <string name="help_item_extract_pages">Utilise Extraire les pages pour enregistrer les pages sélectionnées dans un nouveau PDF.</string>
-    <string name="help_item_duplicate_pages">Utilise Dupliquer les pages pour créer un nouveau PDF contenant des copies des pages sélectionnées.</string>
-    <string name="help_item_edit_copy">Faire pivoter, réorganiser et supprimer des pages peut remplacer le PDF original ou enregistrer le résultat comme copie.</string>
-    <string name="help_item_page_numbers">Utilise Ajouter des numéros de page pour créer une nouvelle copie du PDF avec des numéros centrés sur chaque page.</string>
-    <string name="help_item_watermark">Utilise Ajouter un filigrane texte pour placer un texte personnalisé en diagonale sur chaque page dans une nouvelle copie du PDF.</string>
-    <string name="overlay_document_info">%1$d pages</string>
-    <string name="page_numbers_screen_title">Numéros de page</string>
-    <string name="page_numbers_description">Ajouter des numéros de page à ce PDF</string>
-    <string name="page_numbers_details">Cette action crée une nouvelle copie du PDF et place des numéros de page centrés en bas de chaque page. Le contenu existant et le texte OCR restent inchangés.</string>
-    <string name="page_numbers_apply">Ajouter des numéros de page</string>
-    <string name="page_numbers_success">Numéros de page ajoutés : %1$s</string>
-    <string name="page_numbers_error">Erreur lors de l ajout des numéros de page</string>
-    <string name="action_page_numbers">Ajouter des numéros de page</string>
-    <string name="watermark_screen_title">Filigrane texte</string>
-    <string name="watermark_description">Ajouter un filigrane texte à ce PDF</string>
-    <string name="watermark_details">Le filigrane est appliqué en diagonale sur chaque page et enregistré comme nouvelle copie du PDF. Le contenu existant et le texte OCR restent inchangés.</string>
-    <string name="watermark_label">Texte du filigrane</string>
-    <string name="watermark_apply">Ajouter le filigrane</string>
-    <string name="watermark_success">Filigrane ajouté : %1$s</string>
-    <string name="watermark_error">Erreur lors de l ajout du filigrane</string>
-    <string name="watermark_invalid">Saisir un texte pour le filigrane</string>
-    <string name="action_text_watermark">Ajouter un filigrane texte</string>
-    <string name="compress_pdf_screen_title">Compress PDF</string>
-    <string name="compress_pdf_description">Create a smaller copy of this PDF</string>
-    <string name="compress_pdf_details">Compression creates a new PDF copy by recompressing the page images. Searchable PDFs are excluded in this version so their OCR text layer is not lost.</string>
-    <string name="compress_pdf_preset_label">Compression level</string>
-    <string name="compress_pdf_preset_low">Low</string>
-    <string name="compress_pdf_preset_medium">Medium</string>
-    <string name="compress_pdf_preset_high">High</string>
-    <string name="compress_pdf_apply">Compress PDF</string>
-    <string name="compress_pdf_success">Compressed PDF created: %1$s</string>
-    <string name="compress_pdf_error">Error compressing PDF</string>
-    <string name="compress_pdf_searchable_unsupported">Searchable PDFs cannot be compressed in this version because the OCR text layer must stay intact</string>
-    <string name="compress_pdf_protected_unsupported">Unlock the PDF before compressing it</string>
-    <string name="action_compress_pdf">Compress PDF</string>
-    <string name="protect_pdf_screen_title">Set opening password</string>
-    <string name="protect_pdf_description">Protect this PDF with a password</string>
-    <string name="protect_pdf_details">The app creates a new password-protected PDF copy. The original file stays unchanged.</string>
-    <string name="protect_pdf_apply">Protect PDF</string>
-    <string name="protect_pdf_success">Protected PDF created: %1$s</string>
-    <string name="protect_pdf_error">Error protecting PDF</string>
-    <string name="protect_pdf_already_protected">This PDF is already password-protected</string>
-    <string name="action_protect_pdf">Set opening password</string>
-    <string name="unlock_pdf_screen_title">Remove opening password</string>
-    <string name="unlock_pdf_description">Create an unlocked copy of this PDF</string>
-    <string name="unlock_pdf_details">Enter the current password to save an unprotected copy of this PDF.</string>
-    <string name="unlock_pdf_apply">Unlock PDF</string>
-    <string name="unlock_pdf_success">Unlocked PDF created: %1$s</string>
-    <string name="unlock_pdf_error">Error unlocking PDF</string>
-    <string name="unlock_pdf_not_protected">This PDF is not password-protected</string>
-    <string name="action_unlock_pdf">Remove opening password</string>
-    <string name="password_label">Password</string>
-    <string name="password_confirm_label">Confirm password</string>
-    <string name="password_mismatch">Passwords do not match</string>
-    <string name="password_required">Enter a password</string>
-    <string name="password_wrong">The password is incorrect</string>
-    <string name="help_item_compress_pdf">Choose Compress PDF to create a smaller copy of a non-searchable PDF. The original file remains unchanged.</string>
-    <string name="help_item_export_as_jpg">Exporter en JPG convertit chaque page du PDF en image JPEG (150 DPI) et l\'enregistre dans votre dossier Téléchargements. Un PDF d\'une page génère un fichier ; un PDF de plusieurs pages génère une image par page.</string>
-    <string name="help_item_protect_pdf">Choose Set opening password to create a password-protected copy that requires the password when opening it.</string>
-    <string name="help_item_unlock_pdf">Choose Remove opening password and enter the current password to save an unprotected copy.</string>
-    <string name="signature_screen_title">Sign PDF</string>
-    <string name="signature_description">Add a handwritten signature stamp to this PDF</string>
-    <string name="signature_details">Draw your signature, choose the target page, and save a new signed PDF copy. The signature is placed as a stamp at the bottom right of the selected page. Existing content and OCR text stay untouched.</string>
-    <string name="signature_hint">Draw your signature in one or more strokes.</string>
-    <string name="signature_apply">Add signature</string>
-    <string name="signature_success">Signed PDF created: %1$s</string>
-    <string name="signature_error">Error adding signature</string>
-    <string name="signature_required">Draw a signature first</string>
-    <string name="action_sign_pdf">Sign PDF</string>
-    <string name="signature_target_page">Target page: %1$d of %2$d</string>
-    <string name="signature_page_previous">Previous page</string>
-    <string name="signature_page_next">Next page</string>
-    <string name="signature_size_label">Signature size</string>
-    <string name="signature_size_small">Small</string>
-    <string name="signature_size_medium">Medium</string>
-    <string name="signature_size_large">Large</string>
-    <string name="signature_clear">Clear signature</string>
-    <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
-    <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
-    <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
-    <!-- Remove password / restrictions -->
-    <string name="remove_password_screen_title">Supprimer les restrictions</string>
-    <string name="remove_password_description">Lever les restrictions d\'utilisation sans saisir de mot de passe</string>
-    <string name="remove_password_details">Certains PDF s\'ouvrent sans mot de passe mais ont des restrictions telles que l\'interdiction d\'imprimer ou de copier. Cette fonction lève ces restrictions et crée une copie sans restrictions. Le fichier original n\'est pas modifié.\n\nRemarque : cette fonction ne supprime pas un mot de passe d\'ouverture. Si le PDF nécessite un mot de passe pour s\'ouvrir, utilisez « Déverrouiller le PDF ».</string>
-    <string name="remove_password_apply">Supprimer les restrictions</string>
-    <string name="remove_password_success">Restrictions supprimées : %1$s</string>
-    <string name="remove_password_error">Erreur lors de la suppression des restrictions</string>
-    <string name="remove_password_requires_input">Ce PDF est protégé par un mot de passe d\'ouverture. Utilisez « Déverrouiller le PDF » pour le saisir.</string>
-    <string name="action_remove_password">Supprimer les restrictions</string>
-    <string name="help_item_remove_password">Choisissez Supprimer les restrictions pour lever les restrictions d\'utilisation (p. ex. interdiction d\'imprimer ou de copier) des PDF qui s\'ouvrent sans mot de passe. Cette fonction ne supprime pas un vrai mot de passe d\'ouverture — pour cela, utilisez Déverrouiller le PDF.</string>
-    <!-- Remove text layer -->
-    <string name="remove_text_layer_screen_title">Supprimer la couche de texte</string>
-    <string name="remove_text_layer_description">Créer une copie sans la couche de texte OCR</string>
-    <string name="remove_text_layer_details">Chaque page est restituée en tant qu\'image et enregistrée dans une nouvelle copie PDF. La couche de texte est supprimée ; l\'aspect visuel reste inchangé. Le fichier original n\'est pas modifié.</string>
-    <string name="remove_text_layer_apply">Supprimer la couche de texte</string>
-    <string name="remove_text_layer_success">Couche de texte supprimée : %1$s</string>
-    <string name="remove_text_layer_error">Erreur lors de la suppression de la couche de texte</string>
-    <string name="remove_text_layer_not_searchable">Ce PDF ne possède pas de couche de texte</string>
-    <string name="action_remove_text_layer">Supprimer la couche de texte</string>
-    <string name="help_item_remove_text_layer">Choisissez Supprimer la couche de texte pour créer une copie d’un PDF consultable sans la couche OCR invisible. La copie obtenue n’est plus consultable et n’alimente plus la recherche ni les tags automatiques avec du texte OCR.</string>
-    <!-- Submenus -->
-    <string name="action_submenu_page_structure">Page structure</string>
-    <string name="action_submenu_security">Security &amp; Password</string>
-    <!-- Restrict usage -->
-    <string name="restrict_usage_screen_title">Restrict usage rights</string>
-    <string name="restrict_usage_description">Set usage rights via owner password</string>
-    <string name="restrict_usage_details">Creates a new PDF copy with usage restrictions controlled by an owner password. The document can still be opened without a password, but printing, copying, and editing can be individually restricted. The original file stays unchanged.</string>
-    <string name="restrict_usage_owner_password_label">Owner password</string>
-    <string name="restrict_usage_can_print">Allow printing</string>
-    <string name="restrict_usage_can_copy">Allow copying</string>
-    <string name="restrict_usage_can_edit">Allow editing</string>
-    <string name="restrict_usage_apply">Save restrictions</string>
-    <string name="restrict_usage_success">Restricted PDF created: %1$s</string>
-    <string name="restrict_usage_error">Error restricting PDF</string>
-    <string name="action_restrict_usage">Restrict usage rights</string>
-    <string name="help_item_restrict_usage">Choose Restrict usage rights to create a copy with an owner password that controls whether printing, copying, and editing are allowed. The document can still be opened without a password.</string>
-    <string name="help_back_to_contents">Retour à la table des matières</string>
-    <string name="signature_scale_invalid">Choose a valid signature size</string>
-    <!-- Highlight PDF -->
-    <string name="action_highlight_pdf">Surligner PDF</string>
-    <string name="highlight_screen_title">Surligner PDF</string>
-    <string name="highlight_description">Marquez le texte avec un surligneur jaune</string>
-    <string name="highlight_details">Faites glisser sur les zones pour les surligner en jaune. Passez en mode Panoramique pour zoomer et déplacer la page, puis revenez à Dessiner pour marquer le texte. Naviguez entre les pages pour en surligner plusieurs. Une nouvelle copie PDF surlignée sera créée.</string>
-    <string name="highlight_apply">Enregistrer les surlignages</string>
-    <string name="highlight_clear_page">Page</string>
-    <string name="highlight_hint">Faites glisser sur le texte pour le marquer.</string>
-    <string name="highlight_target_page">Page : %1$d sur %2$d</string>
-    <string name="highlight_success">PDF surligné créé : %1$s</string>
-    <string name="highlight_error">Erreur lors de l\'ajout des surlignages</string>
-    <string name="highlight_no_strokes">Dessinez d\'abord des surlignages</string>
-    <string name="highlight_stroke_thin">Fin</string>
-    <string name="highlight_stroke_medium">Moyen</string>
-    <string name="highlight_stroke_thick">Épais</string>
-    <string name="highlight_stroke_width">Stylo</string>
-    <string name="highlight_mode_draw">Mark.</string>
-    <string name="highlight_mode_snap">Snap</string>
-    <string name="highlight_mode_pan">Zoom</string>
-    <string name="highlight_undo_last">Annuler</string>
-    <string name="highlight_reset_all">Tout</string>
-    <string name="highlight_zoom_reset">%1$s× – Réinitialiser</string>
-    <string name="highlight_zoom_reset_button">Réinitialiser</string>
-    <string name="help_item_highlight_pdf">Choisissez Surligner PDF pour dessiner des surlignages jaunes sur le document. Les PDF consultables proposent aussi Aligner au texte, qui aligne un tracé sur les lignes de texte détectées. Panoramique/zoom permet de déplacer et d’agrandir la page ; si aucune ligne de texte ne correspond, l’app conserve le surlignage normal à main levée.</string>
-    <string name="search_placeholder">Rechercher des documents…</string>
-    <string name="search_no_results">Aucun résultat pour « %1$s »</string>
-    <string name="cd_search_clear">Effacer la recherche</string>
-    <string name="tag_invoice">Facture</string>
-    <string name="tag_contract">Contrat</string>
-    <string name="tag_insurance">Assurance</string>
-    <string name="tag_certificate">Certificat</string>
-    <string name="tag_bank">Banque</string>
-    <string name="tag_delivery">Bon de livraison</string>
-    <string name="help_section_search">Recherche &amp; auto-tags</string>
-    <string name="help_item_search">Appuyez sur le champ de recherche en haut pour trouver des documents par nom de fichier ou par texte OCR enregistré. La recherche s’exécute localement sur votre appareil et utilise une correspondance par préfixe, ainsi « Rec » peut trouver « Reçu ».</string>
-    <string name="help_item_auto_tag">Lorsqu’un document est rendu consultable, l’app attribue localement des tags comme Facture ou Contrat à partir du texte OCR et de mots-clés. Les tags apparaissent sous le nom du fichier.</string>
-    <string name="privacy_keyword_5">Intelligence locale</string>
-    <string name="privacy_point_5">La recherche plein texte, les tags automatiques, la création de PDF consultables et les surlignages alignés au texte fonctionnent localement sur votre appareil à partir du texte OCR et des métadonnées PDF.</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">M24 PDF-Scanner</string>
+    <string name="app_label">Scan PDF</string>
+    <string name="nav_archive">Archives</string>
+    <string name="nav_start_scanner">Lancer le scanner</string>
+    <string name="nav_help">Aide</string>
+    <string name="nav_info">Info</string>
+    <string name="nav_privacy">Confidentialité</string>
+    <string name="cd_open_menu">Ouvrir le menu</string>
+    <string name="cd_navigate_back">Retour</string>
+    <string name="cd_new_scan">Nouveau scan</string>
+    <string name="cd_share">Partager</string>
+    <string name="cd_delete">Supprimer</string>
+    <string name="cd_pdf_document">Document PDF</string>
+    <string name="home_empty_title">Aucun scan disponible</string>
+    <string name="home_empty_hint">Appuie sur + pour commencer</string>
+    <string name="home_stat_doc_count">Documents</string>
+    <string name="home_stat_last_scan">Dernier scan</string>
+    <string name="dialog_save_title">Enregistrer le document</string>
+    <string name="scan_filename_default">Scan_%1$s</string>
+    <string name="dialog_filename_label">Nom du fichier</string>
+    <string name="action_save">Enregistrer</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_ok">OK</string>
+    <string name="confirm_delete_title">Supprimer&#160;?</string>
+    <string name="confirm_delete_single">Supprimer %1$s&#160;?</string>
+    <string name="confirm_delete_multi">Supprimer %1$d documents&#160;?</string>
+    <string name="selection_count_fraction">%1$d/%2$d</string>
+    <string name="selection_count">%1$d sélectionné(s)</string>
+    <string name="action_select_all">Tout sélectionner</string>
+    <string name="error_title">Erreur</string>
+    <string name="error_no_pdf_viewer">Aucun lecteur PDF installé</string>
+    <string name="error_scanner_unavailable">Scanner non disponible</string>
+    <string name="error_source_unavailable">Impossible d\'ouvrir la source PDF</string>
+    <string name="error_pdf_empty">Le PDF enregistré est vide</string>
+    <string name="error_delete_failed">Impossible de supprimer le fichier</string>
+    <string name="error_save_failed">Erreur lors de l\'enregistrement</string>
+    <string name="action_export">Exporter</string>
+    <string name="export_success">Enregistré dans Téléchargements : %1$s</string>
+    <string name="error_export_failed">Échec de l\'exportation</string>
+    <string name="action_export_as_jpg">Exporter en JPG</string>
+    <string name="export_jpg_success">Enregistré dans Téléchargements : %1$s.jpg</string>
+    <string name="export_jpg_success_multi">%1$d pages exportées en JPEG dans Téléchargements</string>
+    <string name="error_export_jpg_failed">Échec de l\'export JPEG</string>
+    <string name="error_device_unsupported">Scanner non pris en charge sur cet appareil</string>
+    <string name="share_pdf_title">Partager le PDF</string>
+    <string name="scan_item_subtitle">%1$s · %2$d p. · %3$s</string>
+    <string name="help_screen_title">Instructions</string>
+    <string name="help_section_contents">Sommaire</string>
+    <string name="help_group_drawer_menu">Menu hamburger</string>
+    <string name="help_group_selection_menu">Barre de sélection</string>
+    <string name="help_section_scan">Scanner un document</string>
+    <string name="help_step1">Appuie sur le bouton + (en bas à droite) ou choisis Lancer le scanner dans le menu.</string>
+    <string name="help_step2">Le Google Document Scanner s\'ouvre. Photographie une ou plusieurs pages : les bords et la perspective sont corrigés automatiquement.</string>
+    <string name="help_step3">Après le scan, une boîte de dialogue s\'affiche. Saisis un nom de fichier et appuie sur Enregistrer. Le PDF est stocké localement sur ton appareil.</string>
+    <string name="help_section_archive">Gérer les archives</string>
+    <string name="help_item_open">Appuie sur un élément de la liste pour ouvrir le PDF dans un visionneur externe.</string>
+    <string name="help_item_select">Appuie sur la case d\'un élément pour sélectionner une ou plusieurs entrées. La barre de titre affiche le nombre et permet de tout sélectionner.</string>
+    <string name="help_item_share_export">Utilise Partager pour envoyer des PDF à d\'autres applications. Utilise Exporter pour copier les fichiers dans Téléchargements.</string>
+    <string name="help_section_pdf_edit">Modifier les PDF</string>
+    <string name="help_section_pdf_pages">Pages et structure</string>
+    <string name="help_section_pdf_page_changes">Modifier les pages</string>
+    <string name="help_section_pdf_marks">Marques et édition</string>
+    <string name="help_section_pdf_output">Sortie et protection</string>
+    <string name="help_desc_archive">Ouvre l\'archive avec vos PDFs enregistrés. De là, vous pouvez ouvrir, sélectionner des documents et lancer d\'autres actions.</string>
+    <string name="help_desc_start_scanner">Lance le scanner de documents pour capturer une ou plusieurs pages et les enregistrer en PDF.</string>
+    <string name="help_desc_help">Ouvre cet écran d\'aide avec les principales fonctions et symboles utilisés dans l\'application.</string>
+    <string name="help_desc_info">Affiche la version de l\'application, les licences, la pile technique et les crédits du projet.</string>
+    <string name="help_desc_privacy">Explique comment l\'application fonctionne localement sur votre appareil et quelles données ne sont pas transmises.</string>
+    <string name="help_desc_share">Partage les PDFs sélectionnés avec d\'autres applications.</string>
+    <string name="help_desc_export">Exporte les PDFs sélectionnés dans votre dossier Téléchargements.</string>
+    <string name="help_item_merge">Sélectionne au moins deux PDF puis appuie sur Fusionner pour les combiner dans un nouveau document.</string>
+    <string name="help_item_split">Ouvre le menu à trois points d\'un PDF de plusieurs pages et choisis Fractionner les pages pour créer plusieurs PDF aux points sélectionnés.</string>
+    <string name="help_item_reorder">Ouvre le menu à trois points et choisis Réorganiser les pages pour changer l\'ordre par glisser-déposer ou avec les boutons haut et bas.</string>
+    <string name="help_item_delete">Utilise Supprimer pour retirer des PDF sélectionnés des archives. L\'application supprime aussi le fichier enregistré et la miniature.</string>
+    <string name="help_section_ocr">OCR et extraction de texte</string>
+    <string name="help_item_extract_text">L\'extraction de texte (OCR) lit toutes les pages et affiche le texte reconnu dans un panneau où tu peux le copier ou le partager.</string>
+    <string name="help_item_make_searchable">Rendre consultable ajoute une couche de texte invisible au PDF, enregistre localement le texte OCR extrait pour la recherche dans l’archive.</string>
+    <string name="help_item_ocr_language">Choisis la langue du document avant l\'OCR ou Rendre consultable. Le modèle hindi est téléchargé lors de la première utilisation.</string>
+    <string name="help_section_navigation">Navigation</string>
+    <string name="help_nav_text">Utilise le menu hamburger (en haut à gauche) pour accéder aux Archives, au Scanner, à l\'Aide et à l\'Info.</string>
+    <string name="help_section_notes">Remarques</string>
+    <string name="help_note1">L\'app ne nécessite pas d\'accès direct à la caméra : le ML Kit Document Scanner s\'exécute comme un processus système séparé.</string>
+    <string name="help_note2">Tous les PDFs sont stockés localement dans le répertoire de l\'app et ne quittent pas l\'appareil.</string>
+    <string name="help_note3">Pour les documents multi-pages, photographie les pages en séquence : le scanner les combine automatiquement en un seul PDF.</string>
+    <string name="help_note4">L\'OCR et l\'édition PDF s\'exécutent localement sur l\'appareil. L\'application ne téléverse pas tes documents.</string>
+    <string name="info_version">Version %1$s (%2$d)</string>
+    <string name="info_section_copyright">Copyright &amp; Licence</string>
+    <string name="info_copyright">© 2026 Günther Meusburger</string>
+    <string name="info_license_title">MIT License</string>
+    <string name="info_license_body">Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so.</string>
+    <string name="info_section_techstack">Tech Stack</string>
+    <string name="info_label_language">Langage</string>
+    <string name="info_label_ui">Framework UI</string>
+    <string name="info_label_architecture">Architecture</string>
+    <string name="info_label_async">Asynchronie</string>
+    <string name="info_label_platform">Plateforme</string>
+    <string name="info_label_ocr_languages">Langues OCR</string>
+    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (hors ligne) + ZH · JA · HI (tél. 1re utilisation)</string>
+    <string name="info_section_libraries">Bibliothèques</string>
+    <string name="info_section_source">Code source</string>
+    <string name="info_repository_label">Dépôt GitHub</string>
+    <string name="info_section_privacy">Confidentialité</string>
+    <string name="info_section_features">Fonctions</string>
+    <string name="info_features_body">L’app numérise des documents en PDF, exécute l’OCR sur l’appareil, stocke localement le texte OCR consultable pour la recherche dans l’archive, et propose l’édition de pages, la protection, les signatures, le surlignage et l’alignement au texte pour les PDF consultables.</string>
+    <string name="info_privacy_body">Pas de publicité, pas de compte et pas de backend propre. Les PDF, miniatures, texte OCR restent dans le stockage de l’app sur votre appareil. Le partage et l’export n’ont lieu que lorsque vous les déclenchez. La numérisation, l’OCR et les téléchargements de modèles ou de polices dépendent de Google Play Services ; cette app ne téléverse pas le contenu de vos documents.</string>
+    <!-- Privacy screen -->
+    <string name="privacy_keyword_1">Local</string>
+    <string name="privacy_keyword_2">Hors ligne</string>
+    <string name="privacy_keyword_3">Sécurisé</string>
+    <string name="privacy_keyword_4">Privé</string>
+    <string name="privacy_point_1">Cette app stocke localement sur votre appareil les PDF, les aperçus, le texte OCR consultable.</string>
+    <string name="privacy_point_2">Aucun document ni contenu n’est téléversé automatiquement. Le partage ou l’export n’ont lieu que lorsque vous les déclenchez explicitement.</string>
+    <string name="privacy_point_3">Les fonctions de numérisation et d’OCR utilisent Google Play Services. Des données techniques de diagnostic peuvent être transmises pour l’analyse d’erreurs. Les modèles de langue pour le chinois, le japonais et l’hindi, ainsi que les polices téléchargeables, peuvent être récupérés via Play Services lors de la première utilisation ; le contenu de vos documents n’est pas envoyé par cette app.</string>
+    <string name="privacy_point_4">L’app ne collecte aucune donnée personnelle, n’utilise pas d’analytique propre et ne demande pas sa propre autorisation réseau.</string>
+    <string name="privacy_footer">Mise à jour : 26 mars 2026</string>
+
+    <!-- OCR -->
+    <string name="cd_extract_text">Extraire le texte</string>
+    <string name="ocr_result_title">Texte extrait</string>
+    <string name="ocr_bulk_separator">— %1$s —</string>
+    <string name="ocr_no_image">Aucune image disponible pour l\'extraction de texte</string>
+    <string name="ocr_no_text_found">Aucun texte trouvé dans ce document</string>
+    <string name="ocr_failed">Échec de l\'extraction de texte</string>
+    <string name="action_copy">Copier</string>
+    <string name="action_share_text">Partager le texte</string>
+    <string name="ocr_copied">Texte copié</string>
+
+    <string name="info_section_credits">Crédits</string>
+    <string name="info_credits_intro">Cette app a été développée avec l\'aide d\'assistants IA :</string>
+    <string name="info_credits_tools">Claude Code · OpenAI Codex · Google Gemini</string>
+    <string name="info_credits_detail">L’architecture, la planification, l’implémentation, le design de l’icône, la révision des traductions et la documentation ont été élaborés avec l’aide de l’IA.</string>
+
+    <!-- Searchable PDF -->
+    <string name="dialog_searchable_pdf">PDF consultable</string>
+    <string name="dialog_searchable_hint">Couche de texte ajoutée par OCR (modèle de langue téléchargé si nécessaire)</string>
+    <string name="dialog_ocr_language">Langue OCR</string>
+    <string name="cd_make_searchable">Rendre consultable</string>
+    <string name="searchable_progress">Page %1$d sur %2$d</string>
+    <string name="searchable_success">Le PDF est désormais consultable : %1$s</string>
+    <string name="searchable_success_multi">%1$d PDFs sont désormais consultables</string>
+    <string name="searchable_failed">Impossible de créer le PDF consultable</string>
+    <string name="searchable_nothing_to_do">Les PDF sélectionnés sont déjà consultables</string>
+    <string name="searchable_badge">Consultable</string>
+
+    <!-- Merge -->
+    <string name="cd_merge">Fusionner les PDF</string>
+    <string name="merge_dialog_title">Fusionner les PDF</string>
+    <string name="merge_dialog_filename_label">Nom du nouveau PDF</string>
+    <string name="merge_dialog_order_hint">L\'ordre suit l\'ordre de la liste</string>
+    <string name="merge_dialog_confirm">Fusionner</string>
+    <string name="merge_success">PDF fusionnés : %1$s</string>
+    <string name="merge_error">Erreur lors de la fusion des PDF</string>
+    <string name="merge_not_enough_scans">Sélectionnez au moins deux PDF à fusionner</string>
+    <string name="merge_filename_default">Fusionné_%1$s</string>
+    <!-- Split -->
+    <string name="split_screen_title">Fractionner le PDF</string>
+    <string name="split_preview">Crée %1$d parties : %2$s</string>
+    <string name="split_confirm">Fractionner</string>
+    <string name="split_success">PDF fractionné en %1$d parties</string>
+    <string name="split_error">Erreur lors du fractionnement</string>
+    <string name="split_no_points">Sélectionnez au moins un point de division</string>
+    <string name="action_split">Fractionner les pages</string>
+    <string name="cd_split_point_active">Supprimer le point de division après la page %1$d</string>
+    <string name="cd_split_point_inactive">Ajouter un point de division après la page %1$d</string>
+    <!-- Reorder -->
+    <string name="reorder_screen_title">Réorganiser les pages</string>
+    <string name="reorder_apply">Appliquer</string>
+    <string name="reorder_success">Ordre des pages enregistré</string>
+    <string name="reorder_error">Erreur lors de la réorganisation</string>
+    <string name="action_reorder">Réorganiser les pages</string>
+    <string name="reorder_save_as_copy">Enregistrer comme copie</string>
+    <string name="reorder_overwrite_hint">L\'original sera remplacé</string>
+    <string name="split_page_label">Page %1$d</string>
+    <string name="cd_drag_handle">Déplacer la page</string>
+    <string name="cd_page_up">Monter la page</string>
+    <string name="cd_page_down">Descendre la page</string>
+    <!-- Edit loading -->
+    <string name="edit_loading">Traitement du PDF…</string>
+    <string name="edit_error_file_locked">Le fichier est en cours d\'utilisation – fermez-le et réessayez</string>
+    <string name="workflow_nothing_selected">Sélectionnez au moins un document</string>
+    <string name="workflow_missing_files">Un ou plusieurs fichiers sélectionnés sont introuvables</string>
+    <string name="workflow_storage_failed">Impossible d\'écrire le fichier PDF</string>
+    <string name="rotate_screen_title">Rotate pages</string>
+    <string name="rotate_apply">Rotate pages</string>
+    <string name="rotate_success">Pages rotated</string>
+    <string name="rotate_success_copy">Rotated pages saved as copy</string>
+    <string name="rotate_error">Error rotating pages</string>
+    <string name="action_rotate">Rotate pages</string>
+    <string name="rotate_option_90">90°</string>
+    <string name="rotate_option_180">180°</string>
+    <string name="rotate_option_270">270°</string>
+    <string name="delete_pages_screen_title">Delete pages</string>
+    <string name="delete_pages_apply">Delete pages</string>
+    <string name="delete_pages_success">Pages deleted</string>
+    <string name="delete_pages_success_copy">Pages deleted and saved as copy</string>
+    <string name="delete_pages_error">Error deleting pages</string>
+    <string name="delete_pages_all_error">At least one page must remain in the PDF</string>
+    <string name="delete_pages_all_hint">Leave at least one page in the PDF</string>
+    <string name="action_delete_pages">Delete pages</string>
+    <string name="extract_pages_screen_title">Extract pages</string>
+    <string name="extract_pages_apply">Extract pages</string>
+    <string name="extract_pages_success">Pages extracted: %1$s</string>
+    <string name="extract_pages_error">Error extracting pages</string>
+    <string name="action_extract_pages">Extract pages</string>
+    <string name="duplicate_pages_screen_title">Duplicate pages</string>
+    <string name="duplicate_pages_apply">Duplicate pages</string>
+    <string name="duplicate_pages_success">Pages duplicated: %1$s</string>
+    <string name="duplicate_pages_error">Error duplicating pages</string>
+    <string name="action_duplicate_pages">Duplicate pages</string>
+    <string name="page_selection_invalid">Select at least one valid page</string>
+    <string name="help_item_rotate">Ouvre le menu à trois points et choisis Faire pivoter les pages. Sélectionne les pages, choisis 90°, 180° ou 270°, puis applique la modification.</string>
+    <string name="help_item_delete_pages">Utilise Supprimer des pages pour retirer les pages sélectionnées du PDF choisi. Au moins une page doit rester dans le document.</string>
+    <string name="help_item_extract_pages">Utilise Extraire les pages pour enregistrer les pages sélectionnées dans un nouveau PDF.</string>
+    <string name="help_item_duplicate_pages">Utilise Dupliquer les pages pour créer un nouveau PDF contenant des copies des pages sélectionnées.</string>
+    <string name="help_item_edit_copy">Faire pivoter, réorganiser et supprimer des pages peut remplacer le PDF original ou enregistrer le résultat comme copie.</string>
+    <string name="help_item_page_numbers">Utilise Ajouter des numéros de page pour créer une nouvelle copie du PDF avec des numéros centrés sur chaque page.</string>
+    <string name="help_item_watermark">Utilise Ajouter un filigrane texte pour placer un texte personnalisé en diagonale sur chaque page dans une nouvelle copie du PDF.</string>
+    <string name="overlay_document_info">%1$d pages</string>
+    <string name="page_numbers_screen_title">Numéros de page</string>
+    <string name="page_numbers_description">Ajouter des numéros de page à ce PDF</string>
+    <string name="page_numbers_details">Cette action crée une nouvelle copie du PDF et place des numéros de page centrés en bas de chaque page. Le contenu existant et le texte OCR restent inchangés.</string>
+    <string name="page_numbers_apply">Ajouter des numéros de page</string>
+    <string name="page_numbers_success">Numéros de page ajoutés : %1$s</string>
+    <string name="page_numbers_error">Erreur lors de l ajout des numéros de page</string>
+    <string name="action_page_numbers">Ajouter des numéros de page</string>
+    <string name="watermark_screen_title">Filigrane texte</string>
+    <string name="watermark_description">Ajouter un filigrane texte à ce PDF</string>
+    <string name="watermark_details">Le filigrane est appliqué en diagonale sur chaque page et enregistré comme nouvelle copie du PDF. Le contenu existant et le texte OCR restent inchangés.</string>
+    <string name="watermark_label">Texte du filigrane</string>
+    <string name="watermark_apply">Ajouter le filigrane</string>
+    <string name="watermark_success">Filigrane ajouté : %1$s</string>
+    <string name="watermark_error">Erreur lors de l ajout du filigrane</string>
+    <string name="watermark_invalid">Saisir un texte pour le filigrane</string>
+    <string name="action_text_watermark">Ajouter un filigrane texte</string>
+    <string name="compress_pdf_screen_title">Compress PDF</string>
+    <string name="compress_pdf_description">Create a smaller copy of this PDF</string>
+    <string name="compress_pdf_details">Compression creates a new PDF copy by recompressing the page images. Searchable PDFs are excluded in this version so their OCR text layer is not lost.</string>
+    <string name="compress_pdf_preset_label">Compression level</string>
+    <string name="compress_pdf_preset_low">Low</string>
+    <string name="compress_pdf_preset_medium">Medium</string>
+    <string name="compress_pdf_preset_high">High</string>
+    <string name="compress_pdf_apply">Compress PDF</string>
+    <string name="compress_pdf_success">Compressed PDF created: %1$s</string>
+    <string name="compress_pdf_error">Error compressing PDF</string>
+    <string name="compress_pdf_searchable_unsupported">Searchable PDFs cannot be compressed in this version because the OCR text layer must stay intact</string>
+    <string name="compress_pdf_protected_unsupported">Unlock the PDF before compressing it</string>
+    <string name="action_compress_pdf">Compress PDF</string>
+    <string name="protect_pdf_screen_title">Set opening password</string>
+    <string name="protect_pdf_description">Protect this PDF with a password</string>
+    <string name="protect_pdf_details">The app creates a new password-protected PDF copy. The original file stays unchanged.</string>
+    <string name="protect_pdf_apply">Protect PDF</string>
+    <string name="protect_pdf_success">Protected PDF created: %1$s</string>
+    <string name="protect_pdf_error">Error protecting PDF</string>
+    <string name="protect_pdf_already_protected">This PDF is already password-protected</string>
+    <string name="action_protect_pdf">Set opening password</string>
+    <string name="unlock_pdf_screen_title">Remove opening password</string>
+    <string name="unlock_pdf_description">Create an unlocked copy of this PDF</string>
+    <string name="unlock_pdf_details">Enter the current password to save an unprotected copy of this PDF.</string>
+    <string name="unlock_pdf_apply">Unlock PDF</string>
+    <string name="unlock_pdf_success">Unlocked PDF created: %1$s</string>
+    <string name="unlock_pdf_error">Error unlocking PDF</string>
+    <string name="unlock_pdf_not_protected">This PDF is not password-protected</string>
+    <string name="action_unlock_pdf">Remove opening password</string>
+    <string name="password_label">Password</string>
+    <string name="password_confirm_label">Confirm password</string>
+    <string name="password_mismatch">Passwords do not match</string>
+    <string name="password_required">Enter a password</string>
+    <string name="password_wrong">The password is incorrect</string>
+    <string name="help_item_compress_pdf">Choose Compress PDF to create a smaller copy of a non-searchable PDF. The original file remains unchanged.</string>
+    <string name="help_item_export_as_jpg">Exporter en JPG convertit chaque page du PDF en image JPEG (150 DPI) et l\'enregistre dans votre dossier Téléchargements. Un PDF d\'une page génère un fichier ; un PDF de plusieurs pages génère une image par page.</string>
+    <string name="help_item_protect_pdf">Choose Set opening password to create a password-protected copy that requires the password when opening it.</string>
+    <string name="help_item_unlock_pdf">Choose Remove opening password and enter the current password to save an unprotected copy.</string>
+    <string name="signature_screen_title">Sign PDF</string>
+    <string name="signature_description">Add a handwritten signature stamp to this PDF</string>
+    <string name="signature_details">Draw your signature, choose the target page, and save a new signed PDF copy. The signature is placed as a stamp at the bottom right of the selected page. Existing content and OCR text stay untouched.</string>
+    <string name="signature_hint">Draw your signature in one or more strokes.</string>
+    <string name="signature_apply">Add signature</string>
+    <string name="signature_success">Signed PDF created: %1$s</string>
+    <string name="signature_error">Error adding signature</string>
+    <string name="signature_required">Draw a signature first</string>
+    <string name="action_sign_pdf">Sign PDF</string>
+    <string name="signature_target_page">Target page: %1$d of %2$d</string>
+    <string name="signature_page_previous">Previous page</string>
+    <string name="signature_page_next">Next page</string>
+    <string name="signature_size_label">Signature size</string>
+    <string name="signature_size_small">Small</string>
+    <string name="signature_size_medium">Medium</string>
+    <string name="signature_size_large">Large</string>
+    <string name="signature_clear">Clear signature</string>
+    <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
+    <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
+    <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>
+    <!-- Remove password / restrictions -->
+    <string name="remove_password_screen_title">Supprimer les restrictions</string>
+    <string name="remove_password_description">Lever les restrictions d\'utilisation sans saisir de mot de passe</string>
+    <string name="remove_password_details">Certains PDF s\'ouvrent sans mot de passe mais ont des restrictions telles que l\'interdiction d\'imprimer ou de copier. Cette fonction lève ces restrictions et crée une copie sans restrictions. Le fichier original n\'est pas modifié.\n\nRemarque : cette fonction ne supprime pas un mot de passe d\'ouverture. Si le PDF nécessite un mot de passe pour s\'ouvrir, utilisez « Déverrouiller le PDF ».</string>
+    <string name="remove_password_apply">Supprimer les restrictions</string>
+    <string name="remove_password_success">Restrictions supprimées : %1$s</string>
+    <string name="remove_password_error">Erreur lors de la suppression des restrictions</string>
+    <string name="remove_password_requires_input">Ce PDF est protégé par un mot de passe d\'ouverture. Utilisez « Déverrouiller le PDF » pour le saisir.</string>
+    <string name="action_remove_password">Supprimer les restrictions</string>
+    <string name="help_item_remove_password">Choisissez Supprimer les restrictions pour lever les restrictions d\'utilisation (p. ex. interdiction d\'imprimer ou de copier) des PDF qui s\'ouvrent sans mot de passe. Cette fonction ne supprime pas un vrai mot de passe d\'ouverture — pour cela, utilisez Déverrouiller le PDF.</string>
+    <!-- Remove text layer -->
+    <string name="remove_text_layer_screen_title">Supprimer la couche de texte</string>
+    <string name="remove_text_layer_description">Créer une copie sans la couche de texte OCR</string>
+    <string name="remove_text_layer_details">Chaque page est restituée en tant qu\'image et enregistrée dans une nouvelle copie PDF. La couche de texte est supprimée ; l\'aspect visuel reste inchangé. Le fichier original n\'est pas modifié.</string>
+    <string name="remove_text_layer_apply">Supprimer la couche de texte</string>
+    <string name="remove_text_layer_success">Couche de texte supprimée : %1$s</string>
+    <string name="remove_text_layer_error">Erreur lors de la suppression de la couche de texte</string>
+    <string name="remove_text_layer_not_searchable">Ce PDF ne possède pas de couche de texte</string>
+    <string name="action_remove_text_layer">Supprimer la couche de texte</string>
+    <string name="help_item_remove_text_layer">Choisissez Supprimer la couche de texte pour créer une copie d’un PDF consultable sans la couche OCR invisible. La copie obtenue n’est plus consultable et n’alimente plus la recherche.</string>
+    <!-- Submenus -->
+    <string name="action_submenu_page_structure">Page structure</string>
+    <string name="action_submenu_security">Security &amp; Password</string>
+    <!-- Restrict usage -->
+    <string name="restrict_usage_screen_title">Restrict usage rights</string>
+    <string name="restrict_usage_description">Set usage rights via owner password</string>
+    <string name="restrict_usage_details">Creates a new PDF copy with usage restrictions controlled by an owner password. The document can still be opened without a password, but printing, copying, and editing can be individually restricted. The original file stays unchanged.</string>
+    <string name="restrict_usage_owner_password_label">Owner password</string>
+    <string name="restrict_usage_can_print">Allow printing</string>
+    <string name="restrict_usage_can_copy">Allow copying</string>
+    <string name="restrict_usage_can_edit">Allow editing</string>
+    <string name="restrict_usage_apply">Save restrictions</string>
+    <string name="restrict_usage_success">Restricted PDF created: %1$s</string>
+    <string name="restrict_usage_error">Error restricting PDF</string>
+    <string name="action_restrict_usage">Restrict usage rights</string>
+    <string name="help_item_restrict_usage">Choose Restrict usage rights to create a copy with an owner password that controls whether printing, copying, and editing are allowed. The document can still be opened without a password.</string>
+    <string name="help_back_to_contents">Retour à la table des matières</string>
+    <string name="signature_scale_invalid">Choose a valid signature size</string>
+    <!-- Highlight PDF -->
+    <string name="action_highlight_pdf">Surligner PDF</string>
+    <string name="highlight_screen_title">Surligner PDF</string>
+    <string name="highlight_description">Marquez le texte avec un surligneur jaune</string>
+    <string name="highlight_details">Faites glisser sur les zones pour les surligner en jaune. Passez en mode Panoramique pour zoomer et déplacer la page, puis revenez à Dessiner pour marquer le texte. Naviguez entre les pages pour en surligner plusieurs. Une nouvelle copie PDF surlignée sera créée.</string>
+    <string name="highlight_apply">Enregistrer les surlignages</string>
+    <string name="highlight_clear_page">Page</string>
+    <string name="highlight_hint">Faites glisser sur le texte pour le marquer.</string>
+    <string name="highlight_target_page">Page : %1$d sur %2$d</string>
+    <string name="highlight_success">PDF surligné créé : %1$s</string>
+    <string name="highlight_error">Erreur lors de l\'ajout des surlignages</string>
+    <string name="highlight_no_strokes">Dessinez d\'abord des surlignages</string>
+    <string name="highlight_stroke_thin">Fin</string>
+    <string name="highlight_stroke_medium">Moyen</string>
+    <string name="highlight_stroke_thick">Épais</string>
+    <string name="highlight_stroke_width">Stylo</string>
+    <string name="highlight_mode_draw">Mark.</string>
+    <string name="highlight_mode_snap">Snap</string>
+    <string name="highlight_mode_pan">Zoom</string>
+    <string name="highlight_undo_last">Annuler</string>
+    <string name="highlight_reset_all">Tout</string>
+    <string name="highlight_zoom_reset">%1$s× – Réinitialiser</string>
+    <string name="highlight_zoom_reset_button">Réinitialiser</string>
+    <string name="help_item_highlight_pdf">Choisissez Surligner PDF pour dessiner des surlignages jaunes sur le document. Les PDF consultables proposent aussi Aligner au texte, qui aligne un tracé sur les lignes de texte détectées. Panoramique/zoom permet de déplacer et d’agrandir la page ; si aucune ligne de texte ne correspond, l’app conserve le surlignage normal à main levée.</string>
+    <string name="search_placeholder">Rechercher des documents…</string>
+    <string name="search_no_results">Aucun résultat pour « %1$s »</string>
+    <string name="cd_search_clear">Effacer la recherche</string>
+    <string name="tag_invoice">Facture</string>
+    <string name="tag_contract">Contrat</string>
+    <string name="tag_insurance">Assurance</string>
+    <string name="tag_certificate">Certificat</string>
+    <string name="tag_bank">Banque</string>
+    <string name="tag_delivery">Bon de livraison</string>
+    <string name="help_section_search">Recherche</string>
+    <string name="help_item_search">Appuyez sur le champ de recherche en haut pour trouver des documents par nom de fichier ou par texte OCR enregistré. La recherche s’exécute localement sur votre appareil et utilise une correspondance par préfixe, ainsi « Rec » peut trouver « Reçu ».</string>
+    <string name="help_item_auto_tag">Lorsqu’un document est rendu consultable, l’app attribue localement des tags comme Facture ou Contrat à partir du texte OCR et de mots-clés. Les tags apparaissent sous le nom du fichier.</string>
+    <string name="privacy_keyword_5">Intelligence locale</string>
+    <string name="privacy_point_5">La recherche plein texte, la création de PDF consultables et les surlignages alignés au texte fonctionnent localement sur votre appareil à partir du texte OCR et des métadonnées PDF.</string>
     <!-- Annotate PDF -->
     <string name="action_annotate_pdf">Marquer/Commenter le PDF</string>
     <string name="annotate_screen_title">Annotate PDF</string>
@@ -401,6 +401,6 @@
     <string name="label_bulk_export">Exporter</string>
     <string name="label_bulk_merge">Fusionner</string>
     <string name="label_bulk_extract">Texte</string>
-    <string name="label_bulk_searchable">Cherchable</string>
+    <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">Supprimer</string>
 </resources>

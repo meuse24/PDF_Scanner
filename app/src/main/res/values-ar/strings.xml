@@ -76,7 +76,7 @@
     <string name="help_item_delete">استخدم حذف لإزالة ملفات PDF المحددة من الأرشيف. كما يحذف التطبيق الملف المحفوظ والصورة المصغرة.</string>
     <string name="help_section_ocr">OCR واستخراج النص</string>
     <string name="help_item_extract_text">يقوم استخراج النص (OCR) بقراءة جميع الصفحات ويعرض النص المتعرف عليه في لوحة يمكنك منها نسخه أو مشاركته.</string>
-    <string name="help_item_make_searchable">يضيف جعل الملف قابلاً للبحث طبقة نص غير مرئية إلى ملف PDF، ويخزن نص OCR المستخرج محلياً للبحث في الأرشيف، ويفعّل الوسوم التلقائية للمستند.</string>
+    <string name="help_item_make_searchable">يضيف جعل الملف قابلاً للبحث طبقة نص غير مرئية إلى ملف PDF، ويخزن نص OCR المستخرج محلياً للبحث في الأرشيف.</string>
     <string name="help_item_ocr_language">اختر لغة المستند قبل OCR أو جعل الملف قابلاً للبحث. يتم تنزيل نموذج اللغة الهندية عند أول استخدام.</string>
     <string name="help_section_navigation">التنقل</string>
     <string name="help_nav_text">استخدم قائمة الهامبرغر (أعلى اليسار) للوصول إلى الأرشيف والماسح والمساعدة والمعلومات.</string>
@@ -103,14 +103,14 @@
     <string name="info_repository_label">مستودع GitHub</string>
     <string name="info_section_privacy">الخصوصية</string>
     <string name="info_section_features">الوظائف</string>
-    <string name="info_features_body">يقوم التطبيق بمسح المستندات إلى PDF، ويجري OCR على الجهاز، ويخزن نص OCR القابل للبحث والوسوم التلقائية محلياً للبحث في الأرشيف، ويوفر تحرير الصفحات والحماية والتواقيع والتمييز والالتقاط المحاذي للنص في ملفات PDF القابلة للبحث.</string>
-    <string name="info_privacy_body">من دون إعلانات أو حساب أو خادم خلفي خاص. تبقى ملفات PDF والصور المصغرة ونص OCR والوسوم التلقائية داخل مساحة تخزين التطبيق على جهازك. لا تتم المشاركة أو التصدير إلا عندما تطلب ذلك صراحة. يعتمد المسح وOCR وتنزيل النماذج والخطوط على خدمات Google Play؛ وهذا التطبيق لا يرفع محتوى مستنداتك.</string>
+    <string name="info_features_body">يقوم التطبيق بمسح المستندات إلى PDF، ويجري OCR على الجهاز، ويخزن نص OCR القابل للبحث محلياً للبحث في الأرشيف، ويوفر تحرير الصفحات والحماية والتواقيع والتمييز والالتقاط المحاذي للنص في ملفات PDF القابلة للبحث.</string>
+    <string name="info_privacy_body">من دون إعلانات أو حساب أو خادم خلفي خاص. تبقى ملفات PDF والصور المصغرة ونص OCR داخل مساحة تخزين التطبيق على جهازك. لا تتم المشاركة أو التصدير إلا عندما تطلب ذلك صراحة. يعتمد المسح وOCR وتنزيل النماذج والخطوط على خدمات Google Play؛ وهذا التطبيق لا يرفع محتوى مستنداتك.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">محلي</string>
     <string name="privacy_keyword_2">غير متصل</string>
     <string name="privacy_keyword_3">آمن</string>
     <string name="privacy_keyword_4">خاص</string>
-    <string name="privacy_point_1">يخزن هذا التطبيق ملفات PDF وصور المعاينة ونص OCR القابل للبحث والوسوم التلقائية محلياً على جهازك.</string>
+    <string name="privacy_point_1">يخزن هذا التطبيق ملفات PDF وصور المعاينة ونص OCR القابل للبحث محلياً على جهازك.</string>
     <string name="privacy_point_2">لا يتم رفع أي مستندات أو محتوى تلقائياً. لا تحدث المشاركة أو التصدير إلا عندما تقوم أنت بتشغيلهما صراحةً.</string>
     <string name="privacy_point_3">تستخدم وظائف المسح وOCR خدمات Google Play. قد تُرسل بيانات تشخيصية تقنية لتحليل الأخطاء. قد يتم جلب نماذج اللغة للصينية واليابانية والهندية، وكذلك الخطوط القابلة للتنزيل، عبر Play Services عند أول استخدام؛ ولا يرسل هذا التطبيق محتوى مستنداتك.</string>
     <string name="privacy_point_4">لا يجمع التطبيق نفسه بيانات شخصية، ولا يستخدم تحليلات خاصة به، ولا يطلب إذناً شبكياً خاصاً به.</string>
@@ -311,7 +311,7 @@
     <string name="remove_text_layer_error">خطأ أثناء إزالة طبقة النص</string>
     <string name="remove_text_layer_not_searchable">لا تحتوي هذه الـ PDF على طبقة نص</string>
     <string name="action_remove_text_layer">إزالة طبقة النص</string>
-    <string name="help_item_remove_text_layer">اختر إزالة طبقة النص لإنشاء نسخة من ملف PDF قابل للبحث من دون طبقة OCR غير المرئية. تصبح النسخة الناتجة غير قابلة للبحث، ولن تزوّد البحث أو الوسوم التلقائية بنص OCR بعد ذلك.</string>
+    <string name="help_item_remove_text_layer">اختر إزالة طبقة النص لإنشاء نسخة من ملف PDF قابل للبحث من دون طبقة OCR غير المرئية. تصبح النسخة الناتجة غير قابلة للبحث.</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>
@@ -363,11 +363,11 @@
     <string name="tag_certificate">شهادة</string>
     <string name="tag_bank">بنك</string>
     <string name="tag_delivery">سند التسليم</string>
-    <string name="help_section_search">البحث والوسوم التلقائية</string>
+    <string name="help_section_search">البحث</string>
     <string name="help_item_search">اضغط على حقل البحث للعثور على المستندات باسم الملف أو بنص OCR المخزن. يعمل البحث محلياً على جهازك ويستخدم مطابقة البادئة، لذلك يمكن أن يجد "Rec" كلمة "Receipt".</string>
     <string name="help_item_auto_tag">عند جعل المستند قابلاً للبحث، يعيّن التطبيق وسوماً مثل الفاتورة أو العقد محلياً اعتماداً على نص OCR والكلمات المفتاحية. تظهر الوسوم أسفل اسم الملف.</string>
     <string name="privacy_keyword_5">الذكاء المحلي</string>
-    <string name="privacy_point_5">يعمل البحث النصي الكامل والوسوم التلقائية وإنشاء ملفات PDF القابلة للبحث والتمييزات المحاذية للنص محلياً على جهازك باستخدام نص OCR وبيانات PDF الوصفية.</string>
+    <string name="privacy_point_5">يعمل البحث النصي الكامل وإنشاء ملفات PDF القابلة للبحث والتمييزات المحاذية للنص محلياً على جهازك باستخدام نص OCR وبيانات PDF الوصفية.</string>
     <!-- Annotate PDF -->
     <string name="action_annotate_pdf">تحديد/تعليق PDF</string>
     <string name="annotate_screen_title">Annotate PDF</string>
@@ -401,7 +401,7 @@
     <string name="label_bulk_export">تصدير</string>
     <string name="label_bulk_merge">دمج</string>
     <string name="label_bulk_extract">نص</string>
-    <string name="label_bulk_searchable">قابل للبحث</string>
+    <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">حذف</string>
 </resources>
 

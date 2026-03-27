@@ -50,9 +50,6 @@ sealed class Screen(val route: String) {
     data object RestrictUsage : Screen("restrict-usage/{scanId}") {
         fun createRoute(scanId: Long) = "restrict-usage/$scanId"
     }
-    data object Highlight : Screen("highlight/{scanId}") {
-        fun createRoute(scanId: Long) = "highlight/$scanId"
-    }
     data object Annotate : Screen("annotate/{scanId}") {
         fun createRoute(scanId: Long) = "annotate/$scanId"
     }

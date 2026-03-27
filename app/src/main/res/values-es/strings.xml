@@ -76,7 +76,7 @@
     <string name="help_item_delete">Usa Eliminar para quitar PDFs seleccionados del archivo. La aplicación también elimina el archivo guardado y la miniatura.</string>
     <string name="help_section_ocr">OCR y extracción de texto</string>
     <string name="help_item_extract_text">Extracción de texto (OCR) lee todas las páginas y muestra el texto reconocido en un panel donde puedes copiarlo o compartirlo.</string>
-    <string name="help_item_make_searchable">Hacer buscable añade una capa de texto invisible al PDF, guarda localmente el texto OCR extraído para la búsqueda del archivo y activa las autoetiquetas del documento.</string>
+    <string name="help_item_make_searchable">Hacer buscable añade una capa de texto invisible al PDF, guarda localmente el texto OCR extraído para la búsqueda del archivo.</string>
     <string name="help_item_ocr_language">Antes de OCR o Hacer buscable, elige el idioma del documento. El modelo hindi se descarga en el primer uso.</string>
     <string name="help_section_navigation">Navegación</string>
     <string name="help_nav_text">Usa el menú hamburguesa (arriba a la izquierda) para acceder al Archivo, Escáner, Ayuda e Info.</string>
@@ -103,14 +103,14 @@
     <string name="info_repository_label">Repositorio GitHub</string>
     <string name="info_section_privacy">Privacidad</string>
     <string name="info_section_features">Funciones</string>
-    <string name="info_features_body">La app escanea documentos a PDF, realiza OCR en el dispositivo, guarda localmente texto OCR buscable y autoetiquetas para la búsqueda del archivo, y ofrece edición de páginas, protección, firmas, resaltado y ajuste al texto en PDFs buscables.</string>
-    <string name="info_privacy_body">Sin anuncios, sin cuenta y sin backend propio. Los PDF, miniaturas, texto OCR y autoetiquetas permanecen en el almacenamiento de la app en tu dispositivo. Compartir y exportar solo ocurren cuando tú lo activas. El escaneo, el OCR y las descargas de modelos y fuentes dependen de Google Play Services; esta app no sube el contenido de tus documentos.</string>
+    <string name="info_features_body">La app escanea documentos a PDF, realiza OCR en el dispositivo, guarda localmente texto OCR buscable y ofrece edición de páginas, protección, firmas, resaltado y ajuste al texto en PDFs buscables.</string>
+    <string name="info_privacy_body">Sin anuncios, sin cuenta y sin backend propio. Los PDF, miniaturas, texto OCR permanecen en el almacenamiento de la app en tu dispositivo. Compartir y exportar solo ocurren cuando tú lo activas. El escaneo, el OCR y las descargas de modelos y fuentes dependen de Google Play Services; esta app no sube el contenido de tus documentos.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
     <string name="privacy_keyword_2">Sin conexión</string>
     <string name="privacy_keyword_3">Seguro</string>
     <string name="privacy_keyword_4">Privado</string>
-    <string name="privacy_point_1">Esta app almacena localmente en tu dispositivo los PDF, las imágenes de vista previa, el texto OCR buscable y las autoetiquetas.</string>
+    <string name="privacy_point_1">Esta app almacena localmente en tu dispositivo los PDF, las imágenes de vista previa, el texto OCR buscable.</string>
     <string name="privacy_point_2">Ningún documento ni contenido se sube automáticamente. Compartir o exportar solo ocurre cuando lo activas explícitamente.</string>
     <string name="privacy_point_3">Las funciones de escaneo y OCR usan Google Play Services. Pueden transmitirse datos técnicos de diagnóstico para el análisis de errores. Los modelos de idioma para chino, japonés e hindi, así como las fuentes descargables, pueden obtenerse mediante Play Services en el primer uso; el contenido de tus documentos no es enviado por esta app.</string>
     <string name="privacy_point_4">La app no recopila datos personales, no usa analítica propia y no solicita un permiso de red propio.</string>
@@ -311,7 +311,7 @@
     <string name="remove_text_layer_error">Error al eliminar la capa de texto</string>
     <string name="remove_text_layer_not_searchable">Este PDF no tiene capa de texto</string>
     <string name="action_remove_text_layer">Eliminar capa de texto</string>
-    <string name="help_item_remove_text_layer">Elige Eliminar capa de texto para crear una copia de un PDF buscable sin la capa OCR invisible. La copia resultante deja de ser buscable y ya no aporta texto OCR a la búsqueda ni a las autoetiquetas.</string>
+    <string name="help_item_remove_text_layer">Elige Eliminar capa de texto para crear una copia de un PDF buscable sin la capa OCR invisible. La copia resultante deja de ser buscable y ya no aporta texto OCR a la búsqueda.</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>
@@ -363,11 +363,11 @@
     <string name="tag_certificate">Certificado</string>
     <string name="tag_bank">Banco</string>
     <string name="tag_delivery">Albarán</string>
-    <string name="help_section_search">Búsqueda y auto-etiquetas</string>
+    <string name="help_section_search">Búsqueda</string>
     <string name="help_item_search">Toca el campo de búsqueda de arriba para encontrar documentos por nombre de archivo o por el texto OCR guardado. La búsqueda se ejecuta localmente en tu dispositivo y usa coincidencia por prefijo, así que "Rec" puede encontrar "Recibo".</string>
     <string name="help_item_auto_tag">Cuando un documento se hace buscable, la app asigna localmente etiquetas como Factura o Contrato a partir del texto OCR y palabras clave. Las etiquetas aparecen como marcas de color bajo el nombre del archivo.</string>
     <string name="privacy_keyword_5">Inteligencia local</string>
-    <string name="privacy_point_5">La búsqueda de texto completo, las autoetiquetas, la creación de PDF buscables y los resaltados alineados al texto se ejecutan localmente en tu dispositivo usando texto OCR y metadatos PDF.</string>
+    <string name="privacy_point_5">La búsqueda de texto completo, la creación de PDF buscables y los resaltados alineados al texto se ejecutan localmente en tu dispositivo usando texto OCR y metadatos PDF.</string>
     <!-- Annotate PDF -->
     <string name="action_annotate_pdf">PDF Marcar/Comentar</string>
     <string name="annotate_screen_title">Annotate PDF</string>
@@ -401,7 +401,7 @@
     <string name="label_bulk_export">Exportar</string>
     <string name="label_bulk_merge">Combinar</string>
     <string name="label_bulk_extract">Texto</string>
-    <string name="label_bulk_searchable">Buscable</string>
+    <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">Eliminar</string>
 </resources>
 

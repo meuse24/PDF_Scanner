@@ -15,8 +15,7 @@ import javax.inject.Inject
 class ImportScanUseCase @Inject constructor(
     private val fileUtil:             FileUtil,
     private val searchablePdfBuilder: SearchablePdfBuilder,
-    private val repository:           ScanRepository,
-    private val autoTagUseCase:       AutoTagUseCase
+    private val repository:           ScanRepository
 ) {
     suspend operator fun invoke(
         pdfUri:         Uri,
@@ -35,12 +34,10 @@ class ImportScanUseCase @Inject constructor(
 
         var isSearchable  = false
         var extractedText: String? = null
-        var tags: String? = null
         if (makeSearchable) {
             val text = searchablePdfBuilder.makeSearchable(savedFile, languageCode, onProgress)
             isSearchable  = true
             extractedText = text.ifBlank { null }
-            tags          = autoTagUseCase.extractTags(text)
         }
 
         val record = ScanRecord(
@@ -52,7 +49,7 @@ class ImportScanUseCase @Inject constructor(
             thumbnailPath = thumbnailPath,
             isSearchable  = isSearchable,
             extractedText = extractedText,
-            tags          = tags
+            tags          = null
         )
         repository.saveScan(record)
         return record

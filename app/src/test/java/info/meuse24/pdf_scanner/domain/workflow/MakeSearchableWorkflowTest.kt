@@ -2,7 +2,6 @@ package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
-import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.FakeSearchablePdfBuilder
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
@@ -24,8 +23,7 @@ class MakeSearchableWorkflowTest {
         val repository = ScanRepository(FakeScanDao())
         val useCase = MakeSearchableUseCase(
             FakeSearchablePdfBuilder(onMakeSearchable),
-            repository,
-            AutoTagUseCase()
+            repository
         )
         return MakeSearchableWorkflow(useCase)
     }

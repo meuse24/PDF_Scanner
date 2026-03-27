@@ -26,8 +26,7 @@ class MakeSearchableUseCaseTest {
         val dao        = FakeScanDao()
         val repository = ScanRepository(dao)
         val builder    = FakeSearchablePdfBuilder(onMakeSearchable)
-        val autoTag    = AutoTagUseCase()
-        return MakeSearchableUseCase(builder, repository, autoTag) to dao
+        return MakeSearchableUseCase(builder, repository) to dao
     }
 
     private fun record(

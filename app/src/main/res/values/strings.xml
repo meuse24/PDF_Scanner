@@ -96,7 +96,7 @@
     <string name="help_item_delete">Use Delete to remove selected PDFs from the archive. The app also removes the stored file and thumbnail.</string>
     <string name="help_section_ocr">OCR and Text Extraction</string>
     <string name="help_item_extract_text">Text Extraction (OCR) reads all pages and shows the recognized text in a panel where you can copy or share it.</string>
-    <string name="help_item_make_searchable">Make Searchable adds an invisible text layer to the PDF, stores the extracted OCR text locally for archive search, and enables auto-tags for the document.</string>
+    <string name="help_item_make_searchable">Make Searchable adds an invisible text layer to the PDF, stores the extracted OCR text locally for archive search.</string>
     <string name="help_item_ocr_language">Choose the document language before OCR or Make Searchable. The Hindi model is downloaded on first use.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Use the hamburger menu (top left) to access the Archive, Scanner, Help, and Info screens.</string>
@@ -125,14 +125,14 @@
     <string name="info_repository_label">GitHub Repository</string>
     <string name="info_section_privacy">Privacy</string>
     <string name="info_section_features">Capabilities</string>
-    <string name="info_features_body">The app scans documents to PDF, performs on-device OCR, stores searchable OCR text and auto-tags locally for archive search, and offers page editing, protection, signatures, highlighting, and text-aligned snapping for searchable PDFs.</string>
-    <string name="info_privacy_body">No ads, no account, and no own backend. PDFs, thumbnails, OCR text, and auto-tags remain in app storage on your device. Sharing and export only happen when you trigger them. Scan, OCR, and model/font downloads rely on Google Play Services; this app does not upload document content.</string>
+    <string name="info_features_body">The app scans documents to PDF, performs on-device OCR, stores searchable OCR text locally for archive search, and offers page editing, protection, signatures, highlighting, and text-aligned snapping for searchable PDFs.</string>
+    <string name="info_privacy_body">No ads, no account, and no own backend. PDFs, thumbnails, and OCR text remain in app storage on your device. Sharing and export only happen when you trigger them. Scan, OCR, and model/font downloads rely on Google Play Services; this app does not upload document content.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
     <string name="privacy_keyword_2">Offline</string>
     <string name="privacy_keyword_3">Secure</string>
     <string name="privacy_keyword_4">Private</string>
-    <string name="privacy_point_1">This app stores PDFs, preview images, searchable OCR text, and auto-tags locally on your device.</string>
+    <string name="privacy_point_1">This app stores PDFs, preview images, and searchable OCR text locally on your device.</string>
     <string name="privacy_point_2">No documents or content are uploaded automatically. Sharing or exporting only happens when you explicitly trigger it.</string>
     <string name="privacy_point_3">The scan and OCR functions use Google Play Services. Technical diagnostic data may be transmitted for error analysis. Language models for Chinese, Japanese, and Hindi, as well as downloadable fonts, may be fetched via Play Services on first use — the content of your documents is not sent by this app.</string>
     <string name="privacy_point_4">The app itself collects no personal data, uses no own analytics, and requests no own network permission.</string>
@@ -332,7 +332,7 @@
     <string name="remove_text_layer_error">Error removing text layer</string>
     <string name="remove_text_layer_not_searchable">This PDF does not have a text layer</string>
     <string name="action_remove_text_layer">Remove text layer</string>
-    <string name="help_item_remove_text_layer">Choose Remove text layer to create a copy of a searchable PDF without the invisible OCR text layer. The resulting copy is no longer searchable and no longer contributes OCR text to search or auto-tags.</string>
+    <string name="help_item_remove_text_layer">Choose Remove text layer to create a copy of a searchable PDF without the invisible OCR text layer. The resulting copy is no longer searchable and no longer contributes OCR text to search.</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>
@@ -388,12 +388,12 @@
     <string name="tag_bank">Bank</string>
     <string name="tag_delivery">Delivery</string>
     <!-- Help: Search & Auto-Tags -->
-    <string name="help_section_search">Search &amp; Auto-Tags</string>
+    <string name="help_section_search">Search</string>
     <string name="help_item_search">Tap the search field at the top to find documents by filename or stored OCR text. Search runs locally on your device and uses prefix matching, so "Rec" can find "Receipt".</string>
     <string name="help_item_auto_tag">When a document is made searchable, tags such as Invoice or Contract are assigned locally from OCR text and keywords. Tags appear as coloured labels below the file name.</string>
     <!-- Privacy: On-Device Intelligence -->
     <string name="privacy_keyword_5">On-Device Intelligence</string>
-    <string name="privacy_point_5">Full-text search, auto-tagging, searchable PDF generation, and text-aligned highlights operate locally on your device using OCR text and PDF metadata.</string>
+    <string name="privacy_point_5">Full-text search, searchable PDF generation, and text-aligned highlights operate locally on your device using OCR text and PDF metadata.</string>
     <!-- Annotate PDF -->
     <string name="action_annotate_pdf">Mark / Comment PDF</string>
     <string name="annotate_screen_title">Annotate PDF</string>
@@ -431,7 +431,7 @@
     <string name="label_bulk_export">Export</string>
     <string name="label_bulk_merge">Merge</string>
     <string name="label_bulk_extract">Text</string>
-    <string name="label_bulk_searchable">Searchable</string>
+    <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">Delete</string>
 </resources>
 

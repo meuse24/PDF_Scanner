@@ -32,7 +32,6 @@ import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.FindInPage
-import androidx.compose.material.icons.filled.Highlight
 import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.FolderOpen
@@ -115,8 +114,7 @@ fun HelpScreen() {
                 icon = Icons.Default.Search,
                 titleRes = R.string.help_section_search,
                 actions = listOf(
-                    HelpAction(Icons.Default.Search, R.string.help_section_search, R.string.help_item_search),
-                    HelpAction(Icons.Default.FindInPage, R.string.cd_make_searchable, R.string.help_item_auto_tag)
+                    HelpAction(Icons.Default.Search, R.string.help_section_search, R.string.help_item_search)
                 )
             ),
             HelpSection(
@@ -143,7 +141,6 @@ fun HelpScreen() {
                 actions = listOf(
                     HelpAction(Icons.Default.FormatListNumbered, R.string.action_page_numbers, R.string.help_item_page_numbers),
                     HelpAction(Icons.AutoMirrored.Filled.BrandingWatermark, R.string.action_text_watermark, R.string.help_item_watermark),
-                    HelpAction(Icons.Default.Highlight,    R.string.action_highlight_pdf,  R.string.help_item_highlight_pdf),
                     HelpAction(Icons.Default.BorderColor,  R.string.action_annotate_pdf,   R.string.help_item_annotate_pdf),
                     HelpAction(Icons.Default.Draw,         R.string.action_sign_pdf,       R.string.help_item_sign_pdf)
                 )

@@ -76,7 +76,7 @@
     <string name="help_item_delete">चयनित PDF को संग्रह से हटाने के लिए हटाएं का उपयोग करें। ऐप सहेजी गई फ़ाइल और थंबनेल भी हटाता है।</string>
     <string name="help_section_ocr">OCR और टेक्स्ट निष्कर्षण</string>
     <string name="help_item_extract_text">टेक्स्ट निष्कर्षण (OCR) सभी पृष्ठ पढ़ता है और पहचाने गए टेक्स्ट को एक पैनल में दिखाता है जहाँ से आप उसे कॉपी या साझा कर सकते हैं।</string>
-    <string name="help_item_make_searchable">खोज योग्य बनाएं PDF में एक अदृश्य टेक्स्ट लेयर जोड़ता है, निकाले गए OCR टेक्स्ट को आर्काइव खोज के लिए स्थानीय रूप से सहेजता है, और दस्तावेज़ के लिए ऑटो-टैग सक्षम करता है।</string>
+    <string name="help_item_make_searchable">खोज योग्य बनाएं PDF में एक अदृश्य टेक्स्ट लेयर जोड़ता है, निकाले गए OCR टेक्स्ट को आर्काइव खोज के लिए स्थानीय रूप से सहेजता है।</string>
     <string name="help_item_ocr_language">OCR या खोज योग्य बनाएं से पहले दस्तावेज़ की भाषा चुनें। हिंदी मॉडल पहले उपयोग पर डाउनलोड होता है।</string>
     <string name="help_section_navigation">नेविगेशन</string>
     <string name="help_nav_text">ऊपर बाईं ओर हैमबर्गर मेनू से संग्रह, स्कैनर, सहायता और जानकारी तक पहुंचें।</string>
@@ -103,14 +103,14 @@
     <string name="info_repository_label">GitHub रिपॉजिटरी</string>
     <string name="info_section_privacy">गोपनीयता</string>
     <string name="info_section_features">क्षमताएँ</string>
-    <string name="info_features_body">यह ऐप दस्तावेज़ों को PDF में स्कैन करता है, डिवाइस पर OCR चलाता है, आर्काइव खोज के लिए खोजयोग्य OCR टेक्स्ट और ऑटो-टैग को स्थानीय रूप से सहेजता है, और पेज संपादन, सुरक्षा, हस्ताक्षर, हाइलाइट तथा खोजयोग्य PDF के लिए टेक्स्ट-अलाइन स्नैपिंग प्रदान करता है।</string>
-    <string name="info_privacy_body">कोई विज्ञापन नहीं, कोई खाता नहीं और कोई अपना बैकएंड नहीं। PDF, थंबनेल, OCR टेक्स्ट और ऑटो-टैग आपके डिवाइस पर ऐप स्टोरेज में ही रहते हैं। शेयर और एक्सपोर्ट केवल तभी होते हैं जब आप उन्हें स्वयं शुरू करते हैं। स्कैन, OCR और मॉडल या फ़ॉन्ट डाउनलोड Google Play Services पर निर्भर करते हैं; यह ऐप दस्तावेज़ सामग्री अपलोड नहीं करता।</string>
+    <string name="info_features_body">यह ऐप दस्तावेज़ों को PDF में स्कैन करता है, डिवाइस पर OCR चलाता है, आर्काइव खोज के लिए खोजयोग्य OCR टेक्स्ट को स्थानीय रूप से सहेजता है, और पेज संपादन, सुरक्षा, हस्ताक्षर, हाइलाइट तथा खोजयोग्य PDF के लिए टेक्स्ट-अलाइन स्नैपिंग प्रदान करता है।</string>
+    <string name="info_privacy_body">कोई विज्ञापन नहीं, कोई खाता नहीं और कोई अपना बैकएंड नहीं। PDF, थंबनेल, OCR टेक्स्ट आपके डिवाइस पर ऐप स्टोरेज में ही रहते हैं। शेयर और एक्सपोर्ट केवल तभी होते हैं जब आप उन्हें स्वयं शुरू करते हैं। स्कैन, OCR और मॉडल या फ़ॉन्ट डाउनलोड Google Play Services पर निर्भर करते हैं; यह ऐप दस्तावेज़ सामग्री अपलोड नहीं करता।</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">स्थानीय</string>
     <string name="privacy_keyword_2">ऑफ़लाइन</string>
     <string name="privacy_keyword_3">सुरक्षित</string>
     <string name="privacy_keyword_4">निजी</string>
-    <string name="privacy_point_1">यह ऐप PDF, प्रीव्यू छवियाँ, खोजयोग्य OCR टेक्स्ट और ऑटो-टैग आपके डिवाइस पर स्थानीय रूप से संग्रहीत करता है।</string>
+    <string name="privacy_point_1">यह ऐप PDF, प्रीव्यू छवियाँ, खोजयोग्य OCR टेक्स्ट आपके डिवाइस पर स्थानीय रूप से संग्रहीत करता है।</string>
     <string name="privacy_point_2">कोई दस्तावेज़ या सामग्री अपने आप अपलोड नहीं की जाती। शेयर या एक्सपोर्ट केवल तभी होता है जब आप उसे स्पष्ट रूप से शुरू करते हैं।</string>
     <string name="privacy_point_3">स्कैन और OCR फ़ंक्शन Google Play Services का उपयोग करते हैं। त्रुटि विश्लेषण के लिए तकनीकी डायग्नोस्टिक डेटा भेजा जा सकता है। चीनी, जापानी और हिंदी के भाषा मॉडल, तथा डाउनलोड योग्य फ़ॉन्ट, पहली बार उपयोग पर Play Services के माध्यम से प्राप्त किए जा सकते हैं; इस ऐप द्वारा आपके दस्तावेज़ों की सामग्री नहीं भेजी जाती।</string>
     <string name="privacy_point_4">ऐप स्वयं कोई व्यक्तिगत डेटा एकत्र नहीं करता, अपनी विश्लेषण सेवा का उपयोग नहीं करता, और अपनी अलग नेटवर्क अनुमति नहीं मांगता।</string>
@@ -311,7 +311,7 @@
     <string name="remove_text_layer_error">टेक्स्ट लेयर हटाने में त्रुटि</string>
     <string name="remove_text_layer_not_searchable">इस PDF में कोई टेक्स्ट लेयर नहीं है</string>
     <string name="action_remove_text_layer">टेक्स्ट लेयर हटाएं</string>
-    <string name="help_item_remove_text_layer">"टेक्स्ट लेयर हटाएं" चुनकर खोजयोग्य PDF की ऐसी कॉपी बनाएं जिसमें अदृश्य OCR टेक्स्ट लेयर न हो। बनी हुई कॉपी अब खोजयोग्य नहीं रहती और खोज या ऑटो-टैग के लिए OCR टेक्स्ट भी नहीं देती।</string>
+    <string name="help_item_remove_text_layer">"टेक्स्ट लेयर हटाएं" चुनकर खोजयोग्य PDF की ऐसी कॉपी बनाएं जिसमें अदृश्य OCR टेक्स्ट लेयर न हो। बनी हुई कॉपी अब खोजयोग्य नहीं रहती।</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>
@@ -363,11 +363,11 @@
     <string name="tag_certificate">प्रमाणपत्र</string>
     <string name="tag_bank">बैंक</string>
     <string name="tag_delivery">डिलीवरी नोट</string>
-    <string name="help_section_search">खोज और ऑटो-टैग</string>
+    <string name="help_section_search">खोज</string>
     <string name="help_item_search">फ़ाइल नाम या संग्रहीत OCR टेक्स्ट से दस्तावेज़ खोजने के लिए ऊपर के खोज फ़ील्ड पर टैप करें। खोज आपके डिवाइस पर स्थानीय रूप से चलती है और प्रीफ़िक्स मिलान का उपयोग करती है, इसलिए "Rec" से "Receipt" मिल सकता है।</string>
     <string name="help_item_auto_tag">जब कोई दस्तावेज़ खोज योग्य बनाया जाता है, तो ऐप OCR टेक्स्ट और कीवर्ड के आधार पर चालान या अनुबंध जैसे टैग स्थानीय रूप से असाइन करता है। टैग फ़ाइल नाम के नीचे दिखते हैं।</string>
     <string name="privacy_keyword_5">ऑन-डिवाइस इंटेलिजेंस</string>
-    <string name="privacy_point_5">फुल-टेक्स्ट सर्च, ऑटो-टैगिंग, खोजयोग्य PDF निर्माण और टेक्स्ट-अलाइन हाइलाइट आपके डिवाइस पर OCR टेक्स्ट और PDF मेटाडेटा का उपयोग करके स्थानीय रूप से चलते हैं।</string>
+    <string name="privacy_point_5">फुल-टेक्स्ट सर्च, खोजयोग्य PDF निर्माण और टेक्स्ट-अलाइन हाइलाइट आपके डिवाइस पर OCR टेक्स्ट और PDF मेटाडेटा का उपयोग करके स्थानीय रूप से चलते हैं।</string>
     <!-- Annotate PDF -->
     <string name="action_annotate_pdf">PDF मार्क/टिप्पणी</string>
     <string name="annotate_screen_title">Annotate PDF</string>
@@ -401,7 +401,7 @@
     <string name="label_bulk_export">निर्यात</string>
     <string name="label_bulk_merge">मर्ज</string>
     <string name="label_bulk_extract">पाठ</string>
-    <string name="label_bulk_searchable">खोजने योग्य</string>
+    <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">हटाएं</string>
 </resources>
 

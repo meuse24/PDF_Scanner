@@ -2,13 +2,11 @@
 
 package info.meuse24.pdf_scanner.ui.home
 
-import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
@@ -16,13 +14,16 @@ import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
+import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
-import kotlinx.coroutines.Dispatchers
+import info.meuse24.pdf_scanner.util.DispatcherProvider
+import info.meuse24.pdf_scanner.util.ResourceProvider
+import info.meuse24.pdf_scanner.util.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -47,7 +48,10 @@ class HomeViewModel @Inject constructor(
     private val extractTextUseCase:  ExtractTextUseCase,
     private val makeSearchableWorkflow: MakeSearchableWorkflow,
     private val mergePdfsWorkflow:   MergePdfsWorkflow,
-    @ApplicationContext private val context: Context
+    private val workflowErrorMapper: WorkflowErrorMapper,
+    private val resourceProvider: ResourceProvider,
+    private val storageProvider: StorageProvider,
+    private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 
     val scans: StateFlow<List<ScanRecord>> = repository.getAllScans()
@@ -92,7 +96,7 @@ class HomeViewModel @Inject constructor(
     private val _editLoading = MutableStateFlow(false)
     val editLoading: StateFlow<Boolean> = _editLoading.asStateFlow()
 
-    private val scansDir get() = File(context.filesDir, "scans").apply { mkdirs() }
+    private val scansDir get() = storageProvider.scansDir()
 
     // ── Scan importieren ──────────────────────────────────────────────────────
 
@@ -104,14 +108,14 @@ class HomeViewModel @Inject constructor(
         makeSearchable: Boolean = false,
         languageCode:   String  = Locale.getDefault().language
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 if (makeSearchable) _ocrLoading.value = true
                 importScanUseCase(
                     pdfUri, pageCount, filename, thumbnailUri, makeSearchable, languageCode
                 ) { cur, tot -> _ocrProgress.value = cur to tot }
             } catch (e: Exception) {
-                _error.value = e.message ?: context.getString(R.string.error_save_failed)
+                _error.value = e.message ?: resourceProvider.getString(R.string.error_save_failed)
             } finally {
                 _ocrLoading.value  = false
                 _ocrProgress.value = null
@@ -122,11 +126,11 @@ class HomeViewModel @Inject constructor(
     fun importFile(pdfUri: Uri, filename: String) {
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 importFileUseCase(pdfUri, filename)
             } catch (e: Exception) {
-                _error.value = e.message ?: context.getString(R.string.error_save_failed)
+                _error.value = e.message ?: resourceProvider.getString(R.string.error_save_failed)
             } finally {
                 _editLoading.value = false
             }
@@ -138,21 +142,21 @@ class HomeViewModel @Inject constructor(
     fun deleteScan(record: ScanRecord) = deleteScans(listOf(record))
 
     fun deleteScans(records: List<ScanRecord>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             val allDeleted = deleteScansUseCase(records)
-            if (!allDeleted) _error.value = context.getString(R.string.error_delete_failed)
+            if (!allDeleted) _error.value = resourceProvider.getString(R.string.error_delete_failed)
         }
     }
 
     // ── Exportieren ───────────────────────────────────────────────────────────
 
     fun exportScan(record: ScanRecord) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 val displayName = exportScanUseCase(record)
-                _success.value = context.getString(R.string.export_success, displayName)
+                _success.value = resourceProvider.getString(R.string.export_success, displayName)
             } catch (e: Exception) {
-                _error.value = context.getString(R.string.error_export_failed)
+                _error.value = resourceProvider.getString(R.string.error_export_failed)
             }
         }
     }
@@ -160,16 +164,16 @@ class HomeViewModel @Inject constructor(
     // ── Als JPEG exportieren ──────────────────────────────────────────────────
 
     fun exportAsJpg(record: ScanRecord) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 val count = exportAsJpgUseCase(record)
                 _success.value = if (count == 1) {
-                    context.getString(R.string.export_jpg_success, record.filename)
+                    resourceProvider.getString(R.string.export_jpg_success, record.filename)
                 } else {
-                    context.getString(R.string.export_jpg_success_multi, count)
+                    resourceProvider.getString(R.string.export_jpg_success_multi, count)
                 }
             } catch (e: Exception) {
-                _error.value = context.getString(R.string.error_export_jpg_failed)
+                _error.value = resourceProvider.getString(R.string.error_export_jpg_failed)
             }
         }
     }
@@ -184,15 +188,15 @@ class HomeViewModel @Inject constructor(
         if (_ocrLoading.value) return
         val validRecords = records.filter { File(it.filepath).exists() || it.thumbnailPath != null }
         if (validRecords.isEmpty()) {
-            _error.value = context.getString(R.string.ocr_no_image)
+            _error.value = resourceProvider.getString(R.string.ocr_no_image)
             return
         }
         _ocrLoading.value = true
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 _ocrText.value = extractTextUseCase(validRecords, languageCode)
             } catch (e: Exception) {
-                _error.value = context.getString(R.string.ocr_failed)
+                _error.value = resourceProvider.getString(R.string.ocr_failed)
             } finally {
                 _ocrLoading.value = false
             }
@@ -204,7 +208,7 @@ class HomeViewModel @Inject constructor(
     fun makeSearchableScans(records: List<ScanRecord>, languageCode: String) {
         if (_ocrLoading.value) return
         _ocrLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = makeSearchableWorkflow(records, languageCode) { cur, tot ->
                     _ocrProgress.value = cur to tot
@@ -212,9 +216,9 @@ class HomeViewModel @Inject constructor(
                     is WorkflowResult.Success -> {
                         val data = result.value
                         _success.value = if (data.processedCount == 1) {
-                            context.getString(R.string.searchable_success, data.firstFilename)
+                            resourceProvider.getString(R.string.searchable_success, data.firstFilename)
                         } else {
-                            context.getString(R.string.searchable_success_multi, data.processedCount)
+                            resourceProvider.getString(R.string.searchable_success_multi, data.processedCount)
                         }
                     }
                     is WorkflowResult.Failure -> handleWorkflowFailure("SearchablePDF", result.error)
@@ -231,11 +235,11 @@ class HomeViewModel @Inject constructor(
     fun mergePdfs(records: List<ScanRecord>, outputFilename: String) {
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = mergePdfsWorkflow(records, outputFilename, scansDir)) {
                     is WorkflowResult.Success -> {
-                        _success.value = context.getString(
+                        _success.value = resourceProvider.getString(
                             R.string.merge_success,
                             result.value.outputFilename
                         )
@@ -253,16 +257,16 @@ class HomeViewModel @Inject constructor(
     fun renameScan(record: ScanRecord, newName: String) {
         val trimmed = newName.trim()
         if (trimmed.isBlank()) return
-        viewModelScope.launch(Dispatchers.IO) {
-            val scansDir = File(context.filesDir, "scans")
+        viewModelScope.launch(dispatcherProvider.io) {
+            val scansDir = storageProvider.scansDir()
             val newFile  = File(scansDir, "$trimmed.pdf")
             if (newFile.exists()) {
-                _error.value = context.getString(R.string.rename_error_exists)
+                _error.value = resourceProvider.getString(R.string.rename_error_exists)
                 return@launch
             }
             val oldFile = File(record.filepath)
             if (!oldFile.renameTo(newFile)) {
-                _error.value = context.getString(R.string.rename_error_failed)
+                _error.value = resourceProvider.getString(R.string.rename_error_failed)
                 return@launch
             }
             val newThumbPath = record.thumbnailPath?.let { oldThumb ->
@@ -272,7 +276,7 @@ class HomeViewModel @Inject constructor(
                 if (renamed) newThumb.absolutePath else oldThumb
             }
             repository.updateFilenameAndPath(record.id, trimmed, newFile.absolutePath, newThumbPath)
-            _success.value = context.getString(R.string.rename_success, trimmed)
+            _success.value = resourceProvider.getString(R.string.rename_success, trimmed)
         }
     }
 
@@ -294,53 +298,7 @@ class HomeViewModel @Inject constructor(
 
     private fun handleWorkflowFailure(tag: String, error: ScanWorkflowError) {
         Log.e(tag, "workflow failed: $error", error.cause)
-        _error.value = mapWorkflowError(error)
-    }
-
-    private fun mapWorkflowError(error: ScanWorkflowError): String = when (error) {
-        ScanWorkflowError.NothingSelected -> context.getString(R.string.workflow_nothing_selected)
-        ScanWorkflowError.NotEnoughScans -> context.getString(R.string.merge_not_enough_scans)
-        ScanWorkflowError.NoEligibleScans -> context.getString(R.string.searchable_nothing_to_do)
-        ScanWorkflowError.InvalidSplitSelection -> context.getString(R.string.split_no_points)
-        ScanWorkflowError.InvalidPageSelection -> context.getString(R.string.page_selection_invalid)
-        ScanWorkflowError.InvalidPageOrder -> context.getString(R.string.reorder_invalid_order)
-        ScanWorkflowError.InvalidWatermarkText -> context.getString(R.string.watermark_invalid)
-        ScanWorkflowError.SignatureRequired -> context.getString(R.string.signature_required)
-        ScanWorkflowError.InvalidSignatureScale -> context.getString(R.string.signature_scale_invalid)
-        ScanWorkflowError.CompressionUnsupportedForSearchablePdf -> context.getString(R.string.compress_pdf_searchable_unsupported)
-        ScanWorkflowError.ProtectedPdfUnsupported -> context.getString(R.string.protected_pdf_unsupported)
-        ScanWorkflowError.PasswordRequired -> context.getString(R.string.password_required)
-        ScanWorkflowError.WrongPassword -> context.getString(R.string.password_wrong)
-        ScanWorkflowError.AlreadyProtected -> context.getString(R.string.protect_pdf_already_protected)
-        ScanWorkflowError.NotProtected -> context.getString(R.string.unlock_pdf_not_protected)
-        ScanWorkflowError.CannotDeleteAllPages -> context.getString(R.string.delete_pages_all_error)
-        is ScanWorkflowError.MissingFiles -> context.getString(R.string.workflow_missing_files)
-        is ScanWorkflowError.StorageWriteFailed -> context.getString(R.string.workflow_storage_failed)
-        is ScanWorkflowError.OcrFailed -> context.getString(R.string.searchable_failed)
-        is ScanWorkflowError.MergeFailed -> context.getString(R.string.merge_error)
-        is ScanWorkflowError.SplitFailed -> context.getString(R.string.split_error)
-        is ScanWorkflowError.ReorderFailed -> context.getString(R.string.reorder_error)
-        is ScanWorkflowError.RotateFailed -> context.getString(R.string.rotate_error)
-        is ScanWorkflowError.DeletePagesFailed -> context.getString(R.string.delete_pages_error)
-        is ScanWorkflowError.ExtractPagesFailed -> context.getString(R.string.extract_pages_error)
-        is ScanWorkflowError.DuplicatePagesFailed -> context.getString(R.string.duplicate_pages_error)
-        is ScanWorkflowError.PageNumbersFailed -> context.getString(R.string.page_numbers_error)
-        is ScanWorkflowError.TextWatermarkFailed -> context.getString(R.string.watermark_error)
-        is ScanWorkflowError.CompressionFailed -> context.getString(R.string.compress_pdf_error)
-        is ScanWorkflowError.ProtectFailed -> context.getString(R.string.protect_pdf_error)
-        is ScanWorkflowError.UnlockFailed -> context.getString(R.string.unlock_pdf_error)
-        is ScanWorkflowError.SignatureFailed -> context.getString(R.string.signature_error)
-        ScanWorkflowError.NotSearchable -> context.getString(R.string.remove_text_layer_not_searchable)
-        is ScanWorkflowError.RemoveTextLayerFailed -> context.getString(R.string.remove_text_layer_error)
-        ScanWorkflowError.PasswordRequiredToRemove -> context.getString(R.string.remove_password_requires_input)
-        is ScanWorkflowError.RemovePasswordFailed -> context.getString(R.string.remove_password_error)
-        is ScanWorkflowError.UsageRestrictionFailed -> context.getString(R.string.restrict_usage_error)
-        ScanWorkflowError.NoHighlightStrokes -> context.getString(R.string.highlight_no_strokes)
-        is ScanWorkflowError.HighlightFailed -> context.getString(R.string.highlight_error)
-        ScanWorkflowError.NoAnnotations -> context.getString(R.string.annotate_no_items)
-        is ScanWorkflowError.AnnotateFailed -> context.getString(R.string.annotate_error)
-        is ScanWorkflowError.GrayscaleFailed -> context.getString(R.string.grayscale_error)
-        is ScanWorkflowError.PdfMetadataFailed -> context.getString(R.string.metadata_error)
+        _error.value = workflowErrorMapper.map(error)
     }
 }
 

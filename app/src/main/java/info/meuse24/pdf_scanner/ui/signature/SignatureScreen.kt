@@ -31,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModel
 
@@ -86,10 +86,10 @@ fun SignatureScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()

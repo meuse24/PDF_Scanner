@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
 
 @Composable
@@ -53,14 +53,14 @@ fun RotatePagesScreen(
     onNavigateBack: () -> Unit,
     viewModel: PageSelectionViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val pages by viewModel.pages.collectAsState()
-    val selectedPages by viewModel.selectedPages.collectAsState()
-    val saveAsCopy by viewModel.saveAsCopy.collectAsState()
-    val loading by viewModel.loading.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val pages by viewModel.pages.collectAsStateWithLifecycle()
+    val selectedPages by viewModel.selectedPages.collectAsStateWithLifecycle()
+    val saveAsCopy by viewModel.saveAsCopy.collectAsStateWithLifecycle()
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
     var rotationDegrees by rememberSaveable { mutableIntStateOf(90) }
 
     LaunchedEffect(success) {
@@ -123,14 +123,14 @@ fun DeletePagesScreen(
     onNavigateBack: () -> Unit,
     viewModel: PageSelectionViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val pages by viewModel.pages.collectAsState()
-    val selectedPages by viewModel.selectedPages.collectAsState()
-    val saveAsCopy by viewModel.saveAsCopy.collectAsState()
-    val loading by viewModel.loading.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val pages by viewModel.pages.collectAsStateWithLifecycle()
+    val selectedPages by viewModel.selectedPages.collectAsStateWithLifecycle()
+    val saveAsCopy by viewModel.saveAsCopy.collectAsStateWithLifecycle()
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
     val allPagesSelected = record != null && selectedPages.size >= record!!.pageCount
 
     LaunchedEffect(success) {
@@ -187,13 +187,13 @@ fun ExtractPagesScreen(
     onNavigateBack: () -> Unit,
     viewModel: PageSelectionViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val pages by viewModel.pages.collectAsState()
-    val selectedPages by viewModel.selectedPages.collectAsState()
-    val loading by viewModel.loading.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val pages by viewModel.pages.collectAsStateWithLifecycle()
+    val selectedPages by viewModel.selectedPages.collectAsStateWithLifecycle()
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()
@@ -249,13 +249,13 @@ fun DuplicatePagesScreen(
     onNavigateBack: () -> Unit,
     viewModel: PageSelectionViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val pages by viewModel.pages.collectAsState()
-    val selectedPages by viewModel.selectedPages.collectAsState()
-    val loading by viewModel.loading.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val pages by viewModel.pages.collectAsStateWithLifecycle()
+    val selectedPages by viewModel.selectedPages.collectAsStateWithLifecycle()
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()

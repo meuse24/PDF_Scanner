@@ -1,19 +1,18 @@
 package info.meuse24.pdf_scanner.ui.reorder
 
-import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.workflow.ReorderPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
+import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.PdfEditor
-import kotlinx.coroutines.Dispatchers
+import info.meuse24.pdf_scanner.util.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,7 +32,8 @@ class ReorderViewModel @Inject constructor(
     private val pdfEditor: PdfEditor,
     private val reorderPagesWorkflow: ReorderPagesWorkflow,
     private val errorMapper: WorkflowErrorMapper,
-    @ApplicationContext private val context: Context,
+    private val storageProvider: StorageProvider,
+    private val dispatcherProvider: DispatcherProvider,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -60,7 +60,7 @@ class ReorderViewModel @Inject constructor(
     private val _success = MutableStateFlow(false)
     val success: StateFlow<Boolean> = _success.asStateFlow()
 
-    private val scansDir get() = File(context.filesDir, "scans").apply { mkdirs() }
+    private val scansDir get() = storageProvider.scansDir()
 
     init {
         loadRecord()
@@ -85,7 +85,7 @@ class ReorderViewModel @Inject constructor(
     }
 
     private fun loadThumbnails(record: ScanRecord, count: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             val pdfFile = File(record.filepath)
             if (!pdfFile.exists()) {
                 _loading.value = false
@@ -130,7 +130,7 @@ class ReorderViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = reorderPagesWorkflow(record, getCurrentOrder(), _saveAsCopy.value, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true

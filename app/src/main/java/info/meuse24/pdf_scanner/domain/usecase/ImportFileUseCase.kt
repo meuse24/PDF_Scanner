@@ -1,13 +1,12 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import android.content.Context
 import android.net.Uri
-import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.util.FileUtil
 import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.util.ResourceProvider
 import java.io.File
 import javax.inject.Inject
 
@@ -15,7 +14,7 @@ class ImportFileUseCase @Inject constructor(
     private val fileUtil: FileUtil,
     private val pdfEditor: PdfEditor,
     private val repository: ScanRepository,
-    @ApplicationContext private val context: Context
+    private val resourceProvider: ResourceProvider
 ) {
     suspend operator fun invoke(pdfUri: Uri, filename: String): ScanRecord {
         val savedFile = fileUtil.savePdfFromUri(pdfUri, filename)
@@ -25,7 +24,7 @@ class ImportFileUseCase @Inject constructor(
             val isEncrypted = pdfEditor.isPdfEncrypted(savedFile)
             val pageCount = pdfEditor.getPageCount(savedFile)
             if (pageCount == 0 && !isEncrypted) {
-                throw IllegalStateException(context.getString(R.string.error_pdf_invalid))
+                throw IllegalStateException(resourceProvider.getString(R.string.error_pdf_invalid))
             }
 
             val thumbnailPath = if (pageCount > 0 && pdfEditor.generateThumbnail(savedFile, thumbnailFile)) {

@@ -1,6 +1,5 @@
 package info.meuse24.pdf_scanner.ui.documentaction
 
-import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
@@ -20,13 +19,16 @@ import info.meuse24.pdf_scanner.domain.workflow.TextWatermarkWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.UpdatePdfMetadataWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
+import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
+import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
+import info.meuse24.pdf_scanner.testutil.TestStorageProvider
 import info.meuse24.pdf_scanner.util.PdfEditor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -39,9 +41,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
 import java.io.File
 import java.io.IOException
 
@@ -51,7 +51,7 @@ class DocumentEditViewModelTest {
     @get:Rule
     val tmpFolder = TemporaryFolder()
 
-    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setUp() {
@@ -76,9 +76,7 @@ class DocumentEditViewModelTest {
     )
 
     private fun stubMapper(msg: String = "err"): WorkflowErrorMapper {
-        val ctx = mock(Context::class.java)
-        `when`(ctx.getString(anyInt())).thenReturn(msg)
-        return WorkflowErrorMapper(ctx)
+        return WorkflowErrorMapper(FakeResourceProvider(fallback = msg))
     }
 
     private fun buildVm(
@@ -104,8 +102,6 @@ class DocumentEditViewModelTest {
         val convertToGrayscaleWorkflow = mock(ConvertToGrayscaleWorkflow::class.java)
         val updatePdfMetadataWorkflow = mock(UpdatePdfMetadataWorkflow::class.java)
 
-        val context = mock(Context::class.java)
-        `when`(context.filesDir).thenReturn(tmpFolder.root)
         val savedState = SavedStateHandle(mapOf("scanId" to 1L))
 
         return DocumentEditViewModel(
@@ -125,7 +121,8 @@ class DocumentEditViewModelTest {
             updatePdfMetadataWorkflow = updatePdfMetadataWorkflow,
             pdfEditor = pdfEditor,
             errorMapper = errorMapper,
-            context = context,
+            storageProvider = TestStorageProvider(tmpFolder.root),
+            dispatcherProvider = TestDispatcherProvider(testDispatcher),
             savedStateHandle = savedState
         )
     }
@@ -135,9 +132,10 @@ class DocumentEditViewModelTest {
         val file = pdfFile()
         val rec = record(file)
         val vm = buildVm(SuccessPageNumbersPdfEditor(tmpFolder.root), rec)
+        advanceUntilIdle()
 
         vm.addPageNumbers()
-        vm.editLoading.first { !it }
+        advanceUntilIdle()
 
         assertTrue(vm.success.value)
         assertFalse(vm.editLoading.value)
@@ -149,9 +147,10 @@ class DocumentEditViewModelTest {
         val file = pdfFile()
         val rec = record(file)
         val vm = buildVm(FailPageNumbersPdfEditor(), rec)
+        advanceUntilIdle()
 
         vm.addPageNumbers()
-        vm.editLoading.first { !it }
+        advanceUntilIdle()
 
         assertNotNull(vm.error.value)
         assertFalse(vm.success.value)
@@ -163,6 +162,7 @@ class DocumentEditViewModelTest {
         val file = pdfFile()
         val rec = record(file)
         val vm = buildVm(NoOpPageNumbersPdfEditor(), rec)
+        advanceUntilIdle()
 
         vm.addPageNumbers()
 
@@ -174,9 +174,10 @@ class DocumentEditViewModelTest {
         val file = pdfFile()
         val rec = record(file)
         val vm = buildVm(FailPageNumbersPdfEditor(), rec)
+        advanceUntilIdle()
 
         vm.addPageNumbers()
-        vm.editLoading.first { !it }
+        advanceUntilIdle()
         assertNotNull(vm.error.value)
 
         vm.clearError()

@@ -13,7 +13,6 @@ import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
 import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
 import com.tom_roush.pdfbox.pdmodel.graphics.state.RenderingMode
 import com.tom_roush.pdfbox.util.Matrix
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -39,7 +38,8 @@ import kotlin.coroutines.resumeWithException
  */
 @Singleton
 open class SearchablePdfBuilder @Inject constructor(
-    private val ocrManager: OcrManager
+    private val ocrManager: OcrManager,
+    private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider()
 ) {
     companion object {
         private const val RENDER_DPI = 150f
@@ -61,7 +61,7 @@ open class SearchablePdfBuilder @Inject constructor(
         pdfFile: File,
         languageCode: String,
         onProgress: (current: Int, total: Int) -> Unit
-    ): String = withContext(Dispatchers.IO) {
+    ): String = withContext(dispatcherProvider.io) {
 
         val recognizer = ocrManager.getRecognizer(languageCode)
         val pageResults = mutableListOf<PageData>()

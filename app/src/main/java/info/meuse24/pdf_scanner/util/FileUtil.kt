@@ -9,10 +9,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-open class FileUtil @Inject constructor(@ApplicationContext private val context: Context) {
+open class FileUtil @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    private val storageProvider: StorageProvider,
+    private val resourceProvider: ResourceProvider
+) {
 
     open fun savePdfFromUri(sourceUri: Uri, filename: String): File {
-        val scansDir = File(context.filesDir, "scans").apply { mkdirs() }
+        val scansDir = storageProvider.scansDir()
 
         // Make filename unique: append _2, _3, … if the target already exists (#1)
         var destFile = File(scansDir, "$filename.pdf")
@@ -25,7 +29,7 @@ open class FileUtil @Inject constructor(@ApplicationContext private val context:
         }
 
         val inputStream = context.contentResolver.openInputStream(sourceUri)
-            ?: throw IllegalStateException(context.getString(R.string.error_source_unavailable))
+            ?: throw IllegalStateException(resourceProvider.getString(R.string.error_source_unavailable))
 
         try {
             inputStream.use { input ->
@@ -33,7 +37,7 @@ open class FileUtil @Inject constructor(@ApplicationContext private val context:
             }
             if (destFile.length() == 0L) {
                 destFile.delete()
-                throw IllegalStateException(context.getString(R.string.error_pdf_empty))
+                throw IllegalStateException(resourceProvider.getString(R.string.error_pdf_empty))
             }
         } catch (e: Exception) {
             destFile.delete()
@@ -45,7 +49,7 @@ open class FileUtil @Inject constructor(@ApplicationContext private val context:
 
     open fun saveThumbnailFromUri(sourceUri: Uri, filename: String): File? {
         return try {
-            val scansDir = File(context.filesDir, "scans").apply { mkdirs() }
+            val scansDir = storageProvider.scansDir()
             val destFile = File(scansDir, "$filename.jpg")
             val inputStream = context.contentResolver.openInputStream(sourceUri) ?: return null
             inputStream.use { input ->

@@ -1,12 +1,10 @@
 package info.meuse24.pdf_scanner.ui.pageedit
 
-import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.workflow.DeletePagesWorkflow
@@ -15,9 +13,10 @@ import info.meuse24.pdf_scanner.domain.workflow.ExtractPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RotatePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
+import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.util.StorageProvider
 import info.meuse24.pdf_scanner.util.normalizePageIndexes
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,7 +39,8 @@ class PageSelectionViewModel @Inject constructor(
     private val extractPagesWorkflow: ExtractPagesWorkflow,
     private val duplicatePagesWorkflow: DuplicatePagesWorkflow,
     private val errorMapper: WorkflowErrorMapper,
-    @ApplicationContext private val context: Context,
+    private val storageProvider: StorageProvider,
+    private val dispatcherProvider: DispatcherProvider,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -70,7 +70,7 @@ class PageSelectionViewModel @Inject constructor(
     private val _success = MutableStateFlow(false)
     val success: StateFlow<Boolean> = _success.asStateFlow()
 
-    private val scansDir get() = File(context.filesDir, "scans").apply { mkdirs() }
+    private val scansDir get() = storageProvider.scansDir()
 
     init {
         loadRecord()
@@ -95,7 +95,7 @@ class PageSelectionViewModel @Inject constructor(
     }
 
     private fun loadThumbnails(record: ScanRecord, count: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             val pdfFile = File(record.filepath)
             if (!pdfFile.exists()) {
                 _loading.value = false
@@ -132,7 +132,7 @@ class PageSelectionViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = rotatePagesWorkflow(record, getSelectedPages(), rotationDegrees, _saveAsCopy.value, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -148,7 +148,7 @@ class PageSelectionViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = deletePagesWorkflow(record, getSelectedPages(), _saveAsCopy.value, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -164,7 +164,7 @@ class PageSelectionViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = extractPagesWorkflow(record, getSelectedPages(), scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -180,7 +180,7 @@ class PageSelectionViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = duplicatePagesWorkflow(record, getSelectedPages(), scansDir)) {
                     is WorkflowResult.Success -> _success.value = true

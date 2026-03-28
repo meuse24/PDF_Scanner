@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.ui.home
 
 import android.app.Activity
+import android.content.ClipData
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -31,24 +32,24 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
@@ -57,26 +58,27 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import android.print.PrintManager
 import androidx.core.content.FileProvider
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.util.PdfPrintAdapter
 import com.google.mlkit.common.MlKitException
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
@@ -95,6 +97,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,19 +125,20 @@ fun HomeScreen(
     onNavigateToPdfMetadata:        (Long) -> Unit = {},
     viewModel:                      HomeViewModel  = hiltViewModel()
 ) {
-    val scans          by viewModel.scans.collectAsState()
-    val filteredScans  by viewModel.filteredScans.collectAsState()
-    val searchQuery    by viewModel.searchQuery.collectAsState()
-    val sortOrder      by viewModel.sortOrder.collectAsState()
-    val error          by viewModel.error.collectAsState()
-    val success      by viewModel.success.collectAsState()
-    val ocrText      by viewModel.ocrText.collectAsState()
-    val ocrLoading   by viewModel.ocrLoading.collectAsState()
-    val ocrProgress  by viewModel.ocrProgress.collectAsState()
-    val editLoading  by viewModel.editLoading.collectAsState()
+    val scans          by viewModel.scans.collectAsStateWithLifecycle()
+    val filteredScans  by viewModel.filteredScans.collectAsStateWithLifecycle()
+    val searchQuery    by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val sortOrder      by viewModel.sortOrder.collectAsStateWithLifecycle()
+    val error          by viewModel.error.collectAsStateWithLifecycle()
+    val success        by viewModel.success.collectAsStateWithLifecycle()
+    val ocrText        by viewModel.ocrText.collectAsStateWithLifecycle()
+    val ocrLoading     by viewModel.ocrLoading.collectAsStateWithLifecycle()
+    val ocrProgress    by viewModel.ocrProgress.collectAsStateWithLifecycle()
+    val editLoading    by viewModel.editLoading.collectAsStateWithLifecycle()
     val context   = LocalContext.current
     val resources = LocalResources.current
-    val clipboard = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val coroutineScope = rememberCoroutineScope()
     val haptic    = LocalHapticFeedback.current
     val errorDeviceUnsupported = stringResource(R.string.error_device_unsupported)
     val errorScannerUnavailable = stringResource(R.string.error_scanner_unavailable)
@@ -325,7 +329,7 @@ fun HomeScreen(
                             onClick = { sortMenuExpanded = true }
                         ) {
                             Icon(
-                                Icons.Default.Sort,
+                                Icons.AutoMirrored.Filled.Sort,
                                 contentDescription = stringResource(
                                     R.string.cd_sort_documents,
                                     stringResource(sortOrderLabel(sortOrder))
@@ -628,7 +632,7 @@ fun HomeScreen(
                         trailingIcon  = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = bulkLangMenuExpanded) },
                         colors        = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                         modifier      = Modifier
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                             .fillMaxWidth()
                     )
                     ExposedDropdownMenu(
@@ -797,8 +801,12 @@ fun HomeScreen(
                     }
                     Spacer(Modifier.width(8.dp))
                     TextButton(onClick = {
-                        clipboard.setText(AnnotatedString(ocrText!!))
-                        Toast.makeText(context, ocrCopiedMessage, Toast.LENGTH_SHORT).show()
+                        coroutineScope.launch {
+                            clipboard.setClipEntry(
+                                ClipData.newPlainText("", ocrText!!).toClipEntry()
+                            )
+                            Toast.makeText(context, ocrCopiedMessage, Toast.LENGTH_SHORT).show()
+                        }
                     }) {
                         Icon(Icons.Default.ContentCopy, contentDescription = null)
                         Spacer(Modifier.width(6.dp))
@@ -885,7 +893,7 @@ fun HomeScreen(
                                 trailingIcon  = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = langMenuExpanded) },
                                 colors        = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                                 modifier      = Modifier
-                                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                                     .fillMaxWidth()
                             )
                             ExposedDropdownMenu(

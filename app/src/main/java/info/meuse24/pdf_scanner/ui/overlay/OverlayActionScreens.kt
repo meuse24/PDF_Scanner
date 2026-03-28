@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.ui.components.ActionScreenContent
 import info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModel
@@ -27,10 +27,10 @@ fun PageNumbersScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()
@@ -77,10 +77,10 @@ fun TextWatermarkScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
     var watermarkText by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(success) {

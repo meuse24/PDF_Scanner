@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import info.meuse24.pdf_scanner.ui.components.ActionScreenContent
@@ -47,10 +47,10 @@ fun CompressPdfScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
     var preset by rememberSaveable { mutableStateOf(PdfCompressionPreset.MEDIUM.name) }
 
     LaunchedEffect(success) {
@@ -104,10 +104,10 @@ fun ProtectPdfScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     val passwordsMatch = password.isNotBlank() && password == confirmPassword
@@ -184,10 +184,10 @@ fun UnlockPdfScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
     var password by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(success) {
@@ -245,10 +245,10 @@ fun RemovePasswordScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()
@@ -296,10 +296,10 @@ fun RemoveTextLayerScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()
@@ -347,10 +347,10 @@ fun RestrictUsageScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
     var ownerPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     var canPrint by rememberSaveable { mutableStateOf(false) }
@@ -462,10 +462,10 @@ fun ConvertToGrayscaleScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()
@@ -513,11 +513,11 @@ fun PdfMetadataScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsState()
-    val metadata by viewModel.metadata.collectAsState()
-    val editLoading by viewModel.editLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val success by viewModel.success.collectAsState()
+    val record by viewModel.record.collectAsStateWithLifecycle()
+    val metadata by viewModel.metadata.collectAsStateWithLifecycle()
+    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val success by viewModel.success.collectAsStateWithLifecycle()
     var title by rememberSaveable(record?.id) { mutableStateOf("") }
     var author by rememberSaveable(record?.id) { mutableStateOf("") }
     var creator by rememberSaveable(record?.id) { mutableStateOf("") }

@@ -1,12 +1,10 @@
 package info.meuse24.pdf_scanner.ui.documentaction
 
-import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
@@ -29,9 +27,10 @@ import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.UpdatePdfMetadataWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
+import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.PdfEditor
 import info.meuse24.pdf_scanner.util.PdfMetadata
-import kotlinx.coroutines.Dispatchers
+import info.meuse24.pdf_scanner.util.StorageProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -58,7 +57,8 @@ class DocumentEditViewModel @Inject constructor(
     private val updatePdfMetadataWorkflow: UpdatePdfMetadataWorkflow,
     private val pdfEditor: PdfEditor,
     private val errorMapper: WorkflowErrorMapper,
-    @ApplicationContext private val context: Context,
+    private val storageProvider: StorageProvider,
+    private val dispatcherProvider: DispatcherProvider,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -76,7 +76,7 @@ class DocumentEditViewModel @Inject constructor(
     private val _success = MutableStateFlow(false)
     val success: StateFlow<Boolean> = _success.asStateFlow()
 
-    private val scansDir get() = File(context.filesDir, "scans").apply { mkdirs() }
+    private val scansDir get() = storageProvider.scansDir()
 
     private val _highlightPageBitmap = MutableStateFlow<Bitmap?>(null)
     val highlightPageBitmap: StateFlow<Bitmap?> = _highlightPageBitmap.asStateFlow()
@@ -100,7 +100,7 @@ class DocumentEditViewModel @Inject constructor(
         highlightPageJob?.cancel()
         _highlightPageBitmap.value = null
         _textLines.value = emptyList()
-        highlightPageJob = viewModelScope.launch(Dispatchers.IO) {
+        highlightPageJob = viewModelScope.launch(dispatcherProvider.io) {
             val inputFile = File(record.filepath)
             _highlightPageBitmap.value = pdfEditor.renderPageThumbnail(inputFile, pageIndex, 1024)
             if (!record.isSearchable) return@launch
@@ -126,7 +126,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = pageNumbersWorkflow(record, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -142,7 +142,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = textWatermarkWorkflow(record, text, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -158,7 +158,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = compressPdfWorkflow(record, preset, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -174,7 +174,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = protectPdfWorkflow(record, password, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -190,7 +190,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = unlockPdfWorkflow(record, password, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -206,7 +206,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = signatureStampWorkflow(record, signatureBitmap, pageIndex, scaleFraction, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -222,7 +222,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = removeTextLayerWorkflow(record, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -238,7 +238,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = removePasswordWorkflow(record, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -254,7 +254,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = restrictUsageWorkflow(record, scansDir, ownerPassword, canPrint, canCopy, canEdit)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -273,7 +273,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = highlightPdfWorkflow(record, strokes, rects, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -293,7 +293,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = annotatePdfWorkflow(record, strokes, rects, comments, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -309,7 +309,7 @@ class DocumentEditViewModel @Inject constructor(
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = convertToGrayscaleWorkflow(record, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -339,7 +339,7 @@ class DocumentEditViewModel @Inject constructor(
             subject = normalizeMetadataField(subject),
             keywords = normalizeMetadataField(keywords)
         )
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = updatePdfMetadataWorkflow(record, updatedMetadata)) {
                     is WorkflowResult.Success -> _success.value = true
@@ -354,7 +354,7 @@ class DocumentEditViewModel @Inject constructor(
     fun loadMetadata() {
         val record = _record.value ?: return
         _metadata.value = null
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io) {
             _metadata.value = pdfEditor.readMetadata(File(record.filepath))
         }
     }

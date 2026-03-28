@@ -2,7 +2,10 @@ package info.meuse24.pdf_scanner.ui.home
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -28,11 +31,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -94,8 +99,8 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    scanTrigger:           Boolean    = false,
-    onScanTriggered:       () -> Unit = {},
+    addActionTrigger:      Boolean    = false,
+    onAddActionTriggered:  () -> Unit = {},
     onSelectionModeChange: (Boolean) -> Unit = {},
     onNavigateToSplit:          (Long) -> Unit = {},
     onNavigateToReorder:        (Long) -> Unit = {},
@@ -140,13 +145,14 @@ fun HomeScreen(
     val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
     val ocrLanguages = remember(displayLocale) { buildOcrLanguageOptions(displayLocale) }
 
-    var pendingScanResult  by remember { mutableStateOf<GmsDocumentScanningResult?>(null) }
+    var pendingImport      by remember { mutableStateOf<PendingImport?>(null) }
+    var showAddSheet       by remember { mutableStateOf(false) }
     var showSaveDialog     by remember { mutableStateOf(false) }
     var filenameInput      by rememberSaveable { mutableStateOf("") }
     var makeSearchable     by rememberSaveable { mutableStateOf(false) }
     val unsupportedLangs = setOf("zh", "ja")
     var selectedLang       by rememberSaveable { mutableStateOf(
-        Locale.getDefault().language.let { if (it in unsupportedLangs) "en" else it }
+        defaultOcrLanguage(unsupportedLangs)
     ) }
     var langMenuExpanded   by remember { mutableStateOf(false) }
     var sortMenuExpanded   by remember { mutableStateOf(false) }
@@ -169,7 +175,7 @@ fun HomeScreen(
     var showBulkLangDialog    by remember { mutableStateOf(false) }
     var bulkLangForSearchable by remember { mutableStateOf(false) }
     var selectedBulkLang      by rememberSaveable { mutableStateOf(
-        Locale.getDefault().language.let { if (it in unsupportedLangs) "en" else it }
+        defaultOcrLanguage(unsupportedLangs)
     ) }
     var bulkLangMenuExpanded  by remember { mutableStateOf(false) }
 
@@ -182,40 +188,79 @@ fun HomeScreen(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            pendingScanResult = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+            val scanResult = GmsDocumentScanningResult.fromActivityResultIntent(result.data) ?: return@rememberLauncherForActivityResult
+            pendingImport = PendingImport.Scan(scanResult)
             filenameInput = resources.getString(
                 R.string.scan_filename_default,
                 SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             )
+            makeSearchable = false
+            selectedLang = defaultOcrLanguage(unsupportedLangs)
             showSaveDialog = true
         }
     }
 
-    LaunchedEffect(scanTrigger) {
-        if (scanTrigger) {
-            val options = GmsDocumentScannerOptions.Builder()
-                .setGalleryImportAllowed(true)
-                .setResultFormats(
-                    GmsDocumentScannerOptions.RESULT_FORMAT_PDF,
-                    GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
+    val importFileLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            try {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
-                .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
-                .setPageLimit(50)
-                .build()
-            GmsDocumentScanning.getClient(options)
-                .getStartScanIntent(context as Activity)
-                .addOnSuccessListener { intentSender ->
-                    scanLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+            } catch (_: SecurityException) {
+                // Some providers only grant a transient permission for the current session.
+            }
+
+            val displayName = queryDisplayName(context, uri)
+                ?: uri.lastPathSegment
+                ?: resources.getString(
+                    R.string.import_filename_default,
+                    SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                )
+            pendingImport = PendingImport.File(uri, displayName)
+            filenameInput = suggestedFilenameFromDisplayName(displayName).ifBlank {
+                resources.getString(
+                    R.string.import_filename_default,
+                    SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                )
+            }
+            makeSearchable = false
+            selectedLang = defaultOcrLanguage(unsupportedLangs)
+            showSaveDialog = true
+        }
+    }
+
+    fun launchScanner() {
+        val options = GmsDocumentScannerOptions.Builder()
+            .setGalleryImportAllowed(true)
+            .setResultFormats(
+                GmsDocumentScannerOptions.RESULT_FORMAT_PDF,
+                GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
+            )
+            .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
+            .setPageLimit(50)
+            .build()
+        GmsDocumentScanning.getClient(options)
+            .getStartScanIntent(context as Activity)
+            .addOnSuccessListener { intentSender ->
+                scanLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+            }
+            .addOnFailureListener { e ->
+                val message = if (e is MlKitException && e.errorCode == MlKitException.UNSUPPORTED) {
+                    errorDeviceUnsupported
+                } else {
+                    e.message ?: errorScannerUnavailable
                 }
-                .addOnFailureListener { e ->
-                    val message = if (e is MlKitException && e.errorCode == MlKitException.UNSUPPORTED) {
-                        errorDeviceUnsupported
-                    } else {
-                        e.message ?: errorScannerUnavailable
-                    }
-                    viewModel.reportError(message)
-                }
-            onScanTriggered()
+                viewModel.reportError(message)
+            }
+    }
+
+    LaunchedEffect(addActionTrigger) {
+        if (addActionTrigger) {
+            showAddSheet = true
+            onAddActionTriggered()
         }
     }
 
@@ -662,6 +707,49 @@ fun HomeScreen(
     }
 
     // ── OCR-Ergebnis-BottomSheet ──────────────────────────────────────────────
+    val addSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    if (showAddSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showAddSheet = false },
+            sheetState = addSheetState
+        ) {
+            Column(
+                modifier = Modifier.padding(bottom = 24.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.add_document_sheet_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+                )
+                AddDocumentOption(
+                    title = stringResource(R.string.add_document_scan_title),
+                    subtitle = stringResource(R.string.add_document_scan_subtitle),
+                    icon = {
+                        Icon(Icons.Default.CameraAlt, contentDescription = null)
+                    },
+                    onClick = {
+                        showAddSheet = false
+                        launchScanner()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
+                AddDocumentOption(
+                    title = stringResource(R.string.add_document_import_title),
+                    subtitle = stringResource(R.string.add_document_import_subtitle),
+                    icon = {
+                        Icon(Icons.Default.UploadFile, contentDescription = null)
+                    },
+                    onClick = {
+                        showAddSheet = false
+                        importFileLauncher.launch(arrayOf("application/pdf"))
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+
     val ocrSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     if (ocrText != null) {
         ModalBottomSheet(
@@ -723,8 +811,14 @@ fun HomeScreen(
 
     // ── Speichern-Dialog ──────────────────────────────────────────────────────
     if (showSaveDialog) {
+        val currentImport = pendingImport
         AlertDialog(
-            onDismissRequest = { showSaveDialog = false; pendingScanResult = null },
+            onDismissRequest = {
+                showSaveDialog = false
+                pendingImport = null
+                makeSearchable = false
+                selectedLang = defaultOcrLanguage(unsupportedLangs)
+            },
             title   = { Text(stringResource(R.string.dialog_save_title)) },
             text    = {
                 Column {
@@ -735,22 +829,44 @@ fun HomeScreen(
                         singleLine    = true,
                         modifier      = Modifier.fillMaxWidth()
                     )
-                    Spacer(Modifier.height(12.dp))
-                    Row(
-                        modifier          = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            stringResource(R.string.dialog_searchable_pdf),
-                            style    = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Switch(
-                            checked         = makeSearchable,
-                            onCheckedChange = { makeSearchable = it }
-                        )
+                    when (currentImport) {
+                        is PendingImport.Scan -> {
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = stringResource(
+                                    R.string.dialog_scan_page_count,
+                                    currentImport.result.pdf?.pageCount ?: 0
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                            Spacer(Modifier.height(12.dp))
+                            Row(
+                                modifier          = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    stringResource(R.string.dialog_searchable_pdf),
+                                    style    = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Switch(
+                                    checked         = makeSearchable,
+                                    onCheckedChange = { makeSearchable = it }
+                                )
+                            }
+                        }
+                        is PendingImport.File -> {
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = stringResource(R.string.dialog_import_selected_file, currentImport.originalName),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                        }
+                        null -> Unit
                     }
-                    if (makeSearchable) {
+                    if (currentImport is PendingImport.Scan && makeSearchable) {
                         Text(
                             stringResource(R.string.dialog_searchable_hint),
                             style = MaterialTheme.typography.bodySmall,
@@ -789,27 +905,42 @@ fun HomeScreen(
             },
             confirmButton = {
                 TextButton(onClick = {
-                    val pdf = pendingScanResult?.pdf
-                    if (filenameInput.isNotBlank() && pdf != null) {
-                        val thumbnailUri = pendingScanResult?.pages?.firstOrNull()?.imageUri
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        viewModel.saveScan(
-                            pdf.uri, pdf.pageCount, filenameInput.trim(),
-                            thumbnailUri, makeSearchable, selectedLang
-                        )
-                        showSaveDialog    = false
-                        pendingScanResult = null
-                        makeSearchable    = false
-                        selectedLang      = Locale.getDefault().language.let { if (it in unsupportedLangs) "en" else it }
+                    when (val import = currentImport) {
+                        is PendingImport.Scan -> {
+                            val pdf = import.result.pdf
+                            if (filenameInput.isNotBlank() && pdf != null) {
+                                val thumbnailUri = import.result.pages?.firstOrNull()?.imageUri
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                viewModel.saveScan(
+                                    pdf.uri, pdf.pageCount, filenameInput.trim(),
+                                    thumbnailUri, makeSearchable, selectedLang
+                                )
+                                showSaveDialog = false
+                                pendingImport = null
+                                makeSearchable = false
+                                selectedLang = defaultOcrLanguage(unsupportedLangs)
+                            }
+                        }
+                        is PendingImport.File -> {
+                            if (filenameInput.isNotBlank()) {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                viewModel.importFile(import.uri, filenameInput.trim())
+                                showSaveDialog = false
+                                pendingImport = null
+                                makeSearchable = false
+                                selectedLang = defaultOcrLanguage(unsupportedLangs)
+                            }
+                        }
+                        null -> Unit
                     }
                 }) { Text(stringResource(R.string.action_save)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     showSaveDialog    = false
-                    pendingScanResult = null
+                    pendingImport     = null
                     makeSearchable    = false
-                    selectedLang      = Locale.getDefault().language.let { if (it in unsupportedLangs) "en" else it }
+                    selectedLang      = defaultOcrLanguage(unsupportedLangs)
                 }) {
                     Text(stringResource(R.string.action_cancel))
                 }
@@ -830,6 +961,45 @@ fun HomeScreen(
     }
 }
 
+private sealed interface PendingImport {
+    data class Scan(val result: GmsDocumentScanningResult) : PendingImport
+    data class File(val uri: Uri, val originalName: String) : PendingImport
+}
+
+@Composable
+private fun AddDocumentOption(
+    title: String,
+    subtitle: String,
+    icon: @Composable () -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            icon()
+            Spacer(Modifier.width(16.dp))
+            Column(horizontalAlignment = Alignment.Start) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline
+                )
+            }
+        }
+    }
+}
+
 private fun buildOcrLanguageOptions(displayLocale: Locale): List<Pair<String, String>> {
     val supportedCodes = listOf("de", "en", "es", "fr", "pt", "ru", "ar", "hi")
     return supportedCodes.map { code ->
@@ -838,6 +1008,34 @@ private fun buildOcrLanguageOptions(displayLocale: Locale): List<Pair<String, St
                 if (char.isLowerCase()) char.titlecase(displayLocale) else char.toString()
             }
         code to name
+    }
+}
+
+internal fun suggestedFilenameFromDisplayName(displayName: String): String {
+    val trimmed = displayName.trim()
+    if (trimmed.isBlank()) return ""
+    return if (trimmed.lowercase(Locale.ROOT).endsWith(".pdf")) {
+        trimmed.dropLast(4).trim()
+    } else {
+        trimmed
+    }
+}
+
+private fun defaultOcrLanguage(unsupportedLangs: Set<String>): String {
+    val language = Locale.getDefault().language
+    return if (language in unsupportedLangs) "en" else language
+}
+
+private fun queryDisplayName(context: Context, uri: Uri): String? {
+    return context.contentResolver.query(
+        uri,
+        arrayOf(OpenableColumns.DISPLAY_NAME),
+        null,
+        null,
+        null
+    )?.use { cursor ->
+        val columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        if (columnIndex >= 0 && cursor.moveToFirst()) cursor.getString(columnIndex) else null
     }
 }
 

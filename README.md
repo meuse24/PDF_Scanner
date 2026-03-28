@@ -5,12 +5,14 @@ A clean, privacy-focused Android app for scanning documents to PDF using Google'
 ## Features
 
 ### Scanning
-- **Scan documents** with automatic edge detection and perspective correction (powered by ML Kit)
+- **Add documents** via the `+` action sheet:
+  - **Scan document** with automatic edge detection and perspective correction (powered by ML Kit)
+  - **Import PDF** from the system file picker; imported files are copied into the app archive
 - **Multi-page PDFs** — photograph multiple pages in one session
 - **OCR / searchable PDFs** — extract text from scans or embed an invisible text layer for full-text search in any PDF viewer
 
 ### Archive & Search
-- Browse, open, share, export, and delete scanned PDFs
+- Browse, open, share, export, and delete archived PDFs
 - **Full-text search** across filename and extracted OCR text (Room FTS4)
 - **Rename PDF** — give any document a new name directly from the archive; file and thumbnail are renamed atomically
 - Multi-select bulk actions: share, export to Downloads, merge, text extraction, OCR / make searchable, delete
@@ -94,7 +96,8 @@ domain/
 ui/
 ├── navigation/         AppNavigation + route definitions
 │                       Drawer gesture disabled on AnnotateScreen
-├── home/               Archive screen, bulk actions, search, rename dialog, scan item menus
+├── home/               Archive screen, add-document sheet, file import, bulk actions,
+│                       search, rename dialog, scan item menus
 ├── components/         Shared action-screen and preview composables
 ├── overlay/            Page numbers, text watermark
 ├── documentaction/     DocumentEditViewModel handles compress, protect, unlock,
@@ -120,7 +123,9 @@ util/                   FileUtil, OcrManager, SearchablePdfBuilder, PdfEditor
 
 **Data flow:** UI → ViewModel (state) → Workflow → Use Case (business logic) → Repository → Room
 
-**Scanner flow:** Triggered via a `Boolean` state in `AppNavigation`, passed to `HomeScreen`, which reacts with `LaunchedEffect`. Avoids holding an Activity reference in the ViewModel.
+**Add-document flow:** Triggered via a `Boolean` state in `AppNavigation`, passed to `HomeScreen`, which opens an add-document bottom sheet. From there the user either starts the ML Kit scanner or opens the system `OpenDocument` picker for `application/pdf`.
+
+**Import flow:** Existing PDFs are copied into `filesDir/scans/`, validated, checked for encryption, thumbnail-generated when possible, and persisted as normal `ScanRecord` entries. Imported documents then behave exactly like scanned documents in archive search, sorting, sharing, export, and follow-up actions.
 
 **Edit screens:** Each edit action navigates to a dedicated screen passing `scanId` as a route argument. `DocumentEditViewModel` loads the target `ScanRecord` and dispatches to the appropriate workflow, mapping failures through `WorkflowErrorMapper`. Page-oriented edit screens use `PageSelectionViewModel`; split and reorder use their own dedicated view models.
 
@@ -145,12 +150,14 @@ Unit tests run on JVM (no emulator required):
 util/PdfEditorTest.kt                          — PDF helper coverage
 domain/usecase/DeleteScansUseCaseTest.kt       — file deletion, thumbnails, error paths
 domain/usecase/MakeSearchableUseCaseTest.kt    — idempotency, DB updates, missing files
+domain/usecase/ImportFileUseCaseTest.kt        — file import, invalid PDF cleanup, encrypted imports
 domain/usecase/AutoTagUseCaseTest.kt           — local tagging heuristics incl. false-positive cases
 domain/workflow/*.kt                           — merge, split, reorder, rotate, delete, extract,
                                                  duplicate, page numbers, watermark, compress,
                                                  protect, unlock, signature, highlight,
                                                  annotate, searchable
 ui/documentaction/DocumentEditViewModelTest.kt — document-edit action dispatch + failure mapping
+ui/home/HomeImportFilenameSuggestionTest.kt    — file picker display-name to archive filename mapping
 ui/highlight/HighlightScreenMathTest.kt        — zoom/pan math, snap and rect helpers
 ui/reorder/ReorderViewModelTest.kt             — reorder state + workflow dispatch
 ui/split/SplitViewModelTest.kt                 — split state + workflow dispatch

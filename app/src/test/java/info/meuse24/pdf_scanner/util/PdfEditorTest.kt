@@ -4,12 +4,14 @@ import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
 import java.util.Calendar
+
 /**
  * Unit-Tests für die JVM-testbaren Hilfsfunktionen buildRanges und
  * resolveUniqueFilename. Diese Funktionen sind top-level internal und
@@ -274,6 +276,51 @@ class PdfEditorTest {
         assertEquals("Taxes", metadata.subject)
         assertEquals("invoice,2024", metadata.keywords)
         assertEquals(creationDate.timeInMillis, metadata.creationDate?.timeInMillis)
+        assertNotNull(metadata.modificationDate)
+    }
+
+    @Test
+    fun `updateMetadata entfernt Felder wenn Eingaben geleert werden`() {
+        val pdfFile = tmpFolder.newFile("metadata-clear.pdf")
+        PDDocument().use { document ->
+            document.addPage(PDPage())
+            document.documentInformation.title = "Existing title"
+            document.documentInformation.author = "Existing author"
+            document.documentInformation.creator = "Existing creator"
+            document.documentInformation.subject = "Existing subject"
+            document.documentInformation.keywords = "alpha,beta"
+            document.save(pdfFile)
+        }
+
+        val editor = PdfEditor()
+        editor.updateMetadata(
+            pdfFile,
+            PdfMetadata(
+                title = null,
+                author = null,
+                creator = null,
+                subject = null,
+                keywords = null,
+                creationDate = null,
+                modificationDate = null
+            )
+        )
+
+        PDDocument.load(pdfFile, "").use { document ->
+            val info = document.documentInformation
+            assertNull(info.title)
+            assertNull(info.author)
+            assertNull(info.creator)
+            assertNull(info.subject)
+            assertNull(info.keywords)
+        }
+
+        val metadata = editor.readMetadata(pdfFile)
+        assertNull(metadata.title)
+        assertNull(metadata.author)
+        assertNull(metadata.creator)
+        assertNull(metadata.subject)
+        assertNull(metadata.keywords)
         assertNotNull(metadata.modificationDate)
     }
 }

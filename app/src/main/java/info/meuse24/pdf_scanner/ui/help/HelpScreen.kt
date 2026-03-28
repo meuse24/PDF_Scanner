@@ -25,6 +25,8 @@ import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.filled.MergeType
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.ContentCopy
@@ -40,7 +42,6 @@ import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.FormatListNumbered
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
@@ -52,6 +53,7 @@ import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -100,6 +102,22 @@ fun HelpScreen() {
                     HelpAction(Icons.AutoMirrored.Filled.Help, R.string.nav_help, R.string.help_desc_help),
                     HelpAction(Icons.Default.Info, R.string.nav_info, R.string.help_desc_info),
                     HelpAction(Icons.Default.PrivacyTip, R.string.nav_privacy, R.string.help_desc_privacy)
+                )
+            ),
+            HelpSection(
+                icon = Icons.Default.CameraAlt,
+                titleRes = R.string.help_section_add_documents,
+                actions = listOf(
+                    HelpAction(Icons.Default.CameraAlt, R.string.add_document_scan_title, R.string.help_item_add_document_scan),
+                    HelpAction(Icons.Default.UploadFile, R.string.add_document_import_title, R.string.help_item_add_document_import)
+                )
+            ),
+            HelpSection(
+                icon = Icons.Default.FolderOpen,
+                titleRes = R.string.help_section_archive,
+                actions = listOf(
+                    HelpAction(Icons.Default.PictureAsPdf, R.string.action_open_document, R.string.help_item_open),
+                    HelpAction(Icons.Default.CheckBox, R.string.action_select_documents, R.string.help_item_select)
                 )
             ),
             HelpSection(

@@ -27,6 +27,7 @@ adb shell am start -n info.meuse24.pdf_scanner/.MainActivity
 ```
 domain/
 └── usecase/
+    ├── ImportFileUseCase.kt       # Externe PDF per FilePicker importieren: kopieren + validieren + isEncrypted + Thumbnail + DB-Insert
     ├── ImportScanUseCase.kt       # PDF kopieren + optional Thumbnail + optional OCR-Textlayer
     ├── ExportScanUseCase.kt       # MediaStore.Downloads Export (IS_PENDING-Pattern)
     ├── DeleteScansUseCase.kt      # Dateilöschung + Thumbnail + DB-Delete
@@ -57,12 +58,13 @@ ui/
 │                                  # Drawer: App-Header (Icon + Name + Version) + Ablage + Hilfe/Info/Datenschutz
 │                                  # „Scanner starten" entfernt — FAB ist der primäre Scan-Einstieg
 │                                  # gesturesEnabled nur auf Top-Level-Screens (Ablage/Help/Info/Privacy)
-│                                  # Verwaltet scanTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
+│                                  # Verwaltet addActionTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
 ├── home/
-│   ├── HomeScreen.kt              # Koordinator: Scanner-Launcher, Dialoge, Listen-Routing, Suchfeld
+│   ├── HomeScreen.kt              # Koordinator: Add-Document-BottomSheet, Scanner-Launcher, OpenDocument-FilePicker,
+│   │                              # PendingImport(Scan/File), Save-Dialog, Listen-Routing, Suchfeld
 │   │                              # ScanItem.onAction(ScanAction) → navigiert zu Edit-Screens; Rename-Dialog inline
-│   ├── HomeViewModel.kt           # Archivkern: Liste, Auswahl, Scanner-Trigger, Bulk-Aktionen, Suche
-│   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading (nur Merge)
+│   ├── HomeViewModel.kt           # Archivkern: Liste, Auswahl, Import/Scan, Bulk-Aktionen, Suche
+│   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading (Merge + Dateiimport)
 │   │                              # _searchQuery → filteredScans (FTS4 via flatMapLatest+debounce)
 │   │                              # renameScan(record, newName): PDF + Thumbnail umbenennen + updateFilenameAndPath
 │   └── components/
@@ -115,7 +117,8 @@ ui/
 │   └── HighlightScreen.kt         # INAKTIV (keine Nav-Route mehr; Funktionalität in AnnotateScreen enthalten)
 │                                  # Datei vorhanden, aber nicht erreichbar — HighlightPdfWorkflow + UseCase bleiben für Tests
 ├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
-│                                  # Hilfe-Texte decken Suche/OCR/Highlight-Snap/Privacy-Verhalten ab
+│                                  # Hilfe-Texte decken Dokument hinzufügen (Scan + PDF-Import), Archiv-Basisaktionen,
+│                                  # Suche/OCR/Highlight-Snap/Privacy-Verhalten ab
 ├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig; zusätzliche Karten für Funktionen + Privacy
 └── privacy/PrivacyScreen.kt       # Privacy-Übersicht; Texte betonen lokale Speicherung, OCR-Text und Play-Services-Abhängigkeit
 
@@ -175,6 +178,8 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
 - **Erfolg in Edit-Screens** → `_success: StateFlow<Boolean>` → `LaunchedEffect` → `onNavigateBack()`
 - **OCR** nutzt PdfRenderer über alle Seiten; Fallback auf `thumbnailPath` wenn PDF fehlt
 - PDFs in `context.filesDir/scans/`; FileProvider-Authority: `${applicationId}.fileprovider`
+- Externe PDF-Importe laufen über `ActivityResultContracts.OpenDocument()` mit MIME `application/pdf`
+- Importierte PDFs werden sofort in `filesDir/scans/` kopiert und anschließend wie normale `ScanRecord`s behandelt
 - Doppelte Dateinamen: `resolveUniqueFilename()` in `util/PdfEditor.kt` (`_2`, `_3`, …)
 - Export: `MediaStore.Downloads` (API 29+), IS_PENDING-Pattern, bei Fehler `resolver.delete()`
 - Backup: `backup_rules.xml` + `data_extraction_rules.xml` schließen `filesDir/scans/` und DB aus
@@ -202,6 +207,7 @@ test/
 ├── domain/usecase/
 │   ├── DeleteScansUseCaseTest.kt           # Dateilöschung, Thumbnail, Fehlerpfad, Mehrfach-Delete
 │   ├── MakeSearchableUseCaseTest.kt        # Idempotenz, DB-Updates, fehlende Dateien, Progress
+│   ├── ImportFileUseCaseTest.kt            # Dateiimport, Invalid-PDF-Cleanup, verschlüsselte PDFs ohne Thumbnail
 │   ├── AutoTagUseCaseTest.kt               # 7 Tests: leer, dt. Invoice, engl. Contract, IBAN, Multi-Tag, irrelevant, sortiert
 │   ├── FakeScanDao (in DeleteScansUseCaseTest)          # In-Memory ScanDao-Implementierung
 │   └── FakeSearchablePdfBuilder (in MakeSearchableUseCaseTest)  # Überschreibt makeSearchable → gibt String zurück
@@ -214,6 +220,7 @@ test/
 │   ├── split/SplitViewModelTest.kt         # editLoading-Guard, Success/Failure, clearError (5 Tests)
 │   ├── reorder/ReorderViewModelTest.kt     # editLoading-Guard, Success/Failure, clearError (4 Tests)
 │   ├── documentaction/DocumentEditViewModelTest.kt  # DocumentEdit-Aktionen: Loading-Guard + Success/Failure-Mapping
+│   ├── home/HomeImportFilenameSuggestionTest.kt     # DISPLAY_NAME → Dateinamensvorschlag ohne .pdf
 │   └── highlight/HighlightScreenMathTest.kt         # clampPanOffset + inverse Zoom/Pan-Mathematik + Snap-/Rect-Hilfsfunktionen
 └── util/
     └── PdfEditorTest.kt                    # buildRanges + resolveUniqueFilename + mapDisplayToPdfCoord + mergeTextBoxesToLines

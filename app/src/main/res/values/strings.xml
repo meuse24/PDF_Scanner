@@ -17,6 +17,8 @@
     <string name="cd_share">Share</string>
     <string name="cd_delete">Delete</string>
     <string name="cd_pdf_document">PDF document</string>
+    <string name="action_open_document">Open PDF</string>
+    <string name="action_select_documents">Select documents</string>
 
     <!-- Home: empty state & stats -->
     <string name="home_empty_title">No scans available</string>
@@ -26,8 +28,16 @@
 
     <!-- Home: save dialog -->
     <string name="dialog_save_title">Save document</string>
+    <string name="add_document_sheet_title">Add document</string>
+    <string name="add_document_scan_title">Scan document</string>
+    <string name="add_document_scan_subtitle">Capture pages with the document scanner</string>
+    <string name="add_document_import_title">Import PDF</string>
+    <string name="add_document_import_subtitle">Choose an existing PDF from your device</string>
     <string name="scan_filename_default">Scan_%1$s</string>
+    <string name="import_filename_default">Imported_%1$s</string>
     <string name="dialog_filename_label">File name</string>
+    <string name="dialog_scan_page_count">%1$d pages scanned</string>
+    <string name="dialog_import_selected_file">Selected file: %1$s</string>
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_ok">OK</string>
@@ -48,6 +58,7 @@
     <string name="error_scanner_unavailable">Scanner not available</string>
     <string name="error_source_unavailable">Could not open PDF source</string>
     <string name="error_pdf_empty">Saved PDF is empty</string>
+    <string name="error_pdf_invalid">The selected file is not a valid PDF</string>
     <string name="error_delete_failed">File could not be deleted</string>
     <string name="error_save_failed">Error saving file</string>
     <string name="action_export">Export</string>
@@ -68,6 +79,7 @@
     <!-- Help screen -->
     <string name="help_screen_title">Instructions</string>
     <string name="help_section_contents">Contents</string>
+    <string name="help_section_add_documents">Add documents</string>
     <string name="help_group_drawer_menu">Hamburger menu</string>
     <string name="help_group_selection_menu">Selection toolbar</string>
     <string name="help_section_scan">Scan a document</string>
@@ -77,6 +89,8 @@
     <string name="help_section_archive">Manage Archive</string>
     <string name="help_item_open">Tap an entry in the list to open the PDF in an external viewer.</string>
     <string name="help_item_select">Tap the checkbox to select one or more entries. The title bar shows the count and lets you select all.</string>
+    <string name="help_item_add_document_scan">Tap + and choose Scan document to capture new pages with the system scanner. After saving, the PDF appears in your archive like any other document.</string>
+    <string name="help_item_add_document_import">Tap + and choose Import PDF to open the system file picker. Select an existing PDF from your device; after saving, it is copied into the archive.</string>
     <string name="help_item_share_export">Use Share to send PDFs to other apps. Use Export to copy them to Downloads.</string>
     <string name="help_section_pdf_edit">Edit PDFs</string>
     <string name="help_section_pdf_pages">Pages and structure</string>

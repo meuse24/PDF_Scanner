@@ -9,9 +9,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FileUtil @Inject constructor(@ApplicationContext private val context: Context) {
+open class FileUtil @Inject constructor(@ApplicationContext private val context: Context) {
 
-    fun savePdfFromUri(sourceUri: Uri, filename: String): File {
+    open fun savePdfFromUri(sourceUri: Uri, filename: String): File {
         val scansDir = File(context.filesDir, "scans").apply { mkdirs() }
 
         // Make filename unique: append _2, _3, … if the target already exists (#1)
@@ -43,7 +43,7 @@ class FileUtil @Inject constructor(@ApplicationContext private val context: Cont
         return destFile
     }
 
-    fun saveThumbnailFromUri(sourceUri: Uri, filename: String): File? {
+    open fun saveThumbnailFromUri(sourceUri: Uri, filename: String): File? {
         return try {
             val scansDir = File(context.filesDir, "scans").apply { mkdirs() }
             val destFile = File(scansDir, "$filename.jpg")

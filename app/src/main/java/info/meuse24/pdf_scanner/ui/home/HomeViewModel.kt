@@ -20,6 +20,7 @@ import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,6 +40,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository:          ScanRepository,
     private val importScanUseCase:   ImportScanUseCase,
+    private val importFileUseCase:   ImportFileUseCase,
     private val exportScanUseCase:   ExportScanUseCase,
     private val exportAsJpgUseCase:  ExportAsJpgUseCase,
     private val deleteScansUseCase:  DeleteScansUseCase,
@@ -113,6 +115,20 @@ class HomeViewModel @Inject constructor(
             } finally {
                 _ocrLoading.value  = false
                 _ocrProgress.value = null
+            }
+        }
+    }
+
+    fun importFile(pdfUri: Uri, filename: String) {
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                importFileUseCase(pdfUri, filename)
+            } catch (e: Exception) {
+                _error.value = e.message ?: context.getString(R.string.error_save_failed)
+            } finally {
+                _editLoading.value = false
             }
         }
     }

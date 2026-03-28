@@ -440,11 +440,11 @@ open class PdfEditor @Inject constructor() {
         return writePdf("UpdateMetadata", input) { target ->
             PDDocument.load(input, "").use { document ->
                 val info = document.documentInformation
-                info.title = metadata.title.orEmpty()
-                info.author = metadata.author.orEmpty()
-                info.creator = metadata.creator.orEmpty()
-                info.subject = metadata.subject.orEmpty()
-                info.keywords = metadata.keywords.orEmpty()
+                info.title = metadata.title
+                info.author = metadata.author
+                info.creator = metadata.creator
+                info.subject = metadata.subject
+                info.keywords = metadata.keywords
                 info.creationDate = metadata.creationDate?.let { it.clone() as Calendar }
                 info.modificationDate = Calendar.getInstance()
                 document.save(target)

@@ -357,6 +357,10 @@
     <string name="search_placeholder">Buscar documentos…</string>
     <string name="search_no_results">Sin resultados para \"%1$s\"</string>
     <string name="cd_search_clear">Borrar búsqueda</string>
+    <string name="sort_by_date">Fecha</string>
+    <string name="sort_by_name">Nombre</string>
+    <string name="sort_by_size">Tamaño</string>
+    <string name="cd_sort_documents">Ordenar documentos, actual: %1$s</string>
     <string name="tag_invoice">Factura</string>
     <string name="tag_contract">Contrato</string>
     <string name="tag_insurance">Seguro</string>
@@ -439,6 +443,11 @@
     <string name="metadata_creation_date">Creado</string>
     <string name="metadata_mod_date">Modificado</string>
     <string name="metadata_empty">—</string>
-    <string name="help_item_pdf_metadata">Toca Info del PDF para ver los metadatos integrados de un documento: título, autor, aplicación creadora, asunto, palabras clave y fechas de creación y modificación. Estos campos provienen de la aplicación de origen que creó el PDF.</string>
+    <string name="metadata_description">Editar los metadatos de este PDF</string>
+    <string name="metadata_details">Cambia título, autor, creador, asunto y palabras clave. El PDF se actualiza en el mismo archivo. La fecha de creación se conserva; la fecha de modificación se actualiza al guardar.</string>
+    <string name="metadata_apply">Guardar metadatos</string>
+    <string name="metadata_error">Error al guardar los metadatos del PDF</string>
+    <string name="help_item_pdf_metadata">Toca Info del PDF para ver y editar los metadatos integrados de un documento: título, autor, aplicación creadora, asunto, palabras clave y fechas de creación y modificación. Los campos editables se vuelven a guardar en el mismo archivo PDF.</string>
 </resources>
+
 

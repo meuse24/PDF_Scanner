@@ -357,6 +357,10 @@
     <string name="search_placeholder">Dokumente durchsuchen…</string>
     <string name="search_no_results">Keine Ergebnisse für „%1$s"</string>
     <string name="cd_search_clear">Suche löschen</string>
+    <string name="sort_by_date">Datum</string>
+    <string name="sort_by_name">Name</string>
+    <string name="sort_by_size">Größe</string>
+    <string name="cd_sort_documents">Dokumente sortieren, aktuell: %1$s</string>
     <string name="tag_invoice">Rechnung</string>
     <string name="tag_contract">Vertrag</string>
     <string name="tag_insurance">Versicherung</string>
@@ -433,7 +437,11 @@
     <string name="metadata_creation_date">Erstellt</string>
     <string name="metadata_mod_date">Geändert</string>
     <string name="metadata_empty">—</string>
-    <string name="help_item_pdf_metadata">Tippe auf PDF-Info, um die eingebetteten Metadaten eines Dokuments anzuzeigen — Titel, Autor, Ersteller-App, Betreff, Schlüsselwörter sowie Erstellungs- und Änderungsdatum. Diese Felder stammen aus der Ursprungsanwendung, die das PDF erstellt hat.</string>
+    <string name="metadata_description">Metadaten dieses PDFs bearbeiten</string>
+    <string name="metadata_details">Ändere Titel, Autor, Ersteller, Betreff und Schlüsselwörter. Das PDF wird direkt aktualisiert. Das Erstellungsdatum bleibt erhalten; das Änderungsdatum wird beim Speichern aktualisiert.</string>
+    <string name="metadata_apply">Metadaten speichern</string>
+    <string name="metadata_error">Fehler beim Speichern der PDF-Metadaten</string>
+    <string name="help_item_pdf_metadata">Tippe auf PDF-Info, um die eingebetteten Metadaten eines Dokuments anzuzeigen und zu bearbeiten — Titel, Autor, Ersteller-App, Betreff, Schlüsselwörter sowie Erstellungs- und Änderungsdatum. Bearbeitbare Felder werden direkt in dieselbe PDF-Datei zurückgeschrieben.</string>
 
     <!-- Rename -->
     <string name="action_rename">PDF umbenennen</string>
@@ -445,4 +453,5 @@
     <string name="rename_error_failed">Umbenennen fehlgeschlagen</string>
     <string name="help_item_rename">Wähle PDF umbenennen, um einem Dokument einen neuen Namen zu geben. Der Dateiname muss in der Ablage eindeutig sein. Die Endung .pdf wird automatisch ergänzt.</string>
 </resources>
+
 

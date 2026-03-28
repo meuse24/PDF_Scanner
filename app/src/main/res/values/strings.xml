@@ -380,6 +380,10 @@
     <string name="search_placeholder">Search documents…</string>
     <string name="search_no_results">No results for \"%1$s\"</string>
     <string name="cd_search_clear">Clear search</string>
+    <string name="sort_by_date">Date</string>
+    <string name="sort_by_name">Name</string>
+    <string name="sort_by_size">Size</string>
+    <string name="cd_sort_documents">Sort documents, current: %1$s</string>
     <!-- Auto-Tags -->
     <string name="tag_invoice">Invoice</string>
     <string name="tag_contract">Contract</string>
@@ -459,7 +463,11 @@
     <string name="metadata_creation_date">Created</string>
     <string name="metadata_mod_date">Modified</string>
     <string name="metadata_empty">—</string>
-    <string name="help_item_pdf_metadata">Tap PDF Info to view the embedded metadata of a document — title, author, creator application, subject, keywords, and creation and modification dates. These fields originate from the source application that created the PDF.</string>
+    <string name="metadata_description">Edit this PDF\'s metadata</string>
+    <string name="metadata_details">Change title, author, creator, subject, and keywords. The PDF is updated in place. The creation date stays unchanged; the modification date is refreshed when you save.</string>
+    <string name="metadata_apply">Save metadata</string>
+    <string name="metadata_error">Error saving PDF metadata</string>
+    <string name="help_item_pdf_metadata">Tap PDF Info to view and edit a document\'s embedded metadata — title, author, creator application, subject, keywords, and the creation and modification dates. Editable fields are written back into the same PDF file.</string>
 
     <!-- Rename -->
     <string name="action_rename">Rename PDF</string>
@@ -471,4 +479,5 @@
     <string name="rename_error_failed">Renaming failed</string>
     <string name="help_item_rename">Choose Rename PDF to give a document a new name. The file name must be unique in the archive. The .pdf extension is added automatically.</string>
 </resources>
+
 

@@ -32,7 +32,9 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -118,6 +120,7 @@ fun HomeScreen(
     val scans          by viewModel.scans.collectAsState()
     val filteredScans  by viewModel.filteredScans.collectAsState()
     val searchQuery    by viewModel.searchQuery.collectAsState()
+    val sortOrder      by viewModel.sortOrder.collectAsState()
     val error          by viewModel.error.collectAsState()
     val success      by viewModel.success.collectAsState()
     val ocrText      by viewModel.ocrText.collectAsState()
@@ -146,6 +149,7 @@ fun HomeScreen(
         Locale.getDefault().language.let { if (it in unsupportedLangs) "en" else it }
     ) }
     var langMenuExpanded   by remember { mutableStateOf(false) }
+    var sortMenuExpanded   by remember { mutableStateOf(false) }
 
     // ── Auswahlmodus ──────────────────────────────────────────────────────────
     var selectedIds           by remember { mutableStateOf(emptySet<Long>()) }
@@ -246,26 +250,59 @@ fun HomeScreen(
                 )
             } else {
                 // ── Suchfeld ─────────────────────────────────────────────────
-                OutlinedTextField(
-                    value         = searchQuery,
-                    onValueChange = viewModel::updateSearchQuery,
-                    placeholder   = { Text(stringResource(R.string.search_placeholder)) },
-                    leadingIcon   = { Icon(Icons.Default.Search, contentDescription = null) },
-                    trailingIcon  = if (searchQuery.isNotEmpty()) {
-                        {
-                            IconButton(onClick = { viewModel.updateSearchQuery("") }) {
-                                Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = stringResource(R.string.cd_search_clear)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value         = searchQuery,
+                        onValueChange = viewModel::updateSearchQuery,
+                        placeholder   = { Text(stringResource(R.string.search_placeholder)) },
+                        leadingIcon   = { Icon(Icons.Default.Search, contentDescription = null) },
+                        trailingIcon  = if (searchQuery.isNotEmpty()) {
+                            {
+                                IconButton(onClick = { viewModel.updateSearchQuery("") }) {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = stringResource(R.string.cd_search_clear)
+                                    )
+                                }
+                            }
+                        } else null,
+                        singleLine    = true,
+                        modifier      = Modifier.weight(1f)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Box {
+                        IconButton(
+                            onClick = { sortMenuExpanded = true }
+                        ) {
+                            Icon(
+                                Icons.Default.Sort,
+                                contentDescription = stringResource(
+                                    R.string.cd_sort_documents,
+                                    stringResource(sortOrderLabel(sortOrder))
+                                )
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = sortMenuExpanded,
+                            onDismissRequest = { sortMenuExpanded = false }
+                        ) {
+                            SortOrder.values().forEach { option ->
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(sortOrderLabel(option))) },
+                                    onClick = {
+                                        viewModel.setSortOrder(option)
+                                        sortMenuExpanded = false
+                                    }
                                 )
                             }
                         }
-                    } else null,
-                    singleLine    = true,
-                    modifier      = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                    }
+                }
             }
 
             if (scans.isEmpty()) {
@@ -802,4 +839,10 @@ private fun buildOcrLanguageOptions(displayLocale: Locale): List<Pair<String, St
             }
         code to name
     }
+}
+
+private fun sortOrderLabel(sortOrder: SortOrder): Int = when (sortOrder) {
+    SortOrder.ByDate -> R.string.sort_by_date
+    SortOrder.ByName -> R.string.sort_by_name
+    SortOrder.BySize -> R.string.sort_by_size
 }

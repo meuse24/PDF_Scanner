@@ -515,59 +515,151 @@ fun PdfMetadataScreen(
 ) {
     val record by viewModel.record.collectAsState()
     val metadata by viewModel.metadata.collectAsState()
+    val editLoading by viewModel.editLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val success by viewModel.success.collectAsState()
+    var title by rememberSaveable(record?.id) { mutableStateOf("") }
+    var author by rememberSaveable(record?.id) { mutableStateOf("") }
+    var creator by rememberSaveable(record?.id) { mutableStateOf("") }
+    var subject by rememberSaveable(record?.id) { mutableStateOf("") }
+    var keywords by rememberSaveable(record?.id) { mutableStateOf("") }
+    var fieldsInitialized by rememberSaveable(record?.id) { mutableStateOf(false) }
 
-    LaunchedEffect(record) {
+    LaunchedEffect(record?.id) {
         if (record != null) viewModel.loadMetadata()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-    ) {
-        record?.let { rec ->
-            Text(
-                text = rec.filename,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(Modifier.height(16.dp))
-        }
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-            )
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                val m = metadata
-                if (m == null) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().height(80.dp),
-                        contentAlignment = Alignment.Center
-                    ) { CircularProgressIndicator() }
-                } else {
-                    MetadataRow(stringResource(R.string.metadata_title),    m.title)
-                    MetadataRow(stringResource(R.string.metadata_author),   m.author)
-                    MetadataRow(stringResource(R.string.metadata_creator),  m.creator)
-                    MetadataRow(stringResource(R.string.metadata_subject),  m.subject)
-                    MetadataRow(stringResource(R.string.metadata_keywords), m.keywords)
-                    val dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
-                    MetadataRow(
-                        stringResource(R.string.metadata_creation_date),
-                        m.creationDate?.let { dateFmt.format(Date(it.timeInMillis)) }
-                    )
-                    MetadataRow(
-                        stringResource(R.string.metadata_mod_date),
-                        m.modificationDate?.let { dateFmt.format(Date(it.timeInMillis)) },
-                        divider = false
-                    )
-                }
-            }
+    LaunchedEffect(metadata, record?.id) {
+        val currentMetadata = metadata ?: return@LaunchedEffect
+        if (!fieldsInitialized) {
+            title = currentMetadata.title.orEmpty()
+            author = currentMetadata.author.orEmpty()
+            creator = currentMetadata.creator.orEmpty()
+            subject = currentMetadata.subject.orEmpty()
+            keywords = currentMetadata.keywords.orEmpty()
+            fieldsInitialized = true
         }
     }
+
+    LaunchedEffect(success) {
+        if (success) onNavigateBack()
+    }
+
+    val isProtected = record?.isEncrypted == true
+    val dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+
+    ActionScreenContent(
+        record = record,
+        title = stringResource(R.string.metadata_description),
+        body = stringResource(
+            if (isProtected) R.string.protected_pdf_unsupported
+            else R.string.metadata_details
+        ),
+        form = {
+            val currentMetadata = metadata
+            if (currentMetadata == null) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().height(80.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                MetadataInputField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = stringResource(R.string.metadata_title)
+                )
+                Spacer(Modifier.height(12.dp))
+                MetadataInputField(
+                    value = author,
+                    onValueChange = { author = it },
+                    label = stringResource(R.string.metadata_author)
+                )
+                Spacer(Modifier.height(12.dp))
+                MetadataInputField(
+                    value = creator,
+                    onValueChange = { creator = it },
+                    label = stringResource(R.string.metadata_creator)
+                )
+                Spacer(Modifier.height(12.dp))
+                MetadataInputField(
+                    value = subject,
+                    onValueChange = { subject = it },
+                    label = stringResource(R.string.metadata_subject)
+                )
+                Spacer(Modifier.height(12.dp))
+                MetadataInputField(
+                    value = keywords,
+                    onValueChange = { keywords = it },
+                    label = stringResource(R.string.metadata_keywords)
+                )
+                Spacer(Modifier.height(16.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        MetadataRow(
+                            stringResource(R.string.metadata_creation_date),
+                            currentMetadata.creationDate?.let { dateFmt.format(Date(it.timeInMillis)) }
+                        )
+                        MetadataRow(
+                            stringResource(R.string.metadata_mod_date),
+                            currentMetadata.modificationDate?.let { dateFmt.format(Date(it.timeInMillis)) },
+                            divider = false
+                        )
+                    }
+                }
+            }
+        },
+        confirmLabel = stringResource(R.string.metadata_apply),
+        confirmEnabled = record != null && metadata != null && !editLoading && !isProtected,
+        onConfirm = { viewModel.saveMetadata(title, author, creator, subject, keywords) }
+    )
+
+    if (editLoading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = null,
+            text = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title = { Text(stringResource(R.string.error_title)) },
+            text = { Text(msg) },
+            confirmButton = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun MetadataInputField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
@@ -626,3 +718,4 @@ private fun CompressionPresetSelector(
         }
     }
 }
+

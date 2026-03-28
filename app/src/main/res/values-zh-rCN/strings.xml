@@ -357,6 +357,10 @@
     <string name="search_placeholder">搜索文档…</string>
     <string name="search_no_results">"%1$s"无结果</string>
     <string name="cd_search_clear">清除搜索</string>
+    <string name="sort_by_date">日期</string>
+    <string name="sort_by_name">名称</string>
+    <string name="sort_by_size">大小</string>
+    <string name="cd_sort_documents">对文档排序，当前：%1$s</string>
     <string name="tag_invoice">发票</string>
     <string name="tag_contract">合同</string>
     <string name="tag_insurance">保险</string>
@@ -439,6 +443,11 @@
     <string name="metadata_creation_date">创建时间</string>
     <string name="metadata_mod_date">修改时间</string>
     <string name="metadata_empty">—</string>
-    <string name="help_item_pdf_metadata">点击"PDF 信息"可查看文档的嵌入元数据——标题、作者、创建应用、主题、关键词以及创建和修改日期。这些字段来自创建该 PDF 的源应用程序。</string>
+    <string name="metadata_description">编辑此 PDF 的元数据</string>
+    <string name="metadata_details">可修改标题、作者、创建者、主题和关键词。PDF 会在原文件中直接更新。创建时间保持不变，保存时会刷新修改时间。</string>
+    <string name="metadata_apply">保存元数据</string>
+    <string name="metadata_error">保存 PDF 元数据时出错</string>
+    <string name="help_item_pdf_metadata">点击"PDF 信息"可查看并编辑文档的嵌入元数据——标题、作者、创建应用、主题、关键词以及创建和修改日期。可编辑字段会写回同一个 PDF 文件。</string>
 </resources>
+
 

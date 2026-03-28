@@ -357,6 +357,10 @@
     <string name="search_placeholder">ドキュメントを検索…</string>
     <string name="search_no_results">\"%1$s\" の検索結果なし</string>
     <string name="cd_search_clear">検索をクリア</string>
+    <string name="sort_by_date">日付</string>
+    <string name="sort_by_name">名前</string>
+    <string name="sort_by_size">サイズ</string>
+    <string name="cd_sort_documents">書類を並べ替え、現在: %1$s</string>
     <string name="tag_invoice">請求書</string>
     <string name="tag_contract">契約書</string>
     <string name="tag_insurance">保険</string>
@@ -439,6 +443,11 @@
     <string name="metadata_creation_date">作成日</string>
     <string name="metadata_mod_date">更新日</string>
     <string name="metadata_empty">—</string>
-    <string name="help_item_pdf_metadata">「PDF 情報」をタップすると、ドキュメントに埋め込まれたメタデータ（タイトル、著者、作成アプリ、件名、キーワード、作成日、更新日）を確認できます。これらのフィールドは PDF を作成したアプリケーションに由来します。</string>
+    <string name="metadata_description">この PDF のメタデータを編集</string>
+    <string name="metadata_details">タイトル、著者、作成アプリ、件名、キーワードを変更できます。PDF は同じファイル内で更新されます。作成日は保持され、保存時に更新日が新しくなります。</string>
+    <string name="metadata_apply">メタデータを保存</string>
+    <string name="metadata_error">PDF メタデータの保存エラー</string>
+    <string name="help_item_pdf_metadata">「PDF 情報」をタップすると、ドキュメントに埋め込まれたメタデータ（タイトル、著者、作成アプリ、件名、キーワード、作成日、更新日）を確認して編集できます。編集可能な項目は同じ PDF ファイルに書き戻されます。</string>
 </resources>
+
 

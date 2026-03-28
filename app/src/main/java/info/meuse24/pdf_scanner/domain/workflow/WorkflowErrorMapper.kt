@@ -53,5 +53,6 @@ class WorkflowErrorMapper @Inject constructor(
         ScanWorkflowError.NoAnnotations -> context.getString(R.string.annotate_no_items)
         is ScanWorkflowError.AnnotateFailed -> context.getString(R.string.annotate_error)
         is ScanWorkflowError.GrayscaleFailed -> context.getString(R.string.grayscale_error)
+        is ScanWorkflowError.PdfMetadataFailed -> context.getString(R.string.metadata_error)
     }
 }

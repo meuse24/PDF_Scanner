@@ -26,6 +26,7 @@ import info.meuse24.pdf_scanner.domain.workflow.RestrictUsageWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.SignatureStampWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.TextWatermarkWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.UpdatePdfMetadataWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.util.PdfEditor
@@ -54,6 +55,7 @@ class DocumentEditViewModel @Inject constructor(
     private val highlightPdfWorkflow: HighlightPdfWorkflow,
     private val annotatePdfWorkflow: AnnotatePdfWorkflow,
     private val convertToGrayscaleWorkflow: ConvertToGrayscaleWorkflow,
+    private val updatePdfMetadataWorkflow: UpdatePdfMetadataWorkflow,
     private val pdfEditor: PdfEditor,
     private val errorMapper: WorkflowErrorMapper,
     @ApplicationContext private val context: Context,
@@ -319,12 +321,45 @@ class DocumentEditViewModel @Inject constructor(
         }
     }
 
+    fun saveMetadata(
+        title: String,
+        author: String,
+        creator: String,
+        subject: String,
+        keywords: String
+    ) {
+        val record = _record.value ?: return
+        val currentMetadata = _metadata.value ?: return
+        if (_editLoading.value) return
+        _editLoading.value = true
+        val updatedMetadata = currentMetadata.copy(
+            title = normalizeMetadataField(title),
+            author = normalizeMetadataField(author),
+            creator = normalizeMetadataField(creator),
+            subject = normalizeMetadataField(subject),
+            keywords = normalizeMetadataField(keywords)
+        )
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                when (val result = updatePdfMetadataWorkflow(record, updatedMetadata)) {
+                    is WorkflowResult.Success -> _success.value = true
+                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
     fun loadMetadata() {
         val record = _record.value ?: return
+        _metadata.value = null
         viewModelScope.launch(Dispatchers.IO) {
             _metadata.value = pdfEditor.readMetadata(File(record.filepath))
         }
     }
 
     fun clearError() { _error.value = null }
+
+    private fun normalizeMetadataField(value: String): String? = value.trim().takeIf { it.isNotEmpty() }
 }

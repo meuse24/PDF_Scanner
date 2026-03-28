@@ -432,6 +432,27 @@ open class PdfEditor @Inject constructor() {
     }
 
     /**
+     * Aktualisiert eingebettete PDF-Metadaten in-place.
+     * Das Original wird über eine temporäre Datei atomar ersetzt.
+     * Das Änderungsdatum wird auf jetzt gesetzt, das Erstellungsdatum beibehalten.
+     */
+    open fun updateMetadata(input: File, metadata: PdfMetadata): File {
+        return writePdf("UpdateMetadata", input) { target ->
+            PDDocument.load(input, "").use { document ->
+                val info = document.documentInformation
+                info.title = metadata.title.orEmpty()
+                info.author = metadata.author.orEmpty()
+                info.creator = metadata.creator.orEmpty()
+                info.subject = metadata.subject.orEmpty()
+                info.keywords = metadata.keywords.orEmpty()
+                info.creationDate = metadata.creationDate?.let { it.clone() as Calendar }
+                info.modificationDate = Calendar.getInstance()
+                document.save(target)
+            }
+        }
+    }
+
+    /**
      * Entfernt den Passwortschutz ohne Passworteingabe.
      * Funktioniert bei PDFs mit leerem Benutzerpasswort (z.B. nur Eigentümerpasswort / Nutzungseinschränkungen).
      * Wirft [PasswordRequiredException] wenn ein echtes Benutzerpasswort gesetzt ist.
@@ -1269,3 +1290,5 @@ internal fun resolveUniqueFilename(dir: File, name: String): String {
     while (File(dir, "${name}_$counter.pdf").exists()) counter++
     return "${name}_$counter"
 }
+
+

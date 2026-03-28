@@ -6,8 +6,9 @@ import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.AddPageNumbersUseCase
-import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.ConvertToGrayscaleWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.HighlightPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
@@ -17,6 +18,7 @@ import info.meuse24.pdf_scanner.domain.workflow.RestrictUsageWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.SignatureStampWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.TextWatermarkWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.UpdatePdfMetadataWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.util.PdfEditor
 import kotlinx.coroutines.Dispatchers
@@ -61,8 +63,6 @@ class DocumentEditViewModelTest {
         Dispatchers.resetMain()
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────────
-
     private fun pdfFile(name: String = "scan_1.pdf"): File =
         tmpFolder.newFile(name).apply { writeText("pdf") }
 
@@ -75,7 +75,6 @@ class DocumentEditViewModelTest {
         fileSize = file.length()
     )
 
-    /** A WorkflowErrorMapper that always returns a fixed string without needing a real Context. */
     private fun stubMapper(msg: String = "err"): WorkflowErrorMapper {
         val ctx = mock(Context::class.java)
         `when`(ctx.getString(anyInt())).thenReturn(msg)
@@ -92,17 +91,18 @@ class DocumentEditViewModelTest {
         val addPageNumbersUseCase = AddPageNumbersUseCase(pdfEditor, repository)
         val pageNumbersWorkflow = PageNumbersWorkflow(addPageNumbersUseCase)
 
-        // The other workflows are never invoked in these tests — mock them.
-        val textWatermarkWorkflow    = mock(TextWatermarkWorkflow::class.java)
-        val compressPdfWorkflow      = mock(CompressPdfWorkflow::class.java)
-        val protectPdfWorkflow       = mock(ProtectPdfWorkflow::class.java)
-        val unlockPdfWorkflow        = mock(UnlockPdfWorkflow::class.java)
-        val signatureStampWorkflow   = mock(SignatureStampWorkflow::class.java)
-        val removeTextLayerWorkflow  = mock(RemoveTextLayerWorkflow::class.java)
-        val removePasswordWorkflow   = mock(RemovePasswordWorkflow::class.java)
-        val restrictUsageWorkflow    = mock(RestrictUsageWorkflow::class.java)
-        val highlightPdfWorkflow     = mock(HighlightPdfWorkflow::class.java)
-        val annotatePdfWorkflow      = mock(AnnotatePdfWorkflow::class.java)
+        val textWatermarkWorkflow = mock(TextWatermarkWorkflow::class.java)
+        val compressPdfWorkflow = mock(CompressPdfWorkflow::class.java)
+        val protectPdfWorkflow = mock(ProtectPdfWorkflow::class.java)
+        val unlockPdfWorkflow = mock(UnlockPdfWorkflow::class.java)
+        val signatureStampWorkflow = mock(SignatureStampWorkflow::class.java)
+        val removeTextLayerWorkflow = mock(RemoveTextLayerWorkflow::class.java)
+        val removePasswordWorkflow = mock(RemovePasswordWorkflow::class.java)
+        val restrictUsageWorkflow = mock(RestrictUsageWorkflow::class.java)
+        val highlightPdfWorkflow = mock(HighlightPdfWorkflow::class.java)
+        val annotatePdfWorkflow = mock(AnnotatePdfWorkflow::class.java)
+        val convertToGrayscaleWorkflow = mock(ConvertToGrayscaleWorkflow::class.java)
+        val updatePdfMetadataWorkflow = mock(UpdatePdfMetadataWorkflow::class.java)
 
         val context = mock(Context::class.java)
         `when`(context.filesDir).thenReturn(tmpFolder.root)
@@ -121,14 +121,14 @@ class DocumentEditViewModelTest {
             restrictUsageWorkflow = restrictUsageWorkflow,
             highlightPdfWorkflow = highlightPdfWorkflow,
             annotatePdfWorkflow = annotatePdfWorkflow,
+            convertToGrayscaleWorkflow = convertToGrayscaleWorkflow,
+            updatePdfMetadataWorkflow = updatePdfMetadataWorkflow,
             pdfEditor = pdfEditor,
             errorMapper = errorMapper,
             context = context,
             savedStateHandle = savedState
         )
     }
-
-    // ── Tests ─────────────────────────────────────────────────────────────────
 
     @Test
     fun `addPageNumbers success setzt success und beendet editLoading`() = runTest(testDispatcher) {
@@ -185,8 +185,6 @@ class DocumentEditViewModelTest {
     }
 }
 
-// ── Fake DAO ──────────────────────────────────────────────────────────────────
-
 private class TestScanDao(
     private val initialRecords: List<ScanRecord> = emptyList()
 ) : ScanDao {
@@ -203,18 +201,11 @@ private class TestScanDao(
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
 }
 
-// ── Fake PdfEditors ───────────────────────────────────────────────────────────
-
-/** Does nothing — only used to keep editLoading == true while the coroutine is "running". */
 private class NoOpPageNumbersPdfEditor : PdfEditor() {
     override fun addPageNumbers(input: File, outputDir: File): File = input
     override fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int) = null
 }
 
-/**
- * addPageNumbers writes a new file and returns it;
- * generateThumbnail writes text; renderPageThumbnail returns null.
- */
 private class SuccessPageNumbersPdfEditor(private val outputDir: File) : PdfEditor() {
     override fun addPageNumbers(input: File, outputDir: File): File =
         File(outputDir, "${input.nameWithoutExtension}_numbered.pdf")
@@ -228,7 +219,6 @@ private class SuccessPageNumbersPdfEditor(private val outputDir: File) : PdfEdit
     override fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int) = null
 }
 
-/** addPageNumbers throws IOException to simulate a disk-full error. */
 private class FailPageNumbersPdfEditor : PdfEditor() {
     override fun addPageNumbers(input: File, outputDir: File): File =
         throw IOException("disk full")

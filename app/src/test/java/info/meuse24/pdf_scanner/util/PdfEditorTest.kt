@@ -1,12 +1,15 @@
 package info.meuse24.pdf_scanner.util
 
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.pdmodel.PDPage
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
-
+import java.util.Calendar
 /**
  * Unit-Tests für die JVM-testbaren Hilfsfunktionen buildRanges und
  * resolveUniqueFilename. Diese Funktionen sind top-level internal und
@@ -237,4 +240,42 @@ class PdfEditorTest {
         assertEquals(x0, xUnk, 0.001f)
         assertEquals(y0, yUnk, 0.001f)
     }
+    @Test
+    fun `updateMetadata schreibt bearbeitbare Metadaten in dieselbe Datei`() {
+        val pdfFile = tmpFolder.newFile("metadata.pdf")
+        PDDocument().use { document ->
+            document.addPage(PDPage())
+            document.save(pdfFile)
+        }
+
+        val creationDate = Calendar.getInstance().apply {
+            set(2024, Calendar.JANUARY, 2, 3, 4, 5)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        val editor = PdfEditor()
+        editor.updateMetadata(
+            pdfFile,
+            PdfMetadata(
+                title = "Invoice",
+                author = "Alice",
+                creator = "PDF Scanner",
+                subject = "Taxes",
+                keywords = "invoice,2024",
+                creationDate = creationDate,
+                modificationDate = null
+            )
+        )
+
+        val metadata = editor.readMetadata(pdfFile)
+        assertEquals("Invoice", metadata.title)
+        assertEquals("Alice", metadata.author)
+        assertEquals("PDF Scanner", metadata.creator)
+        assertEquals("Taxes", metadata.subject)
+        assertEquals("invoice,2024", metadata.keywords)
+        assertEquals(creationDate.timeInMillis, metadata.creationDate?.timeInMillis)
+        assertNotNull(metadata.modificationDate)
+    }
 }
+
+

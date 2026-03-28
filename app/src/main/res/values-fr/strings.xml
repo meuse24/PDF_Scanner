@@ -357,6 +357,10 @@
     <string name="search_placeholder">Rechercher des documents…</string>
     <string name="search_no_results">Aucun résultat pour « %1$s »</string>
     <string name="cd_search_clear">Effacer la recherche</string>
+    <string name="sort_by_date">Date</string>
+    <string name="sort_by_name">Nom</string>
+    <string name="sort_by_size">Taille</string>
+    <string name="cd_sort_documents">Trier les documents, actuel : %1$s</string>
     <string name="tag_invoice">Facture</string>
     <string name="tag_contract">Contrat</string>
     <string name="tag_insurance">Assurance</string>
@@ -439,5 +443,10 @@
     <string name="metadata_creation_date">Créé</string>
     <string name="metadata_mod_date">Modifié</string>
     <string name="metadata_empty">—</string>
-    <string name="help_item_pdf_metadata">Touchez Infos PDF pour voir les métadonnées intégrées d\'un document : titre, auteur, application créatrice, sujet, mots-clés et dates de création et de modification. Ces champs proviennent de l\'application source qui a créé le PDF.</string>
+    <string name="metadata_description">Modifier les métadonnées de ce PDF</string>
+    <string name="metadata_details">Modifiez le titre, l’auteur, le créateur, le sujet et les mots-clés. Le PDF est mis à jour sur place. La date de création reste inchangée ; la date de modification est actualisée à l’enregistrement.</string>
+    <string name="metadata_apply">Enregistrer les métadonnées</string>
+    <string name="metadata_error">Erreur lors de l’enregistrement des métadonnées du PDF</string>
+    <string name="help_item_pdf_metadata">Touchez Infos PDF pour voir et modifier les métadonnées intégrées d\'un document : titre, auteur, application créatrice, sujet, mots-clés et dates de création et de modification. Les champs modifiables sont réenregistrés dans le même fichier PDF.</string>
 </resources>
+

@@ -54,13 +54,20 @@ class HomeViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    val filteredScans: StateFlow<List<ScanRecord>> = _searchQuery
+    private val _sortOrder = MutableStateFlow(SortOrder.ByDate)
+    val sortOrder: StateFlow<SortOrder> = _sortOrder.asStateFlow()
+
+    private val searchResults = _searchQuery
         .debounce(300)
         .flatMapLatest { raw ->
             val query = sanitizeFtsQuery(raw)
             if (query.isBlank()) repository.getAllScans()
             else repository.searchScansFlow(query)
         }
+
+    val filteredScans: StateFlow<List<ScanRecord>> = combine(searchResults, _sortOrder) { scans, sortOrder ->
+        sortScans(scans, sortOrder)
+    }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _error = MutableStateFlow<String?>(null)
@@ -254,6 +261,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun updateSearchQuery(query: String) { _searchQuery.value = query }
+    fun setSortOrder(sortOrder: SortOrder) { _sortOrder.value = sortOrder }
 
     fun clearOcrText() { _ocrText.value = null }
     fun reportError(message: String) { _error.value = message }
@@ -316,5 +324,30 @@ class HomeViewModel @Inject constructor(
         ScanWorkflowError.NoAnnotations -> context.getString(R.string.annotate_no_items)
         is ScanWorkflowError.AnnotateFailed -> context.getString(R.string.annotate_error)
         is ScanWorkflowError.GrayscaleFailed -> context.getString(R.string.grayscale_error)
+        is ScanWorkflowError.PdfMetadataFailed -> context.getString(R.string.metadata_error)
     }
 }
+
+internal fun sortScans(scans: List<ScanRecord>, sortOrder: SortOrder): List<ScanRecord> {
+    val byName = compareBy<ScanRecord>(
+        { it.filename.lowercase(Locale.ROOT) },
+        { it.filename },
+        { it.id }
+    )
+
+    return when (sortOrder) {
+        SortOrder.ByDate -> scans.sortedWith(
+            compareByDescending<ScanRecord> { it.timestamp }
+                .then(byName)
+        )
+        SortOrder.ByName -> scans.sortedWith(
+            byName.thenByDescending { it.timestamp }
+        )
+        SortOrder.BySize -> scans.sortedWith(
+            compareByDescending<ScanRecord> { it.fileSize }
+                .then(byName)
+        )
+    }
+}
+
+

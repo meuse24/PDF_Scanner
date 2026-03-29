@@ -1,9 +1,9 @@
 package info.meuse24.pdf_scanner.ui.annotate
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,7 +47,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -67,7 +66,6 @@ import info.meuse24.pdf_scanner.domain.usecase.AnnotationText
 import info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModel
 import info.meuse24.pdf_scanner.ui.highlight.clampPanOffset
 import info.meuse24.pdf_scanner.ui.highlight.formatZoomScale
-import info.meuse24.pdf_scanner.ui.highlight.normalizeViewportPoint
 import info.meuse24.pdf_scanner.ui.highlight.snapStrokeToTextLines
 import kotlin.math.abs
 
@@ -282,87 +280,36 @@ fun AnnotateScreen(
         modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Surface(
-            modifier = Modifier.fillMaxWidth().zIndex(1f),
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
-            tonalElevation = 1.dp
-        ) {
-            if (isZoomTool) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 6.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text(
-                            text = stringResource(R.string.annotate_mode_zoom_title),
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                        Text(
-                            text = stringResource(R.string.annotate_mode_zoom_hint),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    AnnotationToolbarIconButton(
-                        icon = selectedDrawSpec.icon,
-                        contentDescriptionRes = R.string.annotate_mode_edit_back,
-                        onClick = { selectedTool = selectedDrawTool }
-                    )
-                    AnnotationToolbarIconButton(
-                        icon = Icons.Default.Refresh,
-                        contentDescriptionRes = R.string.highlight_zoom_reset_button,
-                        enabled = zoomScale > 1f || abs(zoomOffsetX) > 0.5f || abs(zoomOffsetY) > 0.5f,
-                        onClick = resetZoom
-                    )
+        AnnotateToolbar(
+            isZoomTool = isZoomTool,
+            selectedTool = selectedTool,
+            selectedDrawSpec = selectedDrawSpec,
+            isSearchable = currentRecord.isSearchable,
+            isSnapMode = isSnapMode,
+            selectedColor = selectedColor,
+            selectedWidthFraction = selectedWidthFraction,
+            widthLabelRes = widthLabelRes,
+            zoomResetEnabled = zoomScale > 1f || abs(zoomOffsetX) > 0.5f || abs(zoomOffsetY) > 0.5f,
+            onToolSelected = { selectedTool = it },
+            onOpenZoom = { selectedTool = AnnotateTool.ZOOM },
+            onExitZoom = { selectedTool = selectedDrawTool },
+            onResetZoom = resetZoom,
+            onSnapModeChanged = { isSnapMode = it },
+            onColorSelected = {
+                selectedColor = it
+                selectedAnnotation?.let { selection ->
+                    setElementState(applySelectionColor(selection, it, elementStateSnapshot), selection)
+                    clearPageHistory()
                 }
-            } else {
-                Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                        AnnotationToolDropdown(
-                            selectedTool = selectedTool,
-                            onToolSelected = { selectedTool = it },
-                            modifier = Modifier.weight(1f)
-                        )
-                        AnnotationToolbarIconButton(
-                            icon = Icons.Default.ZoomIn,
-                            contentDescriptionRes = R.string.annotate_tool_zoom,
-                            onClick = { selectedTool = AnnotateTool.ZOOM }
-                        )
-                        if (currentRecord.isSearchable && selectedTool == AnnotateTool.MARK) {
-                            FilterChip(
-                                selected = isSnapMode,
-                                onClick = { isSnapMode = !isSnapMode },
-                                label = { Text(stringResource(R.string.highlight_mode_snap)) },
-                                leadingIcon = { Icon(Icons.Default.TextFields, null, modifier = Modifier.size(16.dp)) }
-                            )
-                        }
-                    }
-                    AnnotationAttributeBar(
-                        selectedColor = selectedColor,
-                        selectedWidthFraction = selectedWidthFraction,
-                        widthLabelRes = widthLabelRes,
-                        onColorSelected = {
-                            selectedColor = it
-                            selectedAnnotation?.let { selection ->
-                                setElementState(applySelectionColor(selection, it, elementStateSnapshot), selection)
-                                clearPageHistory()
-                            }
-                        },
-                        onWidthSelected = {
-                            selectedWidthFraction = it
-                            selectedAnnotation?.let { selection ->
-                                setElementState(applySelectionWidth(selection, it, elementStateSnapshot), selection)
-                                clearPageHistory()
-                            }
-                        }
-                    )
+            },
+            onWidthSelected = {
+                selectedWidthFraction = it
+                selectedAnnotation?.let { selection ->
+                    setElementState(applySelectionWidth(selection, it, elementStateSnapshot), selection)
+                    clearPageHistory()
                 }
             }
-        }
+        )
 
         Box(
             modifier = Modifier.fillMaxWidth().weight(1f).background(MaterialTheme.colorScheme.surfaceContainerLow)
@@ -459,85 +406,57 @@ fun AnnotateScreen(
                     }
                 }
         ) {
-            Box(modifier = Modifier.fillMaxSize().graphicsLayer {
-                scaleX = zoomScale; scaleY = zoomScale; translationX = zoomOffsetX; translationY = zoomOffsetY; clip = true
-            }) {
-                if (bitmap != null) {
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = stringResource(R.string.annotate_page_content_description, selectedPageIndex + 1),
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-                }
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val pdfX = pdfOrigin.x
-                    val pdfY = pdfOrigin.y
-                    val pdfWidth = pdfSize.width.coerceAtLeast(1f)
-                    val pdfHeight = pdfSize.height.coerceAtLeast(1f)
-                    pageRects.forEach { drawAnnotationRectPreview(it, pdfX, pdfY, pdfWidth, pdfHeight) }
-                    pageOvals.forEach { drawAnnotationOvalPreview(it, pdfX, pdfY, pdfWidth, pdfHeight) }
-                    pageStrokes.forEach { drawAnnotationStrokePreview(it, pdfX, pdfY, pdfWidth, pdfHeight) }
-                    pageComments.forEach { drawAnnotationTextPreview(it, pdfX, pdfY, pdfWidth, pdfHeight) }
-                    currentShapeDraft?.takeIf { it.pageIndex == selectedPageIndex }?.toPreviewShape(selectedColor, selectedWidthFraction)?.let {
-                        when (it) {
-                            is AnnotationRect -> drawAnnotationRectPreview(it, pdfX, pdfY, pdfWidth, pdfHeight)
-                            is AnnotationOval -> drawAnnotationOvalPreview(it, pdfX, pdfY, pdfWidth, pdfHeight)
-                        }
-                    }
-                    if (currentStroke.isNotEmpty()) {
-                        drawAnnotationStrokePreview(AnnotationStroke(currentStroke, selectedPageIndex, selectedWidthFraction, selectedColor), pdfX, pdfY, pdfWidth, pdfHeight)
-                    }
-                    selectionFrame?.let {
-                        drawSelectionFramePreview(it, pdfX, pdfY, pdfWidth, pdfHeight)
-                    }
-                }
-            }
+            AnnotateCanvasContent(
+                bitmap = bitmap,
+                selectedPageIndex = selectedPageIndex,
+                zoomScale = zoomScale,
+                zoomOffsetX = zoomOffsetX,
+                zoomOffsetY = zoomOffsetY,
+                pdfOrigin = pdfOrigin,
+                pdfSize = pdfSize,
+                pageRects = pageRects,
+                pageOvals = pageOvals,
+                pageStrokes = pageStrokes,
+                pageComments = pageComments,
+                currentShapeDraft = currentShapeDraft,
+                selectedColor = selectedColor,
+                selectedWidthFraction = selectedWidthFraction,
+                currentStroke = currentStroke,
+                selectionFrame = selectionFrame
+            )
         }
 
-        Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surfaceContainerLow, tonalElevation = 1.dp) {
-            Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                if (currentRecord.pageCount > 1) {
-                    PageNavigationBar(selectedPageIndex, currentRecord.pageCount) { selectedPageIndex = it }
+        AnnotateFooter(
+            selectedPageIndex = selectedPageIndex,
+            pageCount = currentRecord.pageCount,
+            onPageSelected = { selectedPageIndex = it },
+            selectedTool = selectedTool,
+            zoomScale = zoomScale,
+            isZoomTool = isZoomTool,
+            hasPageAnnotations = hasPageAnnotations,
+            hasAnyAnnotations = hasAnyAnnotations,
+            selectionLabelRes = selectionLabelRes,
+            showEditText = selectedAnnotation?.kind == AnnotationHistoryKind.COMMENT,
+            onUndo = undoLastAnnotation,
+            onClearPage = clearCurrentPage,
+            onResetAll = resetAllAnnotations,
+            onEditText = {
+                val selection = selectedAnnotation
+                val text = selection?.let { selectionText(it, elementStateSnapshot) }
+                if (selection != null && text != null) {
+                    editingCommentIndex = selection.index
+                    commentDialogText = text
+                    showCommentDialog = true
                 }
-                if (selectedTool == AnnotateTool.ZOOM) {
-                    Text("${formatZoomScale(zoomScale)}×", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                } else if (selectedTool == AnnotateTool.TEXT) {
-                    Text(stringResource(R.string.annotate_write_hint), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                } else {
-                    Text(stringResource(R.string.annotate_selected_hint), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            },
+            onDelete = {
+                selectedAnnotation?.let { selection ->
+                    setElementState(deleteSelection(selection, elementStateSnapshot), null)
+                    clearPageHistory()
                 }
-                if (!isZoomTool) {
-                    AnnotationActionIconBar(
-                        hasPageAnnotations = hasPageAnnotations,
-                        hasAnyAnnotations = hasAnyAnnotations,
-                        selectionLabelRes = selectionLabelRes,
-                        showEditText = selectedAnnotation?.kind == AnnotationHistoryKind.COMMENT,
-                        onUndo = undoLastAnnotation,
-                        onClearPage = clearCurrentPage,
-                        onResetAll = resetAllAnnotations,
-                        onEditText = {
-                            val selection = selectedAnnotation
-                            val text = selection?.let { selectionText(it, elementStateSnapshot) }
-                            if (selection != null && text != null) {
-                                editingCommentIndex = selection.index
-                                commentDialogText = text
-                                showCommentDialog = true
-                            }
-                        },
-                        onDelete = {
-                            selectedAnnotation?.let { selection ->
-                                setElementState(deleteSelection(selection, elementStateSnapshot), null)
-                                clearPageHistory()
-                            }
-                        },
-                        onClearSelection = { selectedAnnotation = null }
-                    )
-                }
-            }
-        }
+            },
+            onClearSelection = { selectedAnnotation = null }
+        )
 
         Button(
             onClick = {
@@ -604,197 +523,242 @@ fun AnnotateScreen(
     )
 }
 
-private suspend fun androidx.compose.ui.input.pointer.PointerInputScope.detectMarkGestures(
-    canvasSize: IntSize,
-    zoomScale: Float,
-    zoomOffsetX: Float,
-    zoomOffsetY: Float,
-    pdfOrigin: Offset,
-    pdfSize: Size,
-    selectedPageIndex: Int,
-    currentState: () -> AnnotationElementState,
-    onStateChanged: (AnnotationElementState) -> Unit,
-    onSelectionChanged: (AnnotationSelection?) -> Unit,
-    currentStrokePoints: () -> List<Pair<Float, Float>>,
-    onStrokeChanged: (List<Pair<Float, Float>>) -> Unit,
-    onCommit: (List<Pair<Float, Float>>) -> Unit
+@Composable
+private fun AnnotateToolbar(
+    isZoomTool: Boolean,
+    selectedTool: AnnotateTool,
+    selectedDrawSpec: AnnotateToolSpec,
+    isSearchable: Boolean,
+    isSnapMode: Boolean,
+    selectedColor: Int,
+    selectedWidthFraction: Float,
+    widthLabelRes: Int,
+    zoomResetEnabled: Boolean,
+    onToolSelected: (AnnotateTool) -> Unit,
+    onOpenZoom: () -> Unit,
+    onExitZoom: () -> Unit,
+    onResetZoom: () -> Unit,
+    onSnapModeChanged: (Boolean) -> Unit,
+    onColorSelected: (Int) -> Unit,
+    onWidthSelected: (Float) -> Unit
 ) {
-    awaitEachGesture {
-        var startChange: PointerInputChange? = null
-        while (startChange == null) {
-            val event = awaitPointerEvent()
-            startChange = event.changes.firstOrNull { !it.previousPressed && it.pressed }
-        }
-        val pointerId = startChange.id
-        val startNorm = normalizeViewportPoint(startChange.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
-        val selection = hitTestSelection(selectedPageIndex, startNorm, currentState())
-        if (selection != null) onSelectionChanged(selection)
-
-        var previousNorm = startNorm
-        var movedEnough = false
-        while (true) {
-            val event = awaitPointerEvent()
-            val change = event.changes.firstOrNull { it.id == pointerId } ?: break
-            if (change.previousPressed && !change.pressed) break
-            if (!change.pressed) continue
-
-            val currentNorm = normalizeViewportPoint(change.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
-            val deltaX = currentNorm.first - previousNorm.first
-            val deltaY = currentNorm.second - previousNorm.second
-            val totalX = currentNorm.first - startNorm.first
-            val totalY = currentNorm.second - startNorm.second
-            if (totalX * totalX + totalY * totalY > 0.0009f) movedEnough = true
-
-            if (movedEnough && selection != null) {
-                change.consume()
-                onStateChanged(moveSelectionBy(selection, deltaX, deltaY, currentState()))
-            } else if (selection == null) {
-                change.consume()
-                val nextStroke = if (currentStrokePoints().isEmpty()) {
-                    listOf(startNorm, currentNorm)
-                } else {
-                    currentStrokePoints() + currentNorm
+    Surface(
+        modifier = Modifier.fillMaxWidth().zIndex(1f),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        tonalElevation = 1.dp
+    ) {
+        if (isZoomTool) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        text = stringResource(R.string.annotate_mode_zoom_title),
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = stringResource(R.string.annotate_mode_zoom_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-                onStrokeChanged(nextStroke)
+                AnnotationToolbarIconButton(
+                    icon = selectedDrawSpec.icon,
+                    contentDescriptionRes = R.string.annotate_mode_edit_back,
+                    onClick = onExitZoom
+                )
+                AnnotationToolbarIconButton(
+                    icon = Icons.Default.Refresh,
+                    contentDescriptionRes = R.string.highlight_zoom_reset_button,
+                    enabled = zoomResetEnabled,
+                    onClick = onResetZoom
+                )
             }
-            previousNorm = currentNorm
-        }
-
-        if (selection == null) {
-            onSelectionChanged(null)
-            if (movedEnough) {
-                val points = currentStrokePoints()
-                if (points.isNotEmpty()) onCommit(points)
-                onStrokeChanged(emptyList())
-            } else {
-                onCommit(listOf(startNorm))
-                onStrokeChanged(emptyList())
-            }
-        }
-    }
-}
-
-private suspend fun androidx.compose.ui.input.pointer.PointerInputScope.detectTextGestures(
-    canvasSize: IntSize,
-    zoomScale: Float,
-    zoomOffsetX: Float,
-    zoomOffsetY: Float,
-    pdfOrigin: Offset,
-    pdfSize: Size,
-    selectedPageIndex: Int,
-    currentState: () -> AnnotationElementState,
-    onStateChanged: (AnnotationElementState) -> Unit,
-    onSelectionChanged: (AnnotationSelection?) -> Unit,
-    onAddRequested: (Pair<Float, Float>) -> Unit
-) {
-    awaitEachGesture {
-        var startChange: PointerInputChange? = null
-        while (startChange == null) {
-            val event = awaitPointerEvent()
-            startChange = event.changes.firstOrNull { !it.previousPressed && it.pressed }
-        }
-        val pointerId = startChange.id
-        val startNorm = normalizeViewportPoint(startChange.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
-        val selection = hitTestSelection(selectedPageIndex, startNorm, currentState())
-        if (selection != null) onSelectionChanged(selection)
-
-        var previousNorm = startNorm
-        var latestNorm = startNorm
-        var movedEnough = false
-        while (true) {
-            val event = awaitPointerEvent()
-            val change = event.changes.firstOrNull { it.id == pointerId } ?: break
-            if (change.previousPressed && !change.pressed) break
-            if (!change.pressed) continue
-            latestNorm = normalizeViewportPoint(change.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
-            val totalX = latestNorm.first - startNorm.first
-            val totalY = latestNorm.second - startNorm.second
-            if (totalX * totalX + totalY * totalY > 0.0009f) movedEnough = true
-            if (movedEnough && selection != null) {
-                change.consume()
-                val frameDeltaX = latestNorm.first - previousNorm.first
-                val frameDeltaY = latestNorm.second - previousNorm.second
-                onStateChanged(moveSelectionBy(selection, frameDeltaX, frameDeltaY, currentState()))
-            }
-            previousNorm = latestNorm
-        }
-
-        if (!movedEnough) {
-            if (selection != null) {
-                onSelectionChanged(selection)
-            } else {
-                onSelectionChanged(null)
-                onAddRequested(startNorm)
+        } else {
+            Column(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AnnotationToolDropdown(
+                        selectedTool = selectedTool,
+                        onToolSelected = onToolSelected,
+                        modifier = Modifier.weight(1f)
+                    )
+                    AnnotationToolbarIconButton(
+                        icon = Icons.Default.ZoomIn,
+                        contentDescriptionRes = R.string.annotate_tool_zoom,
+                        onClick = onOpenZoom
+                    )
+                    if (isSearchable && selectedTool == AnnotateTool.MARK) {
+                        FilterChip(
+                            selected = isSnapMode,
+                            onClick = { onSnapModeChanged(!isSnapMode) },
+                            label = { Text(stringResource(R.string.highlight_mode_snap)) },
+                            leadingIcon = { Icon(Icons.Default.TextFields, null, modifier = Modifier.size(16.dp)) }
+                        )
+                    }
+                }
+                AnnotationAttributeBar(
+                    selectedColor = selectedColor,
+                    selectedWidthFraction = selectedWidthFraction,
+                    widthLabelRes = widthLabelRes,
+                    onColorSelected = onColorSelected,
+                    onWidthSelected = onWidthSelected
+                )
             }
         }
     }
 }
 
-private suspend fun androidx.compose.ui.input.pointer.PointerInputScope.detectShapeGestures(
-    canvasSize: IntSize,
+@Composable
+private fun AnnotateCanvasContent(
+    bitmap: Bitmap?,
+    selectedPageIndex: Int,
     zoomScale: Float,
     zoomOffsetX: Float,
     zoomOffsetY: Float,
     pdfOrigin: Offset,
     pdfSize: Size,
-    tool: AnnotateTool,
-    selectedPageIndex: Int,
-    currentState: () -> AnnotationElementState,
-    onStateChanged: (AnnotationElementState) -> Unit,
-    onSelectionChanged: (AnnotationSelection?) -> Unit,
-    currentDraft: () -> AnnotationShapeDraft?,
-    onDraftChanged: (AnnotationShapeDraft?) -> Unit,
-    onCommit: (AnnotationShapeDraft) -> Unit,
-    onTapCommit: (AnnotateTool, Pair<Float, Float>) -> Unit
+    pageRects: List<AnnotationRect>,
+    pageOvals: List<AnnotationOval>,
+    pageStrokes: List<AnnotationStroke>,
+    pageComments: List<AnnotationTextDraft>,
+    currentShapeDraft: AnnotationShapeDraft?,
+    selectedColor: Int,
+    selectedWidthFraction: Float,
+    currentStroke: List<Pair<Float, Float>>,
+    selectionFrame: AnnotationSelectionFrame?
 ) {
-    awaitEachGesture {
-        var startChange: PointerInputChange? = null
-        while (startChange == null) {
-            val event = awaitPointerEvent()
-            startChange = event.changes.firstOrNull { !it.previousPressed && it.pressed }
+    Box(
+        modifier = Modifier.fillMaxSize().graphicsLayer {
+            scaleX = zoomScale
+            scaleY = zoomScale
+            translationX = zoomOffsetX
+            translationY = zoomOffsetY
+            clip = true
         }
-        val pointerId = startChange.id
-        val startNorm = normalizeViewportPoint(startChange.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
-        val selection = hitTestSelection(selectedPageIndex, startNorm, currentState())
-        if (selection != null) onSelectionChanged(selection)
-
-        var previousNorm = startNorm
-        var movedEnough = false
-        while (true) {
-            val event = awaitPointerEvent()
-            val change = event.changes.firstOrNull { it.id == pointerId } ?: break
-            if (change.previousPressed && !change.pressed) break
-            if (!change.pressed) continue
-
-            val currentNorm = normalizeViewportPoint(change.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
-            val deltaX = currentNorm.first - previousNorm.first
-            val deltaY = currentNorm.second - previousNorm.second
-            val totalX = currentNorm.first - startNorm.first
-            val totalY = currentNorm.second - startNorm.second
-            if (totalX * totalX + totalY * totalY > 0.0009f) movedEnough = true
-
-            if (movedEnough && selection != null) {
-                change.consume()
-                onStateChanged(moveSelectionBy(selection, deltaX, deltaY, currentState()))
-            } else if (selection == null) {
-                change.consume()
-                val draft = currentDraft() ?: AnnotationShapeDraft(tool, selectedPageIndex, startNorm, startNorm)
-                onDraftChanged(draft.copy(end = currentNorm))
+    ) {
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = stringResource(R.string.annotate_page_content_description, selectedPageIndex + 1),
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
-            previousNorm = currentNorm
         }
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val pdfX = pdfOrigin.x
+            val pdfY = pdfOrigin.y
+            val pdfWidth = pdfSize.width.coerceAtLeast(1f)
+            val pdfHeight = pdfSize.height.coerceAtLeast(1f)
+            pageRects.forEach { drawAnnotationRectPreview(it, pdfX, pdfY, pdfWidth, pdfHeight) }
+            pageOvals.forEach { drawAnnotationOvalPreview(it, pdfX, pdfY, pdfWidth, pdfHeight) }
+            pageStrokes.forEach { drawAnnotationStrokePreview(it, pdfX, pdfY, pdfWidth, pdfHeight) }
+            pageComments.forEach { drawAnnotationTextPreview(it, pdfX, pdfY, pdfWidth, pdfHeight) }
+            currentShapeDraft
+                ?.takeIf { it.pageIndex == selectedPageIndex }
+                ?.toPreviewShape(selectedColor, selectedWidthFraction)
+                ?.let {
+                    when (it) {
+                        is AnnotationRect -> drawAnnotationRectPreview(it, pdfX, pdfY, pdfWidth, pdfHeight)
+                        is AnnotationOval -> drawAnnotationOvalPreview(it, pdfX, pdfY, pdfWidth, pdfHeight)
+                    }
+                }
+            if (currentStroke.isNotEmpty()) {
+                drawAnnotationStrokePreview(
+                    AnnotationStroke(currentStroke, selectedPageIndex, selectedWidthFraction, selectedColor),
+                    pdfX,
+                    pdfY,
+                    pdfWidth,
+                    pdfHeight
+                )
+            }
+            selectionFrame?.let { drawSelectionFramePreview(it, pdfX, pdfY, pdfWidth, pdfHeight) }
+        }
+    }
+}
 
-        if (selection == null) {
-            onSelectionChanged(null)
-            if (movedEnough) {
-                currentDraft()?.let(onCommit)
-                onDraftChanged(null)
-            } else {
-                onTapCommit(tool, startNorm)
-                onDraftChanged(null)
+@Composable
+private fun AnnotateFooter(
+    selectedPageIndex: Int,
+    pageCount: Int,
+    onPageSelected: (Int) -> Unit,
+    selectedTool: AnnotateTool,
+    zoomScale: Float,
+    isZoomTool: Boolean,
+    hasPageAnnotations: Boolean,
+    hasAnyAnnotations: Boolean,
+    selectionLabelRes: Int?,
+    showEditText: Boolean,
+    onUndo: () -> Unit,
+    onClearPage: () -> Unit,
+    onResetAll: () -> Unit,
+    onEditText: () -> Unit,
+    onDelete: () -> Unit,
+    onClearSelection: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        tonalElevation = 1.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            if (pageCount > 1) {
+                PageNavigationBar(selectedPageIndex, pageCount, onPageSelected)
+            }
+            AnnotateModeHint(selectedTool = selectedTool, zoomScale = zoomScale)
+            if (!isZoomTool) {
+                AnnotationActionIconBar(
+                    hasPageAnnotations = hasPageAnnotations,
+                    hasAnyAnnotations = hasAnyAnnotations,
+                    selectionLabelRes = selectionLabelRes,
+                    showEditText = showEditText,
+                    onUndo = onUndo,
+                    onClearPage = onClearPage,
+                    onResetAll = onResetAll,
+                    onEditText = onEditText,
+                    onDelete = onDelete,
+                    onClearSelection = onClearSelection
+                )
             }
         }
     }
+}
+
+@Composable
+private fun AnnotateModeHint(
+    selectedTool: AnnotateTool,
+    zoomScale: Float
+) {
+    val hintText = when (selectedTool) {
+        AnnotateTool.ZOOM -> "${formatZoomScale(zoomScale)}×"
+        AnnotateTool.TEXT -> stringResource(R.string.annotate_write_hint)
+        else -> stringResource(R.string.annotate_selected_hint)
+    }
+    Text(
+        text = hintText,
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 }
 
 @Composable

@@ -64,7 +64,10 @@ domain/
     ├── RedactPdfUseCase.kt        # applySecureRedaction() + Thumbnail + DB-Insert; optionale OCR-Rekonstruktion via Workflow
     ├── RestrictUsageUseCase.kt    # restrictUsage() aufrufen → isSearchable=false
     ├── HighlightPdfUseCase.kt     # applyHighlight() für Strokes + Rects + Thumbnail + DB-Insert → Suffix _Markiert
-    ├── AnnotatePdfUseCase.kt      # applyAnnotations() für Strokes + Rects + TextComments + Thumbnail + DB-Insert → Suffix _Annotiert
+    ├── AnnotatePdfUseCase.kt      # applyAnnotations() für Strokes + Rects + Ovals + TextAnnotations + Thumbnail + DB-Insert → Suffix _Annotiert
+    ├── CreatePdfFromImagesUseCase.kt # Bilder (URI→ByteArray) zu neuem PDF mit Thumbnail + DB-Insert; meldet skippedCount zurück
+    ├── ImagePageLayout.kt         # SINGLE / TWO_PER_PAGE / FOUR_PER_PAGE
+    ├── AnnotationModel.kt         # AnnotationStroke, AnnotationRect, AnnotationOval, AnnotationText, AnnotationShapeStyle + Defaults
     ├── HighlightStroke.kt         # data class: Freihand-Markierung mit points + pageIndex + strokeWidthFraction
     ├── HighlightRect.kt           # data class: textausgerichtetes Highlight-Rechteck (left/top/right/bottom/pageIndex)
     ├── TextLine.kt                # data class: extrahierte Textzeile in normalisierten Anzeige-Koordinaten
@@ -81,6 +84,8 @@ ui/
 │                                  # „Scanner starten" entfernt — FAB ist der primäre Scan-Einstieg
 │                                  # gesturesEnabled nur auf Top-Level-Screens (Ablage/Help/Info/Privacy)
 │                                  # Verwaltet addActionTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
+│                                  # Edge-to-edge gehärtet: Scaffold mit safeDrawing(Horizontal+Bottom),
+│                                  # NavHost konsumiert innerPadding; MainActivity ruft enableEdgeToEdge() auf
 ├── home/
 │   ├── HomeScreen.kt              # Koordinator: Add-Document-BottomSheet, Scanner-Launcher, OpenDocument-FilePicker,
 │   │                              # PendingImport(Scan/File), Save-Dialog, Listen-Routing, Suchfeld
@@ -98,7 +103,9 @@ ui/
 │       │                          # onAction: (ScanAction) → Unit; Tags als farbige Badges (tertiaryContainer)
 │       ├── SelectionTitleBar.kt   # ✕ · „X ausgewählt" (selection_count) · SelectAll-Icon
 │       ├── BulkActionBar.kt       # Icon+Label: Teilen · Export · Merge (MergeType) · Text (TextSnippet) · OCR (FindInPage) · Löschen (rot)
-│       ├── EmptyStateContent.kt   # Leerarchiv-Illustration + Hint-Texte
+│       ├── EmptyStateContent.kt   # Leerarchiv-Illustration + Hint-Texte + scrollbare Produkt-Card
+│       │                          # Empty-State spricht von Dokumenten statt Scans; Card bewirbt PDF-Erstellung,
+│       │                          # Beschriften/Bearbeiten/Schützen; Texte in allen 10 Locales verdichtet
 │       ├── ScannerLoadingAnimation.kt  # Canvas-Animation (Dokument + Scan-Strahl)
 │       └── MergeDialog.kt         # Dateiname-Eingabe + Reihenfolge-Vorschau
 ├── components/
@@ -112,19 +119,23 @@ ui/
 │   │                              # Lädt ScanRecord per scanId, führt Workflows aus,
 │   │                              # mappt Fehler über WorkflowErrorMapper; _editLoading/_error/_success
 │   │                              # Highlight/Annotate: _highlightPageBitmap + _textLines; seitenweiser TextLine-Cache für Snap-Modus
-│   │                              # applyAnnotations(strokes, rects, comments) → AnnotatePdfWorkflow
+│   │                              # applyAnnotations(strokes, rects, ovals, comments) → AnnotatePdfWorkflow
 │   │                              # applyRedactions(rects, makeSearchable, languageCode) → RedactPdfWorkflow
 │   │                              # convertToGrayscale() → ConvertToGrayscaleWorkflow; loadMetadata() → _metadata: StateFlow<PdfMetadata?>
 │   └── DocumentActionScreens.kt   # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen, RemovePasswordScreen, RemoveTextLayerScreen, RestrictUsageScreen
 │                                  # ConvertToGrayscaleScreen, PdfMetadataScreen (read-only Metadaten-Karte)
 ├── annotate/
-│   └── AnnotateScreen.kt          # Vollbild-Annotieren: 3 Modi (Markieren/Schreiben/Zoom)
-│                                  # Markieren: Freihand-Strokes + Snap auf Textzeilen → HighlightRect
-│                                  # Schreiben: Textkommentare per Tap platzieren, per Drag am Ankerpunkt verschieben
-│                                  # Zoom/Pan via transformable; Koordinaten normalisiert (0..1) für Seitenunabhängigkeit
-│                                  # awaitEachGesture + manueller awaitPointerEvent-Loop (kein touch-slop Problem)
-│                                  # Undo/Clear behandeln Strokes + Rects + Comments gemeinsam
-│                                  # allComments via rememberSaveable (annotateCommentListSaver) → kein Datenverlust bei Rotation
+│   ├── AnnotateModels.kt          # Saveable-Modelle, Toolbar-Enums, Farb- und Breitenoptionen
+│   ├── AnnotateInteractionHelpers.kt # pure Functions für Hit-Testing, Auswahl, Move, Mutationen, Tap-Defaults
+│   ├── AnnotateGestureHandlers.kt # detectMark/Text/ShapeGestures — aus Screen ausgelagert
+│   ├── AnnotateCanvasHelpers.kt   # Handle-/Preview-/Canvas-Helfer
+│   ├── AnnotateComponents.kt      # Toolbar-, Dropdown-, Attribut- und Footer-Bausteine
+│   └── AnnotateScreen.kt          # Vollbild-Beschriften mit klarer Trennung Bearbeiten/Zoom
+│                                  # Werkzeuge: Markieren, Text, Rect fill/frame, Oval fill/frame; Zoom als Lupen-Aktion
+│                                  # Elemente vor Save selektier-, verschieb-, umfärb-, breitenänderbar und löschbar
+│                                  # Auswahl über generischen blauen Handle; Textnotizen zusätzlich editierbar
+│                                  # Snap nur im Bearbeiten, Zoom mit eigener reduzierter Toolbar
+│                                  # Farbe/Stift als Dropdowns; Undo/Clear icon-basiert; annotate_* in allen 10 Locales
 ├── redact/
 │   └── RedactScreen.kt            # Vollbild-Sicher-Schwärzen mit Rechteckmodus + Zoom
 │                                  # Save-Dialog statt permanentem Hinweis auf dem Hauptscreen
@@ -170,7 +181,7 @@ domain/workflow/RedactPdfWorkflow.kt        # Prüft: Datei existiert + Rechteck
 domain/workflow/RestrictUsageWorkflow.kt    # Prüft: Datei existiert → RestrictUsageUseCase
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
 domain/workflow/HighlightPdfWorkflow.kt     # Prüft: Datei existiert + (strokes oder rects) + nicht verschlüsselt → HighlightPdfUseCase
-domain/workflow/AnnotatePdfWorkflow.kt      # Prüft: Datei existiert + (strokes|rects|comments nicht leer) + nicht verschlüsselt → AnnotatePdfUseCase
+domain/workflow/AnnotatePdfWorkflow.kt      # Prüft: Datei existiert + (strokes|rects|ovals|comments nicht leer) + nicht verschlüsselt → AnnotatePdfUseCase
                                             # fängt IOException → StorageWriteFailed; Throwable → AnnotateFailed
 docs/privacy-policy.html            # Veröffentlichtes Privacy-Dokument (EN/DE) muss mit In-App-Privacy konsistent bleiben
 di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3 + MIGRATION_3_4 + MIGRATION_4_5
@@ -180,6 +191,7 @@ util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, o
                                    # Rückgabe: extrahierter Volltext (für lokale DB-Speicherung)
                                    # ZH/JA NICHT als searchable PDF unterstützt (TTC/OTC-Fonts können nicht eingebettet werden)
 util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePages, deletePages, getPageCount, generateThumbnail
+                                   # createPdfFromImages(): A4-Layout mit SINGLE / TWO_PER_PAGE / FOUR_PER_PAGE, Fit-Inside-Zentrierung
                                    # appendTextWatermark nutzt calculateWatermarkFontSize() (internal, testbar)
                                    # buildRanges() + resolveUniqueFilename() als top-level internal (JVM-testbar)
                                    # removeTextLayer(): Seiten per PdfRenderer → LosslessFactory neu rendern → kein OCR-Text
@@ -189,7 +201,8 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
                                    # extractTextLines(file, pageIndex): PDFTextStripper/TextPosition → TextLine-Liste (Font-Filter + Zeilengruppierung)
                                    #   Koordinaten: yDirAdj = Baseline (Screen-Y, von oben); top = yDirAdj-heightDir, bottom = yDirAdj
                                    # applyHighlight(input, outputDir, strokes, rects): Strokes + gefüllte Rects; Rects zuerst, eigenes Non-Stroking-Alpha
-                                   # applyAnnotations(input, outputDir, strokes, rects, comments): wie applyHighlight + Textkommentare; Suffix _Annotiert
+                                   # applyAnnotations(input, outputDir, strokes, rects, ovals, comments): farbige Strokes/Rects/Ovals/Text; Suffix _Annotiert
+                                   #   appendAnnotationRect/appendAnnotationOval/appendAnnotationStroke() kapseln Shape-Export
                                    #   appendTextComment(): rotationsawarere Textmatrix (0°/90°/180°/270°); eigener PDPageContentStream nach Highlight-Stream
                                    #   sanitizeCommentText(): entfernt Sonderzeichen, die PDFBox nicht encodieren kann
                                    # applySecureRedaction(): betroffene Seiten per PdfRenderer (300 DPI / PRINT) neu aufbauen,
@@ -254,6 +267,7 @@ test/
 │   ├── reorder/ReorderViewModelTest.kt     # editLoading-Guard, Success/Failure, clearError (4 Tests)
 │   ├── documentaction/DocumentEditViewModelTest.kt  # inkl. applyRedactions Success/Failure + OCR-Parameter
 │   ├── home/HomeImportFilenameSuggestionTest.kt     # DISPLAY_NAME → Dateinamensvorschlag ohne .pdf
+│   ├── annotate/AnnotateInteractionHelpersTest.kt   # Hit-Testing, Auswahl, Move, Mutationen für Stroke/Rect/Oval/Text
 │   └── highlight/HighlightScreenMathTest.kt         # clampPanOffset + inverse Zoom/Pan-Mathematik + Snap-/Rect-Hilfsfunktionen
 └── util/
     ├── PdfEditorTest.kt                    # buildRanges + resolveUniqueFilename + mapDisplayToPdfCoord + mergeTextBoxesToLines
@@ -267,6 +281,7 @@ androidTest/
     │   # echte Android-/PdfRenderer-Pfade: pageCount, Thumbnail, renderPageThumbnail
     │   # ImportFileUseCase über content://-URI inkl. invalid PDF cleanup und encrypted import
     │   # applyHighlight/applyAnnotations/removeTextLayer/convertToGrayscale auf gerenderten PDFs
+    │   # Annotate: farbige Rects/Ovals/Text + Regression für TWO_PER_PAGE Bild-PDF-Rendering
     │   # sichere Schwärzung inkl. Text-Entfernung, Sanitization, CropBox/Rotation, Metadata/XMP-Cleanup
     └── SearchableAndRoundTripInstrumentedTest.kt
         # SearchablePdfBuilder + MakeSearchableUseCase auf bildbasierten und gemischten mehrseitigen PDFs
@@ -308,6 +323,7 @@ Versionen zentral in `gradle/libs.versions.toml`. Gradle-Besonderheiten:
 - `ksp.workers.max=1` in `gradle.properties` — verhindert Race Condition in KSP 2.2.x (Storage already registered)
 - Builds ohne Configuration-Cache stabiler: `--no-configuration-cache` bei Problemen
 - `buildFeatures { buildConfig = true }` für `BuildConfig.VERSION_NAME` / `VERSION_CODE`
+- App-Release-Stand: `versionName "2.0"`, `versionCode 6`
 - `org.gradle.caching=true`, `org.gradle.parallel=true`, `org.gradle.configuration-cache=true` aktiv
 - `PDFBoxResourceLoader.init(this)` in `PdfScannerApp.onCreate()` erforderlich
 

@@ -96,6 +96,13 @@ class HomeViewModel @Inject constructor(
     private val _editLoading = MutableStateFlow(false)
     val editLoading: StateFlow<Boolean> = _editLoading.asStateFlow()
 
+    /** Temporäre URI-Bridge für den ImagesToPdf-Screen (Android-URIs sind nicht als Nav-Args serialisierbar). */
+    private val _pendingImageUris = MutableStateFlow<List<Uri>>(emptyList())
+    val pendingImageUris: StateFlow<List<Uri>> = _pendingImageUris.asStateFlow()
+
+    fun setPendingImageUris(uris: List<Uri>) { _pendingImageUris.value = uris }
+    fun clearPendingImageUris() { _pendingImageUris.value = emptyList() }
+
     private val scansDir get() = storageProvider.scansDir()
 
     // ── Scan importieren ──────────────────────────────────────────────────────

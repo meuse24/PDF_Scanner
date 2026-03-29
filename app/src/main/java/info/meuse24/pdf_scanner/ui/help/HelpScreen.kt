@@ -110,7 +110,8 @@ fun HelpScreen() {
                 titleRes = R.string.help_section_add_documents,
                 actions = listOf(
                     HelpAction(Icons.Default.CameraAlt, R.string.add_document_scan_title, R.string.help_item_add_document_scan),
-                    HelpAction(Icons.Default.UploadFile, R.string.add_document_import_title, R.string.help_item_add_document_import)
+                    HelpAction(Icons.Default.UploadFile, R.string.add_document_import_title, R.string.help_item_add_document_import),
+                    HelpAction(Icons.Default.Image, R.string.images_to_pdf_title, R.string.images_to_pdf_description)
                 )
             ),
             HelpSection(

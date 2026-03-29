@@ -22,6 +22,7 @@ import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationShapeStyle
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationText
+import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
@@ -597,6 +598,96 @@ class ImportAndPdfEditorInstrumentedTest {
             assertTrue(isGray(grayPixel))
             assertTrue(grayPixel[0] < 250)
         }
+    }
+
+    // ── createPdfFromImages ───────────────────────────────────────────────────
+
+    @Test
+    fun createPdfFromImages_singleLayout_producesOnePagePerImage() {
+        val imageBytes = listOf(createJpegBytes(200, 200, android.graphics.Color.RED))
+        val outputFile = File(scansDir, "androidtest_imgpdf_single.pdf")
+
+        pdfEditor.createPdfFromImages(imageBytes, ImagePageLayout.SINGLE, outputFile)
+
+        assertTrue(outputFile.exists())
+        assertEquals(1, pdfEditor.getPageCount(outputFile))
+    }
+
+    @Test
+    fun createPdfFromImages_twoPerPage_twoImages_createsOnePage() {
+        val imageBytes = listOf(
+            createJpegBytes(200, 200, android.graphics.Color.RED),
+            createJpegBytes(200, 200, android.graphics.Color.BLUE)
+        )
+        val outputFile = File(scansDir, "androidtest_imgpdf_two2.pdf")
+
+        pdfEditor.createPdfFromImages(imageBytes, ImagePageLayout.TWO_PER_PAGE, outputFile)
+
+        assertTrue(outputFile.exists())
+        assertEquals(1, pdfEditor.getPageCount(outputFile))
+    }
+
+    @Test
+    fun createPdfFromImages_twoPerPage_threeImages_createsTwoPages() {
+        val imageBytes = (1..3).map { createJpegBytes(200, 200, android.graphics.Color.GREEN) }
+        val outputFile = File(scansDir, "androidtest_imgpdf_two3.pdf")
+
+        pdfEditor.createPdfFromImages(imageBytes, ImagePageLayout.TWO_PER_PAGE, outputFile)
+
+        assertEquals(2, pdfEditor.getPageCount(outputFile))
+    }
+
+    @Test
+    fun createPdfFromImages_fourPerPage_fourImages_createsOnePage() {
+        val imageBytes = (1..4).map { createJpegBytes(200, 200, android.graphics.Color.CYAN) }
+        val outputFile = File(scansDir, "androidtest_imgpdf_four4.pdf")
+
+        pdfEditor.createPdfFromImages(imageBytes, ImagePageLayout.FOUR_PER_PAGE, outputFile)
+
+        assertEquals(1, pdfEditor.getPageCount(outputFile))
+    }
+
+    @Test
+    fun createPdfFromImages_twoPerPage_bothSlotsRendered() {
+        // Regressionstest: Beide Bilder müssen sichtbar sein (kein ContentStream-Überschreibungsfehler).
+        val redBytes  = createJpegBytes(200, 300, android.graphics.Color.RED)
+        val blueBytes = createJpegBytes(200, 300, android.graphics.Color.BLUE)
+        val outputFile = File(scansDir, "androidtest_imgpdf_slots.pdf")
+
+        pdfEditor.createPdfFromImages(listOf(redBytes, blueBytes), ImagePageLayout.TWO_PER_PAGE, outputFile)
+
+        val bitmap = pdfEditor.renderPageThumbnail(outputFile, pageIndex = 0, maxSizePx = 400)
+        assertNotNull(bitmap)
+        bitmap!!.useBitmap { bmp ->
+            // Slot 0 liegt in der oberen Hälfte → rötlich
+            val topPixel    = pixelAtNormalized(bmp, 0.5f, 0.15f)
+            // Slot 1 liegt in der unteren Hälfte → bläulich
+            val bottomPixel = pixelAtNormalized(bmp, 0.5f, 0.85f)
+            assertTrue("Oberer Slot sollte rot gerendert sein",  topPixel[0]    > topPixel[2])
+            assertTrue("Unterer Slot sollte blau gerendert sein", bottomPixel[2] > bottomPixel[0])
+        }
+    }
+
+    @Test
+    fun createPdfFromImages_thumbnailIsGenerated() {
+        val imageBytes = listOf(createJpegBytes(300, 400, android.graphics.Color.MAGENTA))
+        val outputFile = File(scansDir, "androidtest_imgpdf_thumb.pdf")
+        val thumbFile  = File(scansDir, "androidtest_imgpdf_thumb.jpg")
+
+        pdfEditor.createPdfFromImages(imageBytes, ImagePageLayout.SINGLE, outputFile)
+        pdfEditor.generateThumbnail(outputFile, thumbFile)
+
+        assertTrue(thumbFile.exists())
+        assertTrue(thumbFile.length() > 0L)
+    }
+
+    private fun createJpegBytes(width: Int, height: Int, color: Int): ByteArray {
+        val bmp = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888)
+        bmp.eraseColor(color)
+        val out = java.io.ByteArrayOutputStream()
+        bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, out)
+        bmp.recycle()
+        return out.toByteArray()
     }
 
     private lateinit var fakeDao: InstrumentedFakeScanDao

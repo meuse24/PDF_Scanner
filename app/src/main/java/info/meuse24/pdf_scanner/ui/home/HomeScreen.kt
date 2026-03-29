@@ -34,6 +34,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Search
@@ -126,6 +127,7 @@ fun HomeScreen(
     onNavigateToRedact:             (Long) -> Unit = {},
     onNavigateToGrayscale:          (Long) -> Unit = {},
     onNavigateToPdfMetadata:        (Long) -> Unit = {},
+    onNavigateToImagesToPdf:        () -> Unit     = {},
     viewModel:                      HomeViewModel  = hiltViewModel()
 ) {
     val scans          by viewModel.scans.collectAsStateWithLifecycle()
@@ -231,6 +233,15 @@ fun HomeScreen(
             makeSearchable = false
             selectedLang = defaultOcrLanguage()
             showSaveDialog = true
+        }
+    }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            viewModel.setPendingImageUris(uris)
+            onNavigateToImagesToPdf()
         }
     }
 
@@ -746,6 +757,19 @@ fun HomeScreen(
                     onClick = {
                         showAddSheet = false
                         importFileLauncher.launch(arrayOf("application/pdf"))
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
+                AddDocumentOption(
+                    title = stringResource(R.string.images_to_pdf_add_button),
+                    subtitle = stringResource(R.string.images_to_pdf_description),
+                    icon = {
+                        Icon(Icons.Default.Image, contentDescription = null)
+                    },
+                    onClick = {
+                        showAddSheet = false
+                        imagePickerLauncher.launch("image/*")
                     },
                     modifier = Modifier.fillMaxWidth()
                 )

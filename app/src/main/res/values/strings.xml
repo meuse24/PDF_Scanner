@@ -21,8 +21,12 @@
     <string name="action_select_documents">Select documents</string>
 
     <!-- Home: empty state & stats -->
-    <string name="home_empty_title">No scans available</string>
+    <string name="home_empty_title">No documents available</string>
     <string name="home_empty_hint">Tap + to get started</string>
+    <string name="home_empty_product_title">Your PDF toolkit</string>
+    <string name="home_empty_product_feature_capture">Scan, import, or create PDFs from photos.</string>
+    <string name="home_empty_product_feature_edit">Reorder, annotate, sign, and update PDFs.</string>
+    <string name="home_empty_product_feature_secure">Use OCR, redaction, protection, and optimization tools.</string>
     <string name="home_stat_doc_count">Documents</string>
     <string name="home_stat_last_scan">Last scanned</string>
 
@@ -533,6 +537,20 @@
     <string name="rename_error_exists">A file with that name already exists</string>
     <string name="rename_error_failed">Renaming failed</string>
     <string name="help_item_rename">Choose Rename PDF to give a document a new name. The file name must be unique in the archive. The .pdf extension is added automatically.</string>
+
+    <!-- Images to PDF -->
+    <string name="images_to_pdf_title">Images to PDF</string>
+    <string name="images_to_pdf_description">Convert photos or gallery images into a PDF. Choose how many images to place per page.</string>
+    <string name="images_to_pdf_layout_label">Layout</string>
+    <string name="images_to_pdf_layout_single">Single</string>
+    <string name="images_to_pdf_layout_two">2/Page</string>
+    <string name="images_to_pdf_layout_four">4/Page</string>
+    <string name="images_to_pdf_filename_label">File name</string>
+    <string name="images_to_pdf_filename_default">Images_%s</string>
+    <string name="images_to_pdf_action">Create PDF</string>
+    <string name="images_to_pdf_image_count">%d image(s) selected</string>
+    <string name="images_to_pdf_add_button">Images to PDF</string>
+    <string name="images_to_pdf_unreadable_skipped">%d image(s) could not be read and were skipped.</string>
 </resources>
 
 

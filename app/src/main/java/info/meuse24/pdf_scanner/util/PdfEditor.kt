@@ -26,11 +26,13 @@ import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
 import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
 import com.tom_roush.pdfbox.pdmodel.graphics.image.JPEGFactory
 import com.tom_roush.pdfbox.pdmodel.graphics.image.LosslessFactory
+import com.tom_roush.pdfbox.pdmodel.graphics.image.PDImageXObject
 import com.tom_roush.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.text.TextPosition
 import com.tom_roush.pdfbox.util.Matrix
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
+import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationShapeStyle
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationStroke
@@ -419,6 +421,53 @@ open class PdfEditor @Inject constructor() {
                     }
                 }
                 cleaned.save(target)
+            }
+        }
+    }
+
+    /**
+     * Erzeugt ein neues A4-PDF aus einer Liste von Bild-ByteArrays.
+     * Null-Einträge (nicht lesbare Bilder) erzeugen eine leere Zelle.
+     * Das Layout bestimmt, wie viele Bilder pro Seite angeordnet werden.
+     * Bilder werden proportional (fit-inside) zentriert in ihre Zelle skaliert.
+     */
+    open fun createPdfFromImages(
+        imageBytes: List<ByteArray?>,
+        layout: ImagePageLayout,
+        outputFile: File
+    ): File {
+        require(imageBytes.isNotEmpty()) { "Bildliste darf nicht leer sein" }
+        return writePdf("CreatePdfFromImages", outputFile) { target ->
+            PDDocument().use { doc ->
+                val cells = a4LayoutCells(layout)
+                imageBytes.chunked(layout.imagesPerPage).forEach { chunk ->
+                    val page = PDPage(PDRectangle.A4)
+                    doc.addPage(page)
+                    // Einen einzigen Content-Stream pro Seite öffnen, damit alle Bilder
+                    // erhalten bleiben. Mehrere Streams ohne APPEND überschreiben sich.
+                    PDPageContentStream(doc, page).use { cs ->
+                        chunk.forEachIndexed { slotIndex, bytes ->
+                            if (bytes != null) {
+                                try {
+                                    val image = PDImageXObject.createFromByteArray(
+                                        doc, bytes, "img$slotIndex"
+                                    )
+                                    val cell = cells[slotIndex]
+                                    val draw = fitInsideCell(
+                                        image.width.toFloat(), image.height.toFloat(), cell
+                                    )
+                                    cs.drawImage(image, draw.x, draw.y, draw.w, draw.h)
+                                } catch (_: Exception) {
+                                    // Nicht lesbares Bild → leere Zelle, kein Abbruch
+                                }
+                            }
+                        }
+                    }
+                }
+                if (doc.numberOfPages == 0) {
+                    throw IOException("CreatePdfFromImages erzeugte keine Seiten")
+                }
+                doc.save(target)
             }
         }
     }
@@ -1716,6 +1765,59 @@ private fun sanitizeOverlayText(text: String, font: PDFont): String {
         return text.filter { it.code in 32..126 }
     }
     return text.replace("\n", " ").replace("\r", "").trim()
+}
+
+private data class CellRect(val x: Float, val y: Float, val w: Float, val h: Float)
+private data class DrawRect(val x: Float, val y: Float, val w: Float, val h: Float)
+
+/**
+ * Gibt die Zell-Positionen für das gewählte Layout auf einer A4-Seite zurück.
+ * PDF-Koordinatenursprung ist unten-links; höhere Y-Werte = weiter oben.
+ * Außenabstand: 20 pt, Zellenabstand: 10 pt.
+ */
+private fun a4LayoutCells(layout: ImagePageLayout): List<CellRect> {
+    val margin = 20f
+    val gap = 10f
+    val pageW = PDRectangle.A4.width   // 595 pt
+    val pageH = PDRectangle.A4.height  // 842 pt
+    return when (layout) {
+        ImagePageLayout.SINGLE -> {
+            val w = pageW - 2 * margin
+            val h = pageH - 2 * margin
+            listOf(CellRect(margin, margin, w, h))
+        }
+        ImagePageLayout.TWO_PER_PAGE -> {
+            val w = pageW - 2 * margin
+            val h = (pageH - 2 * margin - gap) / 2f
+            listOf(
+                CellRect(margin, margin + h + gap, w, h),  // oben
+                CellRect(margin, margin, w, h)              // unten
+            )
+        }
+        ImagePageLayout.FOUR_PER_PAGE -> {
+            val w = (pageW - 2 * margin - gap) / 2f
+            val h = (pageH - 2 * margin - gap) / 2f
+            listOf(
+                CellRect(margin, margin + h + gap, w, h),               // oben-links
+                CellRect(margin + w + gap, margin + h + gap, w, h),     // oben-rechts
+                CellRect(margin, margin, w, h),                          // unten-links
+                CellRect(margin + w + gap, margin, w, h)                 // unten-rechts
+            )
+        }
+    }
+}
+
+/** Skaliert ein Bild proportional (fit-inside) und zentriert es in der Zelle. */
+private fun fitInsideCell(imgW: Float, imgH: Float, cell: CellRect): DrawRect {
+    val scale = minOf(cell.w / imgW, cell.h / imgH)
+    val drawW = imgW * scale
+    val drawH = imgH * scale
+    return DrawRect(
+        x = cell.x + (cell.w - drawW) / 2f,
+        y = cell.y + (cell.h - drawH) / 2f,
+        w = drawW,
+        h = drawH
+    )
 }
 
 /**

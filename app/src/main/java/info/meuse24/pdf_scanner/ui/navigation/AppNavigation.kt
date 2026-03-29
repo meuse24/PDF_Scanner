@@ -6,12 +6,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.material.icons.Icons
@@ -64,6 +69,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import info.meuse24.pdf_scanner.ui.help.HelpScreen
 import info.meuse24.pdf_scanner.ui.home.HomeScreen
+import info.meuse24.pdf_scanner.ui.home.HomeViewModel
 import info.meuse24.pdf_scanner.ui.info.InfoScreen
 import info.meuse24.pdf_scanner.ui.documentaction.CompressPdfScreen
 import info.meuse24.pdf_scanner.ui.documentaction.ConvertToGrayscaleScreen
@@ -74,6 +80,7 @@ import info.meuse24.pdf_scanner.ui.documentaction.RemoveTextLayerScreen
 import info.meuse24.pdf_scanner.ui.documentaction.RestrictUsageScreen
 import info.meuse24.pdf_scanner.ui.documentaction.UnlockPdfScreen
 import info.meuse24.pdf_scanner.ui.annotate.AnnotateScreen
+import info.meuse24.pdf_scanner.ui.imagestopdf.ImagesToPdfScreen
 import info.meuse24.pdf_scanner.ui.redact.RedactScreen
 import info.meuse24.pdf_scanner.ui.signature.SignatureScreen
 import info.meuse24.pdf_scanner.ui.overlay.PageNumbersScreen
@@ -85,6 +92,8 @@ import info.meuse24.pdf_scanner.ui.pageedit.RotatePagesScreen
 import info.meuse24.pdf_scanner.ui.privacy.PrivacyScreen
 import info.meuse24.pdf_scanner.ui.reorder.ReorderScreen
 import info.meuse24.pdf_scanner.ui.split.SplitScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -206,6 +215,9 @@ fun AppNavigation() {
         }
     ) {
         Scaffold(
+            contentWindowInsets = WindowInsets.safeDrawing.only(
+                WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+            ),
             topBar = {
                 TopAppBar(
                     title = {
@@ -256,7 +268,9 @@ fun AppNavigation() {
                 NavHost(
                     navController    = navController,
                     startDestination = Screen.Ablage.route,
-                    modifier         = Modifier.padding(innerPadding)
+                    modifier         = Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
                 ) {
                     composable(Screen.Ablage.route) {
                         HomeScreen(
@@ -281,7 +295,8 @@ fun AppNavigation() {
                             onNavigateToAnnotate        = { scanId -> navController.navigate(Screen.Annotate.createRoute(scanId)) },
                             onNavigateToRedact          = { scanId -> navController.navigate(Screen.Redact.createRoute(scanId)) },
                             onNavigateToGrayscale       = { scanId -> navController.navigate(Screen.Grayscale.createRoute(scanId)) },
-                            onNavigateToPdfMetadata     = { scanId -> navController.navigate(Screen.PdfMetadata.createRoute(scanId)) }
+                            onNavigateToPdfMetadata     = { scanId -> navController.navigate(Screen.PdfMetadata.createRoute(scanId)) },
+                            onNavigateToImagesToPdf     = { navController.navigate(Screen.ImagesToPdf.route) }
                         )
                     }
                     composable(Screen.Help.route)    { HelpScreen() }
@@ -401,6 +416,20 @@ fun AppNavigation() {
                     ) {
                         PdfMetadataScreen(onNavigateBack = { navController.navigateUp() })
                     }
+                    composable(Screen.ImagesToPdf.route) { backStackEntry ->
+                        val homeEntry = remember(backStackEntry) {
+                            navController.getBackStackEntry(Screen.Ablage.route)
+                        }
+                        val homeVm: HomeViewModel = hiltViewModel(homeEntry)
+                        val uris by homeVm.pendingImageUris.collectAsStateWithLifecycle()
+                        ImagesToPdfScreen(
+                            imageUris = uris,
+                            onNavigateBack = {
+                                homeVm.clearPendingImageUris()
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                 }
             } // Box
         }
@@ -471,6 +500,7 @@ private fun AppBarTitle(
             currentRoute?.startsWith("redact/") == true -> stringResource(R.string.redact_screen_title)
             currentRoute?.startsWith("grayscale/") == true -> stringResource(R.string.grayscale_screen_title)
             currentRoute?.startsWith("pdf-metadata/") == true -> stringResource(R.string.metadata_screen_title)
+            currentRoute == Screen.ImagesToPdf.route -> stringResource(R.string.images_to_pdf_title)
             else -> stringResource(R.string.app_name)
         },
         maxLines = 1,

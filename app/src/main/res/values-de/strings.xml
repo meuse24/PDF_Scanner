@@ -15,8 +15,12 @@
     <string name="cd_pdf_document">PDF-Dokument</string>
     <string name="action_open_document">PDF öffnen</string>
     <string name="action_select_documents">Dokumente auswählen</string>
-    <string name="home_empty_title">Keine Scans vorhanden</string>
-    <string name="home_empty_hint">Tippe auf + um zu beginnen</string>
+    <string name="home_empty_title">Keine Dokumente vorhanden</string>
+    <string name="home_empty_hint">Tippe auf +, um zu beginnen</string>
+    <string name="home_empty_product_title">Ein umfassendes PDF-Werkzeug</string>
+    <string name="home_empty_product_feature_capture">Dokumente scannen, PDFs importieren oder aus Fotos erzeugen.</string>
+    <string name="home_empty_product_feature_edit">PDFs sortieren, beschriften, signieren und ergänzen.</string>
+    <string name="home_empty_product_feature_secure">OCR, Schwärzen, Schutz- und Optimierungswerkzeuge nutzen.</string>
     <string name="home_stat_doc_count">Dokumente</string>
     <string name="home_stat_last_scan">Zuletzt gescannt</string>
     <string name="dialog_save_title">Dokument speichern</string>
@@ -507,6 +511,18 @@
     <string name="rename_error_exists">Eine Datei mit diesem Namen existiert bereits</string>
     <string name="rename_error_failed">Umbenennen fehlgeschlagen</string>
     <string name="help_item_rename">Wähle PDF umbenennen, um einem Dokument einen neuen Namen zu geben. Der Dateiname muss in der Ablage eindeutig sein. Die Endung .pdf wird automatisch ergänzt.</string>
+
+    <!-- Images to PDF -->
+    <string name="images_to_pdf_title">Bilder zu PDF</string>
+    <string name="images_to_pdf_description">Fotos oder Galeriebilder in ein PDF umwandeln. Wähle, wie viele Bilder pro Seite platziert werden.</string>
+    <string name="images_to_pdf_layout_label">Layout</string>
+    <string name="images_to_pdf_layout_single">Einzeln</string>
+    <string name="images_to_pdf_layout_two">2/Seite</string>
+    <string name="images_to_pdf_layout_four">4/Seite</string>
+    <string name="images_to_pdf_filename_label">Dateiname</string>
+    <string name="images_to_pdf_filename_default">Bilder_%s</string>
+    <string name="images_to_pdf_action">PDF erstellen</string>
+    <string name="images_to_pdf_image_count">%d Bild(er) ausgewählt</string>
+    <string name="images_to_pdf_add_button">Bilder zu PDF</string>
+    <string name="images_to_pdf_unreadable_skipped">%d Bild(er) konnten nicht gelesen werden und wurden übersprungen.</string>
 </resources>
-
-

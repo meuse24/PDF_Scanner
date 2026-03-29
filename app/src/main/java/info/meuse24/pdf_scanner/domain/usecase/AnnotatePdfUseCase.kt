@@ -12,9 +12,10 @@ class AnnotatePdfUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         record: ScanRecord,
-        strokes: List<HighlightStroke>,
-        rects: List<HighlightRect>,
-        comments: List<TextComment>,
+        strokes: List<AnnotationStroke>,
+        rects: List<AnnotationRect>,
+        ovals: List<AnnotationOval>,
+        comments: List<AnnotationText>,
         scansDir: File
     ): String {
         val resultFile = pdfEditor.applyAnnotations(
@@ -22,6 +23,7 @@ class AnnotatePdfUseCase @Inject constructor(
             outputDir = scansDir,
             strokes = strokes,
             rects = rects,
+            ovals = ovals,
             comments = comments
         )
         val thumbFile = File(scansDir, "${resultFile.nameWithoutExtension}.jpg")

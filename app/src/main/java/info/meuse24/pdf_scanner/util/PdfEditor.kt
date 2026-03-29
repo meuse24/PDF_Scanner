@@ -30,6 +30,11 @@ import com.tom_roush.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.text.TextPosition
 import com.tom_roush.pdfbox.util.Matrix
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationShapeStyle
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationStroke
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationText
 import info.meuse24.pdf_scanner.domain.usecase.HIGHLIGHT_ALPHA
 import info.meuse24.pdf_scanner.domain.usecase.HIGHLIGHT_COLOR_BLUE
 import info.meuse24.pdf_scanner.domain.usecase.HIGHLIGHT_COLOR_GREEN
@@ -47,8 +52,10 @@ import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.abs
+import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sin
 
 /**
  * PDF-Metadaten aus PDDocumentInformation.
@@ -792,27 +799,23 @@ open class PdfEditor @Inject constructor() {
     open fun applyAnnotations(
         input: File,
         outputDir: File,
-        strokes: List<HighlightStroke>,
-        rects: List<HighlightRect> = emptyList(),
-        comments: List<info.meuse24.pdf_scanner.domain.usecase.TextComment> = emptyList()
+        strokes: List<AnnotationStroke>,
+        rects: List<AnnotationRect> = emptyList(),
+        ovals: List<AnnotationOval> = emptyList(),
+        comments: List<AnnotationText> = emptyList()
     ): File {
-        require(strokes.isNotEmpty() || rects.isNotEmpty() || comments.isNotEmpty()) {
+        require(strokes.isNotEmpty() || rects.isNotEmpty() || ovals.isNotEmpty() || comments.isNotEmpty()) {
             "Mindestens eine Annotation erforderlich"
         }
         return writeDerivedPdf(input, outputDir, "_Annotiert", "Annotate") { source, result ->
-            val gsStrokeHighlight = PDExtendedGraphicsState().apply {
-                strokingAlphaConstant = HIGHLIGHT_ALPHA
-            }
-            val gsRectHighlight = PDExtendedGraphicsState().apply {
-                nonStrokingAlphaConstant = HIGHLIGHT_RECT_ALPHA
-            }
             val font = loadOverlayFont(result)
             repeat(source.numberOfPages) { pageIdx ->
                 val page = result.importPage(source.getPage(pageIdx))
                 val pageStrokes = strokes.filter { it.pageIndex == pageIdx }
                 val pageRects = rects.filter { it.pageIndex == pageIdx }
+                val pageOvals = ovals.filter { it.pageIndex == pageIdx }
                 val pageComments = comments.filter { it.pageIndex == pageIdx }
-                if (pageStrokes.isNotEmpty() || pageRects.isNotEmpty() || pageComments.isNotEmpty()) {
+                if (pageStrokes.isNotEmpty() || pageRects.isNotEmpty() || pageOvals.isNotEmpty() || pageComments.isNotEmpty()) {
                     val pageWidth = page.mediaBox.width
                     val pageHeight = page.mediaBox.height
                     val rotation = normalizeRotation(page.rotation)
@@ -822,67 +825,14 @@ open class PdfEditor @Inject constructor() {
                         PDPageContentStream.AppendMode.APPEND,
                         true, true
                     ).use { cs ->
-                        if (pageRects.isNotEmpty()) {
-                            cs.setGraphicsStateParameters(gsRectHighlight)
-                            cs.setNonStrokingColor(
-                                HIGHLIGHT_COLOR_RED,
-                                HIGHLIGHT_COLOR_GREEN,
-                                HIGHLIGHT_COLOR_BLUE
-                            )
-                            pageRects.forEach { rect ->
-                                val topLeft = mapDisplayToPdfCoord(
-                                    rect.left, rect.top, pageWidth, pageHeight, rotation
-                                )
-                                val bottomRight = mapDisplayToPdfCoord(
-                                    rect.right, rect.bottom, pageWidth, pageHeight, rotation
-                                )
-                                val rectLeft = minOf(topLeft.first, bottomRight.first)
-                                val rectBottom = minOf(topLeft.second, bottomRight.second)
-                                cs.addRect(
-                                    rectLeft, rectBottom,
-                                    abs(bottomRight.first - topLeft.first),
-                                    abs(bottomRight.second - topLeft.second)
-                                )
-                                cs.fill()
-                            }
+                        pageRects.forEach { rect ->
+                            appendAnnotationRect(cs, rect, displayedWidth, pageWidth, pageHeight, rotation)
                         }
-
-                        if (pageStrokes.isNotEmpty()) {
-                            cs.setGraphicsStateParameters(gsStrokeHighlight)
-                            cs.setStrokingColor(
-                                HIGHLIGHT_COLOR_RED,
-                                HIGHLIGHT_COLOR_GREEN,
-                                HIGHLIGHT_COLOR_BLUE
-                            )
-                            pageStrokes.forEach { stroke ->
-                                val strokeWidthPt =
-                                    (displayedWidth * stroke.strokeWidthFraction).coerceIn(3f, 36f)
-                                cs.setLineWidth(strokeWidthPt)
-                                cs.setLineCapStyle(1)
-                                cs.setLineJoinStyle(1)
-                                if (stroke.points.size == 1) {
-                                    val (px, py) = mapDisplayToPdfCoord(
-                                        stroke.points[0].first, stroke.points[0].second,
-                                        pageWidth, pageHeight, rotation
-                                    )
-                                    cs.moveTo(px - 0.5f, py)
-                                    cs.lineTo(px + 0.5f, py)
-                                    cs.stroke()
-                                } else {
-                                    val first = stroke.points.first()
-                                    val (fx, fy) = mapDisplayToPdfCoord(
-                                        first.first, first.second, pageWidth, pageHeight, rotation
-                                    )
-                                    cs.moveTo(fx, fy)
-                                    stroke.points.drop(1).forEach { (nx, ny) ->
-                                        val (px, py) = mapDisplayToPdfCoord(
-                                            nx, ny, pageWidth, pageHeight, rotation
-                                        )
-                                        cs.lineTo(px, py)
-                                    }
-                                    cs.stroke()
-                                }
-                            }
+                        pageOvals.forEach { oval ->
+                            appendAnnotationOval(cs, oval, displayedWidth, pageWidth, pageHeight, rotation)
+                        }
+                        pageStrokes.forEach { stroke ->
+                            appendAnnotationStroke(cs, stroke, displayedWidth, pageWidth, pageHeight, rotation)
                         }
                     }
                     // pageComments NACH dem use-Block schreiben, da appendTextComment selbst einen neuen Stream öffnet
@@ -1010,6 +960,75 @@ internal fun mapDisplayToPdfCoord(
     180 -> (1f - nx) * pageWidth to (1f - ny) * pageHeight
     270 -> (1f - ny) * pageWidth to (1f - nx) * pageHeight
     else -> nx * pageWidth to (1f - ny) * pageHeight  // R=0
+}
+
+private data class PdfArgbColor(
+    val alpha: Float,
+    val red: Int,
+    val green: Int,
+    val blue: Int
+)
+
+private data class AnnotationPdfBounds(
+    val left: Float,
+    val bottom: Float,
+    val width: Float,
+    val height: Float
+)
+
+private fun Int.toPdfArgbColor(): PdfArgbColor = PdfArgbColor(
+    alpha = ((this ushr 24) and 0xFF) / 255f,
+    red = (this ushr 16) and 0xFF,
+    green = (this ushr 8) and 0xFF,
+    blue = this and 0xFF
+)
+
+private fun normalizedAnnotationBounds(
+    left: Float,
+    top: Float,
+    right: Float,
+    bottom: Float,
+    pageWidth: Float,
+    pageHeight: Float,
+    rotation: Int
+): AnnotationPdfBounds? {
+    val topLeft = mapDisplayToPdfCoord(left, top, pageWidth, pageHeight, rotation)
+    val bottomRight = mapDisplayToPdfCoord(right, bottom, pageWidth, pageHeight, rotation)
+    val rectLeft = minOf(topLeft.first, bottomRight.first)
+    val rectBottom = minOf(topLeft.second, bottomRight.second)
+    val rectWidth = abs(bottomRight.first - topLeft.first)
+    val rectHeight = abs(bottomRight.second - topLeft.second)
+    if (rectWidth <= 0.5f || rectHeight <= 0.5f) return null
+    return AnnotationPdfBounds(
+        left = rectLeft,
+        bottom = rectBottom,
+        width = rectWidth,
+        height = rectHeight
+    )
+}
+
+private fun appendEllipsePath(
+    contentStream: PDPageContentStream,
+    bounds: AnnotationPdfBounds,
+    segments: Int = 32
+) {
+    val centerX = bounds.left + bounds.width / 2f
+    val centerY = bounds.bottom + bounds.height / 2f
+    val radiusX = bounds.width / 2f
+    val radiusY = bounds.height / 2f
+    if (radiusX <= 0f || radiusY <= 0f) return
+
+    repeat(segments + 1) { index ->
+        val angle = (index.toDouble() / segments.toDouble()) * Math.PI * 2.0
+        val x = centerX + radiusX * cos(angle).toFloat()
+        val y = centerY + radiusY * sin(angle).toFloat()
+        if (index == 0) {
+            contentStream.moveTo(x, y)
+        } else {
+            contentStream.lineTo(x, y)
+        }
+    }
+    contentStream.closePath()
 }
 
 private const val MIN_TEXT_FONT_SIZE_PT = 4f
@@ -1412,11 +1431,150 @@ private fun PdfEditor.appendTextWatermark(
     }
 }
 
+private fun PdfEditor.appendAnnotationStroke(
+    contentStream: PDPageContentStream,
+    stroke: AnnotationStroke,
+    displayedWidth: Float,
+    pageWidth: Float,
+    pageHeight: Float,
+    rotation: Int
+) {
+    if (stroke.points.isEmpty()) return
+
+    val color = stroke.color.toPdfArgbColor()
+    contentStream.setGraphicsStateParameters(
+        PDExtendedGraphicsState().apply {
+            strokingAlphaConstant = color.alpha
+        }
+    )
+    contentStream.setStrokingColor(color.red, color.green, color.blue)
+    contentStream.setLineWidth((displayedWidth * stroke.strokeWidthFraction).coerceIn(3f, 36f))
+    contentStream.setLineCapStyle(1)
+    contentStream.setLineJoinStyle(1)
+
+    if (stroke.points.size == 1) {
+        val (px, py) = mapDisplayToPdfCoord(
+            stroke.points[0].first,
+            stroke.points[0].second,
+            pageWidth,
+            pageHeight,
+            rotation
+        )
+        contentStream.moveTo(px - 0.5f, py)
+        contentStream.lineTo(px + 0.5f, py)
+        contentStream.stroke()
+        return
+    }
+
+    val first = stroke.points.first()
+    val (fx, fy) = mapDisplayToPdfCoord(first.first, first.second, pageWidth, pageHeight, rotation)
+    contentStream.moveTo(fx, fy)
+    stroke.points.drop(1).forEach { (nx, ny) ->
+        val (px, py) = mapDisplayToPdfCoord(nx, ny, pageWidth, pageHeight, rotation)
+        contentStream.lineTo(px, py)
+    }
+    contentStream.stroke()
+}
+
+private fun PdfEditor.appendAnnotationRect(
+    contentStream: PDPageContentStream,
+    rect: AnnotationRect,
+    displayedWidth: Float,
+    pageWidth: Float,
+    pageHeight: Float,
+    rotation: Int
+) {
+    val bounds = normalizedAnnotationBounds(
+        left = rect.left,
+        top = rect.top,
+        right = rect.right,
+        bottom = rect.bottom,
+        pageWidth = pageWidth,
+        pageHeight = pageHeight,
+        rotation = rotation
+    ) ?: return
+
+    val color = rect.color.toPdfArgbColor()
+    when (rect.style) {
+        AnnotationShapeStyle.FILLED -> {
+            contentStream.setGraphicsStateParameters(
+                PDExtendedGraphicsState().apply {
+                    nonStrokingAlphaConstant = color.alpha
+                }
+            )
+            contentStream.setNonStrokingColor(color.red, color.green, color.blue)
+            contentStream.addRect(bounds.left, bounds.bottom, bounds.width, bounds.height)
+            contentStream.fill()
+        }
+        AnnotationShapeStyle.FRAME -> {
+            contentStream.setGraphicsStateParameters(
+                PDExtendedGraphicsState().apply {
+                    strokingAlphaConstant = color.alpha
+                }
+            )
+            contentStream.setStrokingColor(color.red, color.green, color.blue)
+            contentStream.setLineWidth((displayedWidth * rect.strokeWidthFraction).coerceIn(2f, 36f))
+            contentStream.setLineJoinStyle(1)
+            contentStream.addRect(bounds.left, bounds.bottom, bounds.width, bounds.height)
+            contentStream.stroke()
+        }
+    }
+}
+
+private fun PdfEditor.appendAnnotationOval(
+    contentStream: PDPageContentStream,
+    oval: AnnotationOval,
+    displayedWidth: Float,
+    pageWidth: Float,
+    pageHeight: Float,
+    rotation: Int
+) {
+    val bounds = normalizedAnnotationBounds(
+        left = oval.left,
+        top = oval.top,
+        right = oval.right,
+        bottom = oval.bottom,
+        pageWidth = pageWidth,
+        pageHeight = pageHeight,
+        rotation = rotation
+    ) ?: return
+
+    val color = oval.color.toPdfArgbColor()
+    when (oval.style) {
+        AnnotationShapeStyle.FILLED -> {
+            contentStream.setGraphicsStateParameters(
+                PDExtendedGraphicsState().apply {
+                    nonStrokingAlphaConstant = color.alpha
+                }
+            )
+            contentStream.setNonStrokingColor(color.red, color.green, color.blue)
+            contentStream.setLineJoinStyle(1)
+        }
+        AnnotationShapeStyle.FRAME -> {
+            contentStream.setGraphicsStateParameters(
+                PDExtendedGraphicsState().apply {
+                    strokingAlphaConstant = color.alpha
+                }
+            )
+            contentStream.setStrokingColor(color.red, color.green, color.blue)
+            contentStream.setLineWidth((displayedWidth * oval.strokeWidthFraction).coerceIn(2f, 36f))
+            contentStream.setLineJoinStyle(1)
+        }
+    }
+
+    appendEllipsePath(contentStream, bounds)
+    if (oval.style == AnnotationShapeStyle.FILLED) {
+        contentStream.fill()
+    } else {
+        contentStream.stroke()
+    }
+}
+
 private fun PdfEditor.appendTextComment(
     page: PDPage,
     document: PDDocument,
     font: PDFont,
-    comment: info.meuse24.pdf_scanner.domain.usecase.TextComment,
+    comment: AnnotationText,
     pageWidth: Float,
     pageHeight: Float,
     rotation: Int,
@@ -1471,7 +1629,13 @@ private fun PdfEditor.appendTextComment(
         PDPageContentStream.AppendMode.APPEND,
         true, true
     ).use { cs ->
-        cs.setNonStrokingColor(40, 40, 40)
+        val color = comment.color.toPdfArgbColor()
+        cs.setGraphicsStateParameters(
+            PDExtendedGraphicsState().apply {
+                nonStrokingAlphaConstant = color.alpha
+            }
+        )
+        cs.setNonStrokingColor(color.red, color.green, color.blue)
         cs.setFont(font, fontSizePt)
         allLines.forEachIndexed { lineIdx, line ->
             val x = anchorPdfX + vecs.lineDX * lineIdx

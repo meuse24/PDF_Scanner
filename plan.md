@@ -1,363 +1,323 @@
-# Plan: Rechtssichere PDF-Schwärzung
+# Implementierungsplan: Konsolidierung und Ausbau des Markierungs- und Kommentierungsscreens
 
-## Fortschritt 2026-03-29
-Bereits umgesetzt:
-- `PdfEditor.applySecureRedaction(...)` als sicherer Kernpfad.
-- Betroffene Seiten werden gerendert, Schwärzungsrechtecke ins Bitmap eingebrannt und als neue bildbasierte PDF-Seiten gespeichert.
-- Nicht betroffene Seiten bleiben unverändert.
-- Renderqualität im sicheren Redaction-Pfad auf 300 DPI angehoben.
-- `PdfRenderer.Page.RENDER_MODE_FOR_PRINT` für den sicheren Redaction-Pfad aktiviert.
-- Eigener Domänentyp `RedactionRect` statt semantischer Wiederverwendung von `HighlightRect`.
-- Rotationsfall im sicheren Redaction-Pfad korrigiert:
-  - betroffene Seiten werden in Display-Orientierung neu aufgebaut
-  - Ergebnis-Seite wird mit `rotation = 0` und bereits gedrehter Seitengrösse gespeichert
-- Neue Workflow-/UseCase-Schicht:
-  - `RedactPdfUseCase`
-  - `RedactPdfWorkflow`
-- UI-Integration als eigener Compose-Screen:
-  - eigener Navigationspfad `redact/{scanId}`
-  - Aktion im Dokument-Menü
-  - Rechteckauswahl mit Zoom-Modus, Mehrseiten-Navigation, Undo/Clear/Reset
-  - Hauptscreen bewusst schlank gehalten; Save-Optionen liegen in einem nachgelagerten Bestätigungsdialog
-  - klarer Warnhinweis, dass eine neue geschwärzte Kopie erzeugt wird und das Original unverändert bleibt
-  - Produktentscheidung vorerst fest auf `neue Kopie`
-- `DocumentEditViewModel` um Redaction-Aktionspfad erweitert (`applyRedactions(...)`)
-- optionale OCR-Rekonstruktion beim Speichern der geschwärzten Kopie:
-  - erscheint erst nach Tippen auf `Speichern` in einem zusätzlichen Dialog
-  - nutzt denselben OCR-Sprachdialog wie der bestehende Searchable-PDF-Flow
-  - läuft nach erfolgreicher Schwärzung optional auf der erzeugten Kopie
-  - bei OCR-Fehler wird die neu erzeugte Kopie wieder entfernt, damit der Save-Flow konsistent bleibt
-  - unerwartete Follow-up-Fehler aus dem OCR-Schritt werden defensiv als `RedactionFailed` gekapselt
-- weitergehende Sanitization im sicheren Redaction-Pfad:
-  - `AcroForm`, `OpenAction`, Catalog-`AA` und dokumentweite Associated Files werden entfernt
-  - `EmbeddedFiles`- und `JavaScript`-Name-Trees werden aus dem Ergebnis entfernt
-  - interaktive Annotationen (`Link`, `Widget`, `FileAttachment`, `Screen`) sowie seitenbezogene Actions/Associated Files werden auf allen Ergebnis-Seiten entfernt
-  - Dokumentinformationen und XMP-/Metadaten-Streams auf Catalog- und Seitenebene werden vor dem Speichern entfernt
-- Hilfe-/String-Ressourcen für sicheren Schwärzungs-Flow ergänzt
-- Ergebnisdatensatz wird bewusst bereinigt gespeichert:
-  - `isSearchable = false`
-  - `extractedText = null`
-  - `tags = null`
-- App-Version auf `2.0` angehoben
-- Tests ergänzt:
-  - JVM-Workflow-Test für Erfolgs-/Fehlerpfade
-  - Instrumentation-Test auf Gerät: extrahierbarer Text verschwindet, schwarzes Rechteck ist sichtbar
-  - Instrumentation-Test auf Gerät: unbeeinflusste Seite eines mehrseitigen Dokuments bleibt extrahierbar
-  - Instrumentation-Test auf Gerät: Byte-Scan mit bewusst roh erzeugtem ASCII-PDF als Regression-Guard
-  - Instrumentation-Test auf Gerät: 90°-Seite bleibt nach sicherer Schwärzung korrekt im Querformat und unverzerrt
+## Zielbild
+Der Annotate-Screen wird zu einer konsistenten, farbfähigen und erweiterbaren Annotationsoberfläche ausgebaut. Der Fokus liegt auf drei Punkten:
 
-Verifiziert:
-- `:app:compileDebugKotlin`
-- `:app:compileDebugUnitTestKotlin`
-- `:app:compileDebugAndroidTestKotlin`
-- `:app:testDebugUnitTest --tests "info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModelTest"`
-- `testDebugUnitTest --tests "info.meuse24.pdf_scanner.domain.workflow.RedactPdfWorkflowTest"`
-- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionRemovesExtractableTextAndBurnsBlackRect`
-- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionKeepsTextOnUntouchedPagesAndRemovesSecretBytes`
-- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionOnRotatedPageKeepsLandscapeDisplayAndBurnsExpectedArea`
-- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionSanitizesFormsLinksAttachmentsAndActions`
-- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionSanitizesDocumentInfoAndXmpMetadata`
-- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionPreservesDisplayedCropBoxDimensionsOnRotatedPage`
+1. Ein sauberes Annotate-Datenmodell, das Highlighting nicht unnötig mitzieht.
+2. Eine kompakte Compose-UI mit Werkzeugwahl, Farbpalette und Attributen ohne Verlust an Canvas-Fläche.
+3. Ein PDF-Export, der Farben, Shapes und Textkommentare reproduzierbar in die Ausgabedatei schreibt.
 
-Noch offen:
-- keine blockierenden Punkte mehr für den aktuellen Redaction-Umfang
+## Konsolidierter Umfang
 
-## 1. Zielbild
-Implementierung einer Schwärzungsfunktion, bei der der Inhalt unter dem Schwärzungsbereich nicht nur verdeckt, sondern aus allen relevanten Datenpfaden entfernt wird.
+### Bewusste Korrekturen gegenüber dem Ursprungsplan
+- Der bestehende Highlight-Flow bleibt unverändert. Die neue Modellierung wird nur im Annotate-Flow eingeführt, um Regressionen auf dem Highlight-Screen zu vermeiden.
+- Outline-Rechtecke und Outline-Ovale benötigen eine persistente Strichbreite. Deshalb erhalten `AnnotationRect` und `AnnotationOval` zusätzlich `strokeWidthFraction`.
+- Für Shapes reicht ein gemeinsames Style-Enum aus. Statt getrennter Rect-/Oval-Enums wird `AnnotationShapeStyle` mit `FILLED` und `FRAME` verwendet.
+- Es existierte noch kein dedizierter Unit-Test für `AnnotatePdfWorkflow`. Dieser wird als Teil der Umsetzung ergänzt.
 
-Rechtssicher bedeutet in diesem Projekt:
-- Der geschwärzte Inhalt ist im Ergebnis-PDF nicht mehr per Copy & Paste, Suche oder `PDFTextStripper` extrahierbar.
-- Der geschwärzte Inhalt bleibt nicht in OCR-Textlayern, Formularfeldern, Annotationen, Metadaten oder lokalen App-Indizes erhalten.
-- Es wird keine inkrementelle PDF-Aktualisierung verwendet, bei der alte Revisionen im Dateikörper erhalten bleiben könnten.
-- Der Nutzer versteht, ob eine ungeschwärzte Originaldatei zusätzlich erhalten bleibt oder ersetzt wird.
+### Umzusetzende Features
+- Farbige Marker, Rechtecke, Ovale und Textkommentare im Annotate-Flow
+- Werkzeug-Dropdown mit sieben Modi:
+  - Marker
+  - Text
+  - Rechteck gefüllt
+  - Rechteck Kontur
+  - Oval gefüllt
+  - Oval Kontur
+  - Zoom
+- Zweizeilige Toolbar oben:
+  - Zeile 1: Werkzeugwahl, optional Snap, Zoom-Reset
+  - Zeile 2: Farbpalette und Breiten-/Größenwahl
+- Live-Preview für Rechteck- und Oval-Drafts
+- PDF-Export für:
+  - farbige Striche
+  - gefüllte und umrandete Rechtecke
+  - gefüllte und umrandete Ovale
+  - farbige Textkommentare
+- Fortschrittsdokumentation und Code-Review-Zusammenfassungen direkt in dieser Datei
 
-Wichtige Abgrenzung:
-- Für beliebige PDFs sind "garantierte Entfernung" und "100 % Erhalt der ursprünglichen Vektor-/Textstruktur" gleichzeitig kaum zuverlässig erreichbar.
-- Für einen rechtssicheren MVP muss Sicherheit vor perfekter interner PDF-Strukturtreue stehen.
+## Technischer Zuschnitt
 
-## 2. Projektkontext im bestehenden Code
-Vorhandene Bausteine, die wiederverwendet werden sollten:
-- `AnnotateScreen` / `HighlightRect`: bestehende Rechteck-Selektion mit normalisierten Koordinaten.
-- `PdfEditor.removeTextLayer()`: bereits vorhandener, sicherer Render-und-Neuaufbau-Pfad für PDFs.
-- `PdfEditor.renderPageThumbnail()` und `PdfRenderer`: bestehender Rendering-Stack.
-- `SearchablePdfBuilder`: vorhandene OCR-/Textlayer-Logik für optionale Wiederherstellung der Suchbarkeit ausserhalb geschwärzter Bereiche.
-- `PdfEditor`-Schreibpfade mit Temp-Datei + atomarem Move: gute Basis, weil keine inkrementellen Saves verwendet werden.
-- `ScanRecord.extractedText`: muss zwingend mitbetrachtet werden, sonst bleibt der entfernte Inhalt lokal in Room/FTS suchbar.
+### Domänenmodell
+- Neue Datei: `app/src/main/java/info/meuse24/pdf_scanner/domain/usecase/AnnotationModel.kt`
+- Enthält:
+  - `AnnotationStroke`
+  - `AnnotationRect`
+  - `AnnotationOval`
+  - `AnnotationText`
+  - `AnnotationShapeStyle`
+  - Default-Farb- und Default-Breitenkonstanten
 
-## 3. Architekturentscheidung
-Empfohlene Standardstrategie: sichere Seiten-Neuerzeugung für betroffene Seiten.
+### Änderungsstrecke
+1. `AnnotationModel.kt` anlegen
+2. `PdfEditor.applyAnnotations(...)` auf neue Typen erweitern
+3. `AnnotatePdfUseCase` auf neue Typen erweitern
+4. `AnnotatePdfWorkflow` auf neue Typen erweitern
+5. `DocumentEditViewModel.applyAnnotations(...)` auf neue Typen erweitern
+6. `AnnotateScreen.kt` auf neues UI- und Zustandsmodell umstellen
+7. Tests ergänzen und anpassen
 
-Empfohlenes Verhalten:
-1. Nur Seiten mit Schwärzungen werden neu aufgebaut.
-2. Diese Seiten werden mit `PdfRenderer` in hoher Auflösung gerendert.
-3. Die Schwärzungsrechtecke werden direkt in das Bitmap eingebrannt.
-4. Aus dem Bitmap wird eine neue PDF-Seite mit identischer Seitengrösse erzeugt.
-5. Nicht betroffene Seiten werden unverändert importiert.
-6. Das Ergebnis wird als vollständige neue PDF-Datei geschrieben.
+## Implementierungsphasen
 
-Warum dieser Ansatz:
-- Er entfernt sichtbaren Inhalt unter der Schwärzung zuverlässig, auch bei Bildern, Vektoren, Text, Mischlayouts und OCR-Textlayern.
-- Er ist mit `pdfbox-android` realistisch umsetzbar.
-- Er ist deutlich robuster als das selektive Löschen einzelner `Tj`/`TJ`-Operatoren.
+### Phase 1: Modell- und Backend-Migration
+Status: Erledigt
 
-Konsequenz:
-- Betroffene Seiten verlieren in der sicheren Standardvariante ihre ursprüngliche interne Text-/Vektorstruktur.
-- Die visuelle Formatierung bleibt weitgehend erhalten, wenn die Seite hochauflösend und verlustfrei neu aufgebaut wird.
+- Annotate-spezifische Modelle einführen
+- `PdfEditor.applyAnnotations(...)` um Ovale, Farben und Shape-Stile erweitern
+- Textkommentare farbfähig machen
+- Signaturkette `UseCase -> Workflow -> ViewModel` umstellen
 
-## 4. Warum direkte Content-Stream-Manipulation als Hauptweg riskant ist
-Der bisherige Plan ist an dieser Stelle zu optimistisch.
+### Phase 2: Compose-UI und Interaktion
+Status: Erledigt
 
-Problemfelder:
-- Ein `Tj`- oder `TJ`-Operator entspricht nicht zuverlässig einem einzelnen Wort oder einer klaren Box.
-- Kerning, Ligaturen, Transformationen und Textmatrizen machen Glyphenpositionen schwer eindeutig manipulierbar.
-- Derselbe Inhalt kann in Form-XObjects, verschachtelten Streams oder mehrfach referenzierten Ressourcen liegen.
-- Teilweise überdeckte Bilder oder Vektorpfade lassen sich nicht sauber "halb löschen", ohne neu zu rendern oder Clipping-/Rewriting-Logik zu bauen.
-- Unsichtbarer Text kann separat vom sichtbaren Inhalt existieren, z. B. OCR-Textlayer.
-- Selbst wenn Operatoren entfernt werden, können lokale App-Daten wie `extractedText`, Thumbnail-Dateien oder ungeschwärzte Originalkopien weiterhin Daten preisgeben.
+- `AnnotateTool` einführen
+- Dropdown-basierte Werkzeugwahl bauen
+- Attributleiste mit Farben und Breiten erstellen
+- Shape-Drafts und Live-Preview implementieren
+- Snap-Verhalten mit aktueller Farbe verbinden
 
-Fazit:
-- Selektive Stream-Manipulation eignet sich höchstens als spätere Optimierung für eng begrenzte PDF-Typen.
-- Sie sollte nicht die Grundlage eines rechtssicheren MVP sein.
+### Phase 3: Testabdeckung und Absicherung
+Status: Erledigt
 
-## 5. MVP nach Best Practice
+- `AnnotatePdfWorkflowTest` neu anlegen
+- `DocumentEditViewModelTest` auf neue Typen erweitern
+- `ImportAndPdfEditorInstrumentedTest` für farbige Shapes/Ovale ergänzen
+- Relevante Unit-Tests ausführen
 
-### Phase 1: UX und Datenmodell
-- Einführung eines eigenen `RedactionRect` oder Wiederverwendung von `HighlightRect` mit eigener Semantik.
-- Wiederverwendung der bestehenden Rechteck-Selektion aus der Annotate-/Highlight-Logik.
-- Speicherung pro Seite in normalisierten Anzeige-Koordinaten, wie im aktuellen Editor.
-- Zusammenführen überlappender Rechtecke pro Seite vor der Verarbeitung.
-- Aktueller Produktentscheid:
-  - standardmässig "als neue geschwärzte Kopie speichern"
-  - optional später eigener Replace-Flow
-- Deutlicher Warnhinweis: Eine neue Kopie lässt das Original ungeschwärzt im Archiv bestehen.
-- Optionaler Bestätigungsdialog vor endgültiger Anwendung.
+### Phase 4: Release-Härtung
+Status: Erledigt
 
-### Phase 2: Sichere Redaction-Engine
-Neue Kernmethode in `PdfEditor`, z. B. `applySecureRedaction(...)`.
+- vollständige Debug-Unit-Test-Suite ausführen
+- vollständige verbundene Android-Instrumentation-Suite auf realem Gerät ausführen
+- Abschlussstatus in dieser Datei dokumentieren
 
-Empfohlener Ablauf pro Dokument:
-1. Neues Zieldokument erzeugen, niemals inkrementell speichern.
-2. Für jede Seite prüfen, ob Schwärzungsrechtecke vorliegen.
-3. Wenn nein: Seite mit `importPage(...)` unverändert übernehmen.
-4. Wenn ja:
-   - Seite mit `PdfRenderer` in hoher Auflösung rendern.
-   - Bitmap-Hintergrund weiss lassen oder aus Original übernehmen.
-   - Schwärzungsrechtecke direkt in das Bitmap zeichnen.
-   - Neue `PDPage` mit identischer `MediaBox` erzeugen.
-   - Nach Möglichkeit auch `CropBox`/Rotation/Seitengrösse übernehmen.
-   - Bitmap verlustfrei mit `LosslessFactory` einbetten.
-5. Zieldokument speichern, Thumbnail neu generieren, Datenbank aktualisieren.
+### Phase 5: Interaktions-Parität vor dem Speichern
+Status: Erledigt
 
-Empfohlene Qualitätsparameter:
-- Standard 300 DPI für normale Dokumente.
-- 450 DPI für kleine Schriften, Tabellen, Stempel, feine Linien.
-- Verlustfrei statt JPEG für rechtssichere Ausgabe.
-- Immer nur eine Seite gleichzeitig rendern, um RAM stabil zu halten.
+- Drag auf bestehendem unsaved Element verschiebt das Element statt ein neues anzulegen
+- Verhalten gilt für Marker, Rechtecke, Ovale und Textkommentare
+- Single-Tap auf freie Fläche legt je aktivem Werkzeug ein neues Element an
+- Verhalten vor dem Speichern wieder auf den früheren Kommentar-Flow angleichen
 
-### Phase 3: Suchbarkeit ausserhalb der Schwärzung
-Aktueller Stand:
-- Standardmässig bleibt die geschwärzte Kopie bildbasiert und damit zunächst nicht durchsuchbar.
-- Beim Speichern kann optional direkt eine OCR-Rekonstruktion auf der erzeugten Kopie gestartet werden.
-- Der Toggle bleibt bewusst optional, damit der sichere Minimalpfad ohne OCR weiterhin verfügbar ist.
+### Phase 6: Auswahl und nachträgliche Bearbeitung vor Save
+Status: Erledigt
 
-Spätere Erweiterung:
-- mask-aware OCR, die Wörter im geschwärzten Bereich explizit ausschliesst statt die gesamte Seite neu zu erkennen
-- feinere Qualitätsregeln pro Dokumenttyp
+- Bestehende unsaved Elemente per Tap selektierbar machen
+- Blauen Punkt zu einem generischen Selektions-Henkel für alle Elementtypen ausbauen
+- Eigenschaften des selektierten Elements im Editor nachträglich ändern:
+  - Farbe
+  - Stiftbreite bzw. Textgröße
+  - Kommentartext bei Text-Elementen
+- Selektiertes Element gezielt löschen
+- Undo nach nachträglicher Mutation defensiv behandeln, solange keine stabilen Element-IDs existieren
 
-### Phase 4: Sanitization ausserhalb des Seitenbilds
-Rechtssicherheit endet nicht beim sichtbaren Seiteninhalt.
+## Fortschrittslog
 
-Zusätzlich bereinigen:
-- `PDDocumentInformation`: Titel, Autor, Betreff, Keywords, Creator nach finaler Sanitization-Policy leeren oder gezielt neu setzen.
-- XMP-Metadaten entfernen oder neu schreiben.
-- Formularfelder (`AcroForm`) und deren Werte prüfen; bei betroffenen Dokumenten im Zweifel entfernen.
-- Annotationen/Links im geschwärzten Bereich entfernen; bei neu gerenderten Seiten idealerweise keine alten Annotationen übernehmen.
-- Eingebettete Dateien / Attachments prüfen und im Zweifel nicht übernehmen.
-- Dokumentinterne Skripte / Actions / versteckte Inhalte nicht blind mitschleppen.
-- Room-Daten:
-  - `extractedText` neu berechnen oder löschen
-  - FTS damit automatisch bereinigen
-- Thumbnail der geschwärzten Datei neu erzeugen.
+### Schritt 1: Plan konsolidiert
+Status: Erledigt
 
-### Phase 5: Dateisemantik und Archivverhalten
-Für "rechtssicher" ist das Produktverhalten genauso wichtig wie die PDF-Technik.
+Ergebnis:
+- Ursprungsplan auf tatsächliche Codebasis abgeglichen
+- Annotate-only-Modellierung festgelegt
+- fehlende Outline-Strichbreite als Architekturloch geschlossen
+- Testlücke bei `AnnotatePdfWorkflow` aufgenommen
 
-Use Cases:
-- "Neue Kopie speichern": Original bleibt absichtlich bestehen. UI muss das klar sagen.
-- "Original ersetzen": nur diese Variante verhindert, dass der Nutzer versehentlich die ungeschwärzte Datei weiterverwendet.
+Code-Review-Zusammenfassung:
+- Der Plan trennt Highlight und Annotate jetzt sauber, wodurch unnötige Regressionen im bestehenden Highlight-Screen vermieden werden.
+- Das Modell ist gegenüber dem Ursprungsplan vollständiger, weil Outline-Shapes ohne persistente Strichbreite fachlich unvollständig gewesen wären.
+- Die Umsetzungsreihenfolge folgt jetzt der realen Abhängigkeit im Code: erst Domain/PdfEditor, dann Compose, dann Tests.
 
-Empfehlung:
-- MVP zuerst als neue Kopie.
-- Zusätzlich gut sichtbarer Hinweis: "Original bleibt unverändert im Archiv."
-- Später optional ein expliziter Replace-Flow mit atomarem Austausch von PDF, Thumbnail und DB-Eintrag.
+### Schritt 2: Modell- und Backend-Migration
+Status: Erledigt
 
-## 6. Herausforderungen und Lösungen
+Ergebnis:
+- `AnnotationModel.kt` mit `AnnotationStroke`, `AnnotationRect`, `AnnotationOval`, `AnnotationText` und `AnnotationShapeStyle` eingeführt
+- `PdfEditor.applyAnnotations(...)` auf farbige Strokes, Rechtecke, Ovale und Textkommentare erweitert
+- `AnnotatePdfUseCase`, `AnnotatePdfWorkflow` und `DocumentEditViewModel.applyAnnotations(...)` auf die neuen Typen und Ovale erweitert
+- Highlight-Flow bewusst unverändert gelassen
 
-### Herausforderung: Garantierte Entfernung ohne Layoutbruch
-Problem:
-- Bei beliebigen PDFs ist punktgenaues Entfernen einzelner Inhalte bei gleichzeitiger vollständiger Erhaltung der ursprünglichen internen Struktur sehr schwer.
+Code-Review-Zusammenfassung:
+- Die neue Annotate-Modellierung ist sauber vom alten Highlight-Modell getrennt; dadurch bleiben bestehende Highlight-Pfade stabil.
+- Die Exportlogik ist jetzt vollständig genug für das neue UI, weil sie nicht nur Farben, sondern auch Shape-Stile und Ovale abdeckt.
+- Ein wichtiger Architekturgewinn ist die persistente Strichbreite auf Outline-Shapes; ohne diese wäre der UI-Zustand fachlich nicht vollständig reproduzierbar gewesen.
 
-Lösung:
-- Für den sicheren Standard die ganze betroffene Seite neu aufbauen.
-- Dadurch bleibt das visuelle Layout praktisch erhalten, obwohl die interne Text-/Vektorstruktur der betroffenen Seite ersetzt wird.
+### Schritt 3: UI- und Interaktionsumbau
+Status: Erledigt
 
-### Herausforderung: Inhalte in Bildern
-Problem:
-- Ein schwarzes Overlay entfernt den Inhalt im Bild nicht.
+Ergebnis:
+- `AnnotateScreen` in kleinere UI-Bausteine zerlegt
+- Werkzeug-Dropdown für Marker, Text, Rechteck/Oval in Fill-/Frame-Variante und Zoom umgesetzt
+- zweizeilige Toolbar mit Farbpalette und Breiten-/Größenwahl umgesetzt
+- Live-Preview für Shape-Drafts, farbige Kommentare und farbige Marker integriert
+- Undo/Clear/Reset auf Strokes, Rects, Ovals und Kommentare erweitert
 
-Lösung:
-- Betroffene Seiten rendern und das Rechteck ins Pixelbild einbrennen.
-- Damit ist der Inhalt unter dem Bereich im Ergebnisbild tatsächlich weg.
+Code-Review-Zusammenfassung:
+- Der Screen ist deutlich wartbarer, weil Toolbar, Canvas-Preview und Saveable-Modelle getrennt sind.
+- Die Toolbar ist funktional dichter, ohne die Canvas-Fläche weiter unten zu zerschneiden.
+- Die größte Verhaltensänderung liegt im neuen Toolmodell; dafür ist die Screen-Logik jetzt konsistenter als die frühere reine MARK/WRITE/ZOOM-Aufteilung.
 
-### Herausforderung: Unsichtbarer OCR-Text
-Problem:
-- Bei durchsuchbaren PDFs kann der sichtbare Bereich geschwärzt sein, der OCR-Text darunter aber weiter extrahierbar bleiben.
+### Schritt 4: Tests und Abschluss
+Status: Erledigt
 
-Lösung:
-- Bei neu gerenderten betroffenen Seiten den alten Textlayer nicht übernehmen.
-- Optional später OCR nur ausserhalb der geschwärzten Bereiche neu aufbauen.
+Ergebnis:
+- Neuer `AnnotatePdfWorkflowTest` ergänzt
+- `DocumentEditViewModelTest` um Annotate-Erfolgsfall erweitert
+- `ImportAndPdfEditorInstrumentedTest` auf neue Annotate-Typen migriert und um Oval-Render-Test ergänzt
+- Verifikation durchgeführt:
+  - `./gradlew testDebugUnitTest --tests "info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflowTest" --tests "info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModelTest"`
+  - `./gradlew compileDebugAndroidTestKotlin`
+  - `./gradlew connectedDebugAndroidTest '-Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest'`
+- Realer Gerätelauf erfolgreich:
+  - Gerät: `SM-A536B`
+  - Android-Version: `16`
+  - Ergebnis: `15/15` Instrumentation-Tests bestanden
+- Erweiterte Release-Härtung erfolgreich:
+  - `./gradlew testDebugUnitTest`
+  - `./gradlew connectedDebugAndroidTest`
+  - Ergebnis: `25/25` Android-Instrumentation-Tests bestanden auf `SM-A536B / Android 16`
+- Kleine Nacharbeiten aus dem Review umgesetzt:
+  - Default-Entscheidung für `AnnotationRect.style` im Modell dokumentiert
+  - Oval-Filled-Pfad im `PdfEditor` um explizites `setLineJoinStyle(1)` ergänzt
 
-### Herausforderung: Lokale Datenlecks in der App
-Problem:
-- `ScanRecord.extractedText`, FTS, Thumbnails oder das ungeschwärzte Original können sensible Daten weiter enthalten.
+Code-Review-Zusammenfassung:
+- Die Testlücke im Annotate-Workflow ist geschlossen; Fehlerpfade und Erfolgspfad sind jetzt explizit abgesichert.
+- Der reale Gerätelauf bestätigt, dass der neue Annotate-Pfad nicht nur kompiliert, sondern auf echter Android-Hardware stabil durchläuft.
+- Die Review-Nacharbeiten sind klein, aber sinnvoll: Die Modellentscheidung ist jetzt explizit dokumentiert und der Oval-Exportzustand ist konsistenter gesetzt.
+- Die vollständige Debug-Regression ist grün; damit gibt es aktuell keinen offenen technischen Restpunkt mehr innerhalb des bearbeiteten Scopes.
 
-Lösung:
-- Ergebnisdatei als eigenen Datensatz mit bereinigtem `extractedText`.
-- Thumbnail immer aus dem geschwärzten PDF neu erzeugen.
-- Klare UI-Semantik für Copy vs Replace.
+### Schritt 5: Interaktions-Parität vor Save
+Status: Erledigt
 
-### Herausforderung: Rotation, CropBox, Seitentransformationen
-Problem:
-- Die UI arbeitet in Anzeige-Koordinaten, PDFs in Seitensystemen und Rotationen.
+Ergebnis:
+- Zielverhalten ergänzt:
+  - Drag auf bestehendem unsaved Element verschiebt dieses
+  - Tap auf freie Fläche legt ein neues Element an
+  - Verhalten wird für Marker, Shapes und Text vereinheitlicht
+- Implementiert:
+  - generisches Hit-Testing für Stroke, Rect, Oval und Kommentar
+  - Drag-Move vor Save für alle unsaved Elementtypen
+  - Single-Tap-Neuanlage:
+    - Marker: Punkt-/Mini-Markierung
+    - Rect/Oval: Default-Shape um den Tap-Punkt
+    - Text: neuer Kommentar-Dialog
+- Absicherung:
+  - neuer Unit-Test `AnnotateInteractionHelpersTest`
+  - `./gradlew --no-configuration-cache testDebugUnitTest --tests "info.meuse24.pdf_scanner.ui.annotate.AnnotateInteractionHelpersTest"`
+  - `./gradlew connectedDebugAndroidTest`
+  - Ergebnis: `25/25` Android-Instrumentation-Tests weiter grün auf `SM-A536B / Android 16`
 
-Lösung:
-- Die bestehende Koordinatenlogik aus Annotation/Highlight wiederverwenden.
-- Bei Rendering-basiertem Ansatz Rechtecke bevorzugt direkt auf das gerenderte Bitmap mappen, nicht erst auf rohe PDF-Operatoren.
-- Seitengrösse, Rotation und sichtbaren Beschnitt beim Neuaufbau explizit übernehmen.
+Code-Review-Zusammenfassung:
+- Dieser Nachtrag ist bewusst auf den Pre-Save-Editor beschränkt und ändert weder Exportmodell noch Persistenz.
+- Das Risiko liegt primär in Hit-Testing und Gesture-Auflösung; deshalb wird der Schritt mit Helper-Tests und einem gezielten Gerätelauf abgeschlossen.
+- Die Interaktionsparität zum früheren Kommentar-Flow ist wiederhergestellt und auf alle Annotate-Typen erweitert.
+- Die Änderung bleibt lokal im Editor-Verhalten; Persistenz- und Exportpfade bleiben unverändert, was das Regressionsrisiko deutlich begrenzt.
 
-### Herausforderung: Performance auf mobilen Geräten
-Problem:
-- Hohe DPI und mehrseitige Dokumente kosten Zeit und Speicher.
+### Schritt 6: Auswahl- und Bearbeitungslogik
+Status: Erledigt
 
-Lösung:
-- Nur betroffene Seiten rendern.
-- Immer nur eine Seite gleichzeitig im RAM halten.
-- DPI konfigurierbar, aber mit sinnvollem Standard.
-- Später WorkManager für lange Jobs.
+Ergebnis:
+- Tap auf ein bestehendes unsaved Element selektiert dieses statt es sofort neu anzulegen oder zu überschreiben
+- Ein generischer blauer Henkel markiert die aktuelle Auswahl für Stroke, Rect, Oval und Text
+- Farb- und Breitenleiste arbeitet bei aktiver Auswahl direkt auf dem selektierten Element
+- Kommentare erhalten zusätzlich eine explizite Text-Bearbeitungsaktion
+- Selektiertes Element kann gezielt gelöscht werden
+- Die Undo-Historie der betroffenen Seite wird nach nachträglichem Editieren oder Löschen defensiv geleert, damit ohne stabile Element-IDs kein falsches Element per Undo entfernt wird
+- Zusätzlich umgesetzt:
+  - Kommentar-Hit-Testing über den sichtbaren Textbereich statt nur über den Anchor
+  - Selektionszustand per `rememberSaveable`, damit Auswahl bei Rotation nicht sofort verloren geht
+  - Selektions-Helfer für Farbe, Breite, Text-Update, Delete und Handle-Frame zentralisiert
+  - Toolbar-Resync bei wiederhergestellter Selektion explizit per `LaunchedEffect` abgesichert, damit Rotation kein implizites Invariant mehr bleibt
+  - Inkonsistenter ausgeschriebener `AnnotationShapeStyle`-Pfad in `createTapRect` und `createTapOval` bereinigt
+- Verifikation:
+  - `./gradlew --no-configuration-cache compileDebugKotlin`
+  - `./gradlew --no-configuration-cache testDebugUnitTest --tests "info.meuse24.pdf_scanner.ui.annotate.AnnotateInteractionHelpersTest"`
+  - `./gradlew --no-configuration-cache connectedDebugAndroidTest`
+  - Ergebnis: `25/25` Android-Instrumentation-Tests weiter grün auf `SM-A536B / Android 16`
 
-## 7. Wie stelle ich sicher, dass der Inhalt unter der Schwärzung wirklich entfernt wird?
-Die belastbarste Antwort für dieses Projekt lautet:
+Code-Review-Zusammenfassung:
+- Der Eingriff bleibt auf den unsaved Editorzustand begrenzt und vermeidet bewusst Änderungen an Export, Persistenz und Domänenmodell.
+- Die zentrale Architekturentscheidung ist defensiv: lieber Undo nach Mutation invalidieren als inkonsistente Rücknahmen auf Basis einer ID-losen History zuzulassen.
+- Der blaue Punkt wird nicht als Sonderfall für Kommentare behalten, sondern als einheitliches Selektionssignal für alle Elementtypen verwendet.
+- Die Selektions- und Änderungslogik ist bewusst in Helper-Funktionen ausgelagert; dadurch bleibt `AnnotateScreen` trotz zusätzlicher Zustände testbar und die Mutation der einzelnen Elementtypen konsistent.
+- Der zuvor nur implizit korrekte Rotationspfad ist jetzt explizit abgesichert; damit hängt Toolbar-State nicht mehr davon ab, dass der Benutzer immer über denselben Interaktionspfad in die Selektion gelangt.
 
-1. Nicht mit schwarzem Overlay arbeiten.
-2. Betroffene Seiten vollständig neu erzeugen.
-3. Dabei das Ergebnis aus gerendertem Seitenbild plus eingebrannter Schwärzung aufbauen.
-4. Alten Textlayer, Annotationen und Formularwerte auf betroffenen Seiten nicht übernehmen.
-5. Das PDF vollständig neu speichern, nicht inkrementell.
-6. `extractedText`, FTS und Thumbnails ebenfalls bereinigen.
-7. Mit adversarial Tests verifizieren, dass die entfernten Begriffe weder im PDF noch in lokalen Indizes wieder auftauchen.
+### Schritt 7: Toolbar für Zoom und Reset verdichten
+Status: Erledigt
 
-Wichtige Ehrlichkeit:
-- Absolute technische Sicherheit und unveränderte interne PDF-Struktur gleichzeitig sind für beliebige Fremd-PDFs mit `pdfbox-android` nicht realistisch.
-- Der beste rechtssichere Weg ist deshalb ein sicherer Neuaufbau der betroffenen Seiten.
+Ergebnis:
+- `Zoom` aus dem Werkzeug-Dropdown entfernt
+- eigene Lupen-Aktion neben dem Dropdown eingeführt
+- `Reset` von Textbutton auf reine Symbolaktion reduziert
+- letzter Nicht-Zoom-Modus bleibt erhalten, damit die Lupen-Aktion zwischen Zoom und dem vorherigen Werkzeug umschaltet
 
-## 8. Wie vermeide ich unnötige Formatverluste?
-Best Practice für gute visuelle Qualität:
-- Nur betroffene Seiten rasterisieren, nicht das ganze Dokument.
-- Hohe Renderauflösung verwenden.
-- Verlustfreie Bild-Einbettung verwenden.
-- Originale Seitengrösse exakt beibehalten.
-- Schwarze Rechtecke exakt aus der UI-Selektion ableiten.
-- Für nicht betroffene Seiten die Originalstruktur unangetastet lassen.
+Code-Review-Zusammenfassung:
+- Die Änderung ist rein im Toolbar-Layout und in der Werkzeugumschaltung verankert; Canvas-, Export- und Selektionslogik bleiben unberührt.
+- Der kleine zusätzliche Zustand `selectedDrawTool` löst das UI-Problem sauber, ohne das bestehende interne `AnnotateTool.ZOOM` aus dem Editor herauszureißen.
 
-Wenn Suchbarkeit ausserhalb der Schwärzung wichtig ist:
-- Diese als nachgelagerte, optionale OCR-Rekonstruktion behandeln.
-- Nicht versuchen, im MVP beliebige digitale PDFs operatorgenau zu zerschneiden.
+### Schritt 8: Mehr Symbolik in der Annotate-UI
+Status: Erledigt
 
-## 9. Use Cases und empfohlene Behandlung
+Ergebnis:
+- Breitenwahl `Dünn / Mittel / Dick` auf visuelle Linien-Previews mit unterschiedlicher Strichstärke umgestellt
+- untere Aktionsleiste `Undo / Seite / Alles` auf Icon-Aktionen reduziert
+- für die icon-basierten Aktionen explizite Accessibility-Strings ergänzt
 
-### Use Case A: Gescannter Vertrag mit OCR-Textlayer
-Empfohlen:
-- Betroffene Seiten rendern und neu aufbauen.
-- Alten OCR-Text auf diesen Seiten verwerfen.
-- Optional später OCR ausserhalb der Schwärzungen neu erzeugen.
+Code-Review-Zusammenfassung:
+- Der Eingriff bleibt rein präsentationsseitig; Zustandsmodell und Interaktionslogik werden nicht verändert.
+- Die Breitenwahl ist jetzt dichter und direkter verständlich, weil sie das Ergebnis visuell statt textuell zeigt.
+- Die Aktionsleiste nutzt kompaktere Symbolik, bleibt aber durch dedizierte Content-Descriptions screenreader-tauglich.
 
-### Use Case B: Digital erzeugte Rechnung mit selektierbarem Text
-Empfohlen:
-- Für rechtssicheren MVP ebenfalls betroffene Seiten rendern und neu aufbauen.
-- So wird der Inhalt sicher entfernt, auch wenn die Seite danach intern bildbasiert ist.
+### Schritt 9: Klare Modustrennung zwischen Zoom und Bearbeiten
+Status: Erledigt
 
-### Use Case C: Gemischte PDFs mit Bild, Text, Stempel, Unterschrift
-Empfohlen:
-- Gleiches sicheres Rendering-Modell für betroffene Seiten.
-- Kein Versuch, gemischte Streams selektiv auseinanderzunehmen.
+Ergebnis:
+- eigener reduzierter Kopfbereich für `Zoom`
+- im Zoom-Modus kein Werkzeug-Dropdown
+- im Zoom-Modus keine `Undo / Seite / Alles`-Aktionsleiste
+- Rückkehr aus `Zoom` direkt über das Symbol des zuletzt aktiven Bearbeitungswerkzeugs
+- Seitennavigation bleibt auch im Zoom-Modus sichtbar
 
-### Use Case D: Nutzer will Original behalten
-Empfohlen:
-- Ergebnis als neue Datei mit klarer Kennzeichnung speichern.
-- UI-Hinweis, dass das Original weiterhin sensible Daten enthält.
+Code-Review-Zusammenfassung:
+- Die Trennung ist jetzt nicht nur funktional, sondern visuell klar: `Zoom` wirkt wie ein eigener Navigationsmodus statt wie nur ein weiteres Werkzeug.
+- Der bestehende interne `AnnotateTool.ZOOM` bleibt erhalten; damit ist die Änderung UI-seitig und risikoarm.
+- Der zuletzt aktive Bearbeitungsmodus wird bewusst weiterverwendet, damit der Wechsel aus `Zoom` wieder an genau dieselbe Arbeitsstelle zurückführt.
 
-### Use Case E: Nutzer will ein wirklich ersetztes Original
-Empfohlen:
-- Später eigener Replace-Flow.
-- Alter Dateipfad, Thumbnail und DB-Eintrag werden atomar ersetzt.
+Nachtrag:
+- `Zoom Reset` wird im Bearbeiten-Modus nicht mehr angezeigt und bleibt ausschließlich dem Zoom-Modus vorbehalten.
 
-## 10. Konkrete Umsetzung im Projekt
+### Schritt 10: Sofortselektion nach Neuanlage
+Status: Erledigt
 
-### Neue/anzupassende Bausteine
-- `PdfEditor.kt`
-  - neue Methode `applySecureRedaction(...)`
-  - optional Hilfsmethoden für Seiten-Rendering und Bitmap-Redaction
-- neue Use Case / Workflow-Schicht
-  - `ApplyRedactionUseCase`
-  - `RedactPdfWorkflow`
-- `DocumentEditViewModel`
-  - neuer Action-Pfad für Redaction
-- UI
-  - bestehende Rechteck-Selektion wiederverwenden
-  - klarer Modus "Schwärzen"
-  - Warntext zu Copy vs Replace
-- Datenhaltung
-  - `ScanRecord` des Ergebnisses mit bereinigtem `extractedText`
-  - `isSearchable` bewusst setzen
+Ergebnis:
+- Ursache analysiert: Der Selektions-Callback im `pointerInput` arbeitete mit einem veralteten Editor-Snapshot, bis der Tool-Block neu aufgebaut wurde
+- Fix umgesetzt: Selektions-Sync im Gesture-Pfad auf den aktuellen `rememberUpdatedState`-Snapshot umgebogen
+- Auto-Selektion neuer Elemente wieder entfernt
+- Ergebnis: Neue Elemente bleiben nach dem Anlegen unmarkiert, bestehende Elemente lassen sich aber unmittelbar per Antippen selektieren
 
-### Was nicht in den MVP gehört
-- Allgemeine Operator-Level-Redaction für beliebige PDFs.
-- Halbautomatische Manipulation einzelner `Tj`/`TJ`-Tokens als Sicherheitskern.
-- Erhalt der exakten Textselektierbarkeit auf betroffenen Seiten um jeden Preis.
+Code-Review-Zusammenfassung:
+- Der eigentliche Fehler lag nicht im Hit-Testing, sondern in einem stale Snapshot innerhalb des Gesture-Callbacks.
+- Der Fix ist präziser als die zwischenzeitliche Sofortselektion, weil er das ursprüngliche Interaktionsmodell beibehält: Selektiert wird erst beim Antippen eines bestehenden Elements.
+- Die Änderung bleibt lokal im Editor-State; Export- und Persistenzpfade werden nicht beeinflusst.
 
-## 11. Teststrategie
+### Schritt 11: Symbolik in der Selektionsleiste vereinheitlichen
+Status: Erledigt
 
-### Pflicht-Tests
-- Unit-Test: PDF mit bekanntem String wie `GEHEIM-123`; nach Schwärzung darf `PDFTextStripper` den String nicht mehr finden.
-- Byte-Test: bekannte ASCII-Testgeheimnisse zusätzlich im Dateibytestrom suchen; sie dürfen nicht mehr vorkommen.
-- Instrumentation-Test: gerenderte Seite enthält an der richtigen Position ein opakes Rechteck.
-- Regressionstest: nicht betroffene Seiten bleiben extrahierbar und visuell unverändert.
-- Rotationstest: 0°, 90°, 180°, 270°.
-- OCR-Test: ursprünglicher OCR-Text ist nach Schwärzung nicht mehr vorhanden.
-- Room-/FTS-Test: `extractedText` des Ergebnisdatensatzes enthält keine geschwärzten Begriffe.
-- Thumbnail-Test: Vorschaubild zeigt die Schwärzung und nicht das Original.
+Ergebnis:
+- `Delete` und `Clear` in der Selektionsleiste auf dieselben kompakten Icon-Buttons wie die untere Aktionsleiste umgestellt
+- `Text bearbeiten` bleibt als Textaktion erhalten, weil die Funktion weniger selbsterklärend ist als Löschen oder Auswahl aufheben
 
-### Manuelle Verifikation
-- Ergebnis in externem PDF-Viewer öffnen.
-- Copy & Paste auf geschwärztem Bereich testen.
-- Dokumentensuche im Viewer testen.
-- Dateieigenschaften/Metadaten prüfen.
-- Archivsuche in der App auf den geschwärzten Begriff testen.
+Code-Review-Zusammenfassung:
+- Die Selektionsleiste folgt jetzt derselben visuellen Sprache wie die restliche Annotate-Steuerung.
+- Die Umstellung bleibt rein präsentationsseitig und ändert keine Interaktionslogik.
 
-## 12. Spätere Ausbaustufe
-Falls später bessere Strukturtreue nötig wird, ist eine zweite Engine denkbar:
-- nur für klar klassifizierte PDFs
-- nur für einfache Textlayer ohne komplexe XObjects
-- mit hartem Fallback auf die sichere Render-Strategie
+### Schritt 12: Selektionsaktionen in die untere Icon-Zeile integrieren
+Status: Erledigt
 
-Diese Ausbaustufe darf nie die sichere Standardvariante ersetzen.
+Ergebnis:
+- `Delete` und `Clear` aus der separaten Selektionsleiste in die gemeinsame untere Icon-Zeile verschoben
+- `Selected: …` bleibt als kleine Hinweiszeile darüber stehen
+- Kommentar-Bearbeitung ebenfalls als Icon in derselben Zeile integriert
 
-## 13. Empfehlung
-Für einen rechtssicheren MVP in diesem Projekt sollte die Schwärzung standardmässig so implementiert werden:
-
-- Sichere Redaction durch Neuaufbau nur der betroffenen Seiten
-- keine direkte Operator-Manipulation als Primärstrategie
-- vollständige Bereinigung von OCR-Text, lokalen Suchindizes, Thumbnails und optional Metadaten
-- aktueller Produktentscheid: neue Kopie als Standard, Replace optional später
-
-Damit ist die Schwärzung technisch belastbar, mit dem vorhandenen Stack realistisch umsetzbar und gegenüber den typischen Leckpfaden eines mobilen PDF-Workflows sauber abgesichert.
+Code-Review-Zusammenfassung:
+- Die untere Steuerfläche ist kompakter, weil Selektions- und Seitenaktionen nicht mehr auf zwei getrennte Zeilen verteilt sind.
+- Die Änderung bleibt rein präsentationsseitig; Zustands- und Selektionslogik wurden nicht verändert.

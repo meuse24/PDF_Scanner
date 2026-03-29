@@ -7,11 +7,14 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationStroke
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationText
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
-import info.meuse24.pdf_scanner.domain.usecase.TextComment
 import info.meuse24.pdf_scanner.domain.usecase.TextLine
 import info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
@@ -309,16 +312,17 @@ class DocumentEditViewModel @Inject constructor(
     }
 
     fun applyAnnotations(
-        strokes: List<HighlightStroke>,
-        rects: List<HighlightRect> = emptyList(),
-        comments: List<TextComment> = emptyList()
+        strokes: List<AnnotationStroke>,
+        rects: List<AnnotationRect> = emptyList(),
+        ovals: List<AnnotationOval> = emptyList(),
+        comments: List<AnnotationText> = emptyList()
     ) {
         val record = _record.value ?: return
         if (_editLoading.value) return
         _editLoading.value = true
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                when (val result = annotatePdfWorkflow(record, strokes, rects, comments, scansDir)) {
+                when (val result = annotatePdfWorkflow(record, strokes, rects, ovals, comments, scansDir)) {
                     is WorkflowResult.Success -> _success.value = true
                     is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
                 }

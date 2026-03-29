@@ -5,7 +5,13 @@ import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.AddPageNumbersUseCase
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationShapeStyle
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationStroke
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationText
 import info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflowResult
 import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ConvertToGrayscaleWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.HighlightPdfWorkflow
@@ -89,7 +95,8 @@ class DocumentEditViewModelTest {
         pdfEditor: PdfEditor,
         scanRecord: ScanRecord,
         errorMapper: WorkflowErrorMapper = stubMapper(),
-        redactPdfWorkflow: RedactPdfWorkflow = mock(RedactPdfWorkflow::class.java)
+        redactPdfWorkflow: RedactPdfWorkflow = mock(RedactPdfWorkflow::class.java),
+        annotatePdfWorkflow: AnnotatePdfWorkflow = mock(AnnotatePdfWorkflow::class.java)
     ): DocumentEditViewModel {
         val dao = TestScanDao(listOf(scanRecord))
         val repository = ScanRepository(dao)
@@ -105,7 +112,6 @@ class DocumentEditViewModelTest {
         val removePasswordWorkflow = mock(RemovePasswordWorkflow::class.java)
         val restrictUsageWorkflow = mock(RestrictUsageWorkflow::class.java)
         val highlightPdfWorkflow = mock(HighlightPdfWorkflow::class.java)
-        val annotatePdfWorkflow = mock(AnnotatePdfWorkflow::class.java)
         val convertToGrayscaleWorkflow = mock(ConvertToGrayscaleWorkflow::class.java)
         val updatePdfMetadataWorkflow = mock(UpdatePdfMetadataWorkflow::class.java)
 
@@ -233,6 +239,61 @@ class DocumentEditViewModelTest {
         assertNotNull(vm.error.value)
         assertFalse(vm.success.value)
         assertFalse(vm.editLoading.value)
+    }
+
+    @Test
+    fun `applyAnnotations success setzt success und beendet editLoading`() = runTest(testDispatcher) {
+        val file = pdfFile()
+        val rec = record(file)
+        val annotateWorkflow = mock(AnnotatePdfWorkflow::class.java)
+        val scansDir = File(tmpFolder.root, "scans").apply { mkdirs() }
+        val strokes = listOf(
+            AnnotationStroke(
+                points = listOf(0.1f to 0.2f, 0.4f to 0.2f),
+                pageIndex = 0
+            )
+        )
+        val rects = listOf(
+            AnnotationRect(
+                left = 0.2f,
+                top = 0.2f,
+                right = 0.5f,
+                bottom = 0.35f,
+                pageIndex = 0,
+                style = AnnotationShapeStyle.FILLED
+            )
+        )
+        val ovals = listOf(
+            AnnotationOval(
+                left = 0.3f,
+                top = 0.3f,
+                right = 0.6f,
+                bottom = 0.5f,
+                pageIndex = 0,
+                style = AnnotationShapeStyle.FRAME
+            )
+        )
+        val comments = listOf(
+            AnnotationText(
+                pageIndex = 0,
+                anchorX = 0.25f,
+                anchorY = 0.4f,
+                text = "note",
+                fontSizeFraction = 0.03f
+            )
+        )
+        `when`(annotateWorkflow.invoke(rec, strokes, rects, ovals, comments, scansDir)).thenReturn(
+            WorkflowResult.Success(AnnotatePdfWorkflowResult(outputFilename = "scan_annotated"))
+        )
+        val vm = buildVm(NoOpPageNumbersPdfEditor(), rec, annotatePdfWorkflow = annotateWorkflow)
+        advanceUntilIdle()
+
+        vm.applyAnnotations(strokes, rects, ovals, comments)
+        advanceUntilIdle()
+
+        assertTrue(vm.success.value)
+        assertFalse(vm.editLoading.value)
+        assertNull(vm.error.value)
     }
 }
 

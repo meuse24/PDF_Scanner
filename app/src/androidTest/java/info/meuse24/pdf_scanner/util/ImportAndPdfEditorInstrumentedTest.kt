@@ -18,10 +18,13 @@ import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationShapeStyle
+import info.meuse24.pdf_scanner.domain.usecase.AnnotationText
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
-import info.meuse24.pdf_scanner.domain.usecase.TextComment
 import info.meuse24.pdf_scanner.util.AndroidResourceProvider
 import info.meuse24.pdf_scanner.util.AndroidStorageProvider
 import info.meuse24.pdf_scanner.util.FileUtil
@@ -181,16 +184,18 @@ class ImportAndPdfEditorInstrumentedTest {
             outputDir = scansDir,
             strokes = emptyList(),
             rects = listOf(
-                HighlightRect(
+                AnnotationRect(
                     left = 0.55f,
                     top = 0.15f,
                     right = 0.75f,
                     bottom = 0.28f,
-                    pageIndex = 0
+                    pageIndex = 0,
+                    style = AnnotationShapeStyle.FILLED
                 )
             ),
+            ovals = emptyList(),
             comments = listOf(
-                TextComment(
+                AnnotationText(
                     pageIndex = 0,
                     anchorX = 0.60f,
                     anchorY = 0.42f,
@@ -205,6 +210,42 @@ class ImportAndPdfEditorInstrumentedTest {
     }
 
     @Test
+    fun applyAnnotationsRendersColoredFilledOval() {
+        val input = createPdf(
+            File(scansDir, "androidtest_annotate_oval_source.pdf"),
+            listOf(TestPage(width = 500f, height = 700f, drawMarker = false))
+        )
+
+        val annotated = pdfEditor.applyAnnotations(
+            input = input,
+            outputDir = scansDir,
+            strokes = emptyList(),
+            rects = emptyList(),
+            ovals = listOf(
+                AnnotationOval(
+                    left = 0.20f,
+                    top = 0.20f,
+                    right = 0.45f,
+                    bottom = 0.45f,
+                    pageIndex = 0,
+                    color = 0x660091EA,
+                    style = AnnotationShapeStyle.FILLED
+                )
+            ),
+            comments = emptyList()
+        )
+
+        val bitmap = pdfEditor.renderPageThumbnail(annotated, pageIndex = 0, maxSizePx = 220)
+        assertNotNull(bitmap)
+        bitmap!!.useBitmap {
+            val target = pixelAtNormalized(it, 0.32f, 0.32f)
+            val control = pixelAtNormalized(it, 0.80f, 0.80f)
+            assertTrue(isBlueHighlight(target))
+            assertTrue(isMostlyWhite(control))
+        }
+    }
+
+    @Test
     fun removeTextLayerRemovesExtractableTextButKeepsPdfRenderable() {
         val input = createPdf(
             File(scansDir, "androidtest_remove_text_source.pdf"),
@@ -214,8 +255,10 @@ class ImportAndPdfEditorInstrumentedTest {
             input = input,
             outputDir = scansDir,
             strokes = emptyList(),
+            rects = emptyList(),
+            ovals = emptyList(),
             comments = listOf(
-                TextComment(
+                AnnotationText(
                     pageIndex = 0,
                     anchorX = 0.20f,
                     anchorY = 0.25f,
@@ -249,8 +292,10 @@ class ImportAndPdfEditorInstrumentedTest {
             input = input,
             outputDir = scansDir,
             strokes = emptyList(),
+            rects = emptyList(),
+            ovals = emptyList(),
             comments = listOf(
-                TextComment(
+                AnnotationText(
                     pageIndex = 0,
                     anchorX = 0.22f,
                     anchorY = 0.28f,
@@ -321,8 +366,10 @@ class ImportAndPdfEditorInstrumentedTest {
             input = input,
             outputDir = scansDir,
             strokes = emptyList(),
+            rects = emptyList(),
+            ovals = emptyList(),
             comments = listOf(
-                TextComment(
+                AnnotationText(
                     pageIndex = 0,
                     anchorX = 0.22f,
                     anchorY = 0.28f,
@@ -469,8 +516,10 @@ class ImportAndPdfEditorInstrumentedTest {
             input = input,
             outputDir = scansDir,
             strokes = emptyList(),
+            rects = emptyList(),
+            ovals = emptyList(),
             comments = listOf(
-                TextComment(
+                AnnotationText(
                     pageIndex = 0,
                     anchorX = 0.20f,
                     anchorY = 0.22f,
@@ -821,6 +870,9 @@ private fun pixelAtNormalized(bitmap: android.graphics.Bitmap, nx: Float, ny: Fl
 
 private fun isYellowHighlight(rgb: IntArray): Boolean =
     rgb[0] > 230 && rgb[1] > 210 && rgb[2] < 220 && abs(rgb[0] - rgb[1]) > 5
+
+private fun isBlueHighlight(rgb: IntArray): Boolean =
+    rgb[2] > 220 && rgb[0] < 220 && rgb[1] < 240
 
 private fun isMostlyWhite(rgb: IntArray): Boolean =
     rgb[0] > 245 && rgb[1] > 245 && rgb[2] > 245

@@ -41,6 +41,8 @@ import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * PDF-Metadaten aus PDDocumentInformation.
@@ -404,6 +406,89 @@ open class PdfEditor @Inject constructor() {
                     }
                 }
                 cleaned.save(target)
+            }
+        }
+    }
+
+    /**
+     * Rechtssichere Schwärzung über Seiten-Neuaufbau:
+     * Nur betroffene Seiten werden gerendert, die Schwärzungsbereiche werden
+     * in das Seitenbitmap eingebrannt und als neue bildbasierte PDF-Seite
+     * gespeichert. Nicht betroffene Seiten bleiben unverändert.
+     *
+     * Ergebnis: Unter dem geschwärzten Bereich bleibt kein extrahierbarer
+     * Seiteninhalt zurück; betroffene Seiten verlieren bewusst ihren Textlayer.
+     */
+    open fun applySecureRedaction(
+        input: File,
+        outputDir: File,
+        rects: List<HighlightRect>
+    ): File {
+        require(rects.isNotEmpty()) { "Mindestens ein Schwärzungsbereich erforderlich" }
+
+        val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_Geschwaerzt")
+        val output = File(outputDir, "$baseName.pdf")
+        return writePdf("SecureRedaction", output) { target ->
+            PDDocument.load(input).use { source ->
+                ParcelFileDescriptor.open(input, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                    PdfRenderer(pfd).use { renderer ->
+                        if (renderer.pageCount != source.numberOfPages) {
+                            throw IOException("PdfRenderer und PdfBox liefern unterschiedliche Seitenanzahl")
+                        }
+
+                        val rectsByPage = rects
+                            .groupBy { it.pageIndex }
+                            .mapValues { (_, pageRects) ->
+                                mergeRedactionRects(pageRects.mapNotNull(::normalizeRedactionRect))
+                            }
+
+                        PDDocument().use { redacted ->
+                            repeat(source.numberOfPages) { pageIndex ->
+                                val pageRects = rectsByPage[pageIndex].orEmpty()
+                                if (pageRects.isEmpty()) {
+                                    val imported = redacted.importPage(source.getPage(pageIndex))
+                                    imported.rotation = source.getPage(pageIndex).rotation
+                                } else {
+                                    renderer.openPage(pageIndex).use { page ->
+                                        val width = page.width.coerceAtLeast(1)
+                                        val height = page.height.coerceAtLeast(1)
+                                        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                                        try {
+                                            Canvas(bitmap).drawColor(Color.WHITE)
+                                            page.render(
+                                                bitmap,
+                                                null,
+                                                null,
+                                                PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY
+                                            )
+                                            burnRedactionRects(bitmap, pageRects)
+
+                                            val pdfPage = PDPage(PDRectangle(width.toFloat(), height.toFloat()))
+                                            redacted.addPage(pdfPage)
+                                            val image = LosslessFactory.createFromImage(redacted, bitmap)
+                                            PDPageContentStream(redacted, pdfPage).use { contentStream ->
+                                                contentStream.drawImage(
+                                                    image,
+                                                    0f,
+                                                    0f,
+                                                    pdfPage.mediaBox.width,
+                                                    pdfPage.mediaBox.height
+                                                )
+                                            }
+                                        } finally {
+                                            bitmap.recycle()
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (redacted.numberOfPages == 0) {
+                                throw IOException("SecureRedaction erzeugte keine Seiten")
+                            }
+                            redacted.save(target)
+                        }
+                    }
+                }
             }
         }
     }
@@ -922,6 +1007,14 @@ internal fun mapDisplayToPdfCoord(
 private const val MIN_TEXT_FONT_SIZE_PT = 4f
 private const val LINE_VERTICAL_MERGE_FACTOR = 0.6f
 private const val HIGHLIGHT_RECT_ALPHA = 0.3f
+private const val REDACTION_TOUCH_TOLERANCE = 0.001f
+
+private data class NormalizedRedactionRect(
+    val left: Float,
+    val top: Float,
+    val right: Float,
+    val bottom: Float
+)
 
 internal data class NormalizedTextBox(
     val left: Float,
@@ -990,6 +1083,77 @@ private fun TextPosition.toNormalizedTextBox(
         right = right,
         bottom = bottom
     )
+}
+
+private fun normalizeRedactionRect(rect: HighlightRect): NormalizedRedactionRect? {
+    val left = min(rect.left, rect.right).coerceIn(0f, 1f)
+    val right = max(rect.left, rect.right).coerceIn(0f, 1f)
+    val top = min(rect.top, rect.bottom).coerceIn(0f, 1f)
+    val bottom = max(rect.top, rect.bottom).coerceIn(0f, 1f)
+    if (right - left <= REDACTION_TOUCH_TOLERANCE || bottom - top <= REDACTION_TOUCH_TOLERANCE) {
+        return null
+    }
+    return NormalizedRedactionRect(left, top, right, bottom)
+}
+
+private fun mergeRedactionRects(rects: List<NormalizedRedactionRect>): List<NormalizedRedactionRect> {
+    if (rects.isEmpty()) return emptyList()
+
+    val merged = mutableListOf<NormalizedRedactionRect>()
+    rects.forEach { candidate ->
+        var current = candidate
+        var mergedAnything = true
+        while (mergedAnything) {
+            mergedAnything = false
+            val iterator = merged.listIterator()
+            while (iterator.hasNext()) {
+                val existing = iterator.next()
+                if (redactionRectsIntersectOrTouch(existing, current)) {
+                    current = NormalizedRedactionRect(
+                        left = min(existing.left, current.left),
+                        top = min(existing.top, current.top),
+                        right = max(existing.right, current.right),
+                        bottom = max(existing.bottom, current.bottom)
+                    )
+                    iterator.remove()
+                    mergedAnything = true
+                }
+            }
+        }
+        merged += current
+    }
+    return merged.sortedWith(compareBy<NormalizedRedactionRect> { it.top }.thenBy { it.left })
+}
+
+private fun redactionRectsIntersectOrTouch(
+    first: NormalizedRedactionRect,
+    second: NormalizedRedactionRect
+): Boolean {
+    return first.left <= second.right + REDACTION_TOUCH_TOLERANCE &&
+        second.left <= first.right + REDACTION_TOUCH_TOLERANCE &&
+        first.top <= second.bottom + REDACTION_TOUCH_TOLERANCE &&
+        second.top <= first.bottom + REDACTION_TOUCH_TOLERANCE
+}
+
+private fun burnRedactionRects(
+    bitmap: Bitmap,
+    rects: List<NormalizedRedactionRect>
+) {
+    val canvas = Canvas(bitmap)
+    val paint = Paint().apply {
+        color = Color.BLACK
+        style = Paint.Style.FILL
+        isAntiAlias = false
+    }
+    rects.forEach { rect ->
+        val left = (rect.left * bitmap.width).coerceIn(0f, bitmap.width.toFloat())
+        val top = (rect.top * bitmap.height).coerceIn(0f, bitmap.height.toFloat())
+        val right = (rect.right * bitmap.width).coerceIn(0f, bitmap.width.toFloat())
+        val bottom = (rect.bottom * bitmap.height).coerceIn(0f, bitmap.height.toFloat())
+        if (right > left && bottom > top) {
+            canvas.drawRect(left, top, right, bottom, paint)
+        }
+    }
 }
 
 private inline fun PdfEditor.editPdf(

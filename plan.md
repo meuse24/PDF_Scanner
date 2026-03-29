@@ -1,5 +1,33 @@
 # Plan: Rechtssichere PDF-Schwärzung
 
+## Fortschritt 2026-03-29
+Bereits umgesetzt:
+- `PdfEditor.applySecureRedaction(...)` als sicherer Kernpfad.
+- Betroffene Seiten werden gerendert, Schwärzungsrechtecke ins Bitmap eingebrannt und als neue bildbasierte PDF-Seiten gespeichert.
+- Nicht betroffene Seiten bleiben unverändert.
+- Neue Workflow-/UseCase-Schicht:
+  - `RedactPdfUseCase`
+  - `RedactPdfWorkflow`
+- Ergebnisdatensatz wird bewusst bereinigt gespeichert:
+  - `isSearchable = false`
+  - `extractedText = null`
+  - `tags = null`
+- Tests ergänzt:
+  - JVM-Workflow-Test für Erfolgs-/Fehlerpfade
+  - Instrumentation-Test auf Gerät: extrahierbarer Text verschwindet, schwarzes Rechteck ist sichtbar
+
+Verifiziert:
+- `:app:compileDebugKotlin`
+- `testDebugUnitTest --tests "info.meuse24.pdf_scanner.domain.workflow.RedactPdfWorkflowTest"`
+- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionRemovesExtractableTextAndBurnsBlackRect`
+
+Noch offen:
+- UI-Integration als eigener Schwärzungsmodus/-screen
+- klare Produktentscheidung und UI für "Kopie" vs "Original ersetzen"
+- optionale OCR-Rekonstruktion ausserhalb der Schwärzungsbereiche
+- weitergehende Sanitization für Formular-/Link-/Attachment-Fälle
+- zusätzliche Regressionstests für Rotation/CropBox und mehrseitige Mischdokumente
+
 ## 1. Zielbild
 Implementierung einer Schwärzungsfunktion, bei der der Inhalt unter dem Schwärzungsbereich nicht nur verdeckt, sondern aus allen relevanten Datenpfaden entfernt wird.
 

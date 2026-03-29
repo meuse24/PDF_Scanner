@@ -40,6 +40,8 @@ sealed interface ScanWorkflowError {
     data class RemoveTextLayerFailed(override val cause: Throwable) : ScanWorkflowError
     data class RemovePasswordFailed(override val cause: Throwable) : ScanWorkflowError
     data class UsageRestrictionFailed(override val cause: Throwable) : ScanWorkflowError
+    data object NoRedactionAreas : ScanWorkflowError
+    data class RedactionFailed(override val cause: Throwable) : ScanWorkflowError
     data object NoHighlightStrokes : ScanWorkflowError
     data class HighlightFailed(override val cause: Throwable) : ScanWorkflowError
     data object NoAnnotations : ScanWorkflowError

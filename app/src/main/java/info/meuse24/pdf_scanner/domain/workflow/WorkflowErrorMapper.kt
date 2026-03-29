@@ -47,6 +47,8 @@ class WorkflowErrorMapper @Inject constructor(
         ScanWorkflowError.PasswordRequiredToRemove -> resourceProvider.getString(R.string.remove_password_requires_input)
         is ScanWorkflowError.RemovePasswordFailed -> resourceProvider.getString(R.string.remove_password_error)
         is ScanWorkflowError.UsageRestrictionFailed -> resourceProvider.getString(R.string.restrict_usage_error)
+        ScanWorkflowError.NoRedactionAreas -> resourceProvider.getString(R.string.redact_no_areas)
+        is ScanWorkflowError.RedactionFailed -> resourceProvider.getString(R.string.redact_error)
         ScanWorkflowError.NoHighlightStrokes -> resourceProvider.getString(R.string.highlight_no_strokes)
         is ScanWorkflowError.HighlightFailed -> resourceProvider.getString(R.string.highlight_error)
         ScanWorkflowError.NoAnnotations -> resourceProvider.getString(R.string.annotate_no_items)

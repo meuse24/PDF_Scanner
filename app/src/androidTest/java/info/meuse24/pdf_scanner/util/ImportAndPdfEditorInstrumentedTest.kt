@@ -228,6 +228,49 @@ class ImportAndPdfEditorInstrumentedTest {
     }
 
     @Test
+    fun secureRedactionRemovesExtractableTextAndBurnsBlackRect() {
+        val input = createPdf(
+            File(scansDir, "androidtest_redact_source.pdf"),
+            listOf(TestPage(width = 520f, height = 720f, drawMarker = false))
+        )
+        val annotated = pdfEditor.applyAnnotations(
+            input = input,
+            outputDir = scansDir,
+            strokes = emptyList(),
+            comments = listOf(
+                TextComment(
+                    pageIndex = 0,
+                    anchorX = 0.22f,
+                    anchorY = 0.28f,
+                    text = "GEHEIM-123",
+                    fontSizeFraction = 0.05f
+                )
+            )
+        )
+        val redactionRect = HighlightRect(
+            left = 0.16f,
+            top = 0.18f,
+            right = 0.56f,
+            bottom = 0.34f,
+            pageIndex = 0
+        )
+
+        assertTrue(extractPdfText(annotated).contains("GEHEIM-123"))
+
+        val redacted = pdfEditor.applySecureRedaction(annotated, scansDir, listOf(redactionRect))
+
+        assertTrue(extractPdfText(redacted).isBlank())
+        val bitmap = pdfEditor.renderPageThumbnail(redacted, pageIndex = 0, maxSizePx = 220)
+        assertNotNull(bitmap)
+        bitmap!!.useBitmap {
+            val redactedPixel = pixelAtNormalized(it, 0.30f, 0.26f)
+            val controlPixel = pixelAtNormalized(it, 0.80f, 0.80f)
+            assertTrue(isBlack(redactedPixel))
+            assertTrue(isMostlyWhite(controlPixel))
+        }
+    }
+
+    @Test
     fun convertToGrayscaleTurnsColoredHighlightGray() {
         val input = createPdf(
             File(scansDir, "androidtest_grayscale_source.pdf"),
@@ -343,6 +386,9 @@ private fun isMostlyWhite(rgb: IntArray): Boolean =
 
 private fun isGray(rgb: IntArray): Boolean =
     abs(rgb[0] - rgb[1]) <= 8 && abs(rgb[1] - rgb[2]) <= 8
+
+private fun isBlack(rgb: IntArray): Boolean =
+    rgb[0] < 12 && rgb[1] < 12 && rgb[2] < 12
 
 private inline fun <T> android.graphics.Bitmap.useBitmap(block: (android.graphics.Bitmap) -> T): T =
     try {

@@ -87,13 +87,14 @@ ui/
 │                                  # Edge-to-edge gehärtet: Scaffold mit safeDrawing(Horizontal+Bottom),
 │                                  # NavHost konsumiert innerPadding; MainActivity ruft enableEdgeToEdge() auf
 ├── home/
-│   ├── HomeScreen.kt              # Koordinator: Add-Document-BottomSheet, Scanner-Launcher, OpenDocument-FilePicker,
-│   │                              # PendingImport(Scan/File), Save-Dialog, Listen-Routing, Suchfeld
+│   ├── HomeScreen.kt              # Koordinator: Add-Document-BottomSheet, Scanner-Launcher, OpenDocument-/Image-Picker,
+│   │                              # PendingImport(Scan/File), Images-to-PDF-Einstieg, Save-Dialog, Listen-Routing, Suchfeld
 │   │                              # ScanItem.onAction(ScanAction) → navigiert zu Edit-Screens; Rename-Dialog inline
 │   ├── HomeViewModel.kt           # Archivkern: Liste, Auswahl, Import/Scan, Bulk-Aktionen, Suche
 │   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading (Merge + Dateiimport)
 │   │                              # _searchQuery → filteredScans (FTS4 via flatMapLatest+debounce)
 │   │                              # renameScan(record, newName): PDF + Thumbnail umbenennen + updateFilenameAndPath
+│   │                              # pendingImageUris: temporäre URI-Bridge für Images-to-PDF-Navigation
 │   └── components/
 │       ├── ScanItem.kt            # Card: Dateiname (maxLines=2, volle Breite) + Row(Thumbnail · Metadaten · Menü · Checkbox)
 │       │                          # MoreVert öffnet ModalBottomSheet (skipPartiallyExpanded=true) statt Dropdown
@@ -136,6 +137,10 @@ ui/
 │                                  # Auswahl über generischen blauen Handle; Textnotizen zusätzlich editierbar
 │                                  # Snap nur im Bearbeiten, Zoom mit eigener reduzierter Toolbar
 │                                  # Farbe/Stift als Dropdowns; Undo/Clear icon-basiert; annotate_* in allen 10 Locales
+├── imagestopdf/
+│   ├── ImagesToPdfScreen.kt       # Vorschauraster + Dateiname + Layoutwahl (1/2/4 Bilder pro A4-Seite)
+│   │                              # A4-Canvas-Vorschau; Erfolg navigiert über HomeViewModel-URI-Bridge zurück
+│   └── ImagesToPdfViewModel.kt    # CreatePdfFromImagesUseCase-Dispatch + skippedCount/error/success
 ├── redact/
 │   └── RedactScreen.kt            # Vollbild-Sicher-Schwärzen mit Rechteckmodus + Zoom
 │                                  # Save-Dialog statt permanentem Hinweis auf dem Hauptscreen
@@ -266,7 +271,9 @@ test/
 │   ├── split/SplitViewModelTest.kt         # editLoading-Guard, Success/Failure, clearError (5 Tests)
 │   ├── reorder/ReorderViewModelTest.kt     # editLoading-Guard, Success/Failure, clearError (4 Tests)
 │   ├── documentaction/DocumentEditViewModelTest.kt  # inkl. applyRedactions Success/Failure + OCR-Parameter
+│   ├── domain/usecase/CreatePdfFromImagesUseCaseTest.kt # Seitenanzahl, unreadable images, Thumbnail + DB-Insert
 │   ├── home/HomeImportFilenameSuggestionTest.kt     # DISPLAY_NAME → Dateinamensvorschlag ohne .pdf
+│   ├── ui/imagestopdf/ImagesToPdfViewModelTest.kt   # editLoading-Guard, Erfolg, Fehler, clearError
 │   ├── annotate/AnnotateInteractionHelpersTest.kt   # Hit-Testing, Auswahl, Move, Mutationen für Stroke/Rect/Oval/Text
 │   └── highlight/HighlightScreenMathTest.kt         # clampPanOffset + inverse Zoom/Pan-Mathematik + Snap-/Rect-Hilfsfunktionen
 └── util/

@@ -321,3 +321,31 @@ Ergebnis:
 Code-Review-Zusammenfassung:
 - Die untere Steuerfläche ist kompakter, weil Selektions- und Seitenaktionen nicht mehr auf zwei getrennte Zeilen verteilt sind.
 - Die Änderung bleibt rein präsentationsseitig; Zustands- und Selektionslogik wurden nicht verändert.
+
+### Schritt 13: Farbe und Stift als kompakte Dropdowns
+Status: Erledigt
+
+Ergebnis:
+- Attributleiste von zwei Zeilen auf eine Zeile verdichtet
+- `Color` als Dropdown mit Farbpreview umgesetzt
+- `Stift` bzw. `Textgröße` als Dropdown mit Linien- bzw. Breitenpreview umgesetzt
+
+Code-Review-Zusammenfassung:
+- Die Toolbar gewinnt horizontalen Platz, ohne die zugrunde liegende Attributlogik zu ändern.
+- Die Auswahl bleibt visuell verständlich, weil beide Dropdowns ihren aktuellen Zustand direkt im Button zeigen.
+
+### Schritt 14: Feature-Benennung und Hilfetexte schärfen
+Status: Erledigt
+
+Ergebnis:
+- Feature-Bezeichnung konsistent auf `Annotate PDF` vereinheitlicht
+- Screen-Beschreibung und Detailtext auf den tatsächlichen Funktionsumfang erweitert:
+  - freie Markierungen
+  - Rechtecke und Ovale
+  - Textnotizen
+  - Auswahl, Verschieben und Nachbearbeitung vor dem Speichern
+- Hilfe- und Abschnittsüberschriften entsprechend angepasst
+
+Code-Review-Zusammenfassung:
+- Die Texte beschreiben jetzt das tatsächliche Feature statt nur den früheren Highlight-/Kommentar-Scope.
+- Menü, Screen und Hilfe sprechen konsistent dieselbe Sprache; das reduziert UI-Brüche und Erwartungsfehler.

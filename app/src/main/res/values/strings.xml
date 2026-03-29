@@ -95,7 +95,7 @@
     <string name="help_section_pdf_edit">Edit PDFs</string>
     <string name="help_section_pdf_pages">Pages and structure</string>
     <string name="help_section_pdf_page_changes">Page changes</string>
-    <string name="help_section_pdf_marks">Marks and Editing</string>
+    <string name="help_section_pdf_marks">Annotations and Editing</string>
     <string name="help_section_pdf_output">Output and protection</string>
     <string name="help_desc_archive">Opens the archive with your saved PDFs. From there you can open documents, select them, and start further actions.</string>
     <string name="help_desc_start_scanner">Starts the document scanner so you can capture one or more pages and save them as a PDF.</string>
@@ -425,10 +425,10 @@
     <string name="privacy_keyword_5">On-Device Intelligence</string>
     <string name="privacy_point_5">Full-text search, searchable PDF generation, secure redaction, and text-aligned highlights operate locally on your device. Newly created redacted copies strip OCR text, metadata, and interactive PDF elements from the saved output.</string>
     <!-- Annotate PDF -->
-    <string name="action_annotate_pdf">Mark / Comment PDF</string>
+    <string name="action_annotate_pdf">Annotate PDF</string>
     <string name="annotate_screen_title">Annotate PDF</string>
-    <string name="annotate_description">Add highlights and text comments to this PDF</string>
-    <string name="annotate_details">Draw yellow highlights or place short text comments on pages. Switch to Write mode and tap on the page to place a comment. Use Zoom for precise placement. The result is saved as a new annotated PDF copy.</string>
+    <string name="annotate_description">Add marks, shapes, and notes to this PDF</string>
+    <string name="annotate_details">Use the annotation tools to add freehand marks, rectangles, ovals, and text notes. Existing annotations can be selected, moved, recolored, resized, edited, or deleted before saving. Searchable PDFs also offer Snap to align freehand marks to detected text lines. Zoom mode helps with precise placement. The result is saved as a new annotated PDF copy.</string>
     <string name="annotate_apply">Save annotations</string>
     <string name="annotate_mode_mark">Mark.</string>
     <string name="annotate_mode_write">Write</string>
@@ -437,14 +437,14 @@
     <string name="annotate_comment_edit_title">Edit Comment</string>
     <string name="annotate_comment_add">Add</string>
     <string name="annotate_comment_delete">Delete</string>
-    <string name="annotate_write_hint">Tap page to add a comment.</string>
+    <string name="annotate_write_hint">Tap the page to add a text note.</string>
     <string name="annotate_text_size">Size</string>
     <string name="annotate_attribute_color">Color</string>
     <string name="annotate_selected_prefix">Selected: %1$s</string>
     <string name="annotate_selected_delete">Delete</string>
     <string name="annotate_selected_clear">Clear</string>
     <string name="annotate_selected_edit_text">Text</string>
-    <string name="annotate_selected_hint">Tap an element to select it. Drag moves the selected element.</string>
+    <string name="annotate_selected_hint">Tap an annotation to select it. Drag moves the selected annotation.</string>
     <string name="annotate_selection_mark">Mark</string>
     <string name="annotate_selection_rect">Rectangle</string>
     <string name="annotate_selection_oval">Oval</string>
@@ -468,7 +468,7 @@
     <string name="annotate_page_next_short">Next</string>
     <string name="annotate_no_items">Add at least one annotation first</string>
     <string name="annotate_error">Error adding annotations</string>
-    <string name="help_item_annotate_pdf">Choose Annotate PDF to draw yellow highlights or place short text comments. In Write mode, tap on the page to place a comment; tap an existing comment to edit it. Snap aligns highlights to detected text lines (searchable PDFs only). Use Zoom for precise placement.</string>
+    <string name="help_item_annotate_pdf">Choose Annotate PDF to review a document with freehand marks, rectangles, ovals, and text notes. Tap an existing annotation to select, move, recolor, resize, edit, or delete it before saving. Searchable PDFs also offer Snap for text-aligned marking. Use Zoom for precise placement.</string>
     <!-- Navigation Drawer header -->
     <string name="drawer_version">Version %1$s</string>
     <!-- PDF Action Bottom Sheet: section headers -->

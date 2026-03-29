@@ -3,15 +3,16 @@ package info.meuse24.pdf_scanner.ui.annotate
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
@@ -27,7 +28,6 @@ import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -135,78 +135,120 @@ internal fun AnnotationAttributeBar(
     onColorSelected: (Int) -> Unit,
     onWidthSelected: (Float) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(
-                text = stringResource(R.string.annotate_attribute_color),
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            annotationPalette.forEach { color ->
-                val isSelected = color == selectedColor
+    var colorExpanded by remember { mutableStateOf(false) }
+    var widthExpanded by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Box(modifier = Modifier.weight(1f)) {
+            OutlinedButton(
+                onClick = { colorExpanded = true },
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.annotate_attribute_color),
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Box(
                     modifier = Modifier
-                        .size(if (isSelected) 28.dp else 24.dp)
-                        .border(
-                            width = if (isSelected) 2.dp else 1.dp,
-                            color = if (isSelected) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.outlineVariant
-                            },
-                            shape = CircleShape
-                        )
-                        .padding(3.dp)
-                        .background(Color(color), CircleShape)
+                        .padding(start = 8.dp)
+                        .size(18.dp)
+                        .background(Color(selectedColor), CircleShape)
                         .border(1.dp, Color.White.copy(alpha = 0.75f), CircleShape)
-                        .clickable { onColorSelected(color) }
                 )
+                Icon(Icons.Default.ArrowDropDown, null, modifier = Modifier.padding(start = 4.dp))
+            }
+            DropdownMenu(expanded = colorExpanded, onDismissRequest = { colorExpanded = false }) {
+                annotationPalette.forEach { color ->
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.annotate_attribute_color)) },
+                        leadingIcon = {
+                            Box(
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .background(Color(color), CircleShape)
+                                    .border(1.dp, Color.White.copy(alpha = 0.75f), CircleShape)
+                            )
+                        },
+                        onClick = {
+                            colorExpanded = false
+                            onColorSelected(color)
+                        }
+                    )
+                }
             }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(
-                text = stringResource(widthLabelRes),
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            markerWidthOptions.forEach { option ->
-                val isSelected = selectedWidthFraction == option.fraction
-                val optionLabel = stringResource(option.labelRes)
-                val lineColor = if (isSelected) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { onWidthSelected(option.fraction) },
-                    label = {
-                        Canvas(
-                            modifier = Modifier
-                                .size(width = 34.dp, height = 18.dp)
-                                .semantics { contentDescription = optionLabel }
-                        ) {
-                            val strokeWidth = when (option.fraction) {
-                                markerWidthOptions[0].fraction -> 3f
-                                markerWidthOptions[1].fraction -> 6f
-                                else -> 10f
-                            }
-                            drawLine(
-                                color = lineColor,
-                                start = center.copy(x = 4.dp.toPx()),
-                                end = center.copy(x = size.width - 4.dp.toPx()),
-                                strokeWidth = strokeWidth,
-                                cap = StrokeCap.Round
-                            )
-                        }
-                    }
+        Box(modifier = Modifier.weight(1f)) {
+            val selectedWidthColor = MaterialTheme.colorScheme.primary
+            OutlinedButton(
+                onClick = { widthExpanded = true },
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = stringResource(widthLabelRes),
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                Canvas(
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(width = 34.dp, height = 18.dp)
+                ) {
+                    drawWidthPreview(selectedWidthFraction, selectedWidthColor)
+                }
+                Icon(Icons.Default.ArrowDropDown, null, modifier = Modifier.padding(start = 4.dp))
+            }
+            DropdownMenu(expanded = widthExpanded, onDismissRequest = { widthExpanded = false }) {
+                markerWidthOptions.forEach { option ->
+                    val optionLabel = stringResource(option.labelRes)
+                    val optionColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    DropdownMenuItem(
+                        text = { Text(optionLabel) },
+                        leadingIcon = {
+                            Canvas(
+                                modifier = Modifier
+                                    .width(34.dp)
+                                    .height(18.dp)
+                                    .semantics { contentDescription = optionLabel }
+                            ) {
+                                drawWidthPreview(option.fraction, optionColor)
+                            }
+                        },
+                        onClick = {
+                            widthExpanded = false
+                            onWidthSelected(option.fraction)
+                        }
+                    )
+                }
             }
         }
     }
+}
+
+private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawWidthPreview(
+    widthFraction: Float,
+    color: Color
+) {
+    val strokeWidth = when (widthFraction) {
+        markerWidthOptions[0].fraction -> 3f
+        markerWidthOptions[1].fraction -> 6f
+        else -> 10f
+    }
+    drawLine(
+        color = color,
+        start = center.copy(x = 4.dp.toPx()),
+        end = center.copy(x = size.width - 4.dp.toPx()),
+        strokeWidth = strokeWidth,
+        cap = StrokeCap.Round
+    )
 }
 
 @Composable

@@ -8,6 +8,9 @@ Bereits umgesetzt:
 - Renderqualität im sicheren Redaction-Pfad auf 300 DPI angehoben.
 - `PdfRenderer.Page.RENDER_MODE_FOR_PRINT` für den sicheren Redaction-Pfad aktiviert.
 - Eigener Domänentyp `RedactionRect` statt semantischer Wiederverwendung von `HighlightRect`.
+- Rotationsfall im sicheren Redaction-Pfad korrigiert:
+  - betroffene Seiten werden in Display-Orientierung neu aufgebaut
+  - Ergebnis-Seite wird mit `rotation = 0` und bereits gedrehter Seitengrösse gespeichert
 - Neue Workflow-/UseCase-Schicht:
   - `RedactPdfUseCase`
   - `RedactPdfWorkflow`
@@ -20,19 +23,21 @@ Bereits umgesetzt:
   - Instrumentation-Test auf Gerät: extrahierbarer Text verschwindet, schwarzes Rechteck ist sichtbar
   - Instrumentation-Test auf Gerät: unbeeinflusste Seite eines mehrseitigen Dokuments bleibt extrahierbar
   - Instrumentation-Test auf Gerät: Byte-Scan mit bewusst roh erzeugtem ASCII-PDF als Regression-Guard
+  - Instrumentation-Test auf Gerät: 90°-Seite bleibt nach sicherer Schwärzung korrekt im Querformat und unverzerrt
 
 Verifiziert:
 - `:app:compileDebugKotlin`
 - `testDebugUnitTest --tests "info.meuse24.pdf_scanner.domain.workflow.RedactPdfWorkflowTest"`
 - `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionRemovesExtractableTextAndBurnsBlackRect`
 - `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionKeepsTextOnUntouchedPagesAndRemovesSecretBytes`
+- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionOnRotatedPageKeepsLandscapeDisplayAndBurnsExpectedArea`
 
 Noch offen:
 - UI-Integration als eigener Schwärzungsmodus/-screen
 - klare Produktentscheidung und UI für "Kopie" vs "Original ersetzen"
 - optionale OCR-Rekonstruktion ausserhalb der Schwärzungsbereiche
 - weitergehende Sanitization für Formular-/Link-/Attachment-Fälle
-- zusätzliche Regressionstests für Rotation/CropBox
+- zusätzliche Regressionstests für CropBox
 
 ## 1. Zielbild
 Implementierung einer Schwärzungsfunktion, bei der der Inhalt unter dem Schwärzungsbereich nicht nur verdeckt, sondern aus allen relevanten Datenpfaden entfernt wird.

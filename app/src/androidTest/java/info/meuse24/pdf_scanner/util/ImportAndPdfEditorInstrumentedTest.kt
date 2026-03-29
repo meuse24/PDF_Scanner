@@ -301,6 +301,52 @@ class ImportAndPdfEditorInstrumentedTest {
     }
 
     @Test
+    fun secureRedactionOnRotatedPageKeepsLandscapeDisplayAndBurnsExpectedArea() {
+        val input = createPdf(
+            File(scansDir, "androidtest_redact_rotated_source.pdf"),
+            listOf(TestPage(width = 500f, height = 700f, rotation = 90, drawMarker = false))
+        )
+        val annotated = pdfEditor.applyAnnotations(
+            input = input,
+            outputDir = scansDir,
+            strokes = emptyList(),
+            comments = listOf(
+                TextComment(
+                    pageIndex = 0,
+                    anchorX = 0.22f,
+                    anchorY = 0.28f,
+                    text = "ROTATE-SECRET",
+                    fontSizeFraction = 0.05f
+                )
+            )
+        )
+        val redacted = pdfEditor.applySecureRedaction(
+            annotated,
+            scansDir,
+            listOf(
+                RedactionRect(
+                    left = 0.16f,
+                    top = 0.18f,
+                    right = 0.56f,
+                    bottom = 0.34f,
+                    pageIndex = 0
+                )
+            )
+        )
+
+        assertFalse(extractPdfText(redacted).contains("ROTATE-SECRET"))
+        val bitmap = pdfEditor.renderPageThumbnail(redacted, pageIndex = 0, maxSizePx = 240)
+        assertNotNull(bitmap)
+        bitmap!!.useBitmap {
+            assertTrue(it.width > it.height)
+            val redactedPixel = pixelAtNormalized(it, 0.30f, 0.26f)
+            val controlPixel = pixelAtNormalized(it, 0.80f, 0.80f)
+            assertTrue(isBlack(redactedPixel))
+            assertTrue(isMostlyWhite(controlPixel))
+        }
+    }
+
+    @Test
     fun convertToGrayscaleTurnsColoredHighlightGray() {
         val input = createPdf(
             File(scansDir, "androidtest_grayscale_source.pdf"),

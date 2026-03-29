@@ -460,9 +460,10 @@ open class PdfEditor @Inject constructor() {
                                             burnRedactionRects(bitmap, pageRects)
 
                                             val sourcePage = source.getPage(pageIndex)
-                                            val pdfPage = PDPage(sourcePage.mediaBox).apply {
-                                                cropBox = sourcePage.cropBox
-                                                rotation = sourcePage.rotation
+                                            val displayRect = displayedPageRectangle(sourcePage)
+                                            val pdfPage = PDPage(displayRect).apply {
+                                                cropBox = displayRect
+                                                rotation = 0
                                             }
                                             redacted.addPage(pdfPage)
                                             val image = LosslessFactory.createFromImage(redacted, bitmap)
@@ -1174,6 +1175,16 @@ private fun renderPdfPageForRebuild(
     Canvas(bitmap).drawColor(Color.WHITE)
     page.render(bitmap, null, null, renderMode)
     return bitmap
+}
+
+private fun displayedPageRectangle(page: PDPage): PDRectangle {
+    val box = page.cropBox ?: page.mediaBox
+    val rotation = normalizeRotation(page.rotation)
+    return if (rotation == 90 || rotation == 270) {
+        PDRectangle(box.height, box.width)
+    } else {
+        PDRectangle(box.width, box.height)
+    }
 }
 
 private inline fun PdfEditor.editPdf(

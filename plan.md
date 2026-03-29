@@ -345,6 +345,7 @@ Ergebnis:
   - Textnotizen
   - Auswahl, Verschieben und Nachbearbeitung vor dem Speichern
 - Hilfe- und Abschnittsüberschriften entsprechend angepasst
+- deutsche Übersetzung (`values-de`) auf denselben Stand wie die Hauptstrings gebracht
 
 Code-Review-Zusammenfassung:
 - Die Texte beschreiben jetzt das tatsächliche Feature statt nur den früheren Highlight-/Kommentar-Scope.

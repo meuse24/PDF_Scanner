@@ -75,7 +75,7 @@
     <string name="help_section_pdf_edit">PDFs bearbeiten</string>
     <string name="help_section_pdf_pages">Seiten und Struktur</string>
     <string name="help_section_pdf_page_changes">Seiten ändern</string>
-    <string name="help_section_pdf_marks">Markierungen und Bearbeiten</string>
+    <string name="help_section_pdf_marks">Annotieren und Bearbeiten</string>
     <string name="help_section_pdf_output">Ausgabe und Schutz</string>
     <string name="help_desc_archive">Öffnet die Ablage mit deinen gespeicherten PDFs. Von dort aus kannst du Dokumente öffnen, auswählen und weitere Aktionen starten.</string>
     <string name="help_desc_start_scanner">Startet den Dokumentenscanner, damit du eine oder mehrere Seiten erfassen und als PDF speichern kannst.</string>
@@ -399,10 +399,10 @@
     <string name="privacy_keyword_5">On-Device-Intelligenz</string>
     <string name="privacy_point_5">Volltextsuche, die Erzeugung durchsuchbarer PDFs, sicheres Schwärzen und textausgerichtete Markierungen arbeiten lokal auf Ihrem Gerät. Neu erzeugte geschwärzte Kopien entfernen OCR-Text, Metadaten und interaktive PDF-Elemente aus dem gespeicherten Ergebnis.</string>
     <!-- PDF annotieren -->
-    <string name="action_annotate_pdf">PDF markieren/kommentieren</string>
+    <string name="action_annotate_pdf">PDF annotieren</string>
     <string name="annotate_screen_title">PDF annotieren</string>
-    <string name="annotate_description">Markierungen und Textkommentare zu diesem PDF hinzufügen</string>
-    <string name="annotate_details">Zeichne gelbe Markierungen oder platziere kurze Textkommentare auf Seiten. Wechsle in den Schreibmodus und tippe auf die Seite, um einen Kommentar zu setzen. Der Zoommodus hilft bei präziser Platzierung. Das Ergebnis wird als neue annotierte PDF-Kopie gespeichert.</string>
+    <string name="annotate_description">Markierungen, Formen und Notizen zu diesem PDF hinzufügen</string>
+    <string name="annotate_details">Nutze die Annotierwerkzeuge, um Freihandmarkierungen, Rechtecke, Ovale und Textnotizen hinzuzufügen. Bestehende Annotationen lassen sich vor dem Speichern auswählen, verschieben, umfärben, in der Größe ändern, bearbeiten oder löschen. Durchsuchbare PDFs bieten zusätzlich Snap, um Freihandmarkierungen an erkannten Textzeilen auszurichten. Der Zoommodus hilft bei präziser Platzierung. Das Ergebnis wird als neue annotierte PDF-Kopie gespeichert.</string>
     <string name="annotate_apply">Annotationen speichern</string>
     <string name="annotate_mode_mark">Mark.</string>
     <string name="annotate_mode_write">Schreiben</string>
@@ -411,7 +411,7 @@
     <string name="annotate_comment_edit_title">Kommentar bearbeiten</string>
     <string name="annotate_comment_add">Übernehmen</string>
     <string name="annotate_comment_delete">Löschen</string>
-    <string name="annotate_write_hint">Für Kommentar auf Seite tippen.</string>
+    <string name="annotate_write_hint">Auf die Seite tippen, um eine Textnotiz hinzuzufügen.</string>
     <string name="annotate_text_size">Größe</string>
     <string name="annotate_page_content_description">Seite %1$d</string>
     <string name="annotate_page_indicator">Seite %1$d / %2$d</string>
@@ -419,7 +419,7 @@
     <string name="annotate_page_next_short">Nächste</string>
     <string name="annotate_no_items">Zuerst mindestens eine Annotation hinzufügen</string>
     <string name="annotate_error">Fehler beim Hinzufügen der Annotationen</string>
-    <string name="help_item_annotate_pdf">Mit PDF annotieren kannst du gelbe Markierungen zeichnen oder kurze Textkommentare auf Seiten platzieren. Im Schreibmodus tippst du auf die Seite, um einen Kommentar zu setzen; tippe auf einen vorhandenen Kommentar, um ihn zu bearbeiten. Snap richtet Markierungen an Textzeilen aus (nur bei durchsuchbaren PDFs). Der Zoommodus hilft bei präziser Platzierung.</string>
+    <string name="help_item_annotate_pdf">Mit PDF annotieren kannst du ein Dokument mit Freihandmarkierungen, Rechtecken, Ovalen und Textnotizen prüfen. Tippe auf eine bestehende Annotation, um sie vor dem Speichern auszuwählen, zu verschieben, umzufärben, in der Größe zu ändern, zu bearbeiten oder zu löschen. Durchsuchbare PDFs bieten zusätzlich Snap für textausgerichtete Markierungen. Der Zoommodus hilft bei präziser Platzierung.</string>
     <!-- Navigation Drawer header -->
     <string name="drawer_version">Version %1$s</string>
     <!-- PDF Action Bottom Sheet: Abschnittsüberschriften -->

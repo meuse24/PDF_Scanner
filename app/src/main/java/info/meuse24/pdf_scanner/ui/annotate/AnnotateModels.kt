@@ -51,6 +51,11 @@ internal data class MarkerWidthOption(
     val labelRes: Int
 )
 
+internal data class AnnotationColorOption(
+    val color: Int,
+    val labelRes: Int
+)
+
 internal val markerWidthOptions = listOf(
     MarkerWidthOption(0.015f, R.string.highlight_stroke_thin),
     MarkerWidthOption(0.025f, R.string.highlight_stroke_medium),
@@ -58,12 +63,12 @@ internal val markerWidthOptions = listOf(
 )
 
 internal val annotationPalette = listOf(
-    0x66FFDC00,
-    0x6600C853,
-    0x66FF1744,
-    0x660091EA,
-    0x66FF6D00,
-    0x66AA00FF
+    AnnotationColorOption(0x66FFDC00, R.string.annotate_color_yellow),
+    AnnotationColorOption(0x6600C853, R.string.annotate_color_green),
+    AnnotationColorOption(0x66FF1744, R.string.annotate_color_red),
+    AnnotationColorOption(0x660091EA, R.string.annotate_color_blue),
+    AnnotationColorOption(0x66FF6D00, R.string.annotate_color_orange),
+    AnnotationColorOption(0x66AA00FF, R.string.annotate_color_violet)
 )
 
 internal val annotatePointListSaver = listSaver<List<Pair<Float, Float>>, Float>(

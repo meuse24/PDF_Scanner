@@ -153,6 +153,8 @@ fun AnnotateScreen(
     val currentSelectedAnnotation by rememberUpdatedState(selectedAnnotation)
     val currentTextLines by rememberUpdatedState(textLines)
     val currentElementState by rememberUpdatedState(elementStateSnapshot)
+    // pointerInput keeps long-lived gesture coroutines; this indirection forces selection changes
+    // to resolve against the latest editor snapshot instead of the snapshot from the last tool rebuild.
     val currentSelectionSync by rememberUpdatedState<(AnnotationSelection?) -> Unit> { selection ->
         applySelectionState(selection, currentElementState)
     }
@@ -541,8 +543,14 @@ fun AnnotateScreen(
             onClick = {
                 val finalStrokes = allStrokes + if (currentStroke.isNotEmpty()) listOf(AnnotationStroke(currentStroke, selectedPageIndex, selectedWidthFraction, selectedColor)) else emptyList()
                 val finalShape = currentShapeDraft?.takeIf { it.pageIndex == selectedPageIndex }?.toPreviewShape(selectedColor, selectedWidthFraction)
-                val finalRects = allRects + listOfNotNull(finalShape as? AnnotationRect)
-                val finalOvals = allOvals + listOfNotNull(finalShape as? AnnotationOval)
+                val finalRects = when (finalShape) {
+                    is AnnotationRect -> allRects + finalShape
+                    else -> allRects
+                }
+                val finalOvals = when (finalShape) {
+                    is AnnotationOval -> allOvals + finalShape
+                    else -> allOvals
+                }
                 val finalComments = allComments.map { AnnotationText(it.pageIndex, it.anchorX, it.anchorY, it.text, it.fontSizeFraction, it.color) }
                 viewModel.applyAnnotations(finalStrokes, finalRects, finalOvals, finalComments)
             },

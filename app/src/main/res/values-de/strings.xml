@@ -75,7 +75,7 @@
     <string name="help_section_pdf_edit">PDFs bearbeiten</string>
     <string name="help_section_pdf_pages">Seiten und Struktur</string>
     <string name="help_section_pdf_page_changes">Seiten ändern</string>
-    <string name="help_section_pdf_marks">Annotieren und Bearbeiten</string>
+    <string name="help_section_pdf_marks">Beschriften und Bearbeiten</string>
     <string name="help_section_pdf_output">Ausgabe und Schutz</string>
     <string name="help_desc_archive">Öffnet die Ablage mit deinen gespeicherten PDFs. Von dort aus kannst du Dokumente öffnen, auswählen und weitere Aktionen starten.</string>
     <string name="help_desc_start_scanner">Startet den Dokumentenscanner, damit du eine oder mehrere Seiten erfassen und als PDF speichern kannst.</string>
@@ -398,9 +398,9 @@
     <string name="help_item_auto_tag">Wenn ein Dokument durchsuchbar gemacht wird, vergibt die App Tags wie Rechnung oder Vertrag lokal aus OCR-Text und Schlüsselwörtern. Tags erscheinen als farbige Etiketten unter dem Dateinamen.</string>
     <string name="privacy_keyword_5">On-Device-Intelligenz</string>
     <string name="privacy_point_5">Volltextsuche, die Erzeugung durchsuchbarer PDFs, sicheres Schwärzen und textausgerichtete Markierungen arbeiten lokal auf Ihrem Gerät. Neu erzeugte geschwärzte Kopien entfernen OCR-Text, Metadaten und interaktive PDF-Elemente aus dem gespeicherten Ergebnis.</string>
-    <!-- PDF annotieren -->
-    <string name="action_annotate_pdf">PDF annotieren</string>
-    <string name="annotate_screen_title">PDF annotieren</string>
+    <!-- PDF beschriften -->
+    <string name="action_annotate_pdf">PDF beschriften</string>
+    <string name="annotate_screen_title">PDF beschriften</string>
     <string name="annotate_description">Markierungen, Formen und Notizen zu diesem PDF hinzufügen</string>
     <string name="annotate_details">Nutze die Annotierwerkzeuge, um Freihandmarkierungen, Rechtecke, Ovale und Textnotizen hinzuzufügen. Bestehende Annotationen lassen sich vor dem Speichern auswählen, verschieben, umfärben, in der Größe ändern, bearbeiten oder löschen. Durchsuchbare PDFs bieten zusätzlich Snap, um Freihandmarkierungen an erkannten Textzeilen auszurichten. Der Zoommodus hilft bei präziser Platzierung. Das Ergebnis wird als neue annotierte PDF-Kopie gespeichert.</string>
     <string name="annotate_apply">Annotationen speichern</string>
@@ -413,13 +413,42 @@
     <string name="annotate_comment_delete">Löschen</string>
     <string name="annotate_write_hint">Auf die Seite tippen, um eine Textnotiz hinzuzufügen.</string>
     <string name="annotate_text_size">Größe</string>
+    <string name="annotate_attribute_color">Farbe</string>
+    <string name="annotate_color_yellow">Gelb</string>
+    <string name="annotate_color_green">Grün</string>
+    <string name="annotate_color_red">Rot</string>
+    <string name="annotate_color_blue">Blau</string>
+    <string name="annotate_color_orange">Orange</string>
+    <string name="annotate_color_violet">Violett</string>
+    <string name="annotate_selected_prefix">Ausgewählt: %1$s</string>
+    <string name="annotate_selected_delete">Löschen</string>
+    <string name="annotate_selected_clear">Auswahl aufheben</string>
+    <string name="annotate_selected_edit_text">Text bearbeiten</string>
+    <string name="annotate_selected_hint">Auf eine Annotation tippen, um sie auszuwählen. Durch Ziehen wird die ausgewählte Annotation verschoben.</string>
+    <string name="annotate_selection_mark">Markierung</string>
+    <string name="annotate_selection_rect">Rechteck</string>
+    <string name="annotate_selection_oval">Oval</string>
+    <string name="annotate_selection_text">Textnotiz</string>
+    <string name="annotate_action_undo">Letzte Annotation rückgängig machen</string>
+    <string name="annotate_action_clear_page">Annotationen auf dieser Seite löschen</string>
+    <string name="annotate_action_clear_all">Alle Annotationen löschen</string>
+    <string name="annotate_mode_zoom_title">Zoommodus</string>
+    <string name="annotate_mode_zoom_hint">Seite verschieben und zoomen. Tippe auf das Werkzeugsymbol, um zum Bearbeiten zurückzukehren.</string>
+    <string name="annotate_mode_edit_back">Zurück zum Bearbeiten</string>
+    <string name="annotate_tool_mark">Markieren</string>
+    <string name="annotate_tool_text">Textnotiz</string>
+    <string name="annotate_tool_rect_filled">Rechteck gefüllt</string>
+    <string name="annotate_tool_rect_frame">Rechteck Kontur</string>
+    <string name="annotate_tool_oval_filled">Oval gefüllt</string>
+    <string name="annotate_tool_oval_frame">Oval Kontur</string>
+    <string name="annotate_tool_zoom">Zoom</string>
     <string name="annotate_page_content_description">Seite %1$d</string>
     <string name="annotate_page_indicator">Seite %1$d / %2$d</string>
     <string name="annotate_page_previous_short">Vorherige</string>
     <string name="annotate_page_next_short">Nächste</string>
     <string name="annotate_no_items">Zuerst mindestens eine Annotation hinzufügen</string>
     <string name="annotate_error">Fehler beim Hinzufügen der Annotationen</string>
-    <string name="help_item_annotate_pdf">Mit PDF annotieren kannst du ein Dokument mit Freihandmarkierungen, Rechtecken, Ovalen und Textnotizen prüfen. Tippe auf eine bestehende Annotation, um sie vor dem Speichern auszuwählen, zu verschieben, umzufärben, in der Größe zu ändern, zu bearbeiten oder zu löschen. Durchsuchbare PDFs bieten zusätzlich Snap für textausgerichtete Markierungen. Der Zoommodus hilft bei präziser Platzierung.</string>
+    <string name="help_item_annotate_pdf">Mit PDF beschriften kannst du ein Dokument mit Freihandmarkierungen, Rechtecken, Ovalen und Textnotizen prüfen. Tippe auf eine bestehende Annotation, um sie vor dem Speichern auszuwählen, zu verschieben, umzufärben, in der Größe zu ändern, zu bearbeiten oder zu löschen. Durchsuchbare PDFs bieten zusätzlich Snap für textausgerichtete Markierungen. Der Zoommodus hilft bei präziser Platzierung.</string>
     <!-- Navigation Drawer header -->
     <string name="drawer_version">Version %1$s</string>
     <!-- PDF Action Bottom Sheet: Abschnittsüberschriften -->

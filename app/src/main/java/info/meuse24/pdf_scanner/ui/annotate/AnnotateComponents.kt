@@ -164,20 +164,22 @@ internal fun AnnotationAttributeBar(
                 Icon(Icons.Default.ArrowDropDown, null, modifier = Modifier.padding(start = 4.dp))
             }
             DropdownMenu(expanded = colorExpanded, onDismissRequest = { colorExpanded = false }) {
-                annotationPalette.forEach { color ->
+                annotationPalette.forEach { option ->
+                    val colorLabel = stringResource(option.labelRes)
                     DropdownMenuItem(
-                        text = { Text(stringResource(R.string.annotate_attribute_color)) },
+                        text = { Text(colorLabel) },
                         leadingIcon = {
                             Box(
                                 modifier = Modifier
                                     .size(18.dp)
-                                    .background(Color(color), CircleShape)
+                                    .background(Color(option.color), CircleShape)
                                     .border(1.dp, Color.White.copy(alpha = 0.75f), CircleShape)
+                                    .semantics { contentDescription = colorLabel }
                             )
                         },
                         onClick = {
                             colorExpanded = false
-                            onColorSelected(color)
+                            onColorSelected(option.color)
                         }
                     )
                 }
@@ -237,11 +239,9 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawWidthPreview(
     widthFraction: Float,
     color: Color
 ) {
-    val strokeWidth = when (widthFraction) {
-        markerWidthOptions[0].fraction -> 3f
-        markerWidthOptions[1].fraction -> 6f
-        else -> 10f
-    }
+    val maxFraction = markerWidthOptions.maxOf { it.fraction }
+    val normalizedFraction = if (maxFraction > 0f) widthFraction / maxFraction else 1f
+    val strokeWidth = 3f + normalizedFraction.coerceIn(0f, 1f) * 7f
     drawLine(
         color = color,
         start = center.copy(x = 4.dp.toPx()),

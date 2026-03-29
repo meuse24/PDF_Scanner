@@ -350,3 +350,19 @@ Ergebnis:
 Code-Review-Zusammenfassung:
 - Die Texte beschreiben jetzt das tatsächliche Feature statt nur den früheren Highlight-/Kommentar-Scope.
 - Menü, Screen und Hilfe sprechen konsistent dieselbe Sprache; das reduziert UI-Brüche und Erwartungsfehler.
+
+Nachtrag:
+- deutsche sichtbare Bezeichnung auf `PDF beschriften` umgestellt, weil sie für Alltagsnutzer verständlicher ist als `PDF annotieren`
+
+### Schritt 15: Review-Findings vor Release nachziehen
+Status: Erledigt
+
+Ergebnis:
+- Farb-Dropdown mit eindeutigen Farbnamen für Screenreader versehen
+- `currentSelectionSync` im Screen mit Kommentar dokumentiert
+- `drawWidthPreview` von starrer Dreier-Abbildung auf proportionale Berechnung umgestellt
+- Save-Pfad für laufende Shape-Drafts von doppelten `as?`-Casts auf klare `when`-Verzweigung umgestellt
+
+Code-Review-Zusammenfassung:
+- Der einzige Release-Blocker aus dem Review, die identischen Farb-Labels im Dropdown, ist geschlossen.
+- Die übrigen kleinen Nacharbeiten verbessern Lesbarkeit und Erweiterbarkeit, ohne Verhalten oder Persistenzpfade zu verändern.

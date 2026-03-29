@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="images_to_pdf_title">画像をPDFに変換</string>
+    <string name="images_to_pdf_description">写真やギャラリー画像をPDFに変換します。1ページに配置する画像数を選択してください。</string>
+    <string name="images_to_pdf_layout_label">レイアウト</string>
+    <string name="images_to_pdf_layout_single">1枚/ページ</string>
+    <string name="images_to_pdf_layout_two">2枚/ページ</string>
+    <string name="images_to_pdf_layout_four">4枚/ページ</string>
+    <string name="images_to_pdf_filename_label">ファイル名</string>
+    <string name="images_to_pdf_filename_default">画像_%s</string>
+    <string name="images_to_pdf_action">PDFを作成</string>
+    <string name="images_to_pdf_image_count">%d 枚の画像を選択中</string>
+    <string name="images_to_pdf_add_button">画像をPDFに変換</string>
+    <string name="images_to_pdf_unreadable_skipped">%d 枚の画像を読み込めなかったためスキップしました。</string>
+</resources>

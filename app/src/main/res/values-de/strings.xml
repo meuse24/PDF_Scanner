@@ -121,15 +121,15 @@
     <string name="info_repository_label">GitHub-Repository</string>
     <string name="info_section_privacy">Datenschutz</string>
     <string name="info_section_features">Funktionen</string>
-    <string name="info_features_body">Die App scannt Dokumente zu PDF, führt OCR direkt auf dem Gerät aus, speichert durchsuchbaren OCR-Text lokal für die Suche in der Ablage und bietet Seitenbearbeitung, Schutz, Signaturen, Markierungen, sichere Schwärzung sowie optionale OCR-Rekonstruktion für geschwärzte Kopien.</string>
-    <string name="info_privacy_body">Keine Werbung, kein Konto und kein eigenes Backend. PDFs, Vorschaubilder und optionaler OCR-Text bleiben lokal im App-Speicher auf Ihrem Gerät. Teilen und Exportieren erfolgen nur auf Ihre Aktion. Sicheres Schwärzen erzeugt lokal eine separate bereinigte Kopie. Scan, OCR sowie Modell- und Schriftart-Downloads nutzen Google Play Services; Dokumentinhalte werden von der App nicht hochgeladen.</string>
+    <string name="info_features_body">Die App scannt, importiert und erstellt PDFs aus Bildern, führt OCR direkt auf dem Gerät aus, speichert durchsuchbaren OCR-Text lokal für die Suche in der Ablage und bietet Seitenbearbeitung, Beschriftung, Signaturen, Metadatenbearbeitung, Graustufen, Schutz sowie sichere Schwärzung mit optionaler OCR-Rekonstruktion für geschwärzte Kopien.</string>
+    <string name="info_privacy_body">Keine Werbung, kein Konto und kein eigenes Backend. PDFs, Vorschaubilder, erzeugte Kopien, geschwärzte Dateien und optionaler OCR-Text bleiben lokal im App-Speicher auf Ihrem Gerät, bis Sie sie exportieren oder teilen. Scan, OCR sowie herunterladbare Modelle und Schriftarten nutzen Google Play Services; Dokumentinhalte werden von der App selbst nicht hochgeladen.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Lokal</string>
     <string name="privacy_keyword_2">Offline</string>
     <string name="privacy_keyword_3">Sicher</string>
     <string name="privacy_keyword_4">Privat</string>
-    <string name="privacy_point_1">Die App speichert PDFs, Vorschaubilder, geschwärzte Kopien und optionalen durchsuchbaren OCR-Text lokal auf Ihrem Gerät.</string>
-    <string name="privacy_point_2">Dokumente oder Inhalte werden nicht automatisch hochgeladen. Teilen oder Exportieren erfolgt nur, wenn Sie es ausdrücklich auslösen. Sicheres Schwärzen erzeugt eine neue Kopie; das Original bleibt erhalten, bis Sie es löschen.</string>
+    <string name="privacy_point_1">Die App speichert PDFs, Vorschaubilder, Bild-zu-PDF-Ergebnisse, geschwärzte Kopien und optionalen durchsuchbaren OCR-Text lokal auf Ihrem Gerät.</string>
+    <string name="privacy_point_2">Dokumente oder Inhalte werden nicht automatisch hochgeladen. Teilen, Drucken oder Exportieren erfolgt nur, wenn Sie es ausdrücklich auslösen. Sicheres Schwärzen erzeugt eine neue Kopie; das Original bleibt erhalten, bis Sie es löschen.</string>
     <string name="privacy_point_3">Scan- und OCR-Funktionen nutzen Google Play Services. Für die Fehleranalyse können technische Diagnosedaten übertragen werden. Sprachmodelle für Chinesisch, Japanisch und Hindi sowie herunterladbare Schriftarten können beim ersten Einsatz über Play Services geladen werden; Dokumentinhalte werden von der App nicht gesendet.</string>
     <string name="privacy_point_4">Die App selbst erhebt keine personenbezogenen Daten, nutzt kein eigenes Analytics-System und fordert keine eigene Netzwerkberechtigung an.</string>
     <string name="privacy_footer">Stand: 29. März 2026</string>
@@ -401,58 +401,8 @@
     <string name="help_item_search">Tippe oben in das Suchfeld, um Dokumente nach Dateiname oder gespeichertem OCR-Text zu finden. Die Suche läuft lokal auf deinem Gerät und nutzt Präfixabgleich, sodass "Rec" zum Beispiel "Rechnung" finden kann.</string>
     <string name="help_item_auto_tag">Wenn ein Dokument durchsuchbar gemacht wird, vergibt die App Tags wie Rechnung oder Vertrag lokal aus OCR-Text und Schlüsselwörtern. Tags erscheinen als farbige Etiketten unter dem Dateinamen.</string>
     <string name="privacy_keyword_5">On-Device-Intelligenz</string>
-    <string name="privacy_point_5">Volltextsuche, die Erzeugung durchsuchbarer PDFs, sicheres Schwärzen und textausgerichtete Markierungen arbeiten lokal auf Ihrem Gerät. Neu erzeugte geschwärzte Kopien entfernen OCR-Text, Metadaten und interaktive PDF-Elemente aus dem gespeicherten Ergebnis.</string>
+    <string name="privacy_point_5">Volltextsuche, die Erzeugung durchsuchbarer PDFs, Beschriftungen mit Textausrichtung, sicheres Schwärzen, Graustufen und Seiten-/Bild-Neuaufbau arbeiten lokal auf Ihrem Gerät. Neu erzeugte geschwärzte Kopien entfernen OCR-Text, Metadaten und interaktive PDF-Elemente aus dem gespeicherten Ergebnis.</string>
     <!-- PDF beschriften -->
-    <string name="action_annotate_pdf">PDF beschriften</string>
-    <string name="annotate_screen_title">PDF beschriften</string>
-    <string name="annotate_description">Markierungen, Formen und Notizen zu diesem PDF hinzufügen</string>
-    <string name="annotate_details">Nutze die Annotierwerkzeuge, um Freihandmarkierungen, Rechtecke, Ovale und Textnotizen hinzuzufügen. Bestehende Annotationen lassen sich vor dem Speichern auswählen, verschieben, umfärben, in der Größe ändern, bearbeiten oder löschen. Durchsuchbare PDFs bieten zusätzlich Snap, um Freihandmarkierungen an erkannten Textzeilen auszurichten. Der Zoommodus hilft bei präziser Platzierung. Das Ergebnis wird als neue annotierte PDF-Kopie gespeichert.</string>
-    <string name="annotate_apply">Annotationen speichern</string>
-    <string name="annotate_mode_mark">Mark.</string>
-    <string name="annotate_mode_write">Schreiben</string>
-    <string name="annotate_comment_hint">Kommentar eingeben…</string>
-    <string name="annotate_comment_title">Kommentar</string>
-    <string name="annotate_comment_edit_title">Kommentar bearbeiten</string>
-    <string name="annotate_comment_add">Übernehmen</string>
-    <string name="annotate_comment_delete">Löschen</string>
-    <string name="annotate_write_hint">Auf die Seite tippen, um eine Textnotiz hinzuzufügen.</string>
-    <string name="annotate_text_size">Größe</string>
-    <string name="annotate_attribute_color">Farbe</string>
-    <string name="annotate_color_yellow">Gelb</string>
-    <string name="annotate_color_green">Grün</string>
-    <string name="annotate_color_red">Rot</string>
-    <string name="annotate_color_blue">Blau</string>
-    <string name="annotate_color_orange">Orange</string>
-    <string name="annotate_color_violet">Violett</string>
-    <string name="annotate_selected_prefix">Ausgewählt: %1$s</string>
-    <string name="annotate_selected_delete">Löschen</string>
-    <string name="annotate_selected_clear">Auswahl aufheben</string>
-    <string name="annotate_selected_edit_text">Text bearbeiten</string>
-    <string name="annotate_selected_hint">Auf eine Annotation tippen, um sie auszuwählen. Durch Ziehen wird die ausgewählte Annotation verschoben.</string>
-    <string name="annotate_selection_mark">Markierung</string>
-    <string name="annotate_selection_rect">Rechteck</string>
-    <string name="annotate_selection_oval">Oval</string>
-    <string name="annotate_selection_text">Textnotiz</string>
-    <string name="annotate_action_undo">Letzte Annotation rückgängig machen</string>
-    <string name="annotate_action_clear_page">Annotationen auf dieser Seite löschen</string>
-    <string name="annotate_action_clear_all">Alle Annotationen löschen</string>
-    <string name="annotate_mode_zoom_title">Zoommodus</string>
-    <string name="annotate_mode_zoom_hint">Seite verschieben und zoomen. Tippe auf das Werkzeugsymbol, um zum Bearbeiten zurückzukehren.</string>
-    <string name="annotate_mode_edit_back">Zurück zum Bearbeiten</string>
-    <string name="annotate_tool_mark">Markieren</string>
-    <string name="annotate_tool_text">Textnotiz</string>
-    <string name="annotate_tool_rect_filled">Rechteck gefüllt</string>
-    <string name="annotate_tool_rect_frame">Rechteck Kontur</string>
-    <string name="annotate_tool_oval_filled">Oval gefüllt</string>
-    <string name="annotate_tool_oval_frame">Oval Kontur</string>
-    <string name="annotate_tool_zoom">Zoom</string>
-    <string name="annotate_page_content_description">Seite %1$d</string>
-    <string name="annotate_page_indicator">Seite %1$d / %2$d</string>
-    <string name="annotate_page_previous_short">Vorherige</string>
-    <string name="annotate_page_next_short">Nächste</string>
-    <string name="annotate_no_items">Zuerst mindestens eine Annotation hinzufügen</string>
-    <string name="annotate_error">Fehler beim Hinzufügen der Annotationen</string>
-    <string name="help_item_annotate_pdf">Mit PDF beschriften kannst du ein Dokument mit Freihandmarkierungen, Rechtecken, Ovalen und Textnotizen prüfen. Tippe auf eine bestehende Annotation, um sie vor dem Speichern auszuwählen, zu verschieben, umzufärben, in der Größe zu ändern, zu bearbeiten oder zu löschen. Durchsuchbare PDFs bieten zusätzlich Snap für textausgerichtete Markierungen. Der Zoommodus hilft bei präziser Platzierung.</string>
     <!-- Navigation Drawer header -->
     <string name="drawer_version">Version %1$s</string>
     <!-- PDF Action Bottom Sheet: Abschnittsüberschriften -->
@@ -513,16 +463,4 @@
     <string name="help_item_rename">Wähle PDF umbenennen, um einem Dokument einen neuen Namen zu geben. Der Dateiname muss in der Ablage eindeutig sein. Die Endung .pdf wird automatisch ergänzt.</string>
 
     <!-- Images to PDF -->
-    <string name="images_to_pdf_title">Bilder zu PDF</string>
-    <string name="images_to_pdf_description">Fotos oder Galeriebilder in ein PDF umwandeln. Wähle, wie viele Bilder pro Seite platziert werden.</string>
-    <string name="images_to_pdf_layout_label">Layout</string>
-    <string name="images_to_pdf_layout_single">Einzeln</string>
-    <string name="images_to_pdf_layout_two">2/Seite</string>
-    <string name="images_to_pdf_layout_four">4/Seite</string>
-    <string name="images_to_pdf_filename_label">Dateiname</string>
-    <string name="images_to_pdf_filename_default">Bilder_%s</string>
-    <string name="images_to_pdf_action">PDF erstellen</string>
-    <string name="images_to_pdf_image_count">%d Bild(er) ausgewählt</string>
-    <string name="images_to_pdf_add_button">Bilder zu PDF</string>
-    <string name="images_to_pdf_unreadable_skipped">%d Bild(er) konnten nicht gelesen werden und wurden übersprungen.</string>
 </resources>

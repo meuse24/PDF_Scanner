@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="images_to_pdf_title">图片转 PDF</string>
+    <string name="images_to_pdf_description">将照片或图库图片转换为 PDF。选择每页放置的图片数量。</string>
+    <string name="images_to_pdf_layout_label">版式</string>
+    <string name="images_to_pdf_layout_single">单张</string>
+    <string name="images_to_pdf_layout_two">2/页</string>
+    <string name="images_to_pdf_layout_four">4/页</string>
+    <string name="images_to_pdf_filename_label">文件名</string>
+    <string name="images_to_pdf_filename_default">图片_%s</string>
+    <string name="images_to_pdf_action">创建 PDF</string>
+    <string name="images_to_pdf_image_count">已选择 %d 张图片</string>
+    <string name="images_to_pdf_add_button">图片转 PDF</string>
+    <string name="images_to_pdf_unreadable_skipped">%d 张图片无法读取，已跳过。</string>
+</resources>

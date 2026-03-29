@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="images_to_pdf_title">تحويل الصور إلى PDF</string>
+    <string name="images_to_pdf_description">حوّل الصور أو صور المعرض إلى PDF. اختر عدد الصور في كل صفحة.</string>
+    <string name="images_to_pdf_layout_label">التخطيط</string>
+    <string name="images_to_pdf_layout_single">مفردة</string>
+    <string name="images_to_pdf_layout_two">2/صفحة</string>
+    <string name="images_to_pdf_layout_four">4/صفحة</string>
+    <string name="images_to_pdf_filename_label">اسم الملف</string>
+    <string name="images_to_pdf_filename_default">صور_%s</string>
+    <string name="images_to_pdf_action">إنشاء PDF</string>
+    <string name="images_to_pdf_image_count">تم تحديد %d صورة</string>
+    <string name="images_to_pdf_add_button">تحويل الصور إلى PDF</string>
+    <string name="images_to_pdf_unreadable_skipped">تعذّر قراءة %d صورة وتم تخطيها.</string>
+</resources>

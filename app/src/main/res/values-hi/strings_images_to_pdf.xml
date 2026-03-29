@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="images_to_pdf_title">छवियाँ PDF में</string>
+    <string name="images_to_pdf_description">फ़ोटो या गैलरी छवियों को PDF में बदलें। प्रति पृष्ठ कितनी छवियाँ रखनी हैं चुनें।</string>
+    <string name="images_to_pdf_layout_label">लेआउट</string>
+    <string name="images_to_pdf_layout_single">एकल</string>
+    <string name="images_to_pdf_layout_two">2/पृष्ठ</string>
+    <string name="images_to_pdf_layout_four">4/पृष्ठ</string>
+    <string name="images_to_pdf_filename_label">फ़ाइल नाम</string>
+    <string name="images_to_pdf_filename_default">छवियाँ_%s</string>
+    <string name="images_to_pdf_action">PDF बनाएँ</string>
+    <string name="images_to_pdf_image_count">%d छवि(याँ) चुनी गई</string>
+    <string name="images_to_pdf_add_button">छवियाँ PDF में</string>
+    <string name="images_to_pdf_unreadable_skipped">%d छवि(याँ) पढ़ी नहीं जा सकीं और छोड़ दी गईं।</string>
+</resources>

@@ -61,6 +61,14 @@ Main editor flows:
 - `annotate/` full-screen PDF annotation editor
 - `redact/` secure redaction editor
 - `imagestopdf/` gallery images to PDF flow
+- `shared/` viewport math and text-snap helpers reused by editors
+
+Recent structure work:
+
+- `PdfEditor` split into focused ops files for annotations, overlays, redaction, images, and shared core helpers
+- `HomeScreen` split into archive content, dialogs, sheets, and small screen models
+- String resources split by feature with `strings_annotate.xml` and `strings_images_to_pdf.xml` in every locale
+- Legacy `HighlightScreen` removed; active editing now lives in `annotate/` and `redact/`
 
 ## Testing
 

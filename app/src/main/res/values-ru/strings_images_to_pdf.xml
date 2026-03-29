@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="images_to_pdf_title">Изображения в PDF</string>
+    <string name="images_to_pdf_description">Преобразуйте фотографии или изображения из галереи в PDF. Выберите количество изображений на странице.</string>
+    <string name="images_to_pdf_layout_label">Макет</string>
+    <string name="images_to_pdf_layout_single">Одно</string>
+    <string name="images_to_pdf_layout_two">2/страница</string>
+    <string name="images_to_pdf_layout_four">4/страница</string>
+    <string name="images_to_pdf_filename_label">Имя файла</string>
+    <string name="images_to_pdf_filename_default">Изображения_%s</string>
+    <string name="images_to_pdf_action">Создать PDF</string>
+    <string name="images_to_pdf_image_count">Выбрано %d изображений</string>
+    <string name="images_to_pdf_add_button">Изображения в PDF</string>
+    <string name="images_to_pdf_unreadable_skipped">%d изображений не удалось прочитать и они были пропущены.</string>
+</resources>

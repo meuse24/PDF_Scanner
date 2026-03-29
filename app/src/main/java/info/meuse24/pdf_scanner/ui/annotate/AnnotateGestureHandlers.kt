@@ -6,7 +6,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.unit.IntSize
-import info.meuse24.pdf_scanner.ui.highlight.normalizeViewportPoint
+import info.meuse24.pdf_scanner.ui.shared.normalizeViewportPoint
 
 internal suspend fun PointerInputScope.detectMarkGestures(
     canvasSize: IntSize,

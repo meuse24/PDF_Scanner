@@ -87,15 +87,17 @@ ui/
 │                                  # Edge-to-edge gehärtet: Scaffold mit safeDrawing(Horizontal+Bottom),
 │                                  # NavHost konsumiert innerPadding; MainActivity ruft enableEdgeToEdge() auf
 ├── home/
-│   ├── HomeScreen.kt              # Koordinator: Add-Document-BottomSheet, Scanner-Launcher, OpenDocument-/Image-Picker,
-│   │                              # PendingImport(Scan/File), Images-to-PDF-Einstieg, Save-Dialog, Listen-Routing, Suchfeld
-│   │                              # ScanItem.onAction(ScanAction) → navigiert zu Edit-Screens; Rename-Dialog inline
+│   ├── HomeScreen.kt              # Koordinator: Launcher, ViewModel-Wiring, Bulk-Aktionen und Navigation
+│   ├── HomeScreenModels.kt        # PendingImport + Dateinamens-/Sortier-Helfer
 │   ├── HomeViewModel.kt           # Archivkern: Liste, Auswahl, Import/Scan, Bulk-Aktionen, Suche
 │   │                              # _error/_success/_ocrText/_ocrLoading/_ocrProgress/_editLoading (Merge + Dateiimport)
 │   │                              # _searchQuery → filteredScans (FTS4 via flatMapLatest+debounce)
 │   │                              # renameScan(record, newName): PDF + Thumbnail umbenennen + updateFilenameAndPath
 │   │                              # pendingImageUris: temporäre URI-Bridge für Images-to-PDF-Navigation
 │   └── components/
+│       ├── HomeArchiveContent.kt  # Suchleiste/Sortierung + Archivliste + Empty/Search-Empty-State
+│       ├── HomeDialogs.kt         # Delete/Rename/BulkLanguage/Error/Loading-Dialoge
+│       ├── HomeSheets.kt          # Add-Document-, OCR-Result- und Save-Import-Sheets/Dialoge
 │       ├── ScanItem.kt            # Card: Dateiname (maxLines=2, volle Breite) + Row(Thumbnail · Metadaten · Menü · Checkbox)
 │       │                          # MoreVert öffnet ModalBottomSheet (skipPartiallyExpanded=true) statt Dropdown
 │       │                          # Sheet-Sektionen: Bearbeiten · Seiten · Ausgabe · Schutz · OCR (nur wenn searchable)
@@ -119,7 +121,7 @@ ui/
 │   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Highlight/Annotate/Redaction/RemoveTextLayer/RemovePassword/RestrictUsage/Grayscale/PdfMetadata
 │   │                              # Lädt ScanRecord per scanId, führt Workflows aus,
 │   │                              # mappt Fehler über WorkflowErrorMapper; _editLoading/_error/_success
-│   │                              # Highlight/Annotate: _highlightPageBitmap + _textLines; seitenweiser TextLine-Cache für Snap-Modus
+│   │                              # Seitenvorschau + _textLines; seitenweiser TextLine-Cache für Snap-Modus
 │   │                              # applyAnnotations(strokes, rects, ovals, comments) → AnnotatePdfWorkflow
 │   │                              # applyRedactions(rects, makeSearchable, languageCode) → RedactPdfWorkflow
 │   │                              # convertToGrayscale() → ConvertToGrayscaleWorkflow; loadMetadata() → _metadata: StateFlow<PdfMetadata?>
@@ -142,10 +144,16 @@ ui/
 │   │                              # A4-Canvas-Vorschau; Erfolg navigiert über HomeViewModel-URI-Bridge zurück
 │   └── ImagesToPdfViewModel.kt    # CreatePdfFromImagesUseCase-Dispatch + skippedCount/error/success
 ├── redact/
+│   ├── RedactModels.kt            # Saver + Konstanten
+│   ├── RedactInteractionHelpers.kt # Rechteck-Erzeugung, Min-Area, Draft-/Applied-Farben
+│   ├── RedactComponents.kt        # ModeBar, Footer, Save-/Error-/Progress-Dialoge
 │   └── RedactScreen.kt            # Vollbild-Sicher-Schwärzen mit Rechteckmodus + Zoom
 │                                  # Save-Dialog statt permanentem Hinweis auf dem Hauptscreen
 │                                  # optionaler searchable-PDF-Toggle + Sprachwahl erst beim Speichern
 │                                  # allRects via rememberSaveable; nur committete Rechtecke werden gespeichert
+├── shared/
+│   ├── PdfViewportMath.kt         # normalize/map/clamp/zoom-Format für Annotate + Redact
+│   └── TextSnapHelpers.kt         # Snap von Freihand-Markierungen auf Textzeilen
 ├── pageedit/
 │   ├── PageSelectionViewModel.kt  # Seiten-Thumbnails, Auswahl, saveAsCopy + Rotate/Delete/Extract/Duplicate-Workflows
 │   └── PageActionScreens.kt       # RotatePagesScreen, DeletePagesScreen, ExtractPagesScreen, DuplicatePagesScreen
@@ -157,9 +165,7 @@ ui/
 │   └── ReorderScreen.kt
 ├── signature/
 │   └── SignatureScreen.kt         # Freihand-Zeichen-Pad + Seiten-/Größenauswahl — nutzt DocumentEditViewModel
-├── highlight/
-│   └── HighlightScreen.kt         # INAKTIV (keine Nav-Route mehr; Funktionalität in AnnotateScreen enthalten)
-│                                  # Datei vorhanden, aber nicht erreichbar — HighlightPdfWorkflow + UseCase bleiben für Tests
+├── highlight/                     # Kein aktiver UI-Screen mehr; nur noch Backend-Highlight-Workflows bleiben erhalten
 ├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
 │                                  # Hilfe-Texte decken Dokument hinzufügen (Scan + PDF-Import), Archiv-Basisaktionen,
 │                                  # Suche/OCR/Highlight-Snap/Privacy-Verhalten ab
@@ -195,9 +201,13 @@ util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer
 util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, onProgress): String — Phase1 PdfRenderer+OCR, Phase2 PdfBox
                                    # Rückgabe: extrahierter Volltext (für lokale DB-Speicherung)
                                    # ZH/JA NICHT als searchable PDF unterstützt (TTC/OTC-Fonts können nicht eingebettet werden)
-util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePages, deletePages, getPageCount, generateThumbnail
+util/PdfEditor.kt                  # Öffentliche PDF-API: Merge/Split/Reorder/Rotate/Delete/Thumbnail/Highlight/Annotate/Redaction/Image→PDF
+util/PdfEditorCore.kt              # writePdf/editPdf/writeDerivedPdf + page/range helpers
+util/PdfEditorAnnotationOps.kt     # Annotation-/Textline-Export-Helfer
+util/PdfEditorOverlayOps.kt        # Page numbers, watermark, signature, overlay font helpers
+util/PdfEditorRedactionOps.kt      # Secure-redaction rebuild + sanitization helpers
+util/PdfEditorImageOps.kt          # A4-Zellenlayout + fitInside für Images-to-PDF
                                    # createPdfFromImages(): A4-Layout mit SINGLE / TWO_PER_PAGE / FOUR_PER_PAGE, Fit-Inside-Zentrierung
-                                   # appendTextWatermark nutzt calculateWatermarkFontSize() (internal, testbar)
                                    # buildRanges() + resolveUniqueFilename() als top-level internal (JVM-testbar)
                                    # removeTextLayer(): Seiten per PdfRenderer → LosslessFactory neu rendern → kein OCR-Text
                                    # convertToGrayscale(): wie removeTextLayer, aber mit ColorMatrix(saturation=0) → Suffix _SW; isSearchable=false
@@ -275,7 +285,7 @@ test/
 │   ├── home/HomeImportFilenameSuggestionTest.kt     # DISPLAY_NAME → Dateinamensvorschlag ohne .pdf
 │   ├── ui/imagestopdf/ImagesToPdfViewModelTest.kt   # editLoading-Guard, Erfolg, Fehler, clearError
 │   ├── annotate/AnnotateInteractionHelpersTest.kt   # Hit-Testing, Auswahl, Move, Mutationen für Stroke/Rect/Oval/Text
-│   └── highlight/HighlightScreenMathTest.kt         # clampPanOffset + inverse Zoom/Pan-Mathematik + Snap-/Rect-Hilfsfunktionen
+│   └── ui/shared/PdfViewportMathTest.kt             # clampPanOffset + inverse Zoom/Pan-Mathematik + Snap-Hilfsfunktionen
 └── util/
     ├── PdfEditorTest.kt                    # buildRanges + resolveUniqueFilename + mapDisplayToPdfCoord + mergeTextBoxesToLines
     ├── PdfEditorRealIntegrationTest.kt     # echte PDF-Dateien im JVM-Lauf: protect/unlock, restrict/removePassword, reorder, duplicate/delete, rotate, merge/split

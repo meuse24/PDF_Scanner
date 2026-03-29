@@ -69,40 +69,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModel
-import info.meuse24.pdf_scanner.ui.highlight.clampPanOffset
-import info.meuse24.pdf_scanner.ui.highlight.formatZoomScale
-import info.meuse24.pdf_scanner.ui.highlight.normalizeViewportPoint
 import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
 import info.meuse24.pdf_scanner.ui.ocr.defaultOcrLanguage
+import info.meuse24.pdf_scanner.ui.shared.clampPanOffset
+import info.meuse24.pdf_scanner.ui.shared.formatZoomScale
+import info.meuse24.pdf_scanner.ui.shared.normalizeViewportPoint
 import java.util.Locale
-
-private const val MIN_REDACTION_SIDE = 0.003f
-
-private val redactionRectListSaver = listSaver<List<RedactionRect>, List<Float>>(
-    save = { rects ->
-        rects.map { rect ->
-            listOf(
-                rect.pageIndex.toFloat(),
-                rect.left,
-                rect.top,
-                rect.right,
-                rect.bottom
-            )
-        }
-    },
-    restore = { values ->
-        values.mapNotNull { savedRect ->
-            if (savedRect.size != 5) return@mapNotNull null
-            RedactionRect(
-                pageIndex = savedRect[0].toInt(),
-                left = savedRect[1],
-                top = savedRect[2],
-                right = savedRect[3],
-                bottom = savedRect[4]
-            )
-        }
-    }
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,7 +86,7 @@ fun RedactScreen(
     val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
     val success by viewModel.success.collectAsStateWithLifecycle()
-    val pageBitmap by viewModel.highlightPageBitmap.collectAsStateWithLifecycle()
+    val pageBitmap by viewModel.documentPageBitmap.collectAsStateWithLifecycle()
     val resources = LocalResources.current
     val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
     val ocrLanguages = remember(displayLocale) { buildOcrLanguageOptions(displayLocale) }
@@ -198,7 +170,7 @@ fun RedactScreen(
     }
 
     LaunchedEffect(selectedPageIndex, currentRecord.id) {
-        viewModel.loadHighlightPage(selectedPageIndex)
+        viewModel.loadDocumentPage(selectedPageIndex)
         currentRect = null
         dragStartPoint = null
         resetZoom()
@@ -234,69 +206,15 @@ fun RedactScreen(
             .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Surface(
-            modifier = Modifier.fillMaxWidth().zIndex(1f),
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
-            tonalElevation = 1.dp
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    FilterChip(
-                        selected = !isZoomMode,
-                        onClick = { isZoomMode = false },
-                        label = { Text(stringResource(R.string.redact_mode_rect)) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.CropSquare,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                    )
-                    FilterChip(
-                        selected = isZoomMode,
-                        onClick = { isZoomMode = true },
-                        label = { Text(stringResource(R.string.highlight_mode_pan)) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.ZoomIn,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (hasMultiplePages) {
-                        Text(
-                            text = "${selectedPageIndex + 1}/${currentRecord.pageCount}",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    if (isZoomMode) {
-                        Text(
-                            text = "${formatZoomScale(zoomScale)}×",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-        }
+        RedactModeBar(
+            isZoomMode = isZoomMode,
+            hasMultiplePages = hasMultiplePages,
+            selectedPageIndex = selectedPageIndex,
+            pageCount = currentRecord.pageCount,
+            zoomScaleLabel = formatZoomScale(zoomScale),
+            onModeChange = { isZoomMode = it },
+            modifier = Modifier.fillMaxWidth().zIndex(1f)
+        )
 
         Box(
             modifier = Modifier
@@ -406,270 +324,60 @@ fun RedactScreen(
             }
         }
 
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
-            tonalElevation = 1.dp
-        ) {
-            Column(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                if (hasMultiplePages) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = { selectedPageIndex = (selectedPageIndex - 1).coerceAtLeast(0) },
-                            enabled = selectedPageIndex > 0,
-                            modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
-                        ) {
-                            Text(stringResource(R.string.signature_page_previous), maxLines = 1)
-                        }
-                        OutlinedButton(
-                            onClick = {
-                                selectedPageIndex =
-                                    (selectedPageIndex + 1).coerceAtMost(currentRecord.pageCount - 1)
-                            },
-                            enabled = selectedPageIndex < currentRecord.pageCount - 1,
-                            modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
-                        ) {
-                            Text(stringResource(R.string.signature_page_next), maxLines = 1)
-                        }
-                    }
-                }
-
-                if (isZoomMode) {
-                    OutlinedButton(
-                        onClick = resetZoom,
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        Text(stringResource(R.string.highlight_zoom_reset_button))
-                    }
-                } else {
-                    Text(
-                        text = stringResource(R.string.redact_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = undoLastRect,
-                            enabled = hasPageRects,
-                            modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.highlight_undo_last),
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center,
-                                maxLines = 1
-                            )
-                        }
-                        OutlinedButton(
-                            onClick = clearCurrentPage,
-                            enabled = hasPageRects,
-                            modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.highlight_clear_page),
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center,
-                                maxLines = 1
-                            )
-                        }
-                        OutlinedButton(
-                            onClick = resetAllRects,
-                            enabled = hasAnyRects,
-                            modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.highlight_reset_all),
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center,
-                                maxLines = 1
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        Button(
-            onClick = { showSaveOptionsDialog = true },
-            enabled = hasAnyRects && !editLoading,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.redact_apply))
-        }
-    }
-
-    if (showInstructionsDialog) {
-        AlertDialog(
-            onDismissRequest = { showInstructionsDialog = false },
-            title = { Text(stringResource(R.string.redact_description)) },
-            text = { Text(stringResource(R.string.redact_details)) },
-            confirmButton = {
-                TextButton(onClick = { showInstructionsDialog = false }) {
-                    Text(stringResource(R.string.action_ok))
-                }
-            }
+        RedactFooter(
+            isZoomMode = isZoomMode,
+            hasMultiplePages = hasMultiplePages,
+            selectedPageIndex = selectedPageIndex,
+            pageCount = currentRecord.pageCount,
+            hasPageRects = hasPageRects,
+            hasAnyRects = hasAnyRects,
+            editLoading = editLoading,
+            onPreviousPage = { selectedPageIndex = (selectedPageIndex - 1).coerceAtLeast(0) },
+            onNextPage = {
+                selectedPageIndex = (selectedPageIndex + 1).coerceAtMost(currentRecord.pageCount - 1)
+            },
+            onResetZoom = resetZoom,
+            onUndoLast = undoLastRect,
+            onClearPage = clearCurrentPage,
+            onClearAll = resetAllRects,
+            onApply = { showSaveOptionsDialog = true }
         )
     }
 
+    if (showInstructionsDialog) {
+        RedactInstructionsDialog(onDismiss = { showInstructionsDialog = false })
+    }
+
     if (showSaveOptionsDialog) {
-        AlertDialog(
-            onDismissRequest = { showSaveOptionsDialog = false },
-            title = { Text(stringResource(R.string.redact_description)) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer
-                        )
-                    ) {
-                        Text(
-                            text = stringResource(R.string.redact_copy_warning),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.dialog_searchable_pdf),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Switch(
-                            checked = makeSearchable,
-                            onCheckedChange = { makeSearchable = it }
-                        )
-                    }
-                    if (makeSearchable) {
-                        Text(
-                            text = stringResource(R.string.dialog_searchable_hint),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        ExposedDropdownMenuBox(
-                            expanded = languageMenuExpanded,
-                            onExpandedChange = { languageMenuExpanded = it }
-                        ) {
-                            OutlinedTextField(
-                                value = ocrLanguages.find { it.first == selectedLanguage }?.second
-                                    ?: selectedLanguage.uppercase(displayLocale),
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text(stringResource(R.string.dialog_ocr_language)) },
-                                trailingIcon = {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = languageMenuExpanded)
-                                },
-                                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                                modifier = Modifier
-                                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                                    .fillMaxWidth()
-                            )
-                            DropdownMenu(
-                                expanded = languageMenuExpanded,
-                                onDismissRequest = { languageMenuExpanded = false }
-                            ) {
-                                ocrLanguages.forEach { (code, name) ->
-                                    DropdownMenuItem(
-                                        text = { Text(name) },
-                                        onClick = {
-                                            selectedLanguage = code
-                                            languageMenuExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+        RedactSaveOptionsDialog(
+            makeSearchable = makeSearchable,
+            selectedLanguage = selectedLanguage,
+            displayLanguageFallback = selectedLanguage.uppercase(displayLocale),
+            languageMenuExpanded = languageMenuExpanded,
+            ocrLanguages = ocrLanguages,
+            onMakeSearchableChange = { makeSearchable = it },
+            onLanguageMenuExpandedChange = { languageMenuExpanded = it },
+            onLanguageSelected = {
+                selectedLanguage = it
+                languageMenuExpanded = false
             },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showSaveOptionsDialog = false
-                        viewModel.applyRedactions(
-                            rects = allRects,
-                            makeSearchable = makeSearchable,
-                            languageCode = selectedLanguage
-                        )
-                    }
-                ) {
-                    Text(stringResource(R.string.redact_apply))
-                }
+            onConfirm = {
+                showSaveOptionsDialog = false
+                viewModel.applyRedactions(
+                    rects = allRects,
+                    makeSearchable = makeSearchable,
+                    languageCode = selectedLanguage
+                )
             },
-            dismissButton = {
-                TextButton(onClick = { showSaveOptionsDialog = false }) {
-                    Text(stringResource(R.string.action_cancel))
-                }
-            }
+            onDismiss = { showSaveOptionsDialog = false }
         )
     }
 
     if (editLoading) {
-        AlertDialog(
-            onDismissRequest = {},
-            title = null,
-            text = {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            },
-            confirmButton = {}
-        )
+        RedactProgressDialog()
     }
 
     error?.let { message ->
-        AlertDialog(
-            onDismissRequest = viewModel::clearError,
-            title = { Text(stringResource(R.string.error_title)) },
-            text = { Text(message) },
-            confirmButton = {
-                TextButton(onClick = viewModel::clearError) {
-                    Text(stringResource(R.string.action_ok))
-                }
-            }
-        )
+        RedactErrorDialog(message = message, onDismiss = viewModel::clearError)
     }
 }
-
-private fun createRedactionRect(
-    start: Pair<Float, Float>,
-    end: Pair<Float, Float>,
-    pageIndex: Int
-): RedactionRect {
-    return RedactionRect(
-        left = minOf(start.first, end.first),
-        top = minOf(start.second, end.second),
-        right = maxOf(start.first, end.first),
-        bottom = maxOf(start.second, end.second),
-        pageIndex = pageIndex
-    )
-}
-
-private fun hasMinimumArea(rect: RedactionRect): Boolean {
-    return (rect.right - rect.left) >= MIN_REDACTION_SIDE &&
-        (rect.bottom - rect.top) >= MIN_REDACTION_SIDE
-}
-
-private val AppliedRedactionColor = Color.Black.copy(alpha = 0.82f)
-private val DraftRedactionColor = Color.Black.copy(alpha = 0.55f)

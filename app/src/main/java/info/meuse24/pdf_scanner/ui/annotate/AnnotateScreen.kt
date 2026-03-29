@@ -64,9 +64,9 @@ import info.meuse24.pdf_scanner.domain.usecase.AnnotationShapeStyle
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationStroke
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationText
 import info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModel
-import info.meuse24.pdf_scanner.ui.highlight.clampPanOffset
-import info.meuse24.pdf_scanner.ui.highlight.formatZoomScale
-import info.meuse24.pdf_scanner.ui.highlight.snapStrokeToTextLines
+import info.meuse24.pdf_scanner.ui.shared.clampPanOffset
+import info.meuse24.pdf_scanner.ui.shared.formatZoomScale
+import info.meuse24.pdf_scanner.ui.shared.snapStrokeToTextLines
 import kotlin.math.abs
 
 @Composable
@@ -78,7 +78,7 @@ fun AnnotateScreen(
     val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
     val success by viewModel.success.collectAsStateWithLifecycle()
-    val pageBitmap by viewModel.highlightPageBitmap.collectAsStateWithLifecycle()
+    val pageBitmap by viewModel.documentPageBitmap.collectAsStateWithLifecycle()
     val textLines by viewModel.textLines.collectAsStateWithLifecycle()
 
     LaunchedEffect(success) {
@@ -234,7 +234,7 @@ fun AnnotateScreen(
         }
     }
     LaunchedEffect(selectedPageIndex, currentRecord.id) {
-        viewModel.loadHighlightPage(selectedPageIndex)
+        viewModel.loadDocumentPage(selectedPageIndex)
         resetZoom()
         selectedAnnotation = null
         currentStroke = emptyList()

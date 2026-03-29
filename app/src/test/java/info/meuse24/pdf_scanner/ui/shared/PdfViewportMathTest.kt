@@ -1,15 +1,13 @@
-package info.meuse24.pdf_scanner.ui.highlight
+package info.meuse24.pdf_scanner.ui.shared
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
-import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.domain.usecase.TextLine
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertSame
 import org.junit.Test
 
-class HighlightScreenMathTest {
+class PdfViewportMathTest {
 
     @Test
     fun `clampPanOffset begrenzt pan auf sichtbaren bereich`() {
@@ -83,37 +81,6 @@ class HighlightScreenMathTest {
 
         assertEquals(0.25f, result.first, 0.001f)
         assertEquals(0.25f, result.second, 0.001f)
-    }
-
-    @Test
-    fun `removeLastStrokeForPage entfernt nur den letzten strich der aktuellen seite`() {
-        val page0a = HighlightStroke(points = listOf(0f to 0f), pageIndex = 0)
-        val page1 = HighlightStroke(points = listOf(0.5f to 0.5f), pageIndex = 1)
-        val page0b = HighlightStroke(points = listOf(1f to 1f), pageIndex = 0)
-
-        val result = removeLastStrokeForPage(listOf(page0a, page1, page0b), pageIndex = 0)
-
-        assertEquals(listOf(page0a, page1), result)
-    }
-
-    @Test
-    fun `removeLastStrokeForPage gibt ursprungsliste unveraendert zurueck wenn keine seitenmarkierung existiert`() {
-        val strokes = listOf(HighlightStroke(points = listOf(0f to 0f), pageIndex = 1))
-
-        val result = removeLastStrokeForPage(strokes, pageIndex = 0)
-
-        assertSame(strokes, result)
-    }
-
-    @Test
-    fun `removeLastRectForPage entfernt nur das letzte rechteck der aktuellen seite`() {
-        val page0a = HighlightRect(left = 0f, top = 0f, right = 0.2f, bottom = 0.1f, pageIndex = 0)
-        val page1 = HighlightRect(left = 0.2f, top = 0.2f, right = 0.4f, bottom = 0.3f, pageIndex = 1)
-        val page0b = HighlightRect(left = 0.5f, top = 0.5f, right = 0.7f, bottom = 0.6f, pageIndex = 0)
-
-        val result = removeLastRectForPage(listOf(page0a, page1, page0b), pageIndex = 0)
-
-        assertEquals(listOf(page0a, page1), result)
     }
 
     @Test

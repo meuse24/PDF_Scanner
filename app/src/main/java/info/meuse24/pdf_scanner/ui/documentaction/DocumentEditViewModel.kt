@@ -84,8 +84,8 @@ class DocumentEditViewModel @Inject constructor(
 
     private val scansDir get() = storageProvider.scansDir()
 
-    private val _highlightPageBitmap = MutableStateFlow<Bitmap?>(null)
-    val highlightPageBitmap: StateFlow<Bitmap?> = _highlightPageBitmap.asStateFlow()
+    private val _documentPageBitmap = MutableStateFlow<Bitmap?>(null)
+    val documentPageBitmap: StateFlow<Bitmap?> = _documentPageBitmap.asStateFlow()
 
     private val _metadata = MutableStateFlow<PdfMetadata?>(null)
     val metadata: StateFlow<PdfMetadata?> = _metadata.asStateFlow()
@@ -93,29 +93,29 @@ class DocumentEditViewModel @Inject constructor(
     private val _textLines = MutableStateFlow<List<TextLine>>(emptyList())
     val textLines: StateFlow<List<TextLine>> = _textLines.asStateFlow()
 
-    private var highlightPageJob: Job? = null
-    private val highlightTextLineCache = mutableMapOf<Int, List<TextLine>>()
-    private var cachedHighlightFilepath: String? = null
+    private var pagePreviewJob: Job? = null
+    private val textLineCache = mutableMapOf<Int, List<TextLine>>()
+    private var cachedPagePreviewFilepath: String? = null
 
-    fun loadHighlightPage(pageIndex: Int) {
+    fun loadDocumentPage(pageIndex: Int) {
         val record = _record.value ?: return
-        if (cachedHighlightFilepath != record.filepath) {
-            cachedHighlightFilepath = record.filepath
-            highlightTextLineCache.clear()
+        if (cachedPagePreviewFilepath != record.filepath) {
+            cachedPagePreviewFilepath = record.filepath
+            textLineCache.clear()
         }
-        highlightPageJob?.cancel()
-        _highlightPageBitmap.value = null
+        pagePreviewJob?.cancel()
+        _documentPageBitmap.value = null
         _textLines.value = emptyList()
-        highlightPageJob = viewModelScope.launch(dispatcherProvider.io) {
+        pagePreviewJob = viewModelScope.launch(dispatcherProvider.io) {
             val inputFile = File(record.filepath)
-            _highlightPageBitmap.value = pdfEditor.renderPageThumbnail(inputFile, pageIndex, 1024)
+            _documentPageBitmap.value = pdfEditor.renderPageThumbnail(inputFile, pageIndex, 1024)
             if (!record.isSearchable) return@launch
-            highlightTextLineCache[pageIndex]?.let { cachedLines ->
+            textLineCache[pageIndex]?.let { cachedLines ->
                 _textLines.value = cachedLines
                 return@launch
             }
             val lines = pdfEditor.extractTextLines(inputFile, pageIndex)
-            highlightTextLineCache[pageIndex] = lines
+            textLineCache[pageIndex] = lines
             _textLines.value = lines
         }
     }

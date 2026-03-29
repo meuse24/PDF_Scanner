@@ -403,56 +403,6 @@
     <string name="privacy_keyword_5">الذكاء المحلي</string>
     <string name="privacy_point_5">يعمل البحث النصي الكامل وإنشاء ملفات PDF القابلة للبحث والطمس الآمن والتمييزات المحاذية للنص محلياً على جهازك. تزيل النسخ المطموسة الجديدة نص OCR والبيانات الوصفية وعناصر PDF التفاعلية من المخرجات المحفوظة.</string>
     <!-- Annotate PDF -->
-    <string name="action_annotate_pdf">التعليق على PDF</string>
-    <string name="annotate_screen_title">التعليق على PDF</string>
-    <string name="annotate_description">أضف علامات وأشكالا وملاحظات إلى ملف PDF هذا</string>
-    <string name="annotate_details">استخدم أدوات التعليق لإضافة علامات حرة ومستطيلات وأشكال بيضاوية وملاحظات نصية. قبل الحفظ، يمكنك تحديد التعليقات الموجودة ونقلها وتغيير لونها وتعديل حجمها وتحريرها أو حذفها. كما توفر ملفات PDF القابلة للبحث ميزة المحاذاة لربط العلامات الحرة بأسطر النص المكتشفة. يساعد وضع التكبير على التحديد الدقيق. تُحفظ النتيجة كنسخة PDF جديدة مع التعليقات.</string>
-    <string name="annotate_apply">حفظ التعليقات</string>
-    <string name="annotate_mode_mark">تمييز</string>
-    <string name="annotate_mode_write">كتابة</string>
-    <string name="annotate_comment_hint">أدخل ملاحظتك…</string>
-    <string name="annotate_comment_title">ملاحظة</string>
-    <string name="annotate_comment_edit_title">تعديل الملاحظة</string>
-    <string name="annotate_comment_add">إضافة</string>
-    <string name="annotate_comment_delete">حذف</string>
-    <string name="annotate_write_hint">اضغط على الصفحة لإضافة ملاحظة نصية.</string>
-    <string name="annotate_text_size">الحجم</string>
-    <string name="annotate_attribute_color">اللون</string>
-    <string name="annotate_color_yellow">أصفر</string>
-    <string name="annotate_color_green">أخضر</string>
-    <string name="annotate_color_red">أحمر</string>
-    <string name="annotate_color_blue">أزرق</string>
-    <string name="annotate_color_orange">برتقالي</string>
-    <string name="annotate_color_violet">بنفسجي</string>
-    <string name="annotate_selected_prefix">المحدد: %1$s</string>
-    <string name="annotate_selected_delete">حذف</string>
-    <string name="annotate_selected_clear">إلغاء التحديد</string>
-    <string name="annotate_selected_edit_text">نص</string>
-    <string name="annotate_selected_hint">اضغط على تعليق لتحديده. يؤدي السحب إلى نقل التعليق المحدد.</string>
-    <string name="annotate_selection_mark">تمييز</string>
-    <string name="annotate_selection_rect">مستطيل</string>
-    <string name="annotate_selection_oval">بيضاوي</string>
-    <string name="annotate_selection_text">نص</string>
-    <string name="annotate_action_undo">التراجع عن آخر تعليق</string>
-    <string name="annotate_action_clear_page">مسح تعليقات هذه الصفحة</string>
-    <string name="annotate_action_clear_all">مسح كل التعليقات</string>
-    <string name="annotate_mode_zoom_title">وضع التكبير</string>
-    <string name="annotate_mode_zoom_hint">حرّك الصفحة وكبّرها. اضغط على زر الأداة للعودة إلى التحرير.</string>
-    <string name="annotate_mode_edit_back">العودة إلى التحرير</string>
-    <string name="annotate_tool_mark">تمييز</string>
-    <string name="annotate_tool_text">نص</string>
-    <string name="annotate_tool_rect_filled">مستطيل ممتلئ</string>
-    <string name="annotate_tool_rect_frame">إطار مستطيل</string>
-    <string name="annotate_tool_oval_filled">بيضاوي ممتلئ</string>
-    <string name="annotate_tool_oval_frame">إطار بيضاوي</string>
-    <string name="annotate_tool_zoom">تكبير</string>
-    <string name="annotate_page_content_description">صفحة %1$d</string>
-    <string name="annotate_page_indicator">صفحة %1$d / %2$d</string>
-    <string name="annotate_page_previous_short">السابق</string>
-    <string name="annotate_page_next_short">التالي</string>
-    <string name="annotate_no_items">أضف تعليقا واحدا على الأقل أولا</string>
-    <string name="annotate_error">حدث خطأ أثناء إضافة التعليقات</string>
-    <string name="help_item_annotate_pdf">اختر التعليق على PDF لمراجعة المستند باستخدام علامات حرة ومستطيلات وأشكال بيضاوية وملاحظات نصية. اضغط على تعليق موجود لتحديده ونقله وتغيير لونه وتعديل حجمه وتحريره أو حذفه قبل الحفظ. توفر ملفات PDF القابلة للبحث أيضا ميزة المحاذاة للتمييز بمحاذاة النص المكتشف. استخدم التكبير للوضع الدقيق.</string>
     <string name="drawer_version">الإصدار %1$s</string>
     <string name="sheet_section_edit">تحرير</string>
     <string name="sheet_section_pages">صفحات</string>
@@ -509,18 +459,6 @@
     <string name="help_item_pdf_metadata">اضغط على «معلومات PDF» لعرض البيانات الوصفية المضمّنة في المستند وتعديلها — العنوان والمؤلف وتطبيق الإنشاء والموضوع والكلمات المفتاحية وتواريخ الإنشاء والتعديل. تُحفظ الحقول القابلة للتعديل مرة أخرى في ملف PDF نفسه.</string>
 
     <!-- Images to PDF -->
-    <string name="images_to_pdf_title">تحويل الصور إلى PDF</string>
-    <string name="images_to_pdf_description">حوّل الصور أو صور المعرض إلى PDF. اختر عدد الصور في كل صفحة.</string>
-    <string name="images_to_pdf_layout_label">التخطيط</string>
-    <string name="images_to_pdf_layout_single">مفردة</string>
-    <string name="images_to_pdf_layout_two">2/صفحة</string>
-    <string name="images_to_pdf_layout_four">4/صفحة</string>
-    <string name="images_to_pdf_filename_label">اسم الملف</string>
-    <string name="images_to_pdf_filename_default">صور_%s</string>
-    <string name="images_to_pdf_action">إنشاء PDF</string>
-    <string name="images_to_pdf_image_count">تم تحديد %d صورة</string>
-    <string name="images_to_pdf_add_button">تحويل الصور إلى PDF</string>
-    <string name="images_to_pdf_unreadable_skipped">تعذّر قراءة %d صورة وتم تخطيها.</string>
 </resources>
 
 

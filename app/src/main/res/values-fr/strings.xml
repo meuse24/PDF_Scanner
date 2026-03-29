@@ -403,56 +403,6 @@
     <string name="privacy_keyword_5">Intelligence locale</string>
     <string name="privacy_point_5">La recherche plein texte, la création de PDF consultables, le caviardage sécurisé et les surlignages alignés au texte fonctionnent localement sur votre appareil. Les nouvelles copies caviardées retirent du résultat enregistré le texte OCR, les métadonnées et les éléments PDF interactifs.</string>
     <!-- Annotate PDF -->
-    <string name="action_annotate_pdf">Annoter le PDF</string>
-    <string name="annotate_screen_title">Annoter le PDF</string>
-    <string name="annotate_description">Ajoutez des marques, des formes et des notes à ce PDF</string>
-    <string name="annotate_details">Utilisez les outils d’annotation pour ajouter des marques à main levée, des rectangles, des ovales et des notes de texte. Avant l’enregistrement, vous pouvez sélectionner les annotations existantes pour les déplacer, changer leur couleur, ajuster leur taille, les modifier ou les supprimer. Les PDF consultables proposent aussi l’alignement pour accrocher les marques aux lignes de texte détectées. Le mode Zoom aide au placement précis. Le résultat est enregistré comme une nouvelle copie annotée du PDF.</string>
-    <string name="annotate_apply">Enregistrer les annotations</string>
-    <string name="annotate_mode_mark">Marquer</string>
-    <string name="annotate_mode_write">Écrire</string>
-    <string name="annotate_comment_hint">Saisissez votre note…</string>
-    <string name="annotate_comment_title">Note</string>
-    <string name="annotate_comment_edit_title">Modifier la note</string>
-    <string name="annotate_comment_add">Ajouter</string>
-    <string name="annotate_comment_delete">Supprimer</string>
-    <string name="annotate_write_hint">Touchez la page pour ajouter une note de texte.</string>
-    <string name="annotate_text_size">Taille</string>
-    <string name="annotate_attribute_color">Couleur</string>
-    <string name="annotate_color_yellow">Jaune</string>
-    <string name="annotate_color_green">Vert</string>
-    <string name="annotate_color_red">Rouge</string>
-    <string name="annotate_color_blue">Bleu</string>
-    <string name="annotate_color_orange">Orange</string>
-    <string name="annotate_color_violet">Violet</string>
-    <string name="annotate_selected_prefix">Sélection : %1$s</string>
-    <string name="annotate_selected_delete">Supprimer</string>
-    <string name="annotate_selected_clear">Désélectionner</string>
-    <string name="annotate_selected_edit_text">Texte</string>
-    <string name="annotate_selected_hint">Touchez une annotation pour la sélectionner. Faites glisser pour déplacer l’annotation sélectionnée.</string>
-    <string name="annotate_selection_mark">Marque</string>
-    <string name="annotate_selection_rect">Rectangle</string>
-    <string name="annotate_selection_oval">Ovale</string>
-    <string name="annotate_selection_text">Texte</string>
-    <string name="annotate_action_undo">Annuler la dernière annotation</string>
-    <string name="annotate_action_clear_page">Effacer les annotations de cette page</string>
-    <string name="annotate_action_clear_all">Effacer toutes les annotations</string>
-    <string name="annotate_mode_zoom_title">Mode zoom</string>
-    <string name="annotate_mode_zoom_hint">Déplacez et zoomez la page. Touchez le bouton d’outil pour revenir à l’édition.</string>
-    <string name="annotate_mode_edit_back">Retour à l’édition</string>
-    <string name="annotate_tool_mark">Marquer</string>
-    <string name="annotate_tool_text">Texte</string>
-    <string name="annotate_tool_rect_filled">Rectangle plein</string>
-    <string name="annotate_tool_rect_frame">Contour rectangulaire</string>
-    <string name="annotate_tool_oval_filled">Ovale plein</string>
-    <string name="annotate_tool_oval_frame">Contour ovale</string>
-    <string name="annotate_tool_zoom">Zoom</string>
-    <string name="annotate_page_content_description">Page %1$d</string>
-    <string name="annotate_page_indicator">Page %1$d / %2$d</string>
-    <string name="annotate_page_previous_short">Précédent</string>
-    <string name="annotate_page_next_short">Suivant</string>
-    <string name="annotate_no_items">Ajoutez d’abord au moins une annotation</string>
-    <string name="annotate_error">Erreur lors de l’ajout des annotations</string>
-    <string name="help_item_annotate_pdf">Choisissez Annoter le PDF pour relire un document avec des marques à main levée, des rectangles, des ovales et des notes de texte. Touchez une annotation existante pour la sélectionner, la déplacer, changer sa couleur, ajuster sa taille, la modifier ou la supprimer avant l’enregistrement. Les PDF consultables proposent aussi l’alignement pour marquer au plus près du texte détecté. Utilisez Zoom pour un placement précis.</string>
     <string name="drawer_version">Version %1$s</string>
     <string name="sheet_section_edit">Modifier</string>
     <string name="sheet_section_pages">Pages</string>
@@ -509,17 +459,5 @@
     <string name="help_item_pdf_metadata">Touchez Infos PDF pour voir et modifier les métadonnées intégrées d\'un document : titre, auteur, application créatrice, sujet, mots-clés et dates de création et de modification. Les champs modifiables sont réenregistrés dans le même fichier PDF.</string>
 
     <!-- Images to PDF -->
-    <string name="images_to_pdf_title">Images en PDF</string>
-    <string name="images_to_pdf_description">Convertissez des photos ou des images de la galerie en PDF. Choisissez combien d\'images placer par page.</string>
-    <string name="images_to_pdf_layout_label">Mise en page</string>
-    <string name="images_to_pdf_layout_single">Unique</string>
-    <string name="images_to_pdf_layout_two">2/Page</string>
-    <string name="images_to_pdf_layout_four">4/Page</string>
-    <string name="images_to_pdf_filename_label">Nom du fichier</string>
-    <string name="images_to_pdf_filename_default">Images_%s</string>
-    <string name="images_to_pdf_action">Créer un PDF</string>
-    <string name="images_to_pdf_image_count">%d image(s) sélectionnée(s)</string>
-    <string name="images_to_pdf_add_button">Images en PDF</string>
-    <string name="images_to_pdf_unreadable_skipped">%d image(s) n\'ont pas pu être lues et ont été ignorées.</string>
 </resources>
 

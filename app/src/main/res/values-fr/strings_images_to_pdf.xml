@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="images_to_pdf_title">Images en PDF</string>
+    <string name="images_to_pdf_description">Convertissez des photos ou des images de la galerie en PDF. Choisissez combien d\'images placer par page.</string>
+    <string name="images_to_pdf_layout_label">Mise en page</string>
+    <string name="images_to_pdf_layout_single">Unique</string>
+    <string name="images_to_pdf_layout_two">2/Page</string>
+    <string name="images_to_pdf_layout_four">4/Page</string>
+    <string name="images_to_pdf_filename_label">Nom du fichier</string>
+    <string name="images_to_pdf_filename_default">Images_%s</string>
+    <string name="images_to_pdf_action">Créer un PDF</string>
+    <string name="images_to_pdf_image_count">%d image(s) sélectionnée(s)</string>
+    <string name="images_to_pdf_add_button">Images en PDF</string>
+    <string name="images_to_pdf_unreadable_skipped">%d image(s) n\'ont pas pu être lues et ont été ignorées.</string>
+</resources>

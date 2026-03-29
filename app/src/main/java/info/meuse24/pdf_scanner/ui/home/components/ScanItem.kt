@@ -5,6 +5,7 @@ import android.text.format.Formatter
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
@@ -178,21 +179,29 @@ internal fun ScanItem(
         shape     = RoundedCornerShape(28.dp),
         colors    = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
-                             else            MaterialTheme.colorScheme.surface
+                             else            MaterialTheme.colorScheme.surfaceContainerLow
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        border    = BorderStroke(
+            width = 1.dp,
+            color = if (isSelected) {
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.32f)
+            } else {
+                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.65f)
+            }
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
             // Dateiname — volle Breite
             Text(
                 record.filename,
-                style      = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
+                style      = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
                 maxLines   = 2,
                 overflow   = TextOverflow.Ellipsis,
                 modifier   = Modifier.fillMaxWidth()
             )
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(2.dp))
             // Thumbnail · Metadaten · Badge · Aktionen
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val thumb = thumbnail
@@ -202,24 +211,24 @@ internal fun ScanItem(
                         contentDescription = stringResource(R.string.cd_pdf_document),
                         contentScale       = ContentScale.Crop,
                         modifier           = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .size(36.dp)
+                            .clip(RoundedCornerShape(10.dp))
                     )
                 } else {
                     Icon(
                         Icons.Default.PictureAsPdf,
                         contentDescription = stringResource(R.string.cd_pdf_document),
                         tint               = MaterialTheme.colorScheme.primary,
-                        modifier           = Modifier.size(40.dp)
+                        modifier           = Modifier.size(36.dp)
                     )
                 }
 
-                Spacer(Modifier.width(10.dp))
+                Spacer(Modifier.width(8.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         subtitle,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.outline
                     )
                     if (record.isSearchable) {
@@ -254,14 +263,22 @@ internal fun ScanItem(
                 }
 
                 if (!inSelectionMode && record.pageCount >= 1) {
-                    IconButton(onClick = { sheetVisible = true }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = null)
+                    IconButton(
+                        onClick = { sheetVisible = true },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 }
 
                 Checkbox(
                     checked         = isSelected,
-                    onCheckedChange = { onCheckboxToggle() }
+                    onCheckedChange = { onCheckboxToggle() },
+                    modifier        = Modifier.size(40.dp)
                 )
             } // Row
         } // Column

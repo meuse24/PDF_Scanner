@@ -21,7 +21,11 @@ class ImportFileUseCase @Inject constructor(
         val thumbnailFile = File(savedFile.parentFile, "${savedFile.nameWithoutExtension}.jpg")
 
         try {
-            val isEncrypted = pdfEditor.isPdfEncrypted(savedFile)
+            val isEncrypted = try {
+                pdfEditor.isPdfEncrypted(savedFile)
+            } catch (e: Exception) {
+                throw IllegalStateException(resourceProvider.getString(R.string.error_pdf_invalid), e)
+            }
             val pageCount = pdfEditor.getPageCount(savedFile)
             if (pageCount == 0 && !isEncrypted) {
                 throw IllegalStateException(resourceProvider.getString(R.string.error_pdf_invalid))

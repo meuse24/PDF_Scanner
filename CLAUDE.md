@@ -8,9 +8,29 @@
 ./gradlew assembleRelease        # Release-APK
 ./gradlew installDebug           # Bauen + installieren
 ./gradlew test                   # Unit-Tests
+./gradlew connectedDebugAndroidTest # Alle Instrumentation-Tests auf angeschlossenem Gerät
 ./gradlew lint                   # Android Lint
 ./gradlew clean                  # Bereinigen
 ```
+
+Gezielte PDF-Verifikation:
+
+```bash
+./gradlew testDebugUnitTest --tests "info.meuse24.pdf_scanner.util.PdfEditorTest" --tests "info.meuse24.pdf_scanner.util.PdfEditorRealIntegrationTest"
+./gradlew --% connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest
+./gradlew --% connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.SearchableAndRoundTripInstrumentedTest
+```
+
+Build-Umgebung:
+- Android Studio Meerkat oder neuer
+- JDK 17+ zum Ausführen von Gradle / AGP
+- Android SDK Platform 36 mit minor API level 1 (`compileSdk 36.1`)
+
+Code-Toolchain:
+- Java source/target compatibility = 11
+- Kotlin JVM toolchain = 11
+
+Wichtig: Das Projekt baut mit einem modernen Android-Build-Stack, kompiliert den App-Code aber weiterhin gezielt auf Java/Kotlin 11.
 
 ADB (Windows): `C:/Users/guent/AppData/Local/Android/Sdk/platform-tools/adb.exe`
 
@@ -28,6 +48,7 @@ adb shell am start -n info.meuse24.pdf_scanner/.MainActivity
 domain/
 └── usecase/
     ├── ImportFileUseCase.kt       # Externe PDF per FilePicker importieren: kopieren + validieren + isEncrypted + Thumbnail + DB-Insert
+    │                              # Beschädigte PDFs werden auf error_pdf_invalid normalisiert; importierte Artefakte werden bereinigt
     ├── ImportScanUseCase.kt       # PDF kopieren + optional Thumbnail + optional OCR-Textlayer
     ├── ExportScanUseCase.kt       # MediaStore.Downloads Export (IS_PENDING-Pattern)
     ├── DeleteScansUseCase.kt      # Dateilöschung + Thumbnail + DB-Delete
@@ -182,7 +203,7 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
 - Importierte PDFs werden sofort in `filesDir/scans/` kopiert und anschließend wie normale `ScanRecord`s behandelt
 - Doppelte Dateinamen: `resolveUniqueFilename()` in `util/PdfEditor.kt` (`_2`, `_3`, …)
 - Export: `MediaStore.Downloads` (API 29+), IS_PENDING-Pattern, bei Fehler `resolver.delete()`
-- Backup: `backup_rules.xml` + `data_extraction_rules.xml` schließen `filesDir/scans/` und DB aus
+- Backup: `android:allowBackup="false"`; zusätzlich schließen `backup_rules.xml` + `data_extraction_rules.xml` `filesDir/scans/` und die DB-Dateien (`pdf_scanner_db`, `-wal`, `-shm`, `-journal`) aus
 - **Aktions-Screens** (Overlay + DocumentAction) nutzen `ActionScreenContent` aus `ui/components/`
 - **ScanItem-Aktionen** via `ScanAction` sealed interface — kein direktes Navigieren aus dem Item heraus
 
@@ -223,11 +244,31 @@ test/
 │   ├── home/HomeImportFilenameSuggestionTest.kt     # DISPLAY_NAME → Dateinamensvorschlag ohne .pdf
 │   └── highlight/HighlightScreenMathTest.kt         # clampPanOffset + inverse Zoom/Pan-Mathematik + Snap-/Rect-Hilfsfunktionen
 └── util/
-    └── PdfEditorTest.kt                    # buildRanges + resolveUniqueFilename + mapDisplayToPdfCoord + mergeTextBoxesToLines
+    ├── PdfEditorTest.kt                    # buildRanges + resolveUniqueFilename + mapDisplayToPdfCoord + mergeTextBoxesToLines
+    ├── PdfEditorRealIntegrationTest.kt     # echte PDF-Dateien im JVM-Lauf: protect/unlock, restrict/removePassword, reorder, duplicate/delete, rotate, merge/split
+    ├── PdfTestFixtures.kt                  # wiederverwendbare Test-PDF-Erzeugung + Seitensignaturen für Real-PDF-Tests
+    └── PdfAssertions.kt                    # Assertions für Seitensignaturen/Rotation/Encryption in Real-PDF-Tests
+
+androidTest/
+└── util/
+    ├── ImportAndPdfEditorInstrumentedTest.kt
+    │   # echte Android-/PdfRenderer-Pfade: pageCount, Thumbnail, renderPageThumbnail
+    │   # ImportFileUseCase über content://-URI inkl. invalid PDF cleanup und encrypted import
+    │   # applyHighlight/applyAnnotations/removeTextLayer/convertToGrayscale auf gerenderten PDFs
+    └── SearchableAndRoundTripInstrumentedTest.kt
+        # SearchablePdfBuilder + MakeSearchableUseCase auf bildbasierten und gemischten mehrseitigen PDFs
+        # ExportScanUseCase + ImportFileUseCase-Roundtrips für plain/protected/restricted PDFs via MediaStore.Downloads
+        # ImportScanUseCase mit Thumbnail-URI + OCR/Textlayer
+        # ExportAsJpgUseCase für mehrseitige PDFs inkl. größerem 6-Seiten-Dokument
 ```
 
 ViewModel-Testmuster: `UnconfinedTestDispatcher` + reale Workflow-Instanzen mit Fake-`PdfEditor`-Subklassen;
 `StateFlow.first { !it }` zum Synchronisieren auf IO-Abschluss ohne Timeouts.
+
+PDF-Teststrategie:
+- JVM-Tests decken echte PDF-Dateioperationen in `PdfEditor` ohne Android-UI ab.
+- Instrumentation-Tests decken alle Android-spezifischen Pfade ab: `PdfRenderer`, `content://`-Importe, MediaStore-Export, ML-Kit-OCR und renderbasierte Pixel-Checks.
+- Neue PDF-Bugs sollten immer als Regressionstest in einer dieser beiden Schichten landen; bevorzugt mit kleinem reproduzierbaren Fixture statt nur mit Fakes.
 
 Testabhängigkeiten: `junit:4.13.2` + `kotlinx-coroutines-test:1.10.1` + `mockito-inline:5.2.0`
 

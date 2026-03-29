@@ -48,7 +48,7 @@ A clean, privacy-focused Android app for scanning documents to PDF using Google'
 - **Restrict usage** — disable printing, copying, or editing with an owner password
 
 ### Privacy & Storage
-- **Local-only** — PDFs saved to app-internal storage, excluded from cloud backup and device transfer
+- **Local-only** — PDFs saved to app-internal storage; app backup / device transfer is disabled and scans plus Room database files are explicitly excluded in backup rules as defense in depth
 - **No internet permission, no camera permission** (ML Kit runs as a separate system process)
 - **Internationalized** — English (default), German, Spanish, French, Portuguese, Chinese (Simplified), Arabic, Japanese, Russian, Hindi
 
@@ -69,7 +69,16 @@ A clean, privacy-focused Android app for scanning documents to PDF using Google'
 ./gradlew lint                   # run Android lint
 ```
 
-Requires Android Studio Meerkat or newer, JDK 11+.
+Build environment:
+- Android Studio Meerkat or newer
+- JDK 17 or newer to run Gradle / AGP
+- Android SDK Platform 36 with minor API level 1 installed (`compileSdk 36.1`)
+
+Project language/toolchain level:
+- Java source/target compatibility: 11
+- Kotlin JVM toolchain: 11
+
+In other words: the app code is compiled for Java/Kotlin 11, but the modern Android build stack itself should be run with a newer JDK.
 
 Launch on a connected Android device:
 
@@ -186,7 +195,25 @@ All versions managed centrally in `gradle/libs.versions.toml`.
 
 - No internet permission
 - No camera permission (ML Kit runs as a separate system process)
-- PDFs and the Room database are explicitly excluded from Android Auto Backup and device-to-device transfer (`backup_rules.xml`, `data_extraction_rules.xml`)
+- `android:allowBackup="false"` disables Android backup / device-transfer app data export at the manifest level
+- `backup_rules.xml` and `data_extraction_rules.xml` still explicitly exclude `filesDir/scans/` plus Room database files (`pdf_scanner_db`, `-wal`, `-shm`, `-journal`) as defense in depth
+
+### Verifying Privacy Claims
+
+The core privacy claims are intentionally easy to audit in the repository:
+
+1. Manifest-level backup disable:
+   `app/src/main/AndroidManifest.xml` → `android:allowBackup="false"`
+2. Defense-in-depth backup exclusions:
+   `app/src/main/res/xml/backup_rules.xml` and `app/src/main/res/xml/data_extraction_rules.xml`
+3. Local storage location for PDFs:
+   `app/src/main/java/info/meuse24/pdf_scanner/util/StorageProvider.kt` → `filesDir/scans`
+4. Local Room database name:
+   `app/src/main/java/info/meuse24/pdf_scanner/di/DatabaseModule.kt` → `pdf_scanner_db`
+5. Network absence:
+   inspect `app/src/main/AndroidManifest.xml` for missing internet permission declarations
+6. Export behavior:
+   `app/src/main/java/info/meuse24/pdf_scanner/util/DownloadsStorage.kt` writes only when the user explicitly exports to `MediaStore.Downloads`
 
 ## License
 

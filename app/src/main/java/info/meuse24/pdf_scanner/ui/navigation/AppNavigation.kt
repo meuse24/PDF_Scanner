@@ -51,7 +51,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -93,6 +95,7 @@ fun AppNavigation() {
     val currentEntry    by navController.currentBackStackEntryAsState()
     val currentRoute    = currentEntry?.destination?.route
     val canNavigateBack = navController.previousBackStackEntry != null
+    val isHomeRoute     = currentRoute == Screen.Ablage.route || currentRoute == null
 
     var addActionTrigger by remember { mutableStateOf(false) }
     var isSelectionMode by remember { mutableStateOf(false) }
@@ -131,7 +134,7 @@ fun AppNavigation() {
                     Spacer(Modifier.width(16.dp))
                     Column {
                         Text(
-                            text       = stringResource(R.string.app_label),
+                            text       = stringResource(R.string.app_name),
                             style      = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             color      = MaterialTheme.colorScheme.onSurface
@@ -205,32 +208,7 @@ fun AppNavigation() {
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(
-                            when {
-                                currentRoute == Screen.Help.route    -> stringResource(R.string.nav_help)
-                                currentRoute == Screen.Info.route    -> stringResource(R.string.nav_info)
-                                currentRoute == Screen.Privacy.route -> stringResource(R.string.nav_privacy)
-                                currentRoute?.startsWith("split/") == true   -> stringResource(R.string.split_screen_title)
-                                currentRoute?.startsWith("reorder/") == true -> stringResource(R.string.reorder_screen_title)
-                                currentRoute?.startsWith("rotate-pages/") == true -> stringResource(R.string.rotate_screen_title)
-                                currentRoute?.startsWith("delete-pages/") == true -> stringResource(R.string.delete_pages_screen_title)
-                                currentRoute?.startsWith("extract-pages/") == true -> stringResource(R.string.extract_pages_screen_title)
-                                currentRoute?.startsWith("duplicate-pages/") == true -> stringResource(R.string.duplicate_pages_screen_title)
-                                currentRoute?.startsWith("page-numbers/") == true -> stringResource(R.string.page_numbers_screen_title)
-                                currentRoute?.startsWith("text-watermark/") == true -> stringResource(R.string.watermark_screen_title)
-                                currentRoute?.startsWith("compress-pdf/") == true -> stringResource(R.string.compress_pdf_screen_title)
-                                currentRoute?.startsWith("protect-pdf/") == true -> stringResource(R.string.protect_pdf_screen_title)
-                                currentRoute?.startsWith("unlock-pdf/") == true -> stringResource(R.string.unlock_pdf_screen_title)
-                                currentRoute?.startsWith("signature/") == true -> stringResource(R.string.signature_screen_title)
-                                currentRoute?.startsWith("remove-text-layer/") == true -> stringResource(R.string.remove_text_layer_screen_title)
-                                currentRoute?.startsWith("remove-password/") == true -> stringResource(R.string.remove_password_screen_title)
-                                currentRoute?.startsWith("restrict-usage/") == true -> stringResource(R.string.restrict_usage_screen_title)
-                                currentRoute?.startsWith("annotate/") == true -> stringResource(R.string.annotate_screen_title)
-                                currentRoute?.startsWith("grayscale/") == true -> stringResource(R.string.grayscale_screen_title)
-                                currentRoute?.startsWith("pdf-metadata/") == true -> stringResource(R.string.metadata_screen_title)
-                                else                                 -> stringResource(R.string.app_name)
-                            }
-                        )
+                        AppBarTitle(currentRoute = currentRoute, isHomeRoute = isHomeRoute)
                     },
                     navigationIcon = {
                         if (canNavigateBack) {
@@ -419,6 +397,76 @@ fun AppNavigation() {
             } // Box
         }
     }
+}
+
+@Composable
+private fun AppBarTitle(
+    currentRoute: String?,
+    isHomeRoute: Boolean
+) {
+    if (isHomeRoute) {
+        val appName = stringResource(R.string.app_name)
+        val splitIndex = appName.indexOf(' ')
+        val prefix = if (splitIndex > 0) appName.substring(0, splitIndex) else appName
+        val suffix = if (splitIndex > 0) appName.substring(splitIndex) else ""
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.tertiary)
+                    .padding(horizontal = 8.dp, vertical = 3.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = prefix,
+                    style = MaterialTheme.typography.titleMedium.copy(letterSpacing = (-0.2).sp),
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onTertiary,
+                    maxLines = 1
+                )
+            }
+            if (suffix.isNotBlank()) {
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = suffix.trimStart(),
+                    style = MaterialTheme.typography.headlineSmall.copy(letterSpacing = (-0.4).sp),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+        return
+    }
+
+    Text(
+        text = when {
+            currentRoute == Screen.Help.route -> stringResource(R.string.nav_help)
+            currentRoute == Screen.Info.route -> stringResource(R.string.nav_info)
+            currentRoute == Screen.Privacy.route -> stringResource(R.string.nav_privacy)
+            currentRoute?.startsWith("split/") == true -> stringResource(R.string.split_screen_title)
+            currentRoute?.startsWith("reorder/") == true -> stringResource(R.string.reorder_screen_title)
+            currentRoute?.startsWith("rotate-pages/") == true -> stringResource(R.string.rotate_screen_title)
+            currentRoute?.startsWith("delete-pages/") == true -> stringResource(R.string.delete_pages_screen_title)
+            currentRoute?.startsWith("extract-pages/") == true -> stringResource(R.string.extract_pages_screen_title)
+            currentRoute?.startsWith("duplicate-pages/") == true -> stringResource(R.string.duplicate_pages_screen_title)
+            currentRoute?.startsWith("page-numbers/") == true -> stringResource(R.string.page_numbers_screen_title)
+            currentRoute?.startsWith("text-watermark/") == true -> stringResource(R.string.watermark_screen_title)
+            currentRoute?.startsWith("compress-pdf/") == true -> stringResource(R.string.compress_pdf_screen_title)
+            currentRoute?.startsWith("protect-pdf/") == true -> stringResource(R.string.protect_pdf_screen_title)
+            currentRoute?.startsWith("unlock-pdf/") == true -> stringResource(R.string.unlock_pdf_screen_title)
+            currentRoute?.startsWith("signature/") == true -> stringResource(R.string.signature_screen_title)
+            currentRoute?.startsWith("remove-text-layer/") == true -> stringResource(R.string.remove_text_layer_screen_title)
+            currentRoute?.startsWith("remove-password/") == true -> stringResource(R.string.remove_password_screen_title)
+            currentRoute?.startsWith("restrict-usage/") == true -> stringResource(R.string.restrict_usage_screen_title)
+            currentRoute?.startsWith("annotate/") == true -> stringResource(R.string.annotate_screen_title)
+            currentRoute?.startsWith("grayscale/") == true -> stringResource(R.string.grayscale_screen_title)
+            currentRoute?.startsWith("pdf-metadata/") == true -> stringResource(R.string.metadata_screen_title)
+            else -> stringResource(R.string.app_name)
+        },
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
 }
 
 @Composable

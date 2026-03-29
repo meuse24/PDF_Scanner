@@ -391,7 +391,7 @@
     <string name="highlight_zoom_reset_button">Reset</string>
     <string name="help_item_highlight_pdf">Choose Highlight PDF to draw yellow highlights over the document. Searchable PDFs also offer Text snap, which aligns a stroke to detected text lines. Pan/Zoom lets you zoom and move the page; if no text line is matched, the app keeps the normal freehand highlight.</string>
     <!-- Search -->
-    <string name="search_placeholder">Search documents…</string>
+    <string name="search_placeholder">Search…</string>
     <string name="search_no_results">No results for \"%1$s\"</string>
     <string name="cd_search_clear">Clear search</string>
     <string name="sort_by_date">Date</string>

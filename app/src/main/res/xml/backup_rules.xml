@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     Backup rules for API < 31.
-    Exclude scanned PDFs and the Room database so they never leave the device,
-    consistent with the privacy claim in the app's help screen (#2).
+    Backup is disabled globally via android:allowBackup="false".
+    These excludes remain as defense in depth and documentation of what must
+    never leave the device if backup behavior is ever relaxed in the future.
 -->
 <full-backup-content>
     <exclude domain="file"     path="scans"/>
     <exclude domain="database" path="pdf_scanner_db"/>
+    <exclude domain="database" path="pdf_scanner_db-wal"/>
+    <exclude domain="database" path="pdf_scanner_db-shm"/>
+    <exclude domain="database" path="pdf_scanner_db-journal"/>
 </full-backup-content>

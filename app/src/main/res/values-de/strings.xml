@@ -368,7 +368,7 @@
     <string name="highlight_zoom_reset">%1$s× – Zurücksetzen</string>
     <string name="highlight_zoom_reset_button">Zurücksetzen</string>
     <string name="help_item_highlight_pdf">Mit PDF markieren kannst du gelbe Markierungen über das Dokument ziehen. Durchsuchbare PDFs bieten zusätzlich Text ausrichten, das einen Strich an erkannte Textzeilen anlegt. Verschieben/Zoom vergrößert und verschiebt die Seite; wenn keine Textzeile passt, bleibt die normale Freihand-Markierung erhalten.</string>
-    <string name="search_placeholder">Dokumente durchsuchen…</string>
+    <string name="search_placeholder">Durchsuchen…</string>
     <string name="search_no_results">Keine Ergebnisse für „%1$s"</string>
     <string name="cd_search_clear">Suche löschen</string>
     <string name="sort_by_date">Datum</string>

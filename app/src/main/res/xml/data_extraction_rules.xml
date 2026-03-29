@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     Data extraction rules for API 31+.
-    Exclude scanned PDFs and the Room database from both cloud backup and
-    device-to-device transfer so they never leave the device (#2).
+    Backup / transfer is disabled globally via android:allowBackup="false".
+    These excludes remain as defense in depth and documentation of the
+    privacy-critical storage locations that must never leave the device.
 -->
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="file"     path="scans"/>
         <exclude domain="database" path="pdf_scanner_db"/>
+        <exclude domain="database" path="pdf_scanner_db-wal"/>
+        <exclude domain="database" path="pdf_scanner_db-shm"/>
+        <exclude domain="database" path="pdf_scanner_db-journal"/>
     </cloud-backup>
     <device-transfer>
         <exclude domain="file"     path="scans"/>
         <exclude domain="database" path="pdf_scanner_db"/>
+        <exclude domain="database" path="pdf_scanner_db-wal"/>
+        <exclude domain="database" path="pdf_scanner_db-shm"/>
+        <exclude domain="database" path="pdf_scanner_db-journal"/>
     </device-transfer>
 </data-extraction-rules>

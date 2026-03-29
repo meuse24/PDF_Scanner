@@ -8,10 +8,15 @@ import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import com.tom_roush.pdfbox.cos.COSArray
+import com.tom_roush.pdfbox.cos.COSDictionary
+import com.tom_roush.pdfbox.cos.COSName
 import com.tom_roush.pdfbox.multipdf.PDFMergerUtility
 import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.pdmodel.PDDocumentInformation
 import com.tom_roush.pdfbox.pdmodel.PDPage
 import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
+import com.tom_roush.pdfbox.pdmodel.common.PDMetadata
 import com.tom_roush.pdfbox.pdmodel.common.PDRectangle
 import com.tom_roush.pdfbox.pdmodel.encryption.AccessPermission
 import com.tom_roush.pdfbox.pdmodel.encryption.InvalidPasswordException
@@ -486,6 +491,8 @@ open class PdfEditor @Inject constructor() {
                             if (redacted.numberOfPages == 0) {
                                 throw IOException("SecureRedaction erzeugte keine Seiten")
                             }
+                            sanitizeInteractiveContent(redacted)
+                            sanitizeDocumentMetadata(redacted)
                             redacted.save(target)
                         }
                     }
@@ -1138,6 +1145,78 @@ private fun redactionRectsIntersectOrTouch(
         second.left <= first.right + REDACTION_TOUCH_TOLERANCE &&
         first.top <= second.bottom + REDACTION_TOUCH_TOLERANCE &&
         second.top <= first.bottom + REDACTION_TOUCH_TOLERANCE
+}
+
+private fun sanitizeInteractiveContent(document: PDDocument) {
+    val catalog = document.documentCatalog.cosObject
+    catalog.removeItem(COSName.ACRO_FORM)
+    catalog.removeItem(COSName.OPEN_ACTION)
+    catalog.removeItem(COSName.AA)
+    catalog.removeItem(COSName.getPDFName("AF"))
+
+    val names = catalog.getDictionaryObject(COSName.NAMES) as? COSDictionary
+    if (names != null) {
+        names.removeItem(COSName.getPDFName("EmbeddedFiles"))
+        names.removeItem(COSName.getPDFName("JavaScript"))
+        if (names.keySet().isEmpty()) {
+            catalog.removeItem(COSName.NAMES)
+        }
+    }
+
+    repeat(document.numberOfPages) { pageIndex ->
+        sanitizeInteractivePageContent(document.getPage(pageIndex).cosObject)
+    }
+}
+
+private fun sanitizeDocumentMetadata(document: PDDocument) {
+    // Reset the API-level info object first so PDFBox does not re-materialize stale metadata on save
+    // before we remove the trailer entry entirely.
+    document.setDocumentInformation(PDDocumentInformation())
+    document.document.trailer.removeItem(COSName.INFO)
+
+    val catalog = document.documentCatalog
+    catalog.setMetadata(null as PDMetadata?)
+    catalog.cosObject.removeItem(COSName.METADATA)
+
+    repeat(document.numberOfPages) { pageIndex ->
+        val page = document.getPage(pageIndex)
+        page.setMetadata(null as PDMetadata?)
+        page.cosObject.removeItem(COSName.METADATA)
+    }
+}
+
+private fun sanitizeInteractivePageContent(page: COSDictionary) {
+    page.removeItem(COSName.AA)
+    page.removeItem(COSName.getPDFName("AF"))
+
+    val annotations = page.getDictionaryObject(COSName.ANNOTS) as? COSArray ?: return
+    val keptAnnotations = COSArray()
+    repeat(annotations.size()) { index ->
+        val annotation = annotations.getObject(index) as? COSDictionary ?: return@repeat
+        if (!shouldRemoveInteractiveAnnotation(annotation)) {
+            keptAnnotations.add(annotation)
+        }
+    }
+
+    if (keptAnnotations.size() == 0) {
+        page.removeItem(COSName.ANNOTS)
+    } else {
+        page.setItem(COSName.ANNOTS, keptAnnotations)
+    }
+}
+
+private fun shouldRemoveInteractiveAnnotation(annotation: COSDictionary): Boolean {
+    val subtype = annotation.getNameAsString(COSName.SUBTYPE)
+    if (subtype in setOf("Link", "Widget", "FileAttachment", "Screen")) {
+        return true
+    }
+    return annotation.containsKey(COSName.A) ||
+        annotation.containsKey(COSName.AA) ||
+        annotation.containsKey(COSName.DEST) ||
+        annotation.containsKey(COSName.getPDFName("FS")) ||
+        // Some producers attach proprietary launch/playback actions via /PA.
+        annotation.containsKey(COSName.getPDFName("PA")) ||
+        annotation.containsKey(COSName.getPDFName("AF"))
 }
 
 private fun burnRedactionRects(

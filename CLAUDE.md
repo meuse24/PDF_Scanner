@@ -17,7 +17,7 @@ Gezielte PDF-Verifikation:
 
 ```bash
 ./gradlew testDebugUnitTest --tests "info.meuse24.pdf_scanner.util.PdfEditorTest" --tests "info.meuse24.pdf_scanner.util.PdfEditorRealIntegrationTest"
-./gradlew --% connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest
+./gradlew --% connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest
 ./gradlew --% connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.SearchableAndRoundTripInstrumentedTest
 ```
 
@@ -61,6 +61,7 @@ domain/
     ├── DeletePdfPagesUseCase.kt   # Seiten löschen; nutzt thumbnailFile() aus PageEditUtils
     ├── RemoveTextLayerUseCase.kt  # Seiten per PdfRenderer rendern → LosslessFactory → isSearchable=false
     ├── RemovePasswordUseCase.kt   # removePassword() aufrufen → isSearchable erhalten
+    ├── RedactPdfUseCase.kt        # applySecureRedaction() + Thumbnail + DB-Insert; optionale OCR-Rekonstruktion via Workflow
     ├── RestrictUsageUseCase.kt    # restrictUsage() aufrufen → isSearchable=false
     ├── HighlightPdfUseCase.kt     # applyHighlight() für Strokes + Rects + Thumbnail + DB-Insert → Suffix _Markiert
     ├── AnnotatePdfUseCase.kt      # applyAnnotations() für Strokes + Rects + TextComments + Thumbnail + DB-Insert → Suffix _Annotiert
@@ -107,11 +108,12 @@ ui/
 ├── overlay/
 │   └── OverlayActionScreens.kt    # PageNumbersScreen, TextWatermarkScreen — nutzen DocumentEditViewModel
 ├── documentaction/
-│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Highlight/Annotate/RemoveTextLayer/RemovePassword/RestrictUsage/Grayscale/PdfMetadata
+│   ├── DocumentEditViewModel.kt   # @HiltViewModel für PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Highlight/Annotate/Redaction/RemoveTextLayer/RemovePassword/RestrictUsage/Grayscale/PdfMetadata
 │   │                              # Lädt ScanRecord per scanId, führt Workflows aus,
 │   │                              # mappt Fehler über WorkflowErrorMapper; _editLoading/_error/_success
 │   │                              # Highlight/Annotate: _highlightPageBitmap + _textLines; seitenweiser TextLine-Cache für Snap-Modus
 │   │                              # applyAnnotations(strokes, rects, comments) → AnnotatePdfWorkflow
+│   │                              # applyRedactions(rects, makeSearchable, languageCode) → RedactPdfWorkflow
 │   │                              # convertToGrayscale() → ConvertToGrayscaleWorkflow; loadMetadata() → _metadata: StateFlow<PdfMetadata?>
 │   └── DocumentActionScreens.kt   # CompressPdfScreen, ProtectPdfScreen, UnlockPdfScreen, RemovePasswordScreen, RemoveTextLayerScreen, RestrictUsageScreen
 │                                  # ConvertToGrayscaleScreen, PdfMetadataScreen (read-only Metadaten-Karte)
@@ -123,6 +125,11 @@ ui/
 │                                  # awaitEachGesture + manueller awaitPointerEvent-Loop (kein touch-slop Problem)
 │                                  # Undo/Clear behandeln Strokes + Rects + Comments gemeinsam
 │                                  # allComments via rememberSaveable (annotateCommentListSaver) → kein Datenverlust bei Rotation
+├── redact/
+│   └── RedactScreen.kt            # Vollbild-Sicher-Schwärzen mit Rechteckmodus + Zoom
+│                                  # Save-Dialog statt permanentem Hinweis auf dem Hauptscreen
+│                                  # optionaler searchable-PDF-Toggle + Sprachwahl erst beim Speichern
+│                                  # allRects via rememberSaveable; nur committete Rechtecke werden gespeichert
 ├── pageedit/
 │   ├── PageSelectionViewModel.kt  # Seiten-Thumbnails, Auswahl, saveAsCopy + Rotate/Delete/Extract/Duplicate-Workflows
 │   └── PageActionScreens.kt       # RotatePagesScreen, DeletePagesScreen, ExtractPagesScreen, DuplicatePagesScreen
@@ -158,6 +165,8 @@ domain/workflow/WorkflowErrorMapper.kt  # @Singleton: ScanWorkflowError → loka
 domain/workflow/RemoveTextLayerWorkflow.kt  # Prüft: Datei existiert → RemoveTextLayerUseCase
 domain/workflow/RemovePasswordWorkflow.kt   # Prüft: Datei existiert + isPdfEncrypted → RemovePasswordUseCase
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
+domain/workflow/RedactPdfWorkflow.kt        # Prüft: Datei existiert + Rechtecke vorhanden + nicht verschlüsselt → RedactPdfUseCase
+                                            # optionaler OCR-Follow-up mit Rollback bei Fehler; unerwartete Folgefehler → RedactionFailed
 domain/workflow/RestrictUsageWorkflow.kt    # Prüft: Datei existiert → RestrictUsageUseCase
                                             # fängt PasswordRequiredException → ScanWorkflowError.PasswordRequiredToRemove
 domain/workflow/HighlightPdfWorkflow.kt     # Prüft: Datei existiert + (strokes oder rects) + nicht verschlüsselt → HighlightPdfUseCase
@@ -183,6 +192,9 @@ util/PdfEditor.kt                  # mergePdfs, splitPdf, reorderPages, rotatePa
                                    # applyAnnotations(input, outputDir, strokes, rects, comments): wie applyHighlight + Textkommentare; Suffix _Annotiert
                                    #   appendTextComment(): rotationsawarere Textmatrix (0°/90°/180°/270°); eigener PDPageContentStream nach Highlight-Stream
                                    #   sanitizeCommentText(): entfernt Sonderzeichen, die PDFBox nicht encodieren kann
+                                   # applySecureRedaction(): betroffene Seiten per PdfRenderer (300 DPI / PRINT) neu aufbauen,
+                                   #   schwarze Boxen einbrennen, Display-CropBox/Rotation in neue Seite uebernehmen,
+                                   #   Formulare/Links/Attachments/Actions sowie Dokument-/XMP-Metadaten entfernen
                                    # restrictUsage(ownerPwd, canPrint, canCopy, canEdit): AccessPermission + StandardProtectionPolicy(ownerPwd, "", ap); Suffix _Eingeschraenkt
                                    # WrongPasswordException + PasswordRequiredException als innere IOException-Subklassen
 ```
@@ -234,13 +246,13 @@ test/
 │   └── FakeSearchablePdfBuilder (in MakeSearchableUseCaseTest)  # Überschreibt makeSearchable → gibt String zurück
 ├── domain/workflow/
 │   ├── *WorkflowTest.kt                    # Merge/Split/Reorder/Rotate/Delete/Extract/Duplicate
-│   ├── *WorkflowTest.kt                    # PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Searchable
+│   ├── *WorkflowTest.kt                    # PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Searchable/Redaction
 │   ├── HighlightPdfWorkflowTest.kt         # leer, Rect-only, gemischt, fehlende Datei, verschlüsselt, IO-Fehler, Erfolg
 │   └── AnnotatePdfWorkflowTest.kt          # (analog zu Highlight) fehlende Datei, verschlüsselt, keine Annotations, Erfolg
 ├── ui/
 │   ├── split/SplitViewModelTest.kt         # editLoading-Guard, Success/Failure, clearError (5 Tests)
 │   ├── reorder/ReorderViewModelTest.kt     # editLoading-Guard, Success/Failure, clearError (4 Tests)
-│   ├── documentaction/DocumentEditViewModelTest.kt  # DocumentEdit-Aktionen: Loading-Guard + Success/Failure-Mapping
+│   ├── documentaction/DocumentEditViewModelTest.kt  # inkl. applyRedactions Success/Failure + OCR-Parameter
 │   ├── home/HomeImportFilenameSuggestionTest.kt     # DISPLAY_NAME → Dateinamensvorschlag ohne .pdf
 │   └── highlight/HighlightScreenMathTest.kt         # clampPanOffset + inverse Zoom/Pan-Mathematik + Snap-/Rect-Hilfsfunktionen
 └── util/
@@ -255,6 +267,7 @@ androidTest/
     │   # echte Android-/PdfRenderer-Pfade: pageCount, Thumbnail, renderPageThumbnail
     │   # ImportFileUseCase über content://-URI inkl. invalid PDF cleanup und encrypted import
     │   # applyHighlight/applyAnnotations/removeTextLayer/convertToGrayscale auf gerenderten PDFs
+    │   # sichere Schwärzung inkl. Text-Entfernung, Sanitization, CropBox/Rotation, Metadata/XMP-Cleanup
     └── SearchableAndRoundTripInstrumentedTest.kt
         # SearchablePdfBuilder + MakeSearchableUseCase auf bildbasierten und gemischten mehrseitigen PDFs
         # ExportScanUseCase + ImportFileUseCase-Roundtrips für plain/protected/restricted PDFs via MediaStore.Downloads

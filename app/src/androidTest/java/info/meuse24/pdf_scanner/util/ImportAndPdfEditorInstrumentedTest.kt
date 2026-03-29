@@ -1,11 +1,17 @@
-package info.meuse24.pdf_scanner.util
+package info.meuse24.pdf_scanner
 
 import androidx.core.content.FileProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.tom_roush.pdfbox.cos.COSArray
+import com.tom_roush.pdfbox.cos.COSDictionary
+import com.tom_roush.pdfbox.cos.COSFloat
+import com.tom_roush.pdfbox.cos.COSName
 import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.pdmodel.PDDocumentInformation
 import com.tom_roush.pdfbox.pdmodel.PDPage
 import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
+import com.tom_roush.pdfbox.pdmodel.common.PDMetadata
 import com.tom_roush.pdfbox.pdmodel.common.PDRectangle
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import info.meuse24.pdf_scanner.R
@@ -16,6 +22,10 @@ import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.domain.usecase.TextComment
+import info.meuse24.pdf_scanner.util.AndroidResourceProvider
+import info.meuse24.pdf_scanner.util.AndroidStorageProvider
+import info.meuse24.pdf_scanner.util.FileUtil
+import info.meuse24.pdf_scanner.util.PdfEditor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -29,6 +39,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
+import java.util.Calendar
 import kotlin.math.abs
 
 @RunWith(AndroidJUnit4::class)
@@ -347,6 +358,163 @@ class ImportAndPdfEditorInstrumentedTest {
     }
 
     @Test
+    fun secureRedactionSanitizesFormsLinksAttachmentsAndActions() {
+        val input = createPdf(
+            File(scansDir, "androidtest_redact_sanitize_source.pdf"),
+            listOf(
+                TestPage(width = 520f, height = 720f, drawMarker = false),
+                TestPage(width = 520f, height = 720f, drawMarker = false)
+            )
+        )
+        enrichPdfWithInteractiveContent(input)
+
+        val redacted = pdfEditor.applySecureRedaction(
+            input,
+            scansDir,
+            listOf(
+                RedactionRect(
+                    left = 0.16f,
+                    top = 0.18f,
+                    right = 0.56f,
+                    bottom = 0.34f,
+                    pageIndex = 0
+                )
+            )
+        )
+
+        PDDocument.load(redacted).use { document ->
+            val catalog = document.documentCatalog.cosObject
+            assertNull(catalog.getDictionaryObject(COSName.ACRO_FORM))
+            assertNull(catalog.getDictionaryObject(COSName.OPEN_ACTION))
+            assertNull(catalog.getDictionaryObject(COSName.AA))
+            assertNull(catalog.getDictionaryObject(COSName.getPDFName("AF")))
+
+            val names = catalog.getDictionaryObject(COSName.NAMES) as? COSDictionary
+            assertTrue(
+                names == null ||
+                    (names.getDictionaryObject(COSName.getPDFName("EmbeddedFiles")) == null &&
+                        names.getDictionaryObject(COSName.getPDFName("JavaScript")) == null)
+            )
+
+            repeat(document.numberOfPages) { pageIndex ->
+                val page = document.getPage(pageIndex).cosObject
+                assertNull(page.getDictionaryObject(COSName.AA))
+                assertNull(page.getDictionaryObject(COSName.getPDFName("AF")))
+                val annots = page.getDictionaryObject(COSName.ANNOTS) as? COSArray
+                assertTrue(annots == null || annots.size() == 0)
+            }
+        }
+    }
+
+    @Test
+    fun secureRedactionSanitizesDocumentInfoAndXmpMetadata() {
+        val input = createPdf(
+            File(scansDir, "androidtest_redact_metadata_source.pdf"),
+            listOf(TestPage(width = 520f, height = 720f, drawMarker = false))
+        )
+        enrichPdfWithMetadata(input)
+
+        val redacted = pdfEditor.applySecureRedaction(
+            input,
+            scansDir,
+            listOf(
+                RedactionRect(
+                    left = 0.16f,
+                    top = 0.18f,
+                    right = 0.56f,
+                    bottom = 0.34f,
+                    pageIndex = 0
+                )
+            )
+        )
+
+        val metadata = pdfEditor.readMetadata(redacted)
+        assertNull(metadata.title)
+        assertNull(metadata.author)
+        assertNull(metadata.creator)
+        assertNull(metadata.subject)
+        assertNull(metadata.keywords)
+        assertNull(metadata.creationDate)
+        assertNull(metadata.modificationDate)
+
+        PDDocument.load(redacted).use { document ->
+            assertNull(document.documentCatalog.metadata)
+            repeat(document.numberOfPages) { pageIndex ->
+                assertNull(document.getPage(pageIndex).metadata)
+            }
+            assertNull(document.document.trailer.getDictionaryObject(COSName.INFO))
+        }
+    }
+
+    @Test
+    fun secureRedactionPreservesDisplayedCropBoxDimensionsOnRotatedPage() {
+        val input = createPdf(
+            File(scansDir, "androidtest_redact_cropbox_source.pdf"),
+            listOf(
+                TestPage(
+                    width = 600f,
+                    height = 800f,
+                    rotation = 90,
+                    cropBox = TestCropBox(
+                        lowerLeftX = 40f,
+                        lowerLeftY = 60f,
+                        width = 300f,
+                        height = 500f
+                    ),
+                    drawMarker = false
+                )
+            )
+        )
+        val annotated = pdfEditor.applyAnnotations(
+            input = input,
+            outputDir = scansDir,
+            strokes = emptyList(),
+            comments = listOf(
+                TextComment(
+                    pageIndex = 0,
+                    anchorX = 0.20f,
+                    anchorY = 0.22f,
+                    text = "CROP-SECRET",
+                    fontSizeFraction = 0.05f
+                )
+            )
+        )
+
+        val redacted = pdfEditor.applySecureRedaction(
+            annotated,
+            scansDir,
+            listOf(
+                RedactionRect(
+                    left = 0.12f,
+                    top = 0.12f,
+                    right = 0.52f,
+                    bottom = 0.30f,
+                    pageIndex = 0
+                )
+            )
+        )
+
+        PDDocument.load(redacted).use { document ->
+            val page = document.getPage(0)
+            assertEquals(500f, page.mediaBox.width, 0.1f)
+            assertEquals(300f, page.mediaBox.height, 0.1f)
+            assertEquals(500f, page.cropBox.width, 0.1f)
+            assertEquals(300f, page.cropBox.height, 0.1f)
+            assertEquals(0, page.rotation)
+        }
+
+        val bitmap = pdfEditor.renderPageThumbnail(redacted, pageIndex = 0, maxSizePx = 240)
+        assertNotNull(bitmap)
+        bitmap!!.useBitmap {
+            assertTrue(it.width > it.height)
+            val redactedPixel = pixelAtNormalized(it, 0.25f, 0.20f)
+            val controlPixel = pixelAtNormalized(it, 0.82f, 0.82f)
+            assertTrue(isBlack(redactedPixel))
+            assertTrue(isMostlyWhite(controlPixel))
+        }
+    }
+
+    @Test
     fun convertToGrayscaleTurnsColoredHighlightGray() {
         val input = createPdf(
             File(scansDir, "androidtest_grayscale_source.pdf"),
@@ -411,7 +579,15 @@ private data class TestPage(
     val width: Float,
     val height: Float,
     val rotation: Int = 0,
+    val cropBox: TestCropBox? = null,
     val drawMarker: Boolean = true
+)
+
+private data class TestCropBox(
+    val lowerLeftX: Float,
+    val lowerLeftY: Float,
+    val width: Float,
+    val height: Float
 )
 
 private fun createPdf(file: File, pages: List<TestPage>): File {
@@ -419,6 +595,14 @@ private fun createPdf(file: File, pages: List<TestPage>): File {
         pages.forEach { spec ->
             val page = PDPage(PDRectangle(spec.width, spec.height)).apply {
                 rotation = spec.rotation
+                spec.cropBox?.let { crop ->
+                    cropBox = PDRectangle(
+                        crop.lowerLeftX,
+                        crop.lowerLeftY,
+                        crop.width,
+                        crop.height
+                    )
+                }
             }
             document.addPage(page)
             PDPageContentStream(document, page).use { content ->
@@ -436,6 +620,122 @@ private fun createPdf(file: File, pages: List<TestPage>): File {
         document.save(file)
     }
     return file
+}
+
+private fun enrichPdfWithMetadata(file: File) {
+    PDDocument.load(file).use { document ->
+        document.setDocumentInformation(
+            PDDocumentInformation().apply {
+                title = "Top Secret Title"
+                author = "Secret Author"
+                creator = "Secret Creator"
+                subject = "Secret Subject"
+                keywords = "secret,internal"
+                producer = "Secret Producer"
+                creationDate = Calendar.getInstance().apply { set(2024, Calendar.JANUARY, 4) }
+                modificationDate = Calendar.getInstance().apply { set(2025, Calendar.FEBRUARY, 5) }
+                setCustomMetadataValue("Classification", "Strictly Confidential")
+            }
+        )
+        document.documentCatalog.metadata = PDMetadata(document).apply {
+            importXMPMetadata(
+                """
+                <x:xmpmeta xmlns:x="adobe:ns:meta/">
+                  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                    <rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">
+                      <dc:title>Top Secret XMP</dc:title>
+                    </rdf:Description>
+                  </rdf:RDF>
+                </x:xmpmeta>
+                """.trimIndent().toByteArray()
+            )
+        }
+        repeat(document.numberOfPages) { pageIndex ->
+            document.getPage(pageIndex).metadata = PDMetadata(document).apply {
+                importXMPMetadata(
+                    """
+                    <x:xmpmeta xmlns:x="adobe:ns:meta/">
+                      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                        <rdf:Description rdf:about="" xmlns:pdfscanner="https://meuse24.info/pdf_scanner/test">
+                          <pdfscanner:page>$pageIndex</pdfscanner:page>
+                        </rdf:Description>
+                      </rdf:RDF>
+                    </x:xmpmeta>
+                    """.trimIndent().toByteArray()
+                )
+            }
+        }
+        document.save(file)
+    }
+}
+
+private fun enrichPdfWithInteractiveContent(file: File) {
+    PDDocument.load(file).use { document ->
+        val catalog = document.documentCatalog.cosObject
+        catalog.setItem(COSName.ACRO_FORM, COSDictionary().apply {
+            setItem(COSName.FIELDS, COSArray())
+        })
+        catalog.setItem(COSName.OPEN_ACTION, actionDictionary("JavaScript"))
+        catalog.setItem(COSName.AA, COSDictionary().apply {
+            setItem(COSName.getPDFName("WC"), actionDictionary("JavaScript"))
+        })
+        catalog.setItem(COSName.getPDFName("AF"), COSArray())
+        catalog.setItem(COSName.NAMES, COSDictionary().apply {
+            setItem(COSName.getPDFName("EmbeddedFiles"), COSDictionary())
+            setItem(COSName.getPDFName("JavaScript"), COSDictionary())
+        })
+
+        val untouchedPage = document.getPage(1).cosObject
+        untouchedPage.setItem(COSName.AA, COSDictionary().apply {
+            setItem(COSName.getPDFName("O"), actionDictionary("URI"))
+        })
+        untouchedPage.setItem(COSName.getPDFName("AF"), COSArray())
+        untouchedPage.setItem(COSName.ANNOTS, COSArray().apply {
+            add(annotationDictionary(subtype = "Link", includeAction = true))
+            add(annotationDictionary(subtype = "FileAttachment", includeFileSpec = true))
+            add(annotationDictionary(subtype = "Widget", includeAdditionalAction = true))
+        })
+
+        document.save(file)
+    }
+}
+
+private fun actionDictionary(actionType: String): COSDictionary =
+    COSDictionary().apply {
+        setName(COSName.getPDFName("S"), actionType)
+    }
+
+private fun annotationDictionary(
+    subtype: String,
+    includeAction: Boolean = false,
+    includeAdditionalAction: Boolean = false,
+    includeFileSpec: Boolean = false
+): COSDictionary {
+    return COSDictionary().apply {
+        setName(COSName.TYPE, "Annot")
+        setName(COSName.SUBTYPE, subtype)
+        setItem(COSName.RECT, COSArray().apply {
+            add(COSFloat(12f))
+            add(COSFloat(12f))
+            add(COSFloat(144f))
+            add(COSFloat(48f))
+        })
+        if (includeAction) {
+            setItem(COSName.A, actionDictionary("URI"))
+        }
+        if (includeAdditionalAction) {
+            setItem(COSName.AA, COSDictionary().apply {
+                setItem(COSName.getPDFName("D"), actionDictionary("JavaScript"))
+            })
+        }
+        if (includeFileSpec) {
+            setItem(COSName.getPDFName("FS"), COSDictionary().apply {
+                setName(COSName.TYPE, "Filespec")
+                setString(COSName.getPDFName("F"), "secret.bin")
+            })
+            setItem(COSName.getPDFName("AF"), COSArray())
+        }
+    }
 }
 
 private fun createRawAsciiTextPdf(

@@ -28,6 +28,11 @@ Bereits umgesetzt:
   - läuft nach erfolgreicher Schwärzung optional auf der erzeugten Kopie
   - bei OCR-Fehler wird die neu erzeugte Kopie wieder entfernt, damit der Save-Flow konsistent bleibt
   - unerwartete Follow-up-Fehler aus dem OCR-Schritt werden defensiv als `RedactionFailed` gekapselt
+- weitergehende Sanitization im sicheren Redaction-Pfad:
+  - `AcroForm`, `OpenAction`, Catalog-`AA` und dokumentweite Associated Files werden entfernt
+  - `EmbeddedFiles`- und `JavaScript`-Name-Trees werden aus dem Ergebnis entfernt
+  - interaktive Annotationen (`Link`, `Widget`, `FileAttachment`, `Screen`) sowie seitenbezogene Actions/Associated Files werden auf allen Ergebnis-Seiten entfernt
+  - Dokumentinformationen und XMP-/Metadaten-Streams auf Catalog- und Seitenebene werden vor dem Speichern entfernt
 - Hilfe-/String-Ressourcen für sicheren Schwärzungs-Flow ergänzt
 - Ergebnisdatensatz wird bewusst bereinigt gespeichert:
   - `isSearchable = false`
@@ -47,14 +52,15 @@ Verifiziert:
 - `:app:compileDebugAndroidTestKotlin`
 - `:app:testDebugUnitTest --tests "info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModelTest"`
 - `testDebugUnitTest --tests "info.meuse24.pdf_scanner.domain.workflow.RedactPdfWorkflowTest"`
-- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionRemovesExtractableTextAndBurnsBlackRect`
-- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionKeepsTextOnUntouchedPagesAndRemovesSecretBytes`
-- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionOnRotatedPageKeepsLandscapeDisplayAndBurnsExpectedArea`
+- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionRemovesExtractableTextAndBurnsBlackRect`
+- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionKeepsTextOnUntouchedPagesAndRemovesSecretBytes`
+- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionOnRotatedPageKeepsLandscapeDisplayAndBurnsExpectedArea`
+- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionSanitizesFormsLinksAttachmentsAndActions`
+- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionSanitizesDocumentInfoAndXmpMetadata`
+- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest#secureRedactionPreservesDisplayedCropBoxDimensionsOnRotatedPage`
 
 Noch offen:
-- weitergehende Sanitization für Formular-/Link-/Attachment-/Action-Fälle
-- zusätzliche Regressionstests für CropBox-/CropRect-Fälle
-- Prüfung, ob betroffene Seiten zusätzlich XMP-/Dokumentmetadaten gezielt bereinigen sollen
+- keine blockierenden Punkte mehr für den aktuellen Redaction-Umfang
 
 ## 1. Zielbild
 Implementierung einer Schwärzungsfunktion, bei der der Inhalt unter dem Schwärzungsbereich nicht nur verdeckt, sondern aus allen relevanten Datenpfaden entfernt wird.

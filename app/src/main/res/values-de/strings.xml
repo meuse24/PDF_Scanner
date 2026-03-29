@@ -117,18 +117,18 @@
     <string name="info_repository_label">GitHub-Repository</string>
     <string name="info_section_privacy">Datenschutz</string>
     <string name="info_section_features">Funktionen</string>
-    <string name="info_features_body">Die App scannt Dokumente zu PDF, führt OCR direkt auf dem Gerät aus, speichert durchsuchbaren OCR-Text lokal für die Suche in der Ablage und bietet Seitenbearbeitung, Schutz, Signaturen, Markierungen sowie textausgerichtetes Einrasten bei durchsuchbaren PDFs.</string>
-    <string name="info_privacy_body">Keine Werbung, kein Konto und kein eigenes Backend. PDFs, Vorschaubilder und OCR-Text bleiben lokal im App-Speicher auf Ihrem Gerät. Teilen und Exportieren erfolgen nur auf Ihre Aktion. Scan, OCR sowie Modell- und Schriftart-Downloads nutzen Google Play Services; Dokumentinhalte werden von der App nicht hochgeladen.</string>
+    <string name="info_features_body">Die App scannt Dokumente zu PDF, führt OCR direkt auf dem Gerät aus, speichert durchsuchbaren OCR-Text lokal für die Suche in der Ablage und bietet Seitenbearbeitung, Schutz, Signaturen, Markierungen, sichere Schwärzung sowie optionale OCR-Rekonstruktion für geschwärzte Kopien.</string>
+    <string name="info_privacy_body">Keine Werbung, kein Konto und kein eigenes Backend. PDFs, Vorschaubilder und optionaler OCR-Text bleiben lokal im App-Speicher auf Ihrem Gerät. Teilen und Exportieren erfolgen nur auf Ihre Aktion. Sicheres Schwärzen erzeugt lokal eine separate bereinigte Kopie. Scan, OCR sowie Modell- und Schriftart-Downloads nutzen Google Play Services; Dokumentinhalte werden von der App nicht hochgeladen.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Lokal</string>
     <string name="privacy_keyword_2">Offline</string>
     <string name="privacy_keyword_3">Sicher</string>
     <string name="privacy_keyword_4">Privat</string>
-    <string name="privacy_point_1">Die App speichert PDFs, Vorschaubilderund durchsuchbaren OCR-Text lokal auf Ihrem Gerät.</string>
-    <string name="privacy_point_2">Dokumente oder Inhalte werden nicht automatisch hochgeladen. Teilen oder Exportieren erfolgt nur, wenn Sie es ausdrücklich auslösen.</string>
+    <string name="privacy_point_1">Die App speichert PDFs, Vorschaubilder, geschwärzte Kopien und optionalen durchsuchbaren OCR-Text lokal auf Ihrem Gerät.</string>
+    <string name="privacy_point_2">Dokumente oder Inhalte werden nicht automatisch hochgeladen. Teilen oder Exportieren erfolgt nur, wenn Sie es ausdrücklich auslösen. Sicheres Schwärzen erzeugt eine neue Kopie; das Original bleibt erhalten, bis Sie es löschen.</string>
     <string name="privacy_point_3">Scan- und OCR-Funktionen nutzen Google Play Services. Für die Fehleranalyse können technische Diagnosedaten übertragen werden. Sprachmodelle für Chinesisch, Japanisch und Hindi sowie herunterladbare Schriftarten können beim ersten Einsatz über Play Services geladen werden; Dokumentinhalte werden von der App nicht gesendet.</string>
     <string name="privacy_point_4">Die App selbst erhebt keine personenbezogenen Daten, nutzt kein eigenes Analytics-System und fordert keine eigene Netzwerkberechtigung an.</string>
-    <string name="privacy_footer">Stand: 26. März 2026</string>
+    <string name="privacy_footer">Stand: 29. März 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Text extrahieren</string>
@@ -336,7 +336,7 @@
     <string name="redact_apply">Schwärzungen speichern</string>
     <string name="redact_error">Fehler beim sicheren Schwärzen</string>
     <string name="redact_no_areas">Wähle mindestens einen Schwärzungsbereich aus</string>
-    <string name="help_item_redact_pdf">Wähle Sicher schwärzen, um Inhalte unter schwarzen Flächen dauerhaft zu entfernen. Ziehe Rechtecke über sensible Bereiche, prüfe die betroffenen Seiten und speichere eine neue geschwärzte Kopie. Die Originaldatei bleibt unverändert, also teile nur die geschwärzte Kopie.</string>
+    <string name="help_item_redact_pdf">Wähle Sicher schwärzen, um Inhalte unter schwarzen Flächen dauerhaft zu entfernen. Ziehe Rechtecke über sensible Bereiche und tippe dann auf Speichern, um Warnhinweis, optional durchsuchbares PDF und Sprache zu prüfen, bevor eine neue geschwärzte Kopie erzeugt wird. Die Originaldatei bleibt unverändert, also teile nur die geschwärzte Kopie.</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Seitenstruktur</string>
     <string name="action_submenu_security">Schutz &amp; Passwort</string>
@@ -397,7 +397,7 @@
     <string name="help_item_search">Tippe oben in das Suchfeld, um Dokumente nach Dateiname oder gespeichertem OCR-Text zu finden. Die Suche läuft lokal auf deinem Gerät und nutzt Präfixabgleich, sodass "Rec" zum Beispiel "Rechnung" finden kann.</string>
     <string name="help_item_auto_tag">Wenn ein Dokument durchsuchbar gemacht wird, vergibt die App Tags wie Rechnung oder Vertrag lokal aus OCR-Text und Schlüsselwörtern. Tags erscheinen als farbige Etiketten unter dem Dateinamen.</string>
     <string name="privacy_keyword_5">On-Device-Intelligenz</string>
-    <string name="privacy_point_5">Volltextsuche, die Erzeugung durchsuchbarer PDFs und textausgerichtete Markierungen arbeiten lokal auf Ihrem Gerät mit OCR-Text und PDF-Metadaten.</string>
+    <string name="privacy_point_5">Volltextsuche, die Erzeugung durchsuchbarer PDFs, sicheres Schwärzen und textausgerichtete Markierungen arbeiten lokal auf Ihrem Gerät. Neu erzeugte geschwärzte Kopien entfernen OCR-Text, Metadaten und interaktive PDF-Elemente aus dem gespeicherten Ergebnis.</string>
     <!-- PDF annotieren -->
     <string name="action_annotate_pdf">PDF markieren/kommentieren</string>
     <string name="annotate_screen_title">PDF annotieren</string>

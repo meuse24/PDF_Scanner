@@ -45,6 +45,8 @@ A clean, privacy-focused Android app for scanning documents to PDF using Google'
 - **Password protect** — encrypt with AES user password
 - **Unlock** — remove password from a protected PDF
 - **Remove text layer** — rebuild the PDF as image-only pages
+- **Secure redaction** — draw black boxes over sensitive areas and create a new redacted copy that rebuilds affected pages as image-only output, removes OCR text on those pages, strips document/XMP metadata, and sanitizes interactive PDF content such as forms, links, attachments, and actions
+- **Optional searchable redacted copy** — after secure redaction, optionally run OCR on the new copy from the save dialog to rebuild searchability
 - **Restrict usage** — disable printing, copying, or editing with an owner password
 
 ### Privacy & Storage
@@ -96,25 +98,28 @@ MVVM + Clean Architecture with Jetpack Compose.
 domain/
 ├── usecase/        Import/export/delete/rename, OCR, searchable PDF, page editing,
 │                   highlight (inactive, kept for tests), annotate (AnnotatePdfUseCase),
-│                   remove text layer, remove password, restrict usage,
+│                   remove text layer, secure redaction, remove password, restrict usage,
 │                   shared page-thumbnail helpers
-│                   Data classes: HighlightStroke, HighlightRect, TextLine, TextComment
+│                   Data classes: HighlightStroke, HighlightRect, RedactionRect, TextLine, TextComment
 └── workflow/       Orchestrates use cases and maps failures to WorkflowResult<T>;
-                    includes AnnotatePdfWorkflow, HighlightPdfWorkflow
+                    includes AnnotatePdfWorkflow, HighlightPdfWorkflow, RedactPdfWorkflow
 
 ui/
 ├── navigation/         AppNavigation + route definitions
-│                       Drawer gesture disabled on AnnotateScreen
+│                       Drawer gesture disabled on AnnotateScreen / RedactScreen
 ├── home/               Archive screen, add-document sheet, file import, bulk actions,
 │                       search, rename dialog, scan item menus
 ├── components/         Shared action-screen and preview composables
 ├── overlay/            Page numbers, text watermark
 ├── documentaction/     DocumentEditViewModel handles compress, protect, unlock,
-│                       highlight, annotate, remove text layer,
+│                       highlight, annotate, secure redaction, remove text layer,
 │                       remove password, restrict usage
 ├── annotate/           AnnotateScreen — 3-mode annotation editor
 │                       (Mark / Write / Zoom) with zoom-aware drawing,
 │                       text comment placement and drag-to-reposition
+├── redact/             RedactScreen — full-screen secure redaction editor
+│                       with rectangle mode, zoom-aware placement, page navigation,
+│                       save confirmation dialog, and optional OCR follow-up
 ├── pageedit/           Rotate, delete, extract, duplicate
 ├── split/              Split screen + view model
 ├── reorder/            Reorder screen + view model
@@ -145,11 +150,13 @@ util/                   FileUtil, OcrManager, SearchablePdfBuilder, PdfEditor
 
 All annotation state (`HighlightStroke`, `HighlightRect`, `TextCommentDraft`) is persisted across screen rotation via `rememberSaveable` with custom `listSaver` implementations. `PdfEditor.applyAnnotations()` writes highlight strokes, snap rectangles, and text comments (rotation-aware text matrix for 0°/90°/180°/270° pages) into a new PDF copy.
 
+**Secure redaction workflow:** `RedactScreen` renders page previews and stores `RedactionRect` values in normalized display coordinates. Saving opens a confirmation dialog with the copy-warning and optional searchable-PDF OCR settings. `PdfEditor.applySecureRedaction()` rebuilds affected pages from `PdfRenderer` output at print quality, burns in black rectangles, preserves the displayed crop/rotation geometry, sanitizes interactive content, and removes document plus page metadata before saving the new copy.
+
 **Search:** `ScanRecord` stores extracted OCR text. Room FTS4 indexes filename and extracted text for debounced archive search. `AutoTagUseCase` exists in the codebase (with tests) but is no longer invoked; the `tags` column is retained in the database schema and always written as `null`.
 
 **OCR / searchable PDFs:** Two-phase process — Phase 1: `PdfRenderer` renders each page to a bitmap (150 DPI), ML Kit OCR extracts text with bounding boxes, bitmap is immediately recycled. Phase 2: PdfBox appends an invisible text layer to the original PDF. Only one bitmap in RAM at a time, safe for large documents. CJK (ZH/JA) is supported for text extraction only; searchable PDF generation is not supported due to TTC/OTC font embedding limitations in PdfBox.
 
-**Storage:** PDFs are saved to `filesDir/scans/<filename>.pdf`. Duplicate filenames resolved with `_2`, `_3`, etc. Sharing uses `FileProvider` (`${applicationId}.fileprovider`). Export writes to `MediaStore.Downloads` with the IS_PENDING pattern.
+**Storage:** PDFs are saved to `filesDir/scans/<filename>.pdf`. Duplicate filenames resolved with `_2`, `_3`, etc. Sharing uses `FileProvider` (`${applicationId}.fileprovider`). Export writes to `MediaStore.Downloads` with the IS_PENDING pattern. Secure redaction always creates a new sanitized copy; the original remains until the user deletes it.
 
 ## Tests
 
@@ -163,7 +170,7 @@ domain/usecase/ImportFileUseCaseTest.kt        — file import, invalid PDF clea
 domain/usecase/AutoTagUseCaseTest.kt           — local tagging heuristics incl. false-positive cases
 domain/workflow/*.kt                           — merge, split, reorder, rotate, delete, extract,
                                                  duplicate, page numbers, watermark, compress,
-                                                 protect, unlock, signature, highlight,
+                                                 protect, unlock, signature, highlight, redact,
                                                  annotate, searchable
 ui/documentaction/DocumentEditViewModelTest.kt — document-edit action dispatch + failure mapping
 ui/home/HomeImportFilenameSuggestionTest.kt    — file picker display-name to archive filename mapping
@@ -197,6 +204,7 @@ All versions managed centrally in `gradle/libs.versions.toml`.
 - No camera permission (ML Kit runs as a separate system process)
 - `android:allowBackup="false"` disables Android backup / device-transfer app data export at the manifest level
 - `backup_rules.xml` and `data_extraction_rules.xml` still explicitly exclude `filesDir/scans/` plus Room database files (`pdf_scanner_db`, `-wal`, `-shm`, `-journal`) as defense in depth
+- Secure redaction runs locally and creates a separate output file; affected output pages intentionally lose their original text layer, document/XMP metadata is removed, and forms/links/attachments/actions are sanitized from the saved redacted copy
 
 ### Verifying Privacy Claims
 

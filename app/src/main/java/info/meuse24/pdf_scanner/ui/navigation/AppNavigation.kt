@@ -74,6 +74,7 @@ import info.meuse24.pdf_scanner.ui.documentaction.RemoveTextLayerScreen
 import info.meuse24.pdf_scanner.ui.documentaction.RestrictUsageScreen
 import info.meuse24.pdf_scanner.ui.documentaction.UnlockPdfScreen
 import info.meuse24.pdf_scanner.ui.annotate.AnnotateScreen
+import info.meuse24.pdf_scanner.ui.redact.RedactScreen
 import info.meuse24.pdf_scanner.ui.signature.SignatureScreen
 import info.meuse24.pdf_scanner.ui.overlay.PageNumbersScreen
 import info.meuse24.pdf_scanner.ui.overlay.TextWatermarkScreen
@@ -278,6 +279,7 @@ fun AppNavigation() {
                             onNavigateToRemovePassword  = { scanId -> navController.navigate(Screen.RemovePassword.createRoute(scanId)) },
                             onNavigateToRestrictUsage   = { scanId -> navController.navigate(Screen.RestrictUsage.createRoute(scanId)) },
                             onNavigateToAnnotate        = { scanId -> navController.navigate(Screen.Annotate.createRoute(scanId)) },
+                            onNavigateToRedact          = { scanId -> navController.navigate(Screen.Redact.createRoute(scanId)) },
                             onNavigateToGrayscale       = { scanId -> navController.navigate(Screen.Grayscale.createRoute(scanId)) },
                             onNavigateToPdfMetadata     = { scanId -> navController.navigate(Screen.PdfMetadata.createRoute(scanId)) }
                         )
@@ -382,6 +384,12 @@ fun AppNavigation() {
                         AnnotateScreen(onNavigateBack = { navController.navigateUp() })
                     }
                     composable(
+                        route = Screen.Redact.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        RedactScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
                         route = Screen.Grayscale.route,
                         arguments = listOf(navArgument("scanId") { type = NavType.LongType })
                     ) {
@@ -460,6 +468,7 @@ private fun AppBarTitle(
             currentRoute?.startsWith("remove-password/") == true -> stringResource(R.string.remove_password_screen_title)
             currentRoute?.startsWith("restrict-usage/") == true -> stringResource(R.string.restrict_usage_screen_title)
             currentRoute?.startsWith("annotate/") == true -> stringResource(R.string.annotate_screen_title)
+            currentRoute?.startsWith("redact/") == true -> stringResource(R.string.redact_screen_title)
             currentRoute?.startsWith("grayscale/") == true -> stringResource(R.string.grayscale_screen_title)
             currentRoute?.startsWith("pdf-metadata/") == true -> stringResource(R.string.metadata_screen_title)
             else -> stringResource(R.string.app_name)

@@ -10,6 +10,7 @@ import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
+import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.domain.usecase.TextComment
 import info.meuse24.pdf_scanner.domain.usecase.TextLine
 import info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflow
@@ -18,6 +19,7 @@ import info.meuse24.pdf_scanner.domain.workflow.ConvertToGrayscaleWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.HighlightPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.RedactPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RemovePasswordWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RemoveTextLayerWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RestrictUsageWorkflow
@@ -48,6 +50,7 @@ class DocumentEditViewModel @Inject constructor(
     private val protectPdfWorkflow: ProtectPdfWorkflow,
     private val unlockPdfWorkflow: UnlockPdfWorkflow,
     private val signatureStampWorkflow: SignatureStampWorkflow,
+    private val redactPdfWorkflow: RedactPdfWorkflow,
     private val removeTextLayerWorkflow: RemoveTextLayerWorkflow,
     private val removePasswordWorkflow: RemovePasswordWorkflow,
     private val restrictUsageWorkflow: RestrictUsageWorkflow,
@@ -209,6 +212,26 @@ class DocumentEditViewModel @Inject constructor(
         viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (val result = signatureStampWorkflow(record, signatureBitmap, pageIndex, scaleFraction, scansDir)) {
+                    is WorkflowResult.Success -> _success.value = true
+                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
+                }
+            } finally {
+                _editLoading.value = false
+            }
+        }
+    }
+
+    fun applyRedactions(
+        rects: List<RedactionRect>,
+        makeSearchable: Boolean = false,
+        languageCode: String = "en"
+    ) {
+        val record = _record.value ?: return
+        if (_editLoading.value) return
+        _editLoading.value = true
+        viewModelScope.launch(dispatcherProvider.io) {
+            try {
+                when (val result = redactPdfWorkflow(record, rects, scansDir, makeSearchable, languageCode)) {
                     is WorkflowResult.Success -> _success.value = true
                     is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
                 }

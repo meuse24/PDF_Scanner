@@ -186,7 +186,10 @@ private class TestScanDao(
 ) : ScanDao {
     val inserted = mutableListOf<ScanRecord>()
     override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(initialRecords)
-    override suspend fun insert(record: ScanRecord) { inserted.add(record) }
+    override suspend fun insert(record: ScanRecord): Long {
+        inserted.add(record)
+        return inserted.size.toLong()
+    }
     override suspend fun insertAll(records: List<ScanRecord>) { inserted.addAll(records) }
     override suspend fun delete(record: ScanRecord) {}
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())

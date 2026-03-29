@@ -348,8 +348,17 @@
     <string name="action_remove_text_layer">Remove text layer</string>
     <string name="help_item_remove_text_layer">Choose Remove text layer to create a copy of a searchable PDF without the invisible OCR text layer. The resulting copy is no longer searchable and no longer contributes OCR text to search.</string>
     <!-- Secure redaction -->
+    <string name="action_redact_pdf">Secure Redaction</string>
+    <string name="redact_screen_title">Secure Redaction</string>
+    <string name="redact_description">Permanently remove content under black boxes</string>
+    <string name="redact_details">Drag rectangles over sensitive content. Affected pages are rebuilt as image-only pages with the black boxes burned in, then saved as a new redacted PDF copy. The original file stays unchanged.</string>
+    <string name="redact_mode_rect">Rect</string>
+    <string name="redact_hint">Drag on the page to place a redaction box.</string>
+    <string name="redact_copy_warning">A new redacted copy is created. The original file remains unchanged and may still contain sensitive data.</string>
+    <string name="redact_apply">Save redactions</string>
     <string name="redact_error">Error applying secure redaction</string>
     <string name="redact_no_areas">Select at least one area to redact</string>
+    <string name="help_item_redact_pdf">Choose Secure Redaction to permanently remove content under black boxes. Drag rectangles over sensitive areas, review each affected page, and save a new redacted copy. The original file stays unchanged, so only share the redacted copy.</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>

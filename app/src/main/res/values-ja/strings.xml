@@ -326,6 +326,18 @@
     <string name="remove_text_layer_not_searchable">このPDFにはテキストレイヤーがありません</string>
     <string name="action_remove_text_layer">テキストレイヤーを削除</string>
     <string name="help_item_remove_text_layer">「テキストレイヤーを削除」を選ぶと、検索可能な PDF から非表示の OCR テキストレイヤーを除いたコピーを作成できます。作成後のコピーは検索できなくなり、OCR テキスト。</string>
+    <!-- Secure redaction -->
+    <string name="action_redact_pdf">安全に黒塗り</string>
+    <string name="redact_screen_title">安全な黒塗り</string>
+    <string name="redact_description">黒いボックスの下にある内容を完全に削除</string>
+    <string name="redact_details">機密内容の上に長方形をドラッグします。対象ページは黒塗りを焼き込んだ画像ページとして再構築され、新しい黒塗り済み PDF コピーとして保存されます。元のファイルは変更されません。</string>
+    <string name="redact_mode_rect">矩形</string>
+    <string name="redact_hint">ページ上をドラッグして黒塗り領域を配置します。</string>
+    <string name="redact_copy_warning">新しい黒塗り済みコピーが作成されます。元のファイルは変更されず、機密データが残っている可能性があります。</string>
+    <string name="redact_apply">黒塗りを保存</string>
+    <string name="redact_error">安全な黒塗りの適用中にエラーが発生しました</string>
+    <string name="redact_no_areas">少なくとも1つの黒塗り領域を選択してください</string>
+    <string name="help_item_redact_pdf">「安全に黒塗り」を選ぶと、黒いボックスの下の内容を完全に削除できます。機密部分に長方形をドラッグし、影響を受ける各ページを確認してから、新しい黒塗り済みコピーを保存してください。元のファイルは変更されないため、共有するのは黒塗り済みコピーだけにしてください。</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>

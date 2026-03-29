@@ -14,10 +14,26 @@ Bereits umgesetzt:
 - Neue Workflow-/UseCase-Schicht:
   - `RedactPdfUseCase`
   - `RedactPdfWorkflow`
+- UI-Integration als eigener Compose-Screen:
+  - eigener Navigationspfad `redact/{scanId}`
+  - Aktion im Dokument-Menü
+  - Rechteckauswahl mit Zoom-Modus, Mehrseiten-Navigation, Undo/Clear/Reset
+  - Hauptscreen bewusst schlank gehalten; Save-Optionen liegen in einem nachgelagerten Bestätigungsdialog
+  - klarer Warnhinweis, dass eine neue geschwärzte Kopie erzeugt wird und das Original unverändert bleibt
+  - Produktentscheidung vorerst fest auf `neue Kopie`
+- `DocumentEditViewModel` um Redaction-Aktionspfad erweitert (`applyRedactions(...)`)
+- optionale OCR-Rekonstruktion beim Speichern der geschwärzten Kopie:
+  - erscheint erst nach Tippen auf `Speichern` in einem zusätzlichen Dialog
+  - nutzt denselben OCR-Sprachdialog wie der bestehende Searchable-PDF-Flow
+  - läuft nach erfolgreicher Schwärzung optional auf der erzeugten Kopie
+  - bei OCR-Fehler wird die neu erzeugte Kopie wieder entfernt, damit der Save-Flow konsistent bleibt
+  - unerwartete Follow-up-Fehler aus dem OCR-Schritt werden defensiv als `RedactionFailed` gekapselt
+- Hilfe-/String-Ressourcen für sicheren Schwärzungs-Flow ergänzt
 - Ergebnisdatensatz wird bewusst bereinigt gespeichert:
   - `isSearchable = false`
   - `extractedText = null`
   - `tags = null`
+- App-Version auf `2.0` angehoben
 - Tests ergänzt:
   - JVM-Workflow-Test für Erfolgs-/Fehlerpfade
   - Instrumentation-Test auf Gerät: extrahierbarer Text verschwindet, schwarzes Rechteck ist sichtbar
@@ -27,17 +43,18 @@ Bereits umgesetzt:
 
 Verifiziert:
 - `:app:compileDebugKotlin`
+- `:app:compileDebugUnitTestKotlin`
+- `:app:compileDebugAndroidTestKotlin`
+- `:app:testDebugUnitTest --tests "info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModelTest"`
 - `testDebugUnitTest --tests "info.meuse24.pdf_scanner.domain.workflow.RedactPdfWorkflowTest"`
 - `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionRemovesExtractableTextAndBurnsBlackRect`
 - `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionKeepsTextOnUntouchedPagesAndRemovesSecretBytes`
 - `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionOnRotatedPageKeepsLandscapeDisplayAndBurnsExpectedArea`
 
 Noch offen:
-- UI-Integration als eigener Schwärzungsmodus/-screen
-- klare Produktentscheidung und UI für "Kopie" vs "Original ersetzen"
-- optionale OCR-Rekonstruktion ausserhalb der Schwärzungsbereiche
-- weitergehende Sanitization für Formular-/Link-/Attachment-Fälle
-- zusätzliche Regressionstests für CropBox
+- weitergehende Sanitization für Formular-/Link-/Attachment-/Action-Fälle
+- zusätzliche Regressionstests für CropBox-/CropRect-Fälle
+- Prüfung, ob betroffene Seiten zusätzlich XMP-/Dokumentmetadaten gezielt bereinigen sollen
 
 ## 1. Zielbild
 Implementierung einer Schwärzungsfunktion, bei der der Inhalt unter dem Schwärzungsbereich nicht nur verdeckt, sondern aus allen relevanten Datenpfaden entfernt wird.
@@ -103,9 +120,9 @@ Fazit:
 - Wiederverwendung der bestehenden Rechteck-Selektion aus der Annotate-/Highlight-Logik.
 - Speicherung pro Seite in normalisierten Anzeige-Koordinaten, wie im aktuellen Editor.
 - Zusammenführen überlappender Rechtecke pro Seite vor der Verarbeitung.
-- Klare Nutzerentscheidung:
-  - "Als neue geschwärzte Kopie speichern"
-  - optional später: "Original ersetzen"
+- Aktueller Produktentscheid:
+  - standardmässig "als neue geschwärzte Kopie speichern"
+  - optional später eigener Replace-Flow
 - Deutlicher Warnhinweis: Eine neue Kopie lässt das Original ungeschwärzt im Archiv bestehen.
 - Optionaler Bestätigungsdialog vor endgültiger Anwendung.
 
@@ -132,26 +149,20 @@ Empfohlene Qualitätsparameter:
 - Immer nur eine Seite gleichzeitig rendern, um RAM stabil zu halten.
 
 ### Phase 3: Suchbarkeit ausserhalb der Schwärzung
-Hier ist eine bewusste Produktentscheidung nötig.
+Aktueller Stand:
+- Standardmässig bleibt die geschwärzte Kopie bildbasiert und damit zunächst nicht durchsuchbar.
+- Beim Speichern kann optional direkt eine OCR-Rekonstruktion auf der erzeugten Kopie gestartet werden.
+- Der Toggle bleibt bewusst optional, damit der sichere Minimalpfad ohne OCR weiterhin verfügbar ist.
 
-Variante A, empfohlen für MVP:
-- Betroffene Seiten werden bildbasiert und auf diesen Seiten nicht mehr durchsuchbar.
-- `isSearchable` für das Ergebnis auf `false` setzen oder konservativ nur dann auf `true`, wenn alle Seiten weiterhin suchbar sind.
-- `extractedText` für das Ergebnis neu berechnen oder auf `null` setzen.
-
-Variante B, spätere Erweiterung:
-- Betroffene Seiten erneut per OCR verarbeiten.
-- Nur Wörter ausserhalb der Schwärzungsrechtecke wieder als unsichtbarer Textlayer einfügen.
-- Vorteil: Suche ausserhalb geschwärzter Bereiche bleibt erhalten.
-- Nachteil: Textpositionen und Auswahlverhalten sind nur approximiert, nicht identisch zum Original.
-
-Für den MVP ist Variante A deutlich robuster.
+Spätere Erweiterung:
+- mask-aware OCR, die Wörter im geschwärzten Bereich explizit ausschliesst statt die gesamte Seite neu zu erkennen
+- feinere Qualitätsregeln pro Dokumenttyp
 
 ### Phase 4: Sanitization ausserhalb des Seitenbilds
 Rechtssicherheit endet nicht beim sichtbaren Seiteninhalt.
 
 Zusätzlich bereinigen:
-- `PDDocumentInformation`: Titel, Autor, Betreff, Keywords, Creator nach Produktentscheidung leeren oder gezielt neu setzen.
+- `PDDocumentInformation`: Titel, Autor, Betreff, Keywords, Creator nach finaler Sanitization-Policy leeren oder gezielt neu setzen.
 - XMP-Metadaten entfernen oder neu schreiben.
 - Formularfelder (`AcroForm`) und deren Werte prüfen; bei betroffenen Dokumenten im Zweifel entfernen.
 - Annotationen/Links im geschwärzten Bereich entfernen; bei neu gerenderten Seiten idealerweise keine alten Annotationen übernehmen.
@@ -341,6 +352,6 @@ Für einen rechtssicheren MVP in diesem Projekt sollte die Schwärzung standardm
 - Sichere Redaction durch Neuaufbau nur der betroffenen Seiten
 - keine direkte Operator-Manipulation als Primärstrategie
 - vollständige Bereinigung von OCR-Text, lokalen Suchindizes, Thumbnails und optional Metadaten
-- klare Produktentscheidung zwischen "Kopie" und "Original ersetzen"
+- aktueller Produktentscheid: neue Kopie als Standard, Replace optional später
 
 Damit ist die Schwärzung technisch belastbar, mit dem vorhandenen Stack realistisch umsetzbar und gegenüber den typischen Leckpfaden eines mobilen PDF-Workflows sauber abgesichert.

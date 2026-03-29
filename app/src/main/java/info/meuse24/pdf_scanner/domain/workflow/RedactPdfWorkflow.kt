@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactPdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.util.PdfEditor
@@ -12,12 +13,16 @@ data class RedactPdfWorkflowResult(val outputFilename: String)
 
 class RedactPdfWorkflow @Inject constructor(
     private val redactPdfUseCase: RedactPdfUseCase,
+    private val makeSearchableWorkflow: MakeSearchableWorkflow,
+    private val deleteScansUseCase: DeleteScansUseCase,
     private val pdfEditor: PdfEditor
 ) {
     suspend operator fun invoke(
         record: ScanRecord,
         rects: List<RedactionRect>,
-        scansDir: File
+        scansDir: File,
+        makeSearchable: Boolean = false,
+        languageCode: String = "en"
     ): WorkflowResult<RedactPdfWorkflowResult> {
         val input = File(record.filepath)
         if (!input.exists()) {
@@ -31,9 +36,19 @@ class RedactPdfWorkflow @Inject constructor(
         }
 
         return try {
+            val outputRecord = redactPdfUseCase(record, rects, scansDir)
+            if (makeSearchable) {
+                when (val searchableResult = makeSearchableWorkflow(listOf(outputRecord), languageCode)) {
+                    is WorkflowResult.Success -> Unit
+                    is WorkflowResult.Failure -> {
+                        runCatching { deleteScansUseCase(listOf(outputRecord)) }
+                        return WorkflowResult.Failure(mapSearchableFollowUpError(searchableResult.error))
+                    }
+                }
+            }
             WorkflowResult.Success(
                 RedactPdfWorkflowResult(
-                    outputFilename = redactPdfUseCase(record, rects, scansDir)
+                    outputFilename = outputRecord.filename
                 )
             )
         } catch (e: IOException) {
@@ -41,5 +56,15 @@ class RedactPdfWorkflow @Inject constructor(
         } catch (t: Throwable) {
             WorkflowResult.Failure(ScanWorkflowError.RedactionFailed(t))
         }
+    }
+}
+
+internal fun mapSearchableFollowUpError(error: ScanWorkflowError): ScanWorkflowError {
+    return when (error) {
+        is ScanWorkflowError.OcrFailed,
+        is ScanWorkflowError.StorageWriteFailed -> error
+        else -> ScanWorkflowError.RedactionFailed(
+            IllegalStateException("Unexpected searchable follow-up failure after redaction: $error", error.cause)
+        )
     }
 }

@@ -89,6 +89,8 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.ui.home.components.BulkActionBar
 import info.meuse24.pdf_scanner.ui.home.components.EmptyStateContent
 import info.meuse24.pdf_scanner.ui.home.components.MergeDialog
+import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
+import info.meuse24.pdf_scanner.ui.ocr.defaultOcrLanguage
 import info.meuse24.pdf_scanner.ui.home.components.ScanAction
 import info.meuse24.pdf_scanner.ui.home.components.ScanItem
 import info.meuse24.pdf_scanner.ui.home.components.ScannerLoadingAnimation
@@ -121,6 +123,7 @@ fun HomeScreen(
     onNavigateToRemovePassword:     (Long) -> Unit = {},
     onNavigateToRestrictUsage:      (Long) -> Unit = {},
     onNavigateToAnnotate:           (Long) -> Unit = {},
+    onNavigateToRedact:             (Long) -> Unit = {},
     onNavigateToGrayscale:          (Long) -> Unit = {},
     onNavigateToPdfMetadata:        (Long) -> Unit = {},
     viewModel:                      HomeViewModel  = hiltViewModel()
@@ -154,10 +157,7 @@ fun HomeScreen(
     var showSaveDialog     by remember { mutableStateOf(false) }
     var filenameInput      by rememberSaveable { mutableStateOf("") }
     var makeSearchable     by rememberSaveable { mutableStateOf(false) }
-    val unsupportedLangs = setOf("zh", "ja")
-    var selectedLang       by rememberSaveable { mutableStateOf(
-        defaultOcrLanguage(unsupportedLangs)
-    ) }
+    var selectedLang       by rememberSaveable { mutableStateOf(defaultOcrLanguage()) }
     var langMenuExpanded   by remember { mutableStateOf(false) }
     var sortMenuExpanded   by remember { mutableStateOf(false) }
 
@@ -178,9 +178,7 @@ fun HomeScreen(
     // ── Bulk-OCR-Sprachdialog ─────────────────────────────────────────────────
     var showBulkLangDialog    by remember { mutableStateOf(false) }
     var bulkLangForSearchable by remember { mutableStateOf(false) }
-    var selectedBulkLang      by rememberSaveable { mutableStateOf(
-        defaultOcrLanguage(unsupportedLangs)
-    ) }
+    var selectedBulkLang      by rememberSaveable { mutableStateOf(defaultOcrLanguage()) }
     var bulkLangMenuExpanded  by remember { mutableStateOf(false) }
 
     LaunchedEffect(isSelectionMode) { onSelectionModeChange(isSelectionMode) }
@@ -199,7 +197,7 @@ fun HomeScreen(
                 SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             )
             makeSearchable = false
-            selectedLang = defaultOcrLanguage(unsupportedLangs)
+            selectedLang = defaultOcrLanguage()
             showSaveDialog = true
         }
     }
@@ -231,7 +229,7 @@ fun HomeScreen(
                 )
             }
             makeSearchable = false
-            selectedLang = defaultOcrLanguage(unsupportedLangs)
+            selectedLang = defaultOcrLanguage()
             showSaveDialog = true
         }
     }
@@ -429,6 +427,7 @@ fun HomeScreen(
                                     ScanAction.RestrictUsage   -> onNavigateToRestrictUsage(record.id)
                                     ScanAction.ExportAsJpg     -> viewModel.exportAsJpg(record)
                                     ScanAction.Annotate        -> onNavigateToAnnotate(record.id)
+                                    ScanAction.Redact          -> onNavigateToRedact(record.id)
                                     ScanAction.Grayscale       -> onNavigateToGrayscale(record.id)
                                     ScanAction.PdfMetadata     -> onNavigateToPdfMetadata(record.id)
                                     ScanAction.Print           -> {
@@ -825,7 +824,7 @@ fun HomeScreen(
                 showSaveDialog = false
                 pendingImport = null
                 makeSearchable = false
-                selectedLang = defaultOcrLanguage(unsupportedLangs)
+                selectedLang = defaultOcrLanguage()
             },
             title   = { Text(stringResource(R.string.dialog_save_title)) },
             text    = {
@@ -926,7 +925,7 @@ fun HomeScreen(
                                 showSaveDialog = false
                                 pendingImport = null
                                 makeSearchable = false
-                                selectedLang = defaultOcrLanguage(unsupportedLangs)
+                                selectedLang = defaultOcrLanguage()
                             }
                         }
                         is PendingImport.File -> {
@@ -936,7 +935,7 @@ fun HomeScreen(
                                 showSaveDialog = false
                                 pendingImport = null
                                 makeSearchable = false
-                                selectedLang = defaultOcrLanguage(unsupportedLangs)
+                                selectedLang = defaultOcrLanguage()
                             }
                         }
                         null -> Unit
@@ -948,7 +947,7 @@ fun HomeScreen(
                     showSaveDialog    = false
                     pendingImport     = null
                     makeSearchable    = false
-                    selectedLang      = defaultOcrLanguage(unsupportedLangs)
+                    selectedLang      = defaultOcrLanguage()
                 }) {
                     Text(stringResource(R.string.action_cancel))
                 }
@@ -1008,17 +1007,6 @@ private fun AddDocumentOption(
     }
 }
 
-private fun buildOcrLanguageOptions(displayLocale: Locale): List<Pair<String, String>> {
-    val supportedCodes = listOf("de", "en", "es", "fr", "pt", "ru", "ar", "hi")
-    return supportedCodes.map { code ->
-        val name = Locale.forLanguageTag(code).getDisplayLanguage(displayLocale)
-            .replaceFirstChar { char ->
-                if (char.isLowerCase()) char.titlecase(displayLocale) else char.toString()
-            }
-        code to name
-    }
-}
-
 internal fun suggestedFilenameFromDisplayName(displayName: String): String {
     val trimmed = displayName.trim()
     if (trimmed.isBlank()) return ""
@@ -1027,11 +1015,6 @@ internal fun suggestedFilenameFromDisplayName(displayName: String): String {
     } else {
         trimmed
     }
-}
-
-private fun defaultOcrLanguage(unsupportedLangs: Set<String>): String {
-    val language = Locale.getDefault().language
-    return if (language in unsupportedLangs) "en" else language
 }
 
 private fun queryDisplayName(context: Context, uri: Uri): String? {

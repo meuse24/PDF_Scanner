@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.BrandingWatermark
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.AdminPanelSettings
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.ContentCopy
@@ -109,6 +110,7 @@ sealed interface ScanAction {
     data object RestrictUsage    : ScanAction
     data object ExportAsJpg      : ScanAction
     data object Annotate         : ScanAction
+    data object Redact           : ScanAction
     data object Rename           : ScanAction
     data object Grayscale        : ScanAction
     data object PdfMetadata      : ScanAction
@@ -372,6 +374,7 @@ private fun PdfActionSheet(
         // ── SCHUTZ ───────────────────────────────────────────────────────────
         SheetSection(R.string.sheet_section_security)
         SheetItem(Icons.Default.Lock,               R.string.action_protect_pdf,     notEncrypted)         { onAction(ScanAction.ProtectPdf) }
+        SheetItem(Icons.Default.Block,              R.string.action_redact_pdf,      notEncrypted)         { onAction(ScanAction.Redact) }
         SheetItem(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage,  notEncrypted)         { onAction(ScanAction.RestrictUsage) }
         SheetItem(Icons.Default.LockOpen,           R.string.action_unlock_pdf,      record.isEncrypted)   { onAction(ScanAction.UnlockPdf) }
         SheetItem(Icons.Default.NoEncryption,       R.string.action_remove_password, record.isEncrypted)   { onAction(ScanAction.RemovePassword) }

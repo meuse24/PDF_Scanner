@@ -326,6 +326,18 @@
     <string name="remove_text_layer_not_searchable">Este PDF no tiene capa de texto</string>
     <string name="action_remove_text_layer">Eliminar capa de texto</string>
     <string name="help_item_remove_text_layer">Elige Eliminar capa de texto para crear una copia de un PDF buscable sin la capa OCR invisible. La copia resultante deja de ser buscable y ya no aporta texto OCR a la búsqueda.</string>
+    <!-- Secure redaction -->
+    <string name="action_redact_pdf">Redacción segura</string>
+    <string name="redact_screen_title">Redacción segura</string>
+    <string name="redact_description">Eliminar de forma permanente el contenido bajo cajas negras</string>
+    <string name="redact_details">Arrastra rectángulos sobre el contenido sensible. Las páginas afectadas se reconstruyen como páginas de imagen con las cajas negras integradas y se guardan como una nueva copia redactada del PDF. El archivo original no se modifica.</string>
+    <string name="redact_mode_rect">Rect.</string>
+    <string name="redact_hint">Arrastra sobre la página para colocar una caja de redacción.</string>
+    <string name="redact_copy_warning">Se crea una nueva copia redactada. El archivo original permanece sin cambios y puede seguir conteniendo datos sensibles.</string>
+    <string name="redact_apply">Guardar redacciones</string>
+    <string name="redact_error">Error al aplicar la redacción segura</string>
+    <string name="redact_no_areas">Selecciona al menos un área para redactar</string>
+    <string name="help_item_redact_pdf">Elige Redacción segura para eliminar permanentemente el contenido bajo cajas negras. Arrastra rectángulos sobre las zonas sensibles, revisa cada página afectada y guarda una nueva copia redactada. El archivo original no se modifica, así que comparte solo la copia redactada.</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>

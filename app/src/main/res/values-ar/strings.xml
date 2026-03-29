@@ -326,6 +326,18 @@
     <string name="remove_text_layer_not_searchable">لا تحتوي هذه الـ PDF على طبقة نص</string>
     <string name="action_remove_text_layer">إزالة طبقة النص</string>
     <string name="help_item_remove_text_layer">اختر إزالة طبقة النص لإنشاء نسخة من ملف PDF قابل للبحث من دون طبقة OCR غير المرئية. تصبح النسخة الناتجة غير قابلة للبحث.</string>
+    <!-- Secure redaction -->
+    <string name="action_redact_pdf">طمس آمن</string>
+    <string name="redact_screen_title">الطمس الآمن</string>
+    <string name="redact_description">إزالة المحتوى أسفل المربعات السوداء نهائياً</string>
+    <string name="redact_details">اسحب مستطيلات فوق المحتوى الحساس. تُعاد بناء الصفحات المتأثرة كصفحات صورية مع دمج المربعات السوداء فيها، ثم تُحفظ كنسخة PDF مطموسة جديدة. يبقى الملف الأصلي دون تغيير.</string>
+    <string name="redact_mode_rect">مستطيل</string>
+    <string name="redact_hint">اسحب على الصفحة لوضع مربع طمس.</string>
+    <string name="redact_copy_warning">يتم إنشاء نسخة مطموسة جديدة. يبقى الملف الأصلي دون تغيير وقد يظل يحتوي على بيانات حساسة.</string>
+    <string name="redact_apply">حفظ الطمس</string>
+    <string name="redact_error">خطأ أثناء تطبيق الطمس الآمن</string>
+    <string name="redact_no_areas">حدّد منطقة طمس واحدة على الأقل</string>
+    <string name="help_item_redact_pdf">اختر الطمس الآمن لإزالة المحتوى الموجود أسفل المربعات السوداء نهائياً. اسحب مستطيلات فوق المناطق الحساسة، وراجع كل صفحة متأثرة، ثم احفظ نسخة مطموسة جديدة. يبقى الملف الأصلي دون تغيير، لذلك شارك النسخة المطموسة فقط.</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>

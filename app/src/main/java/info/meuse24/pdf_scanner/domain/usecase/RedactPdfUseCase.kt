@@ -14,7 +14,7 @@ class RedactPdfUseCase @Inject constructor(
         record: ScanRecord,
         rects: List<RedactionRect>,
         scansDir: File
-    ): String {
+    ): ScanRecord {
         val resultFile = pdfEditor.applySecureRedaction(
             input = File(record.filepath),
             outputDir = scansDir,
@@ -22,19 +22,18 @@ class RedactPdfUseCase @Inject constructor(
         )
         val thumbFile = File(scansDir, "${resultFile.nameWithoutExtension}.jpg")
         pdfEditor.generateThumbnail(resultFile, thumbFile)
-        repository.saveScan(
-            ScanRecord(
-                filename = resultFile.nameWithoutExtension,
-                filepath = resultFile.absolutePath,
-                timestamp = System.currentTimeMillis(),
-                pageCount = record.pageCount,
-                fileSize = resultFile.length(),
-                thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath,
-                isSearchable = false,
-                extractedText = null,
-                tags = null
-            )
+        val savedRecord = ScanRecord(
+            filename = resultFile.nameWithoutExtension,
+            filepath = resultFile.absolutePath,
+            timestamp = System.currentTimeMillis(),
+            pageCount = record.pageCount,
+            fileSize = resultFile.length(),
+            thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath,
+            isSearchable = false,
+            extractedText = null,
+            tags = null
         )
-        return resultFile.nameWithoutExtension
+        val savedId = repository.saveScan(savedRecord)
+        return savedRecord.copy(id = savedId)
     }
 }

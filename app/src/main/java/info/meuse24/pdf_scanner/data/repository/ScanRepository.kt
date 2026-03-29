@@ -10,7 +10,7 @@ import javax.inject.Singleton
 class ScanRepository @Inject constructor(private val dao: ScanDao) {
     fun getAllScans(): Flow<List<ScanRecord>> = dao.getAllScans()
     fun searchScansFlow(query: String): Flow<List<ScanRecord>> = dao.searchScansFlow(query)
-    suspend fun saveScan(record: ScanRecord) = dao.insert(record)
+    suspend fun saveScan(record: ScanRecord): Long = dao.insert(record)
     suspend fun saveScans(records: List<ScanRecord>) = dao.insertAll(records)
     suspend fun deleteScan(record: ScanRecord) = dao.delete(record)
     suspend fun markSearchable(id: Long, fileSize: Long) = dao.markSearchable(id, fileSize)

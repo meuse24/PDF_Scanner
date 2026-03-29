@@ -26,6 +26,7 @@ import androidx.compose.material.icons.automirrored.filled.MergeType
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.Image
@@ -178,6 +179,7 @@ fun HelpScreen() {
                     HelpAction(Icons.Default.InvertColors, R.string.action_grayscale_pdf, R.string.help_item_grayscale_pdf),
                     HelpAction(Icons.Default.Image, R.string.action_export_as_jpg, R.string.help_item_export_as_jpg),
                     HelpAction(Icons.Default.Lock, R.string.action_protect_pdf, R.string.help_item_protect_pdf),
+                    HelpAction(Icons.Default.Block, R.string.action_redact_pdf, R.string.help_item_redact_pdf),
                     HelpAction(Icons.Default.LockOpen, R.string.action_unlock_pdf, R.string.help_item_unlock_pdf),
                     HelpAction(Icons.Default.NoEncryption, R.string.action_remove_password, R.string.help_item_remove_password),
                     HelpAction(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage, R.string.help_item_restrict_usage),

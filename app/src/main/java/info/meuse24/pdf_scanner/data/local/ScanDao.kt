@@ -16,7 +16,7 @@ interface ScanDao {
     fun searchScansFlow(query: String): Flow<List<ScanRecord>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(record: ScanRecord)
+    suspend fun insert(record: ScanRecord): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(records: List<ScanRecord>)

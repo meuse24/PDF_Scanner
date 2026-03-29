@@ -564,8 +564,9 @@ private class TrackingScanDao : ScanDao {
 
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
 
-    override suspend fun insert(record: ScanRecord) {
+    override suspend fun insert(record: ScanRecord): Long {
         inserted.add(record)
+        return inserted.size.toLong()
     }
 
     override suspend fun insertAll(records: List<ScanRecord>) {

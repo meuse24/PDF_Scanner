@@ -326,6 +326,18 @@
     <string name="remove_text_layer_not_searchable">इस PDF में कोई टेक्स्ट लेयर नहीं है</string>
     <string name="action_remove_text_layer">टेक्स्ट लेयर हटाएं</string>
     <string name="help_item_remove_text_layer">"टेक्स्ट लेयर हटाएं" चुनकर खोजयोग्य PDF की ऐसी कॉपी बनाएं जिसमें अदृश्य OCR टेक्स्ट लेयर न हो। बनी हुई कॉपी अब खोजयोग्य नहीं रहती।</string>
+    <!-- Secure redaction -->
+    <string name="action_redact_pdf">सुरक्षित रिडैक्शन</string>
+    <string name="redact_screen_title">सुरक्षित रिडैक्शन</string>
+    <string name="redact_description">काले बॉक्स के नीचे की सामग्री स्थायी रूप से हटाएं</string>
+    <string name="redact_details">संवेदनशील सामग्री पर आयत खींचें। प्रभावित पृष्ठों को काले बॉक्स के साथ इमेज-आधारित पृष्ठों के रूप में फिर से बनाया जाता है और नई रिडैक्टेड PDF कॉपी के रूप में सहेजा जाता है। मूल फ़ाइल अपरिवर्तित रहती है।</string>
+    <string name="redact_mode_rect">आयत</string>
+    <string name="redact_hint">रिडैक्शन बॉक्स रखने के लिए पृष्ठ पर खींचें।</string>
+    <string name="redact_copy_warning">एक नई रिडैक्टेड कॉपी बनाई जाती है। मूल फ़ाइल अपरिवर्तित रहती है और उसमें अभी भी संवेदनशील डेटा हो सकता है।</string>
+    <string name="redact_apply">रिडैक्शन सहेजें</string>
+    <string name="redact_error">सुरक्षित रिडैक्शन लागू करने में त्रुटि</string>
+    <string name="redact_no_areas">कम से कम एक रिडैक्शन क्षेत्र चुनें</string>
+    <string name="help_item_redact_pdf">काले बॉक्स के नीचे की सामग्री स्थायी रूप से हटाने के लिए सुरक्षित रिडैक्शन चुनें। संवेदनशील क्षेत्रों पर आयत खींचें, हर प्रभावित पृष्ठ की जाँच करें और नई रिडैक्टेड कॉपी सहेजें। मूल फ़ाइल अपरिवर्तित रहती है, इसलिए केवल रिडैक्टेड कॉपी ही साझा करें।</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>

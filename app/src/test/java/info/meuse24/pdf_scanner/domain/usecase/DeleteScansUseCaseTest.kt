@@ -122,7 +122,10 @@ class FakeScanDao : ScanDao {
 
     override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
-    override suspend fun insert(record: ScanRecord)              { inserted.add(record) }
+    override suspend fun insert(record: ScanRecord): Long {
+        inserted.add(record)
+        return inserted.size.toLong()
+    }
     override suspend fun insertAll(records: List<ScanRecord>)    { inserted.addAll(records) }
     override suspend fun delete(record: ScanRecord)              { deleted.add(record) }
     override suspend fun markSearchable(id: Long, fileSize: Long) { searchableUpdates.add(id to fileSize) }

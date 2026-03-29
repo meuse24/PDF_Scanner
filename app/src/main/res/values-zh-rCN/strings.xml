@@ -326,6 +326,18 @@
     <string name="remove_text_layer_not_searchable">此 PDF 没有文字层</string>
     <string name="action_remove_text_layer">删除文字层</string>
     <string name="help_item_remove_text_layer">选择“删除文字层”可创建一个不含隐藏 OCR 文字层的可搜索 PDF 副本。生成后的副本将不再可搜索。</string>
+    <!-- Secure redaction -->
+    <string name="action_redact_pdf">安全遮蔽</string>
+    <string name="redact_screen_title">安全遮蔽</string>
+    <string name="redact_description">永久移除黑框下方的内容</string>
+    <string name="redact_details">在敏感内容上拖拽矩形。受影响的页面会重建为带有已烧录黑框的图像页面，并保存为新的已遮蔽 PDF 副本。原始文件保持不变。</string>
+    <string name="redact_mode_rect">矩形</string>
+    <string name="redact_hint">在页面上拖拽以放置遮蔽框。</string>
+    <string name="redact_copy_warning">系统会创建新的已遮蔽副本。原始文件保持不变，并且可能仍然包含敏感数据。</string>
+    <string name="redact_apply">保存遮蔽</string>
+    <string name="redact_error">应用安全遮蔽时出错</string>
+    <string name="redact_no_areas">请至少选择一个遮蔽区域</string>
+    <string name="help_item_redact_pdf">选择“安全遮蔽”可永久移除黑框下方的内容。在敏感区域上拖拽矩形，检查每个受影响页面，然后保存新的已遮蔽副本。原始文件保持不变，因此只应分享已遮蔽副本。</string>
     <!-- Submenus -->
     <string name="action_submenu_page_structure">Page structure</string>
     <string name="action_submenu_security">Security &amp; Password</string>

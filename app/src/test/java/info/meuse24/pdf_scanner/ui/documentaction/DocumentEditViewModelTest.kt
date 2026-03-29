@@ -11,14 +11,19 @@ import info.meuse24.pdf_scanner.domain.workflow.ConvertToGrayscaleWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.HighlightPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.RedactPdfWorkflowResult
+import info.meuse24.pdf_scanner.domain.workflow.RedactPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RemovePasswordWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RemoveTextLayerWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
 import info.meuse24.pdf_scanner.domain.workflow.RestrictUsageWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.SignatureStampWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.TextWatermarkWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.UnlockPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.UpdatePdfMetadataWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
+import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
+import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
@@ -42,6 +47,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 import java.io.File
 import java.io.IOException
 
@@ -82,7 +88,8 @@ class DocumentEditViewModelTest {
     private fun buildVm(
         pdfEditor: PdfEditor,
         scanRecord: ScanRecord,
-        errorMapper: WorkflowErrorMapper = stubMapper()
+        errorMapper: WorkflowErrorMapper = stubMapper(),
+        redactPdfWorkflow: RedactPdfWorkflow = mock(RedactPdfWorkflow::class.java)
     ): DocumentEditViewModel {
         val dao = TestScanDao(listOf(scanRecord))
         val repository = ScanRepository(dao)
@@ -112,6 +119,7 @@ class DocumentEditViewModelTest {
             protectPdfWorkflow = protectPdfWorkflow,
             unlockPdfWorkflow = unlockPdfWorkflow,
             signatureStampWorkflow = signatureStampWorkflow,
+            redactPdfWorkflow = redactPdfWorkflow,
             removeTextLayerWorkflow = removeTextLayerWorkflow,
             removePasswordWorkflow = removePasswordWorkflow,
             restrictUsageWorkflow = restrictUsageWorkflow,
@@ -184,14 +192,67 @@ class DocumentEditViewModelTest {
 
         assertNull(vm.error.value)
     }
+
+    @Test
+    fun `applyRedactions success setzt success und beendet editLoading`() = runTest(testDispatcher) {
+        val file = pdfFile()
+        val rec = record(file)
+        val redactWorkflow = mock(RedactPdfWorkflow::class.java)
+        val rects = listOf(redactionRect())
+        val scansDir = File(tmpFolder.root, "scans").apply { mkdirs() }
+        `when`(redactWorkflow.invoke(rec, rects, scansDir, true, "de")).thenReturn(
+            WorkflowResult.Success(RedactPdfWorkflowResult(outputFilename = "scan_redacted"))
+        )
+        val vm = buildVm(NoOpPageNumbersPdfEditor(), rec, redactPdfWorkflow = redactWorkflow)
+        advanceUntilIdle()
+
+        vm.applyRedactions(rects, makeSearchable = true, languageCode = "de")
+        advanceUntilIdle()
+
+        assertTrue(vm.success.value)
+        assertFalse(vm.editLoading.value)
+        assertNull(vm.error.value)
+    }
+
+    @Test
+    fun `applyRedactions failure setzt error und beendet editLoading`() = runTest(testDispatcher) {
+        val file = pdfFile()
+        val rec = record(file)
+        val redactWorkflow = mock(RedactPdfWorkflow::class.java)
+        val rects = listOf(redactionRect())
+        val scansDir = File(tmpFolder.root, "scans").apply { mkdirs() }
+        `when`(redactWorkflow.invoke(rec, rects, scansDir, false, "en")).thenReturn(
+            WorkflowResult.Failure(ScanWorkflowError.NoRedactionAreas)
+        )
+        val vm = buildVm(NoOpPageNumbersPdfEditor(), rec, redactPdfWorkflow = redactWorkflow)
+        advanceUntilIdle()
+
+        vm.applyRedactions(rects)
+        advanceUntilIdle()
+
+        assertNotNull(vm.error.value)
+        assertFalse(vm.success.value)
+        assertFalse(vm.editLoading.value)
+    }
 }
+
+private fun redactionRect() = RedactionRect(
+    pageIndex = 0,
+    left = 0.1f,
+    top = 0.1f,
+    right = 0.4f,
+    bottom = 0.3f
+)
 
 private class TestScanDao(
     private val initialRecords: List<ScanRecord> = emptyList()
 ) : ScanDao {
     val inserted = mutableListOf<ScanRecord>()
     override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(initialRecords)
-    override suspend fun insert(record: ScanRecord) { inserted.add(record) }
+    override suspend fun insert(record: ScanRecord): Long {
+        inserted.add(record)
+        return inserted.size.toLong()
+    }
     override suspend fun insertAll(records: List<ScanRecord>) { inserted.addAll(records) }
     override suspend fun delete(record: ScanRecord) {}
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())

@@ -14,6 +14,7 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
+import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.domain.usecase.TextComment
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -247,7 +248,7 @@ class ImportAndPdfEditorInstrumentedTest {
                 )
             )
         )
-        val redactionRect = HighlightRect(
+        val redactionRect = RedactionRect(
             left = 0.16f,
             top = 0.18f,
             right = 0.56f,
@@ -268,6 +269,35 @@ class ImportAndPdfEditorInstrumentedTest {
             assertTrue(isBlack(redactedPixel))
             assertTrue(isMostlyWhite(controlPixel))
         }
+    }
+
+    @Test
+    fun secureRedactionKeepsTextOnUntouchedPagesAndRemovesSecretBytes() {
+        val input = createRawAsciiTextPdf(
+            File(scansDir, "androidtest_redact_multipage_source.pdf"),
+            listOf("GEHEIM-123", "PUBLIC-456"),
+            pageWidth = 520,
+            pageHeight = 720
+        )
+        val redacted = pdfEditor.applySecureRedaction(
+            input,
+            scansDir,
+            listOf(
+                RedactionRect(
+                    left = 0.15f,
+                    top = 0.18f,
+                    right = 0.56f,
+                    bottom = 0.34f,
+                    pageIndex = 0
+                )
+            )
+        )
+
+        val extractedText = extractPdfText(redacted)
+        assertFalse(extractedText.contains("GEHEIM-123"))
+        assertTrue(extractedText.contains("PUBLIC-456"))
+        assertTrue(fileContainsAsciiToken(input, "GEHEIM-123"))
+        assertFalse(fileContainsAsciiToken(redacted, "GEHEIM-123"))
     }
 
     @Test
@@ -362,6 +392,71 @@ private fun createPdf(file: File, pages: List<TestPage>): File {
     return file
 }
 
+private fun createRawAsciiTextPdf(
+    file: File,
+    pageTexts: List<String>,
+    pageWidth: Int,
+    pageHeight: Int
+): File {
+    require(pageTexts.isNotEmpty()) { "At least one page text is required" }
+
+    val pageObjectNumbers = pageTexts.indices.map { 4 + it }
+    val contentObjectNumbers = pageTexts.indices.map { 4 + pageTexts.size + it }
+    val kids = pageObjectNumbers.joinToString(" ") { "$it 0 R" }
+    val objects = mutableListOf<String>()
+
+    objects += "<< /Type /Catalog /Pages 2 0 R >>"
+    objects += "<< /Type /Pages /Kids [ $kids ] /Count ${pageTexts.size} >>"
+    objects += "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>"
+
+    pageTexts.forEachIndexed { index, _ ->
+        objects += """
+            << /Type /Page
+               /Parent 2 0 R
+               /MediaBox [0 0 $pageWidth $pageHeight]
+               /Resources << /Font << /F1 3 0 R >> >>
+               /Contents ${contentObjectNumbers[index]} 0 R
+            >>
+        """.trimIndent().replace("\n", " ")
+    }
+
+    pageTexts.forEach { text ->
+        val escapedText = text
+            .replace("\\", "\\\\")
+            .replace("(", "\\(")
+            .replace(")", "\\)")
+        val stream = "BT\n/F1 36 Tf\n100 500 Td\n($escapedText) Tj\nET\n"
+        val length = stream.toByteArray(Charsets.US_ASCII).size
+        objects += "<< /Length $length >>\nstream\n$stream" + "endstream"
+    }
+
+    val builder = StringBuilder()
+    builder.append("%PDF-1.4\n")
+    val offsets = mutableListOf(0)
+    objects.forEachIndexed { index, body ->
+        offsets += builder.toString().toByteArray(Charsets.US_ASCII).size
+        builder.append("${index + 1} 0 obj\n")
+        builder.append(body)
+        builder.append("\nendobj\n")
+    }
+    val xrefOffset = builder.toString().toByteArray(Charsets.US_ASCII).size
+    builder.append("xref\n")
+    builder.append("0 ${objects.size + 1}\n")
+    builder.append("0000000000 65535 f \n")
+    offsets.drop(1).forEach { offset ->
+        builder.append(offset.toString().padStart(10, '0'))
+        builder.append(" 00000 n \n")
+    }
+    builder.append("trailer\n")
+    builder.append("<< /Size ${objects.size + 1} /Root 1 0 R >>\n")
+    builder.append("startxref\n")
+    builder.append(xrefOffset)
+    builder.append("\n%%EOF")
+
+    file.writeText(builder.toString(), Charsets.US_ASCII)
+    return file
+}
+
 private fun extractPdfText(file: File): String =
     PDDocument.load(file).use { document ->
         PDFTextStripper().getText(document).replace("\\s+".toRegex(), " ").trim()
@@ -389,6 +484,23 @@ private fun isGray(rgb: IntArray): Boolean =
 
 private fun isBlack(rgb: IntArray): Boolean =
     rgb[0] < 12 && rgb[1] < 12 && rgb[2] < 12
+
+private fun fileContainsAsciiToken(file: File, token: String): Boolean {
+    val bytes = file.readBytes()
+    val needle = token.toByteArray(Charsets.US_ASCII)
+    if (needle.isEmpty() || bytes.size < needle.size) return false
+    return bytes.indices.any { start ->
+        if (start + needle.size > bytes.size) return@any false
+        var matches = true
+        for (index in needle.indices) {
+            if (bytes[start + index] != needle[index]) {
+                matches = false
+                break
+            }
+        }
+        matches
+    }
+}
 
 private inline fun <T> android.graphics.Bitmap.useBitmap(block: (android.graphics.Bitmap) -> T): T =
     try {

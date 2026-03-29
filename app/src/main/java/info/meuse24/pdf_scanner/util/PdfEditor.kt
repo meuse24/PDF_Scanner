@@ -32,6 +32,7 @@ import info.meuse24.pdf_scanner.domain.usecase.HIGHLIGHT_COLOR_RED
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
+import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.domain.usecase.TextLine
 import java.io.File
 import java.io.IOException
@@ -422,7 +423,7 @@ open class PdfEditor @Inject constructor() {
     open fun applySecureRedaction(
         input: File,
         outputDir: File,
-        rects: List<HighlightRect>
+        rects: List<RedactionRect>
     ): File {
         require(rects.isNotEmpty()) { "Mindestens ein Schwärzungsbereich erforderlich" }
 
@@ -450,20 +451,19 @@ open class PdfEditor @Inject constructor() {
                                     imported.rotation = source.getPage(pageIndex).rotation
                                 } else {
                                     renderer.openPage(pageIndex).use { page ->
-                                        val width = page.width.coerceAtLeast(1)
-                                        val height = page.height.coerceAtLeast(1)
-                                        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                                        val bitmap = renderPdfPageForRebuild(
+                                            page = page,
+                                            renderDpi = SECURE_REDACTION_RENDER_DPI,
+                                            renderMode = PdfRenderer.Page.RENDER_MODE_FOR_PRINT
+                                        )
                                         try {
-                                            Canvas(bitmap).drawColor(Color.WHITE)
-                                            page.render(
-                                                bitmap,
-                                                null,
-                                                null,
-                                                PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY
-                                            )
                                             burnRedactionRects(bitmap, pageRects)
 
-                                            val pdfPage = PDPage(PDRectangle(width.toFloat(), height.toFloat()))
+                                            val sourcePage = source.getPage(pageIndex)
+                                            val pdfPage = PDPage(sourcePage.mediaBox).apply {
+                                                cropBox = sourcePage.cropBox
+                                                rotation = sourcePage.rotation
+                                            }
                                             redacted.addPage(pdfPage)
                                             val image = LosslessFactory.createFromImage(redacted, bitmap)
                                             PDPageContentStream(redacted, pdfPage).use { contentStream ->
@@ -1008,6 +1008,10 @@ private const val MIN_TEXT_FONT_SIZE_PT = 4f
 private const val LINE_VERTICAL_MERGE_FACTOR = 0.6f
 private const val HIGHLIGHT_RECT_ALPHA = 0.3f
 private const val REDACTION_TOUCH_TOLERANCE = 0.001f
+private const val DEFAULT_REBUILD_PAGE_WIDTH_PT = 595
+private const val DEFAULT_REBUILD_PAGE_HEIGHT_PT = 842
+private const val PDF_POINTS_PER_INCH = 72f
+private const val SECURE_REDACTION_RENDER_DPI = 300f
 
 private data class NormalizedRedactionRect(
     val left: Float,
@@ -1085,7 +1089,7 @@ private fun TextPosition.toNormalizedTextBox(
     )
 }
 
-private fun normalizeRedactionRect(rect: HighlightRect): NormalizedRedactionRect? {
+private fun normalizeRedactionRect(rect: RedactionRect): NormalizedRedactionRect? {
     val left = min(rect.left, rect.right).coerceIn(0f, 1f)
     val right = max(rect.left, rect.right).coerceIn(0f, 1f)
     val top = min(rect.top, rect.bottom).coerceIn(0f, 1f)
@@ -1154,6 +1158,22 @@ private fun burnRedactionRects(
             canvas.drawRect(left, top, right, bottom, paint)
         }
     }
+}
+
+private fun renderPdfPageForRebuild(
+    page: PdfRenderer.Page,
+    renderDpi: Float,
+    renderMode: Int
+): Bitmap {
+    val baseWidth = page.width.takeIf { it > 0 } ?: DEFAULT_REBUILD_PAGE_WIDTH_PT
+    val baseHeight = page.height.takeIf { it > 0 } ?: DEFAULT_REBUILD_PAGE_HEIGHT_PT
+    val scale = (renderDpi / PDF_POINTS_PER_INCH).coerceAtLeast(1f)
+    val bitmapWidth = (baseWidth * scale).toInt().coerceAtLeast(1)
+    val bitmapHeight = (baseHeight * scale).toInt().coerceAtLeast(1)
+    val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+    Canvas(bitmap).drawColor(Color.WHITE)
+    page.render(bitmap, null, null, renderMode)
+    return bitmap
 }
 
 private inline fun PdfEditor.editPdf(

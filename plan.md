@@ -5,6 +5,9 @@ Bereits umgesetzt:
 - `PdfEditor.applySecureRedaction(...)` als sicherer Kernpfad.
 - Betroffene Seiten werden gerendert, Schwärzungsrechtecke ins Bitmap eingebrannt und als neue bildbasierte PDF-Seiten gespeichert.
 - Nicht betroffene Seiten bleiben unverändert.
+- Renderqualität im sicheren Redaction-Pfad auf 300 DPI angehoben.
+- `PdfRenderer.Page.RENDER_MODE_FOR_PRINT` für den sicheren Redaction-Pfad aktiviert.
+- Eigener Domänentyp `RedactionRect` statt semantischer Wiederverwendung von `HighlightRect`.
 - Neue Workflow-/UseCase-Schicht:
   - `RedactPdfUseCase`
   - `RedactPdfWorkflow`
@@ -15,18 +18,21 @@ Bereits umgesetzt:
 - Tests ergänzt:
   - JVM-Workflow-Test für Erfolgs-/Fehlerpfade
   - Instrumentation-Test auf Gerät: extrahierbarer Text verschwindet, schwarzes Rechteck ist sichtbar
+  - Instrumentation-Test auf Gerät: unbeeinflusste Seite eines mehrseitigen Dokuments bleibt extrahierbar
+  - Instrumentation-Test auf Gerät: Byte-Scan mit bewusst roh erzeugtem ASCII-PDF als Regression-Guard
 
 Verifiziert:
 - `:app:compileDebugKotlin`
 - `testDebugUnitTest --tests "info.meuse24.pdf_scanner.domain.workflow.RedactPdfWorkflowTest"`
 - `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionRemovesExtractableTextAndBurnsBlackRect`
+- `connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.util.ImportAndPdfEditorInstrumentedTest#secureRedactionKeepsTextOnUntouchedPagesAndRemovesSecretBytes`
 
 Noch offen:
 - UI-Integration als eigener Schwärzungsmodus/-screen
 - klare Produktentscheidung und UI für "Kopie" vs "Original ersetzen"
 - optionale OCR-Rekonstruktion ausserhalb der Schwärzungsbereiche
 - weitergehende Sanitization für Formular-/Link-/Attachment-Fälle
-- zusätzliche Regressionstests für Rotation/CropBox und mehrseitige Mischdokumente
+- zusätzliche Regressionstests für Rotation/CropBox
 
 ## 1. Zielbild
 Implementierung einer Schwärzungsfunktion, bei der der Inhalt unter dem Schwärzungsbereich nicht nur verdeckt, sondern aus allen relevanten Datenpfaden entfernt wird.

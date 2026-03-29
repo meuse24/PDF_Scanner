@@ -12,7 +12,7 @@ class RedactPdfUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         record: ScanRecord,
-        rects: List<HighlightRect>,
+        rects: List<RedactionRect>,
         scansDir: File
     ): String {
         val resultFile = pdfEditor.applySecureRedaction(

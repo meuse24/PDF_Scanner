@@ -3,8 +3,8 @@ package info.meuse24.pdf_scanner.domain.workflow
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
-import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.RedactPdfUseCase
+import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.util.PdfEditor
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -45,7 +45,7 @@ class RedactPdfWorkflowTest {
         )
     }
 
-    private fun rect(page: Int = 0) = HighlightRect(
+    private fun rect(page: Int = 0) = RedactionRect(
         left = 0.10f,
         top = 0.20f,
         right = 0.60f,
@@ -140,7 +140,7 @@ class RedactPdfWorkflowTest {
 
 private class FakeRedactionPdfEditor(
     private val encrypted: Boolean = false,
-    private val onApply: (File, File, List<HighlightRect>) -> File = { input, outputDir, _ ->
+    private val onApply: (File, File, List<RedactionRect>) -> File = { input, outputDir, _ ->
         File(outputDir, "${input.nameWithoutExtension}_Geschwaerzt.pdf").apply { writeText("copy") }
     }
 ) : PdfEditor() {
@@ -149,7 +149,7 @@ private class FakeRedactionPdfEditor(
     override fun applySecureRedaction(
         input: File,
         outputDir: File,
-        rects: List<HighlightRect>
+        rects: List<RedactionRect>
     ): File = onApply(input, outputDir, rects)
 
     override fun generateThumbnail(pdfFile: File, outputFile: File): Boolean {

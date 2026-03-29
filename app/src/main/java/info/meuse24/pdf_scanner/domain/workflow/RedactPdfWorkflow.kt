@@ -1,8 +1,8 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.RedactPdfUseCase
+import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.util.PdfEditor
 import java.io.File
 import java.io.IOException
@@ -16,7 +16,7 @@ class RedactPdfWorkflow @Inject constructor(
 ) {
     suspend operator fun invoke(
         record: ScanRecord,
-        rects: List<HighlightRect>,
+        rects: List<RedactionRect>,
         scansDir: File
     ): WorkflowResult<RedactPdfWorkflowResult> {
         val input = File(record.filepath)

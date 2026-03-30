@@ -9,12 +9,12 @@ import androidx.compose.ui.unit.IntSize
 import info.meuse24.pdf_scanner.ui.shared.normalizeViewportPoint
 
 internal suspend fun PointerInputScope.detectMarkGestures(
-    canvasSize: IntSize,
-    zoomScale: Float,
-    zoomOffsetX: Float,
-    zoomOffsetY: Float,
-    pdfOrigin: Offset,
-    pdfSize: Size,
+    currentCanvasSize: () -> IntSize,
+    currentZoomScale: () -> Float,
+    currentZoomOffsetX: () -> Float,
+    currentZoomOffsetY: () -> Float,
+    currentPdfOrigin: () -> Offset,
+    currentPdfSize: () -> Size,
     selectedPageIndex: Int,
     currentState: () -> AnnotationElementState,
     onStateChanged: (AnnotationElementState) -> Unit,
@@ -27,22 +27,44 @@ internal suspend fun PointerInputScope.detectMarkGestures(
         var startChange: PointerInputChange? = null
         while (startChange == null) {
             val event = awaitPointerEvent()
+            if (hasMultiplePressedPointers(event.changes)) return@awaitEachGesture
             startChange = event.changes.firstOrNull { !it.previousPressed && it.pressed }
         }
         val pointerId = startChange.id
-        val startNorm = normalizeViewportPoint(startChange.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
+        val startNorm = normalizeViewportPoint(
+            startChange.position,
+            currentCanvasSize(),
+            currentZoomScale(),
+            currentZoomOffsetX(),
+            currentZoomOffsetY(),
+            currentPdfOrigin(),
+            currentPdfSize()
+        )
         val selection = hitTestSelection(selectedPageIndex, startNorm, currentState())
         if (selection != null) onSelectionChanged(selection)
 
         var previousNorm = startNorm
         var movedEnough = false
+        var cancelledByMultiTouch = false
         while (true) {
             val event = awaitPointerEvent()
+            if (hasMultiplePressedPointers(event.changes)) {
+                cancelledByMultiTouch = true
+                break
+            }
             val change = event.changes.firstOrNull { it.id == pointerId } ?: break
             if (change.previousPressed && !change.pressed) break
             if (!change.pressed) continue
 
-            val currentNorm = normalizeViewportPoint(change.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
+            val currentNorm = normalizeViewportPoint(
+                change.position,
+                currentCanvasSize(),
+                currentZoomScale(),
+                currentZoomOffsetX(),
+                currentZoomOffsetY(),
+                currentPdfOrigin(),
+                currentPdfSize()
+            )
             val deltaX = currentNorm.first - previousNorm.first
             val deltaY = currentNorm.second - previousNorm.second
             val totalX = currentNorm.first - startNorm.first
@@ -66,7 +88,9 @@ internal suspend fun PointerInputScope.detectMarkGestures(
 
         if (selection == null) {
             onSelectionChanged(null)
-            if (movedEnough) {
+            if (cancelledByMultiTouch) {
+                onStrokeChanged(emptyList())
+            } else if (movedEnough) {
                 val points = currentStrokePoints()
                 if (points.isNotEmpty()) onCommit(points)
                 onStrokeChanged(emptyList())
@@ -79,12 +103,12 @@ internal suspend fun PointerInputScope.detectMarkGestures(
 }
 
 internal suspend fun PointerInputScope.detectTextGestures(
-    canvasSize: IntSize,
-    zoomScale: Float,
-    zoomOffsetX: Float,
-    zoomOffsetY: Float,
-    pdfOrigin: Offset,
-    pdfSize: Size,
+    currentCanvasSize: () -> IntSize,
+    currentZoomScale: () -> Float,
+    currentZoomOffsetX: () -> Float,
+    currentZoomOffsetY: () -> Float,
+    currentPdfOrigin: () -> Offset,
+    currentPdfSize: () -> Size,
     selectedPageIndex: Int,
     currentState: () -> AnnotationElementState,
     onStateChanged: (AnnotationElementState) -> Unit,
@@ -95,22 +119,44 @@ internal suspend fun PointerInputScope.detectTextGestures(
         var startChange: PointerInputChange? = null
         while (startChange == null) {
             val event = awaitPointerEvent()
+            if (hasMultiplePressedPointers(event.changes)) return@awaitEachGesture
             startChange = event.changes.firstOrNull { !it.previousPressed && it.pressed }
         }
         val pointerId = startChange.id
-        val startNorm = normalizeViewportPoint(startChange.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
+        val startNorm = normalizeViewportPoint(
+            startChange.position,
+            currentCanvasSize(),
+            currentZoomScale(),
+            currentZoomOffsetX(),
+            currentZoomOffsetY(),
+            currentPdfOrigin(),
+            currentPdfSize()
+        )
         val selection = hitTestSelection(selectedPageIndex, startNorm, currentState())
         if (selection != null) onSelectionChanged(selection)
 
         var previousNorm = startNorm
         var latestNorm = startNorm
         var movedEnough = false
+        var cancelledByMultiTouch = false
         while (true) {
             val event = awaitPointerEvent()
+            if (hasMultiplePressedPointers(event.changes)) {
+                cancelledByMultiTouch = true
+                break
+            }
             val change = event.changes.firstOrNull { it.id == pointerId } ?: break
             if (change.previousPressed && !change.pressed) break
             if (!change.pressed) continue
-            latestNorm = normalizeViewportPoint(change.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
+            latestNorm = normalizeViewportPoint(
+                change.position,
+                currentCanvasSize(),
+                currentZoomScale(),
+                currentZoomOffsetX(),
+                currentZoomOffsetY(),
+                currentPdfOrigin(),
+                currentPdfSize()
+            )
             val totalX = latestNorm.first - startNorm.first
             val totalY = latestNorm.second - startNorm.second
             if (totalX * totalX + totalY * totalY > 0.0009f) movedEnough = true
@@ -123,7 +169,7 @@ internal suspend fun PointerInputScope.detectTextGestures(
             previousNorm = latestNorm
         }
 
-        if (!movedEnough) {
+        if (!movedEnough && !cancelledByMultiTouch) {
             if (selection != null) {
                 onSelectionChanged(selection)
             } else {
@@ -135,12 +181,12 @@ internal suspend fun PointerInputScope.detectTextGestures(
 }
 
 internal suspend fun PointerInputScope.detectShapeGestures(
-    canvasSize: IntSize,
-    zoomScale: Float,
-    zoomOffsetX: Float,
-    zoomOffsetY: Float,
-    pdfOrigin: Offset,
-    pdfSize: Size,
+    currentCanvasSize: () -> IntSize,
+    currentZoomScale: () -> Float,
+    currentZoomOffsetX: () -> Float,
+    currentZoomOffsetY: () -> Float,
+    currentPdfOrigin: () -> Offset,
+    currentPdfSize: () -> Size,
     tool: AnnotateTool,
     selectedPageIndex: Int,
     currentState: () -> AnnotationElementState,
@@ -155,22 +201,44 @@ internal suspend fun PointerInputScope.detectShapeGestures(
         var startChange: PointerInputChange? = null
         while (startChange == null) {
             val event = awaitPointerEvent()
+            if (hasMultiplePressedPointers(event.changes)) return@awaitEachGesture
             startChange = event.changes.firstOrNull { !it.previousPressed && it.pressed }
         }
         val pointerId = startChange.id
-        val startNorm = normalizeViewportPoint(startChange.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
+        val startNorm = normalizeViewportPoint(
+            startChange.position,
+            currentCanvasSize(),
+            currentZoomScale(),
+            currentZoomOffsetX(),
+            currentZoomOffsetY(),
+            currentPdfOrigin(),
+            currentPdfSize()
+        )
         val selection = hitTestSelection(selectedPageIndex, startNorm, currentState())
         if (selection != null) onSelectionChanged(selection)
 
         var previousNorm = startNorm
         var movedEnough = false
+        var cancelledByMultiTouch = false
         while (true) {
             val event = awaitPointerEvent()
+            if (hasMultiplePressedPointers(event.changes)) {
+                cancelledByMultiTouch = true
+                break
+            }
             val change = event.changes.firstOrNull { it.id == pointerId } ?: break
             if (change.previousPressed && !change.pressed) break
             if (!change.pressed) continue
 
-            val currentNorm = normalizeViewportPoint(change.position, canvasSize, zoomScale, zoomOffsetX, zoomOffsetY, pdfOrigin, pdfSize)
+            val currentNorm = normalizeViewportPoint(
+                change.position,
+                currentCanvasSize(),
+                currentZoomScale(),
+                currentZoomOffsetX(),
+                currentZoomOffsetY(),
+                currentPdfOrigin(),
+                currentPdfSize()
+            )
             val deltaX = currentNorm.first - previousNorm.first
             val deltaY = currentNorm.second - previousNorm.second
             val totalX = currentNorm.first - startNorm.first
@@ -190,7 +258,9 @@ internal suspend fun PointerInputScope.detectShapeGestures(
 
         if (selection == null) {
             onSelectionChanged(null)
-            if (movedEnough) {
+            if (cancelledByMultiTouch) {
+                onDraftChanged(null)
+            } else if (movedEnough) {
                 currentDraft()?.let(onCommit)
                 onDraftChanged(null)
             } else {
@@ -200,3 +270,6 @@ internal suspend fun PointerInputScope.detectShapeGestures(
         }
     }
 }
+
+private fun hasMultiplePressedPointers(changes: List<PointerInputChange>): Boolean =
+    changes.count { it.pressed } > 1

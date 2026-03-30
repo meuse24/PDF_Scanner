@@ -21,6 +21,7 @@
     <string name="annotate_color_blue">Bleu</string>
     <string name="annotate_color_orange">Orange</string>
     <string name="annotate_color_violet">Violet</string>
+    <string name="annotate_color_black">Noir</string>
     <string name="annotate_selected_prefix">Sélection : %1$s</string>
     <string name="annotate_selected_delete">Supprimer</string>
     <string name="annotate_selected_clear">Désélectionner</string>

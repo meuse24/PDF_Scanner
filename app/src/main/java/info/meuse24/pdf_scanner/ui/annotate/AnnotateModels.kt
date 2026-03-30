@@ -68,7 +68,8 @@ internal val annotationPalette = listOf(
     AnnotationColorOption(0x66FF1744, R.string.annotate_color_red),
     AnnotationColorOption(0x660091EA, R.string.annotate_color_blue),
     AnnotationColorOption(0x66FF6D00, R.string.annotate_color_orange),
-    AnnotationColorOption(0x66AA00FF, R.string.annotate_color_violet)
+    AnnotationColorOption(0x66AA00FF, R.string.annotate_color_violet),
+    AnnotationColorOption(0x66000000, R.string.annotate_color_black)
 )
 
 internal val annotatePointListSaver = listSaver<List<Pair<Float, Float>>, Float>(
@@ -303,9 +304,26 @@ internal fun String.toAnnotationShapeStyleOrNull(): AnnotationShapeStyle? =
 internal fun String.toAnnotationHistoryKindOrNull(): AnnotationHistoryKind? =
     AnnotationHistoryKind.entries.firstOrNull { it.name == this }
 
+internal fun AnnotateTool.usesOpaqueAnnotationColor(): Boolean = when (this) {
+    AnnotateTool.TEXT,
+    AnnotateTool.RECT_FILLED,
+    AnnotateTool.RECT_FRAME,
+    AnnotateTool.OVAL_FILLED,
+    AnnotateTool.OVAL_FRAME -> true
+    AnnotateTool.MARK,
+    AnnotateTool.ZOOM -> false
+}
+
+internal fun effectiveToolColor(tool: AnnotateTool, color: Int): Int =
+    if (tool.usesOpaqueAnnotationColor()) color.toOpaqueColor() else color.toMarkerColor()
+
 internal fun Int.toOpaqueColor(): Int = this or (0xFF shl 24)
 
+internal fun Int.toMarkerColor(): Int = (this and 0x00FFFFFF) or (defaultAnnotationColor() and (0xFF shl 24))
+
 internal fun defaultAnnotationColor(): Int = DEFAULT_ANNOTATION_COLOR_ARGB
+
+internal fun defaultTextAnnotationColor(): Int = 0xFF000000.toInt()
 
 internal fun commentFontSizeFromWidth(widthFraction: Float): Float =
     (widthFraction + 0.003f).coerceIn(0.01f, 0.1f)

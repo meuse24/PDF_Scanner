@@ -47,6 +47,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -94,6 +95,8 @@ fun AnnotateScreen(
 
     var selectedPageIndex by rememberSaveable { mutableStateOf(0) }
     var selectedWidthFraction by rememberSaveable { mutableFloatStateOf(0.025f) }
+    var selectedMarkerColor by rememberSaveable { mutableIntStateOf(defaultAnnotationColor()) }
+    var selectedOpaqueColor by rememberSaveable { mutableIntStateOf(defaultTextAnnotationColor()) }
     var selectedColor by rememberSaveable { mutableIntStateOf(defaultAnnotationColor()) }
     var selectedTool by rememberSaveable { mutableStateOf(AnnotateTool.MARK) }
     var selectedDrawTool by rememberSaveable { mutableStateOf(AnnotateTool.MARK) }
@@ -105,6 +108,7 @@ fun AnnotateScreen(
     var zoomScale by rememberSaveable { mutableFloatStateOf(1f) }
     var zoomOffsetX by rememberSaveable { mutableFloatStateOf(0f) }
     var zoomOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
+    var activePointerCount by remember { mutableIntStateOf(0) }
 
     var currentShapeDraft by remember { mutableStateOf<AnnotationShapeDraft?>(null) }
     var showCommentDialog by remember { mutableStateOf(false) }
@@ -224,6 +228,13 @@ fun AnnotateScreen(
     }
     LaunchedEffect(selectedTool) {
         if (selectedTool != AnnotateTool.ZOOM) selectedDrawTool = selectedTool
+        if (selectedAnnotation == null) {
+            selectedColor = when {
+                selectedTool == AnnotateTool.MARK -> selectedMarkerColor
+                selectedTool.usesOpaqueAnnotationColor() -> selectedOpaqueColor
+                else -> selectedColor
+            }
+        }
         currentStroke = emptyList()
         currentShapeDraft = null
     }
@@ -255,6 +266,13 @@ fun AnnotateScreen(
     val selectedDrawSpec = selectedDrawTool.spec()
     val selectionLabelRes = selectionKindLabelRes(selectedAnnotation)
     val selectionFrame = selectionFrame(selectedAnnotation, elementStateSnapshot)
+    val showOpaqueColorPreview = when (selectedAnnotation?.kind) {
+        AnnotationHistoryKind.RECT,
+        AnnotationHistoryKind.OVAL,
+        AnnotationHistoryKind.COMMENT -> true
+        AnnotationHistoryKind.STROKE -> false
+        null -> selectedTool.usesOpaqueAnnotationColor()
+    }
     val widthLabelRes = when (selectedAnnotation?.kind) {
         AnnotationHistoryKind.COMMENT -> R.string.annotate_text_size
         AnnotationHistoryKind.STROKE, AnnotationHistoryKind.RECT, AnnotationHistoryKind.OVAL -> R.string.highlight_stroke_width
@@ -287,6 +305,7 @@ fun AnnotateScreen(
             isSearchable = currentRecord.isSearchable,
             isSnapMode = isSnapMode,
             selectedColor = selectedColor,
+            showOpaqueColorPreview = showOpaqueColorPreview,
             selectedWidthFraction = selectedWidthFraction,
             widthLabelRes = widthLabelRes,
             zoomResetEnabled = zoomScale > 1f || abs(zoomOffsetX) > 0.5f || abs(zoomOffsetY) > 0.5f,
@@ -296,9 +315,26 @@ fun AnnotateScreen(
             onResetZoom = resetZoom,
             onSnapModeChanged = { isSnapMode = it },
             onColorSelected = {
-                selectedColor = it
+                val resolvedColor = when {
+                    selectedAnnotation?.kind == AnnotationHistoryKind.STROKE || selectedTool == AnnotateTool.MARK -> it.toMarkerColor()
+                    else -> it.toOpaqueColor()
+                }
+                selectedColor = resolvedColor
+                when (selectedAnnotation?.kind) {
+                    AnnotationHistoryKind.STROKE -> selectedMarkerColor = resolvedColor
+                    AnnotationHistoryKind.RECT,
+                    AnnotationHistoryKind.OVAL,
+                    AnnotationHistoryKind.COMMENT -> selectedOpaqueColor = resolvedColor
+                    null -> {
+                        if (selectedTool == AnnotateTool.MARK) {
+                            selectedMarkerColor = resolvedColor
+                        } else if (selectedTool.usesOpaqueAnnotationColor()) {
+                            selectedOpaqueColor = resolvedColor
+                        }
+                    }
+                }
                 selectedAnnotation?.let { selection ->
-                    setElementState(applySelectionColor(selection, it, elementStateSnapshot), selection)
+                    setElementState(applySelectionColor(selection, resolvedColor, elementStateSnapshot), selection)
                     clearPageHistory()
                 }
             },
@@ -314,11 +350,28 @@ fun AnnotateScreen(
         Box(
             modifier = Modifier.fillMaxWidth().weight(1f).background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .onSizeChanged { canvasSize = it }
-                .transformable(state = transformableState, enabled = isZoomTool)
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val pressedPointers = awaitPointerEvent(PointerEventPass.Initial).changes.count { it.pressed }
+                            if (activePointerCount != pressedPointers) activePointerCount = pressedPointers
+                        }
+                    }
+                }
+                .transformable(
+                    state = transformableState,
+                    canPan = { activePointerCount > 1 },
+                    enabled = true
+                )
                 .pointerInput(selectedTool, isSnapMode) {
                     when (selectedTool) {
                         AnnotateTool.MARK -> detectMarkGestures(
-                            currentCanvasSize, currentZoomScale, currentZoomOffsetX, currentZoomOffsetY, currentPdfOrigin, currentPdfSize,
+                            currentCanvasSize = { currentCanvasSize },
+                            currentZoomScale = { currentZoomScale },
+                            currentZoomOffsetX = { currentZoomOffsetX },
+                            currentZoomOffsetY = { currentZoomOffsetY },
+                            currentPdfOrigin = { currentPdfOrigin },
+                            currentPdfSize = { currentPdfSize },
                             selectedPageIndex = currentSelectedPageIndex,
                             currentState = { currentElementState },
                             onStateChanged = { setElementState(it, currentSelectedAnnotation) },
@@ -328,7 +381,7 @@ fun AnnotateScreen(
                             onCommit = { points ->
                                 val snappedRects = if (isSnapMode) {
                                     snapStrokeToTextLines(points, currentTextLines.filter { it.pageIndex == currentSelectedPageIndex }).map {
-                                        AnnotationRect(it.left, it.top, it.right, it.bottom, it.pageIndex, currentSelectedColor, AnnotationShapeStyle.FILLED, currentSelectedWidthFraction)
+                                        AnnotationRect(it.left, it.top, it.right, it.bottom, it.pageIndex, currentSelectedColor.toMarkerColor(), AnnotationShapeStyle.FILLED, currentSelectedWidthFraction)
                                     }
                                 } else emptyList()
                                 if (snappedRects.isNotEmpty()) {
@@ -336,14 +389,19 @@ fun AnnotateScreen(
                                     selectedAnnotation = null
                                     annotationHistory = annotationHistory + snappedRects.map { AnnotationHistoryEntry(it.pageIndex, AnnotationHistoryKind.RECT) }
                                 } else {
-                                    allStrokes = allStrokes + AnnotationStroke(points, currentSelectedPageIndex, currentSelectedWidthFraction, currentSelectedColor)
+                                    allStrokes = allStrokes + AnnotationStroke(points, currentSelectedPageIndex, currentSelectedWidthFraction, currentSelectedColor.toMarkerColor())
                                     selectedAnnotation = null
                                     annotationHistory = annotationHistory + AnnotationHistoryEntry(currentSelectedPageIndex, AnnotationHistoryKind.STROKE)
                                 }
                             }
                         )
                         AnnotateTool.TEXT -> detectTextGestures(
-                            currentCanvasSize, currentZoomScale, currentZoomOffsetX, currentZoomOffsetY, currentPdfOrigin, currentPdfSize,
+                            currentCanvasSize = { currentCanvasSize },
+                            currentZoomScale = { currentZoomScale },
+                            currentZoomOffsetX = { currentZoomOffsetX },
+                            currentZoomOffsetY = { currentZoomOffsetY },
+                            currentPdfOrigin = { currentPdfOrigin },
+                            currentPdfSize = { currentPdfSize },
                             currentSelectedPageIndex, currentState = { currentElementState },
                             onStateChanged = { setElementState(it, currentSelectedAnnotation) },
                             onSelectionChanged = { currentSelectionSync(it) },
@@ -351,7 +409,12 @@ fun AnnotateScreen(
                         )
                         AnnotateTool.RECT_FILLED, AnnotateTool.RECT_FRAME, AnnotateTool.OVAL_FILLED, AnnotateTool.OVAL_FRAME ->
                             detectShapeGestures(
-                                currentCanvasSize, currentZoomScale, currentZoomOffsetX, currentZoomOffsetY, currentPdfOrigin, currentPdfSize,
+                                currentCanvasSize = { currentCanvasSize },
+                                currentZoomScale = { currentZoomScale },
+                                currentZoomOffsetX = { currentZoomOffsetX },
+                                currentZoomOffsetY = { currentZoomOffsetY },
+                                currentPdfOrigin = { currentPdfOrigin },
+                                currentPdfSize = { currentPdfSize },
                                 selectedTool, currentSelectedPageIndex,
                                 currentState = { currentElementState },
                                 onStateChanged = { setElementState(it, currentSelectedAnnotation) },
@@ -359,7 +422,7 @@ fun AnnotateScreen(
                                 currentDraft = { currentShapeDraft },
                                 onDraftChanged = { currentShapeDraft = it },
                                 onCommit = { draft ->
-                                    when (val shape = draft.toPreviewShape(currentSelectedColor, currentSelectedWidthFraction)) {
+                                    when (val shape = draft.toPreviewShape(currentSelectedColor.toOpaqueColor(), currentSelectedWidthFraction)) {
                                         is AnnotationRect -> {
                                             allRects = allRects + shape
                                             selectedAnnotation = null
@@ -379,7 +442,7 @@ fun AnnotateScreen(
                                                 pageIndex = currentSelectedPageIndex,
                                                 center = center,
                                                 widthFraction = currentSelectedWidthFraction,
-                                                color = currentSelectedColor,
+                                                color = currentSelectedColor.toOpaqueColor(),
                                                 filled = tool == AnnotateTool.RECT_FILLED
                                             )
                                             allRects = allRects + rect
@@ -391,7 +454,7 @@ fun AnnotateScreen(
                                                 pageIndex = currentSelectedPageIndex,
                                                 center = center,
                                                 widthFraction = currentSelectedWidthFraction,
-                                                color = currentSelectedColor,
+                                                color = currentSelectedColor.toOpaqueColor(),
                                                 filled = tool == AnnotateTool.OVAL_FILLED
                                             )
                                             allOvals = allOvals + oval
@@ -460,8 +523,9 @@ fun AnnotateScreen(
 
         Button(
             onClick = {
-                val finalStrokes = allStrokes + if (currentStroke.isNotEmpty()) listOf(AnnotationStroke(currentStroke, selectedPageIndex, selectedWidthFraction, selectedColor)) else emptyList()
-                val finalShape = currentShapeDraft?.takeIf { it.pageIndex == selectedPageIndex }?.toPreviewShape(selectedColor, selectedWidthFraction)
+                val finalStrokes = allStrokes + if (currentStroke.isNotEmpty()) listOf(AnnotationStroke(currentStroke, selectedPageIndex, selectedWidthFraction, selectedColor.toMarkerColor())) else emptyList()
+                val finalShape = currentShapeDraft?.takeIf { it.pageIndex == selectedPageIndex }
+                    ?.toPreviewShape(selectedColor.toOpaqueColor(), selectedWidthFraction)
                 val finalRects = when (finalShape) {
                     is AnnotationRect -> allRects + finalShape
                     else -> allRects
@@ -531,6 +595,7 @@ private fun AnnotateToolbar(
     isSearchable: Boolean,
     isSnapMode: Boolean,
     selectedColor: Int,
+    showOpaqueColorPreview: Boolean,
     selectedWidthFraction: Float,
     widthLabelRes: Int,
     zoomResetEnabled: Boolean,
@@ -610,6 +675,7 @@ private fun AnnotateToolbar(
                 }
                 AnnotationAttributeBar(
                     selectedColor = selectedColor,
+                    showOpaqueColorPreview = showOpaqueColorPreview,
                     selectedWidthFraction = selectedWidthFraction,
                     widthLabelRes = widthLabelRes,
                     onColorSelected = onColorSelected,

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_qr_codes">QR कोड स्कैन करें</string>
+    <string name="qr_scan_title">QR कोड</string>
+    <string name="qr_scan_progress">%2$d में से पृष्ठ %1$d स्कैन किया जा रहा है</string>
+    <string name="qr_scan_empty">कोई QR कोड नहीं मिला</string>
+    <string name="qr_scan_page">पृष्ठ %1$d</string>
+    <string name="qr_scan_copy">क्लिपबोर्ड पर कॉपी करें</string>
+    <string name="qr_scan_copied">कॉपी किया गया</string>
+    <string name="qr_scan_share">साझा करें</string>
+    <string name="qr_scan_wifi_ssid">नेटवर्क: %1$s</string>
+    <string name="qr_scan_wifi_password">पासवर्ड</string>
+    <string name="qr_scan_wifi_show_password">पासवर्ड दिखाएं</string>
+    <string name="qr_scan_wifi_hide_password">पासवर्ड छिपाएं</string>
+    <string name="qr_scan_error_encrypted">एन्क्रिप्टेड PDF स्कैन नहीं की जा सकती</string>
+    <string name="help_item_scan_qr_codes">QR कोड स्कैन करें चुनें, ताकि PDF को पेज दर पेज जांचकर मिले हुए लिंक, Wi‑Fi विवरण या टेक्स्ट को आपके डिवाइस पर स्थानीय रूप से देखा जा सके।</string>
+    <string name="info_feature_qr_scan">QR कोड पहचान पूरी तरह डिवाइस पर चलती है और मिले हुए URL, Wi‑Fi डेटा या टेक्स्ट को पेज के अनुसार दिखाती है, बिना दस्तावेज़ की सामग्री किसी सर्वर पर भेजे।</string>
+</resources>

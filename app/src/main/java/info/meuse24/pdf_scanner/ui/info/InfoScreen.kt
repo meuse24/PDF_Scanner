@@ -94,11 +94,18 @@ fun InfoScreen() {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.info_feature_qr_scan),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
         item {
             SectionCard(Icons.AutoMirrored.Filled.LibraryBooks, stringResource(R.string.info_section_libraries)) {
                 InfoRow("Google ML Kit Document Scanner",    "16.0.0")
+                InfoRow("Google ML Kit Barcode Scanning",   "17.3.0")
                 InfoRow("Google ML Kit Text Recognition",   "16.0.1")
                 InfoRow("PdfBox Android",                   "2.0.27.0")
                 InfoRow("Jetpack Room",                     "2.8.4")

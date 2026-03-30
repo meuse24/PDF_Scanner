@@ -3,7 +3,7 @@
     <string name="action_annotate_pdf">Annotate PDF</string>
     <string name="annotate_screen_title">Annotate PDF</string>
     <string name="annotate_description">Add marks, shapes, and notes to this PDF</string>
-    <string name="annotate_details">Use the annotation tools to add freehand marks, rectangles, ovals, and text notes. Existing annotations can be selected, moved, recolored, resized, edited, or deleted before saving. Searchable PDFs also offer Snap to align freehand marks to detected text lines. Zoom mode helps with precise placement. The result is saved as a new annotated PDF copy.</string>
+    <string name="annotate_details">Use the annotation tools to add freehand marks, rectangles, ovals, and text notes. Existing annotations can be selected, moved, recolored, resized, edited, or deleted before saving. Searchable PDFs also offer Snap to align freehand marks to detected text lines. In edit mode, use two fingers to zoom and move the page; Zoom mode remains available as an alternative. The result is saved as a new annotated PDF copy.</string>
     <string name="annotate_apply">Save annotations</string>
     <string name="annotate_mode_mark">Mark.</string>
     <string name="annotate_mode_write">Write</string>
@@ -12,7 +12,7 @@
     <string name="annotate_comment_edit_title">Edit Comment</string>
     <string name="annotate_comment_add">Add</string>
     <string name="annotate_comment_delete">Delete</string>
-    <string name="annotate_write_hint">Tap the page to add a text note.</string>
+    <string name="annotate_write_hint">Tap the page to add a text note. Use two fingers to zoom or move the page.</string>
     <string name="annotate_text_size">Size</string>
     <string name="annotate_attribute_color">Color</string>
     <string name="annotate_color_yellow">Yellow</string>
@@ -21,11 +21,12 @@
     <string name="annotate_color_blue">Blue</string>
     <string name="annotate_color_orange">Orange</string>
     <string name="annotate_color_violet">Violet</string>
+    <string name="annotate_color_black">Black</string>
     <string name="annotate_selected_prefix">Selected: %1$s</string>
     <string name="annotate_selected_delete">Delete</string>
     <string name="annotate_selected_clear">Clear</string>
     <string name="annotate_selected_edit_text">Text</string>
-    <string name="annotate_selected_hint">Tap an annotation to select it. Drag moves the selected annotation.</string>
+    <string name="annotate_selected_hint">Tap an annotation to select it. Drag moves the selected annotation. Use two fingers to zoom or move the page.</string>
     <string name="annotate_selection_mark">Mark</string>
     <string name="annotate_selection_rect">Rectangle</string>
     <string name="annotate_selection_oval">Oval</string>
@@ -34,7 +35,7 @@
     <string name="annotate_action_clear_page">Clear current page annotations</string>
     <string name="annotate_action_clear_all">Clear all annotations</string>
     <string name="annotate_mode_zoom_title">Zoom mode</string>
-    <string name="annotate_mode_zoom_hint">Move and zoom the page. Tap the tool button to return to editing.</string>
+    <string name="annotate_mode_zoom_hint">Use two fingers to move and zoom the page. Tap the tool button to return to editing.</string>
     <string name="annotate_mode_edit_back">Back to edit mode</string>
     <string name="annotate_tool_mark">Mark</string>
     <string name="annotate_tool_text">Text</string>
@@ -49,5 +50,5 @@
     <string name="annotate_page_next_short">Next</string>
     <string name="annotate_no_items">Add at least one annotation first</string>
     <string name="annotate_error">Error adding annotations</string>
-    <string name="help_item_annotate_pdf">Choose Annotate PDF to review a document with freehand marks, rectangles, ovals, and text notes. Tap an existing annotation to select, move, recolor, resize, edit, or delete it before saving. Searchable PDFs also offer Snap for text-aligned marking. Use Zoom for precise placement.</string>
+    <string name="help_item_annotate_pdf">Choose Annotate PDF to review a document with freehand marks, rectangles, ovals, and text notes. Tap an existing annotation to select, move, recolor, resize, edit, or delete it before saving. Searchable PDFs also offer Snap for text-aligned marking. In edit mode, use two fingers to zoom and move the page; Zoom mode remains available as an alternative.</string>
 </resources>

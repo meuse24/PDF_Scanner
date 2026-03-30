@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_qr_codes">Сканировать QR-коды</string>
+    <string name="qr_scan_title">QR-коды</string>
+    <string name="qr_scan_progress">Сканирование страницы %1$d из %2$d</string>
+    <string name="qr_scan_empty">QR-коды не найдены</string>
+    <string name="qr_scan_page">Страница %1$d</string>
+    <string name="qr_scan_copy">Копировать в буфер обмена</string>
+    <string name="qr_scan_copied">Скопировано</string>
+    <string name="qr_scan_share">Поделиться</string>
+    <string name="qr_scan_wifi_ssid">Сеть: %1$s</string>
+    <string name="qr_scan_wifi_password">Пароль</string>
+    <string name="qr_scan_wifi_show_password">Показать пароль</string>
+    <string name="qr_scan_wifi_hide_password">Скрыть пароль</string>
+    <string name="qr_scan_error_encrypted">Невозможно сканировать зашифрованный PDF</string>
+    <string name="help_item_scan_qr_codes">Выберите «Сканировать QR-коды», чтобы анализировать PDF постранично и локально на устройстве просматривать найденные ссылки, данные Wi‑Fi или текст.</string>
+    <string name="info_feature_qr_scan">Распознавание QR-кодов полностью выполняется на устройстве и показывает по страницам найденные URL, данные Wi‑Fi или текст без отправки содержимого документа на сервер.</string>
+</resources>

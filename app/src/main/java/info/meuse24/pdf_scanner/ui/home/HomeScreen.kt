@@ -137,6 +137,7 @@ fun HomeScreen(
     onNavigateToRedact:             (Long) -> Unit = {},
     onNavigateToGrayscale:          (Long) -> Unit = {},
     onNavigateToPdfMetadata:        (Long) -> Unit = {},
+    onNavigateToQrScan:             (Long) -> Unit = {},
     onNavigateToImagesToPdf:        () -> Unit     = {},
     viewModel:                      HomeViewModel  = hiltViewModel()
 ) {
@@ -365,6 +366,7 @@ fun HomeScreen(
                         ScanAction.Redact -> onNavigateToRedact(record.id)
                         ScanAction.Grayscale -> onNavigateToGrayscale(record.id)
                         ScanAction.PdfMetadata -> onNavigateToPdfMetadata(record.id)
+                        ScanAction.ScanQrCodes -> onNavigateToQrScan(record.id)
                         ScanAction.Print -> {
                             val printManager = context.getSystemService(PrintManager::class.java)
                             printManager?.print(
@@ -534,9 +536,9 @@ fun HomeScreen(
         HomeLoadingDialog(
             progressText = ocrProgress?.let { progress ->
                 resources.getString(R.string.searchable_progress, progress.first, progress.second)
-            }
-        )
-    }
+                }
+            )
+        }
 
     // ── Edit-Lade-Overlay ─────────────────────────────────────────────────────
     if (editLoading) {

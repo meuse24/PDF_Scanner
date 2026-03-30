@@ -48,6 +48,7 @@ import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
@@ -114,6 +115,7 @@ sealed interface ScanAction {
     data object Rename           : ScanAction
     data object Grayscale        : ScanAction
     data object PdfMetadata      : ScanAction
+    data object ScanQrCodes      : ScanAction
     data object Print            : ScanAction
 }
 
@@ -368,6 +370,7 @@ private fun PdfActionSheet(
         SheetItem(Icons.AutoMirrored.Filled.BrandingWatermark,   R.string.action_text_watermark, notEncrypted)                        { onAction(ScanAction.TextWatermark) }
         SheetItem(Icons.Default.Print,                           R.string.action_print_pdf,     notEncrypted)                         { onAction(ScanAction.Print) }
         SheetItem(Icons.Default.Image,                           R.string.action_export_as_jpg, notEncrypted)                         { onAction(ScanAction.ExportAsJpg) }
+        SheetItem(Icons.Default.QrCodeScanner,                   R.string.action_scan_qr_codes, notEncrypted)                        { onAction(ScanAction.ScanQrCodes) }
         SheetItem(Icons.Default.InvertColors,                    R.string.action_grayscale_pdf, notEncrypted)                         { onAction(ScanAction.Grayscale) }
         SheetItem(Icons.Default.Compress,                        R.string.action_compress_pdf,  notEncrypted && !record.isSearchable) { onAction(ScanAction.CompressPdf) }
 

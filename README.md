@@ -11,6 +11,7 @@ Privacy-focused Android app for scanning, creating, editing, and protecting PDFs
   - 2 images per page
   - 4 images per page
 - Search by filename and OCR text
+- Scan PDFs for QR codes and inspect URLs, Wi-Fi credentials, and raw payloads locally
 - Merge, split, reorder, rotate, extract, duplicate, and delete pages
 - Add annotations with marks, rectangles, ovals, text notes, and zoom-aware editing
 - Add page numbers, text watermarks, and signatures
@@ -46,6 +47,12 @@ Useful Android verification:
 ```bash
 ./gradlew --no-configuration-cache connectedDebugAndroidTest
 ./gradlew --no-configuration-cache --% connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=info.meuse24.pdf_scanner.ImportAndPdfEditorInstrumentedTest
+```
+
+If Hilt-generated classes go missing after an incremental install, force a fresh install without the Gradle build cache:
+
+```bash
+./gradlew installDebug --no-build-cache --rerun-tasks
 ```
 
 ## Project shape

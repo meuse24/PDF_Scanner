@@ -140,31 +140,13 @@ internal fun DrawScope.drawAnnotationTextPreview(
         android.graphics.Color.green(comment.color),
         android.graphics.Color.blue(comment.color)
     )
-    val backgroundColor = android.graphics.Color.argb(
-        54,
-        android.graphics.Color.red(comment.color),
-        android.graphics.Color.green(comment.color),
-        android.graphics.Color.blue(comment.color)
-    )
     val paint = android.graphics.Paint().apply {
         color = textColor
         textSize = textSizePx
         isAntiAlias = true
     }
-    val bgPaint = android.graphics.Paint().apply {
-        color = backgroundColor
-        isAntiAlias = true
-    }
     val lines = comment.text.split("\n")
     val lineHeight = textSizePx * 1.3f
-    val maxWidth = lines.maxOfOrNull { paint.measureText(it) } ?: 0f
-    val bgRect = android.graphics.RectF(
-        anchorX - 6f,
-        anchorY - textSizePx - 4f,
-        anchorX + maxWidth + 8f,
-        anchorY + lineHeight * (lines.size - 1) + 6f
-    )
-    drawContext.canvas.nativeCanvas.drawRoundRect(bgRect, 6f, 6f, bgPaint)
     lines.forEachIndexed { index, line ->
         drawContext.canvas.nativeCanvas.drawText(line, anchorX, anchorY + lineHeight * index, paint)
     }

@@ -18,3 +18,11 @@
 # ── Coroutines (internal compiler-generated classes) ─────────────────────────
 -keepclassmembers class kotlinx.coroutines.** { volatile <fields>; }
 -dontwarn kotlinx.coroutines.**
+
+# ── Hilt application/bootstrap ───────────────────────────────────────────────
+# AGP/R8 strips the generated Hilt application superclass in release builds
+# unless it is kept explicitly; the manifest still instantiates PdfScannerApp.
+-keep class info.meuse24.pdf_scanner.PdfScannerApp { *; }
+-keep class info.meuse24.pdf_scanner.Hilt_PdfScannerApp { *; }
+-keep class info.meuse24.pdf_scanner.*_GeneratedInjector { *; }
+-keep class dagger.hilt.internal.** { *; }

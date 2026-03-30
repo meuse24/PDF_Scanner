@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_qr_codes">扫描二维码</string>
+    <string name="qr_scan_title">二维码</string>
+    <string name="qr_scan_progress">正在扫描第 %1$d / %2$d 页</string>
+    <string name="qr_scan_empty">未找到二维码</string>
+    <string name="qr_scan_page">第 %1$d 页</string>
+    <string name="qr_scan_copy">复制到剪贴板</string>
+    <string name="qr_scan_copied">已复制</string>
+    <string name="qr_scan_share">分享</string>
+    <string name="qr_scan_wifi_ssid">网络：%1$s</string>
+    <string name="qr_scan_wifi_password">密码</string>
+    <string name="qr_scan_wifi_show_password">显示密码</string>
+    <string name="qr_scan_wifi_hide_password">隐藏密码</string>
+    <string name="qr_scan_error_encrypted">无法扫描加密 PDF</string>
+    <string name="help_item_scan_qr_codes">选择“扫描二维码”即可逐页分析 PDF，并在设备本地查看检测到的链接、Wi‑Fi 信息或文本。</string>
+    <string name="info_feature_qr_scan">二维码识别完全在设备本地运行，可按页列出找到的 URL、Wi‑Fi 数据或文本，不会将文档内容发送到服务器。</string>
+</resources>

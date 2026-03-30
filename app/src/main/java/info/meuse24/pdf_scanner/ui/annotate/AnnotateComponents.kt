@@ -130,6 +130,7 @@ internal fun AnnotationToolbarIconButton(
 @Composable
 internal fun AnnotationAttributeBar(
     selectedColor: Int,
+    showOpaqueColorPreview: Boolean,
     selectedWidthFraction: Float,
     widthLabelRes: Int,
     onColorSelected: (Int) -> Unit,
@@ -166,13 +167,14 @@ internal fun AnnotationAttributeBar(
             DropdownMenu(expanded = colorExpanded, onDismissRequest = { colorExpanded = false }) {
                 annotationPalette.forEach { option ->
                     val colorLabel = stringResource(option.labelRes)
+                    val previewColor = if (showOpaqueColorPreview) option.color.toOpaqueColor() else option.color.toMarkerColor()
                     DropdownMenuItem(
                         text = { Text(colorLabel) },
                         leadingIcon = {
                             Box(
                                 modifier = Modifier
                                     .size(18.dp)
-                                    .background(Color(option.color), CircleShape)
+                                    .background(Color(previewColor), CircleShape)
                                     .border(1.dp, Color.White.copy(alpha = 0.75f), CircleShape)
                                     .semantics { contentDescription = colorLabel }
                             )

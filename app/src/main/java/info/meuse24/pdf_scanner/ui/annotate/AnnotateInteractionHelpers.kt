@@ -174,17 +174,17 @@ internal fun applySelectionColor(
 ): AnnotationElementState = when (selection.kind) {
     AnnotationHistoryKind.STROKE -> state.copy(
         strokes = state.strokes.toMutableList().apply {
-            getOrNull(selection.index)?.let { this[selection.index] = it.copy(color = color) }
+            getOrNull(selection.index)?.let { this[selection.index] = it.copy(color = color.toMarkerColor()) }
         }
     )
     AnnotationHistoryKind.RECT -> state.copy(
         rects = state.rects.toMutableList().apply {
-            getOrNull(selection.index)?.let { this[selection.index] = it.copy(color = color) }
+            getOrNull(selection.index)?.let { this[selection.index] = it.copy(color = color.toOpaqueColor()) }
         }
     )
     AnnotationHistoryKind.OVAL -> state.copy(
         ovals = state.ovals.toMutableList().apply {
-            getOrNull(selection.index)?.let { this[selection.index] = it.copy(color = color) }
+            getOrNull(selection.index)?.let { this[selection.index] = it.copy(color = color.toOpaqueColor()) }
         }
     )
     AnnotationHistoryKind.COMMENT -> state.copy(

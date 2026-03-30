@@ -210,6 +210,57 @@ class AnnotateInteractionHelpersTest {
     }
 
     @Test
+    fun `applySelectionColor macht rect farbe deckend`() {
+        val state = AnnotationElementState(
+            strokes = emptyList(),
+            rects = listOf(
+                AnnotationRect(
+                    left = 0.2f,
+                    top = 0.2f,
+                    right = 0.4f,
+                    bottom = 0.4f,
+                    pageIndex = 0,
+                    color = 0x66FFDC00
+                )
+            ),
+            ovals = emptyList(),
+            comments = emptyList()
+        )
+
+        val updated = applySelectionColor(
+            selection = AnnotationSelection(AnnotationHistoryKind.RECT, 0),
+            color = 0x660091EA,
+            state = state
+        )
+
+        assertEquals(0xFF0091EA.toInt(), updated.rects.single().color)
+    }
+
+    @Test
+    fun `applySelectionColor behaelt marker transparenz bei`() {
+        val state = AnnotationElementState(
+            strokes = listOf(
+                AnnotationStroke(
+                    points = listOf(0.1f to 0.1f, 0.2f to 0.2f),
+                    pageIndex = 0,
+                    color = 0x66FFDC00
+                )
+            ),
+            rects = emptyList(),
+            ovals = emptyList(),
+            comments = emptyList()
+        )
+
+        val updated = applySelectionColor(
+            selection = AnnotationSelection(AnnotationHistoryKind.STROKE, 0),
+            color = 0x660091EA,
+            state = state
+        )
+
+        assertEquals(0x660091EA, updated.strokes.single().color)
+    }
+
+    @Test
     fun `applySelectionWidth aktualisiert kommentar ueber width mapping`() {
         val state = AnnotationElementState(
             strokes = emptyList(),

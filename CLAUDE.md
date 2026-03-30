@@ -40,6 +40,12 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb shell am start -n info.meuse24.pdf_scanner/.MainActivity
 ```
 
+Hilt-Build-Cache-Workaround bei fehlenden generierten Klassen nach inkrementellen Builds:
+
+```bash
+./gradlew installDebug --no-build-cache --rerun-tasks
+```
+
 ## Projekt
 
 **App-Name:** M24 PDF-Scanner (Launcher-Label: „PDF Scan") | **Paket:** `info.meuse24.pdf_scanner` | **Min SDK:** 29 | **Target SDK:** 36
@@ -86,6 +92,9 @@ ui/
 │                                  # Verwaltet addActionTrigger + isSelectionMode → FAB ausgeblendet im Auswahlmodus
 │                                  # Edge-to-edge gehärtet: Scaffold mit safeDrawing(Horizontal+Bottom),
 │                                  # NavHost konsumiert innerPadding; MainActivity ruft enableEdgeToEdge() auf
+├── qrscan/
+│   ├── QrScanScreen.kt            # Ergebnisliste für QR-Codes: URL/WiFi/Text, Copy/Share, Fortschritt, Fehlerdialog
+│   └── QrScanViewModel.kt         # Lädt ScanRecord per scanId und koordiniert den QR-Scan-UseCase
 ├── home/
 │   ├── HomeScreen.kt              # Koordinator: Launcher, ViewModel-Wiring, Bulk-Aktionen und Navigation
 │   ├── HomeScreenModels.kt        # PendingImport + Dateinamens-/Sortier-Helfer
@@ -232,6 +241,7 @@ util/PdfEditorImageOps.kt          # A4-Zellenlayout + fitInside für Images-to-
 - **Schichtenregel:** ViewModel koordiniert State + ruft Use Cases/Workflows auf → Use Cases verarbeiten → Repository persistiert
 - **Keine Literal-Strings im Kotlin-Code** — ausschließlich `context.getString(R.string.*)` oder `stringResource()`
 - **Neue Strings** immer in alle 10 Locale-Dateien eintragen (values/, -de, -es, -fr, -pt, -zh-rCN, -ar, -ja, -ru, -hi)
+- Feature-spezifische String-Dateien folgen dem Muster `strings_<feature>.xml`; für QR-Scan liegt das in `strings_qr_scan.xml`
 - **Privacy-/Help-/Info-Texte** immer auch gegen `docs/privacy-policy.html` und reale Datenflüsse prüfen
 - **Fehler in HomeScreen** → `viewModel.reportError(String)` → `_error: StateFlow` → AlertDialog
 - **Fehler in Edit-Screens** → eigener `_error: StateFlow<String?>` im jeweiligen ViewModel → AlertDialog im Screen
@@ -284,9 +294,11 @@ test/
 │   ├── domain/usecase/CreatePdfFromImagesUseCaseTest.kt # Seitenanzahl, unreadable images, Thumbnail + DB-Insert
 │   ├── home/HomeImportFilenameSuggestionTest.kt     # DISPLAY_NAME → Dateinamensvorschlag ohne .pdf
 │   ├── ui/imagestopdf/ImagesToPdfViewModelTest.kt   # editLoading-Guard, Erfolg, Fehler, clearError
+│   ├── ui/qrscan/QrScanViewModelTest.kt             # Scan-Guard, Erfolg/Fehler, verschlüsselte PDFs
 │   ├── annotate/AnnotateInteractionHelpersTest.kt   # Hit-Testing, Auswahl, Move, Mutationen für Stroke/Rect/Oval/Text
 │   └── ui/shared/PdfViewportMathTest.kt             # clampPanOffset + inverse Zoom/Pan-Mathematik + Snap-Hilfsfunktionen
 └── util/
+    ├── QrCodeScannerTest.kt                 # Resource-close-Helfer für QR-Scanner-Lifecycle
     ├── PdfEditorTest.kt                    # buildRanges + resolveUniqueFilename + mapDisplayToPdfCoord + mergeTextBoxesToLines
     ├── PdfEditorRealIntegrationTest.kt     # echte PDF-Dateien im JVM-Lauf: protect/unlock, restrict/removePassword, reorder, duplicate/delete, rotate, merge/split
     ├── PdfTestFixtures.kt                  # wiederverwendbare Test-PDF-Erzeugung + Seitensignaturen für Real-PDF-Tests
@@ -328,6 +340,7 @@ Testabhängigkeiten: `junit:4.13.2` + `kotlinx-coroutines-test:1.10.1` + `mockit
 | Room | 2.8.4 |
 | Navigation Compose | 2.9.7 |
 | ML Kit Document Scanner | 16.0.0 |
+| ML Kit Barcode Scanning | 17.3.0 |
 | ML Kit Text Recognition | 16.0.1 |
 | ML Kit Text (HI/ZH/JA) | 16.0.1 (GMS unbundled; ZH/JA nur OCR-Text, kein searchable PDF) |
 | PdfBox-Android | 2.0.27.0 |

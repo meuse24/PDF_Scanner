@@ -90,6 +90,7 @@ import info.meuse24.pdf_scanner.ui.pageedit.DuplicatePagesScreen
 import info.meuse24.pdf_scanner.ui.pageedit.ExtractPagesScreen
 import info.meuse24.pdf_scanner.ui.pageedit.RotatePagesScreen
 import info.meuse24.pdf_scanner.ui.privacy.PrivacyScreen
+import info.meuse24.pdf_scanner.ui.qrscan.QrScanScreen
 import info.meuse24.pdf_scanner.ui.reorder.ReorderScreen
 import info.meuse24.pdf_scanner.ui.split.SplitScreen
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -296,6 +297,7 @@ fun AppNavigation() {
                             onNavigateToRedact          = { scanId -> navController.navigate(Screen.Redact.createRoute(scanId)) },
                             onNavigateToGrayscale       = { scanId -> navController.navigate(Screen.Grayscale.createRoute(scanId)) },
                             onNavigateToPdfMetadata     = { scanId -> navController.navigate(Screen.PdfMetadata.createRoute(scanId)) },
+                            onNavigateToQrScan          = { scanId -> navController.navigate(Screen.QrScan.createRoute(scanId)) },
                             onNavigateToImagesToPdf     = { navController.navigate(Screen.ImagesToPdf.route) }
                         )
                     }
@@ -416,6 +418,12 @@ fun AppNavigation() {
                     ) {
                         PdfMetadataScreen(onNavigateBack = { navController.navigateUp() })
                     }
+                    composable(
+                        route = Screen.QrScan.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        QrScanScreen(onNavigateBack = { navController.navigateUp() })
+                    }
                     composable(Screen.ImagesToPdf.route) { backStackEntry ->
                         val homeEntry = remember(backStackEntry) {
                             navController.getBackStackEntry(Screen.Ablage.route)
@@ -500,6 +508,7 @@ private fun AppBarTitle(
             currentRoute?.startsWith("redact/") == true -> stringResource(R.string.redact_screen_title)
             currentRoute?.startsWith("grayscale/") == true -> stringResource(R.string.grayscale_screen_title)
             currentRoute?.startsWith("pdf-metadata/") == true -> stringResource(R.string.metadata_screen_title)
+            currentRoute?.startsWith("qr-scan/") == true -> stringResource(R.string.qr_scan_title)
             currentRoute == Screen.ImagesToPdf.route -> stringResource(R.string.images_to_pdf_title)
             else -> stringResource(R.string.app_name)
         },

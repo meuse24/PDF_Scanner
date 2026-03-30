@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_qr_codes">Scanner les codes QR</string>
+    <string name="qr_scan_title">Codes QR</string>
+    <string name="qr_scan_progress">Analyse de la page %1$d sur %2$d</string>
+    <string name="qr_scan_empty">Aucun code QR trouvé</string>
+    <string name="qr_scan_page">Page %1$d</string>
+    <string name="qr_scan_copy">Copier dans le presse-papiers</string>
+    <string name="qr_scan_copied">Copié</string>
+    <string name="qr_scan_share">Partager</string>
+    <string name="qr_scan_wifi_ssid">Réseau : %1$s</string>
+    <string name="qr_scan_wifi_password">Mot de passe</string>
+    <string name="qr_scan_wifi_show_password">Afficher le mot de passe</string>
+    <string name="qr_scan_wifi_hide_password">Masquer le mot de passe</string>
+    <string name="qr_scan_error_encrypted">Impossible de scanner un PDF chiffré</string>
+    <string name="help_item_scan_qr_codes">Choisissez Scanner les codes QR pour analyser un PDF page par page et consulter localement sur votre appareil les liens, données Wi‑Fi ou textes détectés.</string>
+    <string name="info_feature_qr_scan">La détection des codes QR fonctionne entièrement sur l’appareil et liste, page par page, les URL, données Wi‑Fi ou textes trouvés sans envoyer le contenu du document à un serveur.</string>
+</resources>

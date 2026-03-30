@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_qr_codes">QRコードをスキャン</string>
+    <string name="qr_scan_title">QRコード</string>
+    <string name="qr_scan_progress">%2$d ページ中 %1$d ページをスキャン中</string>
+    <string name="qr_scan_empty">QRコードが見つかりませんでした</string>
+    <string name="qr_scan_page">%1$d ページ</string>
+    <string name="qr_scan_copy">クリップボードにコピー</string>
+    <string name="qr_scan_copied">コピーしました</string>
+    <string name="qr_scan_share">共有</string>
+    <string name="qr_scan_wifi_ssid">ネットワーク: %1$s</string>
+    <string name="qr_scan_wifi_password">パスワード</string>
+    <string name="qr_scan_wifi_show_password">パスワードを表示</string>
+    <string name="qr_scan_wifi_hide_password">パスワードを非表示</string>
+    <string name="qr_scan_error_encrypted">暗号化された PDF はスキャンできません</string>
+    <string name="help_item_scan_qr_codes">「QRコードをスキャン」を選ぶと、PDF をページごとに解析し、検出したリンク、Wi‑Fi 情報、テキストを端末上でローカルに確認できます。</string>
+    <string name="info_feature_qr_scan">QR コード検出は完全に端末内で実行され、見つかった URL、Wi‑Fi 情報、テキストをページごとに一覧表示します。文書内容がサーバーへ送信されることはありません。</string>
+</resources>

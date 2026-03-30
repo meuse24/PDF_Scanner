@@ -21,6 +21,7 @@
     <string name="annotate_color_blue">أزرق</string>
     <string name="annotate_color_orange">برتقالي</string>
     <string name="annotate_color_violet">بنفسجي</string>
+    <string name="annotate_color_black">أسود</string>
     <string name="annotate_selected_prefix">المحدد: %1$s</string>
     <string name="annotate_selected_delete">حذف</string>
     <string name="annotate_selected_clear">إلغاء التحديد</string>

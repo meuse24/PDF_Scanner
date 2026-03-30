@@ -62,5 +62,8 @@ sealed class Screen(val route: String) {
     data object PdfMetadata : Screen("pdf-metadata/{scanId}") {
         fun createRoute(scanId: Long) = "pdf-metadata/$scanId"
     }
+    data object QrScan : Screen("qr-scan/{scanId}") {
+        fun createRoute(scanId: Long) = "qr-scan/$scanId"
+    }
     data object ImagesToPdf : Screen("images-to-pdf")
 }

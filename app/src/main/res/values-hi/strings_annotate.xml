@@ -21,6 +21,7 @@
     <string name="annotate_color_blue">नीला</string>
     <string name="annotate_color_orange">नारंगी</string>
     <string name="annotate_color_violet">बैंगनी</string>
+    <string name="annotate_color_black">काला</string>
     <string name="annotate_selected_prefix">चयनित: %1$s</string>
     <string name="annotate_selected_delete">हटाएं</string>
     <string name="annotate_selected_clear">चयन हटाएं</string>

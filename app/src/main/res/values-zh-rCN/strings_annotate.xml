@@ -21,6 +21,7 @@
     <string name="annotate_color_blue">蓝色</string>
     <string name="annotate_color_orange">橙色</string>
     <string name="annotate_color_violet">紫色</string>
+    <string name="annotate_color_black">黑色</string>
     <string name="annotate_selected_prefix">已选中：%1$s</string>
     <string name="annotate_selected_delete">删除</string>
     <string name="annotate_selected_clear">取消选择</string>

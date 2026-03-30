@@ -21,6 +21,7 @@
     <string name="annotate_color_blue">Синий</string>
     <string name="annotate_color_orange">Оранжевый</string>
     <string name="annotate_color_violet">Фиолетовый</string>
+    <string name="annotate_color_black">Черный</string>
     <string name="annotate_selected_prefix">Выбрано: %1$s</string>
     <string name="annotate_selected_delete">Удалить</string>
     <string name="annotate_selected_clear">Снять выбор</string>

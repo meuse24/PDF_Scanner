@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_qr_codes">QR-Codes scannen</string>
+    <string name="qr_scan_title">QR-Codes</string>
+    <string name="qr_scan_progress">Seite %1$d von %2$d wird gescannt</string>
+    <string name="qr_scan_empty">Keine QR-Codes gefunden</string>
+    <string name="qr_scan_page">Seite %1$d</string>
+    <string name="qr_scan_copy">In Zwischenablage kopieren</string>
+    <string name="qr_scan_copied">Kopiert</string>
+    <string name="qr_scan_share">Teilen</string>
+    <string name="qr_scan_wifi_ssid">Netzwerk: %1$s</string>
+    <string name="qr_scan_wifi_password">Passwort</string>
+    <string name="qr_scan_wifi_show_password">Passwort anzeigen</string>
+    <string name="qr_scan_wifi_hide_password">Passwort verbergen</string>
+    <string name="qr_scan_error_encrypted">Verschlüsselte PDF kann nicht gescannt werden</string>
+    <string name="help_item_scan_qr_codes">Wähle QR-Codes scannen, um eine PDF seitenweise nach QR-Codes zu durchsuchen und erkannte Links, WLAN-Daten oder Klartext lokal auf dem Gerät anzuzeigen.</string>
+    <string name="info_feature_qr_scan">Die QR-Code-Erkennung läuft vollständig lokal auf dem Gerät und listet gefundene URLs, WLAN-Daten oder Text seitenweise auf, ohne Dokumentinhalte an einen Server zu senden.</string>
+</resources>

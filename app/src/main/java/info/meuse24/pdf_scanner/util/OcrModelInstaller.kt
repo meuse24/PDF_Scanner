@@ -27,6 +27,11 @@ interface OcrModelInstaller {
     )
 }
 
+class OcrModelInstallException(
+    message: String,
+    cause: Throwable? = null
+) : Exception(message, cause)
+
 @Singleton
 class AndroidOcrModelInstaller @Inject constructor(
     @param:ApplicationContext private val context: Context
@@ -87,7 +92,9 @@ class AndroidOcrModelInstaller @Inject constructor(
                     ModuleInstallStatusUpdate.InstallState.STATE_FAILED ->
                         finish {
                             cont.resumeWithException(
-                                IllegalStateException("Model module download failed: ${update.errorCode}")
+                                OcrModelInstallException(
+                                    message = "Model module download failed: ${update.errorCode}"
+                                )
                             )
                         }
                     else -> Unit
@@ -107,7 +114,14 @@ class AndroidOcrModelInstaller @Inject constructor(
                     }
                 }
                 .addOnFailureListener { error ->
-                    finish { cont.resumeWithException(error) }
+                    finish {
+                        cont.resumeWithException(
+                            OcrModelInstallException(
+                                message = "Model module install request failed",
+                                cause = error
+                            )
+                        )
+                    }
                 }
 
             cont.invokeOnCancellation {

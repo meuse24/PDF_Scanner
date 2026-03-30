@@ -1,11 +1,13 @@
 package info.meuse24.pdf_scanner.util
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import android.util.Log
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
 import com.tom_roush.pdfbox.pdmodel.font.PDFont
@@ -35,6 +37,7 @@ import javax.inject.Singleton
  */
 @Singleton
 open class SearchablePdfBuilder @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val ocrPipeline: OcrPipeline,
     private val textRecognizerRunner: TextRecognizerRunner,
     private val dispatcherProvider: DispatcherProvider
@@ -215,16 +218,30 @@ open class SearchablePdfBuilder @Inject constructor(
     }
 
     /**
-     * Lädt einen geeigneten Systemfont für den Sprachcode.
-     * Fallback-Kette: skriptspezifisch → Roboto (Latin+Cyrillic) → Helvetica (PDF built-in).
-     *
-     * Alle Pfad-Kandidaten werden per file.exists() geprüft, PDType0Font.load()
-     * ist in try-catch eingeschlossen — kein Absturz bei herstellerspezifischen Pfaden.
-     *
-     * Technical Debt: Robustere Alternative wäre eine NotoSans-Subset-Datei in
-     * src/main/assets/, die geräteunabhängig immer vorhanden ist.
+     * Lädt einen geeigneten Font für den Sprachcode.
+     * Priorität:
+     * 1) App-eigene Assets (geräteunabhängig)
+     * 2) Systemfont-Kandidaten (falls Asset fehlt)
+     * 3) Helvetica (eingebauter PDF-Fallback)
      */
     private fun loadFont(document: PDDocument, languageCode: String): PDFont {
+        val assetCandidates = buildList {
+            when (languageCode) {
+                "hi" -> add("fonts/NotoSansDevanagari-Regular.ttf")
+                "ar" -> add("fonts/NotoSansArabic-Regular.ttf")
+                else -> Unit
+            }
+            add("fonts/NotoSans-Regular.ttf")
+        }
+
+        for (assetPath in assetCandidates) {
+            try {
+                context.assets.open(assetPath).use { stream ->
+                    return PDType0Font.load(document, stream, true)
+                }
+            } catch (_: Exception) { /* nächsten Kandidaten versuchen */ }
+        }
+
         val candidates = buildList {
             when (languageCode) {
                 "hi" -> {

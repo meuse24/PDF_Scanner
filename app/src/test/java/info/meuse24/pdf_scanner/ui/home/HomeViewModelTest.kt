@@ -17,6 +17,7 @@ import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
+import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -80,6 +81,8 @@ class HomeViewModelTest {
                 R.string.ocr_no_image         to "No image available",
                 R.string.ocr_no_text_auto_hint to "No text: try Hindi manually",
                 R.string.ocr_no_text_found    to "No text found",
+                R.string.ocr_auto_detection_uncertain to "Automatic detection uncertain",
+                R.string.ocr_model_download_failed to "Model download failed",
                 R.string.ocr_failed           to "OCR failed",
                 R.string.rename_error_exists  to "Filename already exists",
                 R.string.rename_error_failed  to "Rename failed",
@@ -174,6 +177,39 @@ class HomeViewModelTest {
         assertEquals("OCR failed", viewModel.error.value)
         assertNull(viewModel.ocrText.value)
         assertFalse(viewModel.ocrLoading.value)
+    }
+
+    @Test
+    fun `extractTexts shows uncertain warning when auto mode has weak language signal`() = runTest(testDispatcher) {
+        val pdf = File(tmpFolder.root, "doc4.pdf").apply { writeText("pdf") }
+        val record = ScanRecord(id = 4L, filename = "doc4", filepath = pdf.absolutePath,
+            timestamp = 0L, pageCount = 1, fileSize = 0L)
+
+        val stats = info.meuse24.pdf_scanner.util.OcrResultStats(0.55f, null, 0f)
+        val viewModel = buildViewModel(extractTextUseCase = fakeExtract { _, _ -> "Ambiguous text" to stats })
+        viewModel.extractTexts(listOf(record), OCR_LANGUAGE_AUTO)
+        advanceUntilIdle()
+
+        assertEquals("Ambiguous text", viewModel.ocrText.value)
+        assertEquals("Automatic detection uncertain", viewModel.error.value)
+    }
+
+    @Test
+    fun `extractTexts reports model download failure explicitly`() = runTest(testDispatcher) {
+        val pdf = File(tmpFolder.root, "doc5.pdf").apply { writeText("pdf") }
+        val record = ScanRecord(id = 5L, filename = "doc5", filepath = pdf.absolutePath,
+            timestamp = 0L, pageCount = 1, fileSize = 0L)
+
+        val viewModel = buildViewModel(
+            extractTextUseCase = fakeExtract { _, _ ->
+                throw OcrModelInstallException("install failed")
+            }
+        )
+        viewModel.extractTexts(listOf(record), OCR_LANGUAGE_AUTO)
+        advanceUntilIdle()
+
+        assertEquals("Model download failed", viewModel.error.value)
+        assertNull(viewModel.ocrText.value)
     }
 
     @Test

@@ -19,11 +19,11 @@ Der Plan orientiert sich an Android/Kotlin- und Clean-Architecture-Prinzipien: U
 
 ## Umsetzungsstand
 
-Stand dieses Dokuments: 30. März 2026
+Stand dieses Dokuments: 31. März 2026
 
-- **Phase 1–6 sind funktional umgesetzt (Phase 7–9 teilweise).**
-- Gemeinsame OCR-Pipeline, Auto-Fallback, Modellinstallation, Sprachabdeckung (inkl. Koreanisch), Metadaten-Nutzung und CJK-Guard für Searchable PDF sind implementiert.
-- Offen: App-eigene Font-Assets (Phase 6), differenzierte Fehler-UX (Phase 7), Backfill-Strategie (Phase 8), Hilfe-/Privacy-Texte (Phase 9).
+- **Phase 1–9 sind funktional umgesetzt; Phase 7/9 sind inhaltlich weitgehend abgeschlossen.**
+- Gemeinsame OCR-Pipeline, Auto-Fallback, Modellinstallation, Sprachabdeckung (inkl. Koreanisch), Metadaten-Nutzung, CJK-Guard, Backfill sowie aktualisierte Help-/Info-/Privacy-Texte sind implementiert.
+- Neu seit 31.03.2026: app-eigene OCR-Fonts (Assets) für reproduzierbarere Searchable-PDF-Ergebnisse und differenzierte OCR-Fehlerhinweise (Auto-unsicher, Modell-Download fehlgeschlagen, niedrige Qualität).
 
 ### ✅ Phase 1: OCR-Pfade zusammenführen (Umgesetzt)
 - Gemeinsame `OcrPipeline.kt` für Textextraktion und Searchable PDF.
@@ -708,7 +708,7 @@ Warum diese Reihenfolge:
 
 Status:
 
-- ⏳ teilweise umgesetzt; CJK-Guard in MakeSearchableWorkflow (zh/ja/ko liefern ScanWorkflowError.SearchableUnsupportedForScript); App-eigene Font-Subsets in assets/ noch ausstehend
+- ✅ abgeschlossen; CJK-Guard in MakeSearchableWorkflow (zh/ja/ko liefern ScanWorkflowError.SearchableUnsupportedForScript) und app-eigene Font-Assets fuer Latin/Arabic/Devanagari sind integriert; Systemfontsuche bleibt als Fallback erhalten
 
 Ziel:
 
@@ -750,7 +750,7 @@ Das verhindert:
 
 Status:
 
-- ⏳ teilweise umgesetzt; SearchableUnsupportedForScript als neuer Fehlertyp mit Übersetzungen in allen 10 Locales; differenzierte Meldungen für "auto-Erkennung unsicher" und "Qualität zu niedrig" noch ausstehend
+- ✅ weitgehend abgeschlossen; SearchableUnsupportedForScript als Fehlertyp inkl. Übersetzungen vorhanden; differenzierte OCR-Hinweise fuer "auto-Erkennung unsicher", "Qualitaet niedrig" und "Modell-Download fehlgeschlagen" sind implementiert
 
 Ziel:
 
@@ -779,7 +779,7 @@ Zusatzanforderung:
 
 Status:
 
-- ⏳ offen; force-Parameter in MakeSearchableUseCase vorhanden (erlaubt Re-Processing bereits durchsuchbarer Records); proaktiver Lazy-Backfill-Mechanismus noch nicht implementiert
+- ✅ abgeschlossen; force-Parameter in MakeSearchableUseCase vorhanden und ein stiller Lazy-Backfill fuer bestehende searchable Records ohne extractedText wird beim Start der HomeViewModel-Session angestoßen (begrenzt pro Session)
 
 Ziel:
 
@@ -809,7 +809,7 @@ Begruendung:
 
 Status:
 
-- ⏳ offen; Hilfe-/Info-/Privacy-Texte spiegeln OCR-Auto-Modus, Play-Services-Download, Sprachmodell-Grenzen und CJK-Einschränkungen noch nicht wider
+- ✅ weitgehend abgeschlossen; Hilfe-/Info-/Privacy-Texte spiegeln OCR-Auto-Modus, Play-Services-Download, Sprachmodell-Grenzen und CJK-Einschraenkungen wider (inkl. docs/privacy-policy.html und lokalisierter Strings)
 
 Ziel:
 

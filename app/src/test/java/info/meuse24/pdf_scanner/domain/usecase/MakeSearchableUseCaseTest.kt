@@ -1,5 +1,6 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
+import android.content.Context
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.util.OcrPipeline
@@ -136,6 +137,7 @@ class MakeSearchableUseCaseTest {
 class FakeSearchablePdfBuilder(
     private val onMakeSearchable: (File, String) -> Unit
 ) : SearchablePdfBuilder(
+    context = mock(Context::class.java),
     ocrPipeline = mock(OcrPipeline::class.java),
     textRecognizerRunner = mock(TextRecognizerRunner::class.java),
     dispatcherProvider = info.meuse24.pdf_scanner.testutil.TestDispatcherProvider(kotlinx.coroutines.test.StandardTestDispatcher())

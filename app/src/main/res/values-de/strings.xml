@@ -143,6 +143,8 @@
     <string name="ocr_no_text_found">Kein Text im Dokument gefunden</string>
     <string name="ocr_no_text_auto_hint">Kein Text erkannt. Bei Hindi, Chinesisch, Japanisch oder Koreanisch bitte die Sprache manuell auswählen.</string>
     <string name="ocr_low_confidence_warning">Die Erkennungsgenauigkeit ist niedrig (%1$d%%). Der Text könnte Fehler enthalten.</string>
+    <string name="ocr_auto_detection_uncertain">Die automatische Erkennung ist unsicher. Bitte Sprache manuell auswählen.</string>
+    <string name="ocr_model_download_failed">Sprachmodell konnte nicht geladen werden. Bitte Google Play Services prüfen und erneut versuchen.</string>
     <string name="ocr_failed">Texterkennung fehlgeschlagen</string>
     <string name="ocr_model_preparing">OCR-Sprachmodell wird vorbereitet…</string>
     <string name="ocr_model_downloading">OCR-Sprachmodell wird heruntergeladen…</string>

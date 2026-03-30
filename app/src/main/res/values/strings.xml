@@ -165,6 +165,8 @@
     <string name="ocr_no_text_found">No text found in this document</string>
     <string name="ocr_no_text_auto_hint">No text recognized. For Hindi, Chinese, Japanese, or Korean documents, try selecting the language manually.</string>
     <string name="ocr_low_confidence_warning">Confidence is low (%1$d%%). The recognized text might contain errors.</string>
+    <string name="ocr_auto_detection_uncertain">Automatic detection is uncertain. Try selecting the language manually.</string>
+    <string name="ocr_model_download_failed">Language model download failed. Check Google Play Services and try again.</string>
     <string name="ocr_failed">Text extraction failed</string>
     <string name="ocr_model_preparing">Preparing OCR language model…</string>
     <string name="ocr_model_downloading">Downloading OCR language model…</string>

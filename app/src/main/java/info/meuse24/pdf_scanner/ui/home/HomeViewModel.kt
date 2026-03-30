@@ -23,7 +23,9 @@ import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
 import info.meuse24.pdf_scanner.ui.ocr.OCR_LANGUAGE_AUTO
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
+import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import info.meuse24.pdf_scanner.util.DispatcherProvider
+import info.meuse24.pdf_scanner.util.OcrResultStats
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.ResourceProvider
 import info.meuse24.pdf_scanner.util.StorageProvider
@@ -223,16 +225,13 @@ class HomeViewModel @Inject constructor(
             try {
                 val (text, stats) = extractTextUseCase(validRecords, languageCode, ::updateOcrStatus)
                 _ocrText.value = text
-                
-                // Warnung bei niedriger Confidence (Phasen 6 & 7)
-                if (stats != null && stats.confidence < 0.3f && text.isNotBlank()) {
-                    val confidencePercent = (stats.confidence * 100).toInt()
-                    _error.value = resourceProvider.getString(R.string.ocr_low_confidence_warning, confidencePercent)
-                }
+                maybeReportOcrWarning(languageCode, text, stats)
             } catch (e: OcrNoTextException) {
                 val msgRes = if (languageCode == OCR_LANGUAGE_AUTO) R.string.ocr_no_text_auto_hint
                              else R.string.ocr_no_text_found
                 _error.value = resourceProvider.getString(msgRes)
+            } catch (e: OcrModelInstallException) {
+                _error.value = resourceProvider.getString(R.string.ocr_model_download_failed)
             } catch (e: Exception) {
                 _error.value = resourceProvider.getString(R.string.ocr_failed)
             } finally {
@@ -393,6 +392,28 @@ class HomeViewModel @Inject constructor(
                 resourceProvider.getString(R.string.ocr_model_downloading)
             OcrPipelineStatus.InstallingModel ->
                 resourceProvider.getString(R.string.ocr_model_installing)
+        }
+    }
+
+    private fun maybeReportOcrWarning(
+        languageCode: String,
+        text: String,
+        stats: OcrResultStats?
+    ) {
+        if (text.isBlank() || stats == null) return
+
+        if (stats.confidence < 0.3f) {
+            val confidencePercent = (stats.confidence * 100).toInt()
+            _error.value = resourceProvider.getString(R.string.ocr_low_confidence_warning, confidencePercent)
+            return
+        }
+
+        if (
+            languageCode == OCR_LANGUAGE_AUTO &&
+            stats.recognizedLanguage.isNullOrBlank() &&
+            stats.confidence < 0.6f
+        ) {
+            _error.value = resourceProvider.getString(R.string.ocr_auto_detection_uncertain)
         }
     }
 }

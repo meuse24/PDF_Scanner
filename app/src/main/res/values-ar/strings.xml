@@ -142,6 +142,8 @@
     <string name="ocr_no_image">لا توجد صورة متاحة لاستخراج النص</string>
     <string name="ocr_no_text_found">لم يُعثر على نص في هذا المستند</string>
     <string name="ocr_no_text_auto_hint">لم يُتعرَّف على أي نص. للمستندات بالهندية، اختر الهندية يدوياً كلغة.</string>
+    <string name="ocr_auto_detection_uncertain">الكشف التلقائي غير مؤكد. يرجى اختيار اللغة يدويًا.</string>
+    <string name="ocr_model_download_failed">فشل تنزيل نموذج اللغة. تحقّق من Google Play Services وحاول مرة أخرى.</string>
     <string name="ocr_failed">فشل استخراج النص</string>
     <string name="ocr_model_preparing">جارٍ تجهيز نموذج لغة OCR…</string>
     <string name="ocr_model_downloading">جارٍ تنزيل نموذج لغة OCR…</string>

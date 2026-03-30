@@ -142,6 +142,8 @@
     <string name="ocr_no_image">没有可用于文本提取的图片</string>
     <string name="ocr_no_text_found">此文档中未找到文本</string>
     <string name="ocr_no_text_auto_hint">未识别到文本。对于印地语文档，请手动选择印地语作为语言。</string>
+    <string name="ocr_auto_detection_uncertain">自动检测不确定。请手动选择语言。</string>
+    <string name="ocr_model_download_failed">语言模型下载失败。请检查 Google Play 服务后重试。</string>
     <string name="ocr_failed">文本提取失败</string>
     <string name="ocr_model_preparing">正在准备 OCR 语言模型…</string>
     <string name="ocr_model_downloading">正在下载 OCR 语言模型…</string>

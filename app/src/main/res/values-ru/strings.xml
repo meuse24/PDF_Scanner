@@ -142,6 +142,8 @@
     <string name="ocr_no_image">Нет изображения для извлечения текста</string>
     <string name="ocr_no_text_found">Текст в документе не найден</string>
     <string name="ocr_no_text_auto_hint">Текст не распознан. Для документов на хинди выберите хинди вручную в качестве языка.</string>
+    <string name="ocr_auto_detection_uncertain">Автоматическое определение неуверенное. Выберите язык вручную.</string>
+    <string name="ocr_model_download_failed">Не удалось загрузить языковую модель. Проверьте Google Play Services и повторите попытку.</string>
     <string name="ocr_failed">Ошибка извлечения текста</string>
     <string name="ocr_model_preparing">Подготовка языковой модели OCR…</string>
     <string name="ocr_model_downloading">Загрузка языковой модели OCR…</string>

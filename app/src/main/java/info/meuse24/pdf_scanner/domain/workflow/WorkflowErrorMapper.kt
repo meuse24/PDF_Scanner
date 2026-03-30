@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import info.meuse24.pdf_scanner.util.ResourceProvider
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,7 +30,7 @@ class WorkflowErrorMapper @Inject constructor(
         ScanWorkflowError.CannotDeleteAllPages -> resourceProvider.getString(R.string.delete_pages_all_error)
         is ScanWorkflowError.MissingFiles -> resourceProvider.getString(R.string.workflow_missing_files)
         is ScanWorkflowError.StorageWriteFailed -> resourceProvider.getString(R.string.workflow_storage_failed)
-        is ScanWorkflowError.OcrFailed -> resourceProvider.getString(R.string.searchable_failed)
+        is ScanWorkflowError.OcrFailed -> mapOcrFailed(error)
         is ScanWorkflowError.MergeFailed -> resourceProvider.getString(R.string.merge_error)
         is ScanWorkflowError.SplitFailed -> resourceProvider.getString(R.string.split_error)
         is ScanWorkflowError.ReorderFailed -> resourceProvider.getString(R.string.reorder_error)
@@ -56,5 +57,13 @@ class WorkflowErrorMapper @Inject constructor(
         is ScanWorkflowError.AnnotateFailed -> resourceProvider.getString(R.string.annotate_error)
         is ScanWorkflowError.GrayscaleFailed -> resourceProvider.getString(R.string.grayscale_error)
         is ScanWorkflowError.PdfMetadataFailed -> resourceProvider.getString(R.string.metadata_error)
+    }
+
+    private fun mapOcrFailed(error: ScanWorkflowError.OcrFailed): String {
+        return if (error.cause is OcrModelInstallException) {
+            resourceProvider.getString(R.string.ocr_model_download_failed)
+        } else {
+            resourceProvider.getString(R.string.searchable_failed)
+        }
     }
 }

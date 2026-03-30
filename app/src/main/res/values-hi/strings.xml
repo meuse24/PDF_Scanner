@@ -142,6 +142,8 @@
     <string name="ocr_no_image">टेक्स्ट निष्कर्षण के लिए कोई छवि उपलब्ध नहीं</string>
     <string name="ocr_no_text_found">इस दस्तावेज़ में कोई टेक्स्ट नहीं मिला</string>
     <string name="ocr_no_text_auto_hint">कोई टेक्स्ट नहीं पहचाना गया। हिंदी दस्तावेज़ों के लिए हिंदी को मैन्युअल रूप से भाषा के रूप में चुनें।</string>
+    <string name="ocr_auto_detection_uncertain">स्वचालित पहचान अनिश्चित है। कृपया भाषा मैन्युअल रूप से चुनें।</string>
+    <string name="ocr_model_download_failed">भाषा मॉडल डाउनलोड विफल रहा। कृपया Google Play Services जांचें और फिर से प्रयास करें।</string>
     <string name="ocr_failed">टेक्स्ट निष्कर्षण विफल</string>
     <string name="ocr_model_preparing">OCR भाषा मॉडल तैयार किया जा रहा है…</string>
     <string name="ocr_model_downloading">OCR भाषा मॉडल डाउनलोड किया जा रहा है…</string>

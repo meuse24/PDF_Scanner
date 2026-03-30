@@ -142,6 +142,8 @@
     <string name="ocr_no_image">Nenhuma imagem disponível para extração de texto</string>
     <string name="ocr_no_text_found">Nenhum texto encontrado neste documento</string>
     <string name="ocr_no_text_auto_hint">Nenhum texto reconhecido. Para documentos em hindi, selecione Hindi manualmente como idioma.</string>
+    <string name="ocr_auto_detection_uncertain">A deteção automática é incerta. Tente selecionar o idioma manualmente.</string>
+    <string name="ocr_model_download_failed">Falha ao transferir o modelo de idioma. Verifique os Google Play Services e tente novamente.</string>
     <string name="ocr_failed">Falha na extração de texto</string>
     <string name="ocr_model_preparing">A preparar o modelo de idioma OCR…</string>
     <string name="ocr_model_downloading">A transferir o modelo de idioma OCR…</string>

@@ -142,6 +142,8 @@ class HomeViewModel @Inject constructor(
                     onProgress = { cur, tot -> _ocrProgress.value = cur to tot },
                     onStatus = ::updateOcrStatus
                 )
+            } catch (e: OcrModelInstallException) {
+                _error.value = resourceProvider.getString(R.string.ocr_model_download_failed)
             } catch (e: Exception) {
                 _error.value = e.message ?: resourceProvider.getString(R.string.error_save_failed)
             } finally {

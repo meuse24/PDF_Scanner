@@ -142,6 +142,8 @@
     <string name="ocr_no_image">テキスト抽出に使用できる画像がありません</string>
     <string name="ocr_no_text_found">このドキュメントにテキストが見つかりません</string>
     <string name="ocr_no_text_auto_hint">テキストを認識できませんでした。ヒンディー語の文書の場合は、言語としてヒンディー語を手動で選択してください。</string>
+    <string name="ocr_auto_detection_uncertain">自動検出が不確実です。言語を手動で選択してください。</string>
+    <string name="ocr_model_download_failed">言語モデルのダウンロードに失敗しました。Google Play Services を確認して再試行してください。</string>
     <string name="ocr_failed">テキスト抽出に失敗しました</string>
     <string name="ocr_model_preparing">OCR 言語モデルを準備しています…</string>
     <string name="ocr_model_downloading">OCR 言語モデルをダウンロードしています…</string>

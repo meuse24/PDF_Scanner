@@ -411,6 +411,10 @@
     <string name="sheet_section_output">Ausgabe</string>
     <string name="sheet_section_security">Schutz</string>
     <string name="sheet_section_ocr">OCR</string>
+    <string name="sheet_section_document">Dokument</string>
+    <string name="sheet_section_analyse">Analysieren &amp; Text</string>
+    <string name="sheet_section_export">Export &amp; Umwandeln</string>
+    <string name="help_section_archive_search">Ablage &amp; Suche</string>
     <!-- PDF Action Bottom Sheet: Dokumentkopf -->
     <string name="sheet_header_meta">%1$d Seiten · %2$s</string>
     <!-- Bulk-Aktionsleiste: kompakte Labels -->

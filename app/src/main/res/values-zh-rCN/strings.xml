@@ -409,6 +409,10 @@
     <string name="sheet_section_output">输出</string>
     <string name="sheet_section_security">安全</string>
     <string name="sheet_section_ocr">OCR</string>
+    <string name="sheet_section_document">文档</string>
+    <string name="sheet_section_analyse">分析与文本</string>
+    <string name="sheet_section_export">导出与转换</string>
+    <string name="help_section_archive_search">存档与搜索</string>
     <string name="sheet_header_meta">%1$d 页 · %2$s</string>
     <string name="label_bulk_share">分享</string>
     <string name="label_bulk_export">导出</string>

@@ -409,6 +409,10 @@
     <string name="sheet_section_output">Вывод</string>
     <string name="sheet_section_security">Защита</string>
     <string name="sheet_section_ocr">OCR</string>
+    <string name="sheet_section_document">Документ</string>
+    <string name="sheet_section_analyse">Анализ и текст</string>
+    <string name="sheet_section_export">Экспорт и конвертация</string>
+    <string name="help_section_archive_search">Архив и поиск</string>
     <string name="sheet_header_meta">%1$d стр. · %2$s</string>
     <string name="label_bulk_share">Поделиться</string>
     <string name="label_bulk_export">Экспорт</string>

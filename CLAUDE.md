@@ -109,7 +109,8 @@ ui/
 │       ├── HomeSheets.kt          # Add-Document-, OCR-Result- und Save-Import-Sheets/Dialoge
 │       ├── ScanItem.kt            # Card: Dateiname (maxLines=2, volle Breite) + Row(Thumbnail · Metadaten · Menü · Checkbox)
 │       │                          # MoreVert öffnet ModalBottomSheet (skipPartiallyExpanded=true) statt Dropdown
-│       │                          # Sheet-Sektionen: Bearbeiten · Seiten · Ausgabe · Schutz · OCR (nur wenn searchable)
+│       │                          # Sheet-Sektionen: Dokument · Seiten · Bearbeiten · Analysieren & Text · Export & Umwandeln · Schutz
+│                          # „Analysieren & Text" zeigt Remove text layer nur wenn isSearchable && !isEncrypted
 │       │                          # SheetItem: enabled = alpha 0.38f + clickable(enabled=false); icon FindInPage für Textebene entfernen
 │       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Rename/Annotate/RemoveTextLayer/Grayscale/PdfMetadata/…)
 │       │                          # onAction: (ScanAction) → Unit; Tags als farbige Badges (tertiaryContainer)

@@ -117,10 +117,11 @@ fun HelpScreen() {
             ),
             HelpSection(
                 icon = Icons.Default.FolderOpen,
-                titleRes = R.string.help_section_archive,
+                titleRes = R.string.help_section_archive_search,
                 actions = listOf(
                     HelpAction(Icons.Default.PictureAsPdf, R.string.action_open_document, R.string.help_item_open),
-                    HelpAction(Icons.Default.CheckBox, R.string.action_select_documents, R.string.help_item_select)
+                    HelpAction(Icons.Default.CheckBox, R.string.action_select_documents, R.string.help_item_select),
+                    HelpAction(Icons.Default.Search, R.string.help_section_search, R.string.help_item_search)
                 )
             ),
             HelpSection(
@@ -136,57 +137,62 @@ fun HelpScreen() {
                 )
             ),
             HelpSection(
-                icon = Icons.Default.Search,
-                titleRes = R.string.help_section_search,
+                icon = Icons.Default.Info,
+                titleRes = R.string.sheet_section_document,
                 actions = listOf(
-                    HelpAction(Icons.Default.Search, R.string.help_section_search, R.string.help_item_search)
+                    HelpAction(Icons.Default.DriveFileRenameOutline, R.string.action_rename,       R.string.help_item_rename),
+                    HelpAction(Icons.Default.Info,                   R.string.action_pdf_metadata, R.string.help_item_pdf_metadata)
                 )
             ),
             HelpSection(
                 icon = Icons.Default.SwapVert,
-                titleRes = R.string.help_section_pdf_pages,
+                titleRes = R.string.sheet_section_pages,
                 actions = listOf(
-                    HelpAction(Icons.Default.ContentCut, R.string.action_split, R.string.help_item_split),
-                    HelpAction(Icons.Default.SwapVert, R.string.action_reorder, R.string.help_item_reorder)
+                    HelpAction(Icons.Default.SwapVert,                R.string.action_reorder,         R.string.help_item_reorder),
+                    HelpAction(Icons.AutoMirrored.Filled.RotateRight, R.string.action_rotate,          R.string.help_item_rotate),
+                    HelpAction(Icons.Default.ContentCut,              R.string.action_split,           R.string.help_item_split),
+                    HelpAction(Icons.Default.PictureAsPdf,            R.string.action_extract_pages,   R.string.help_item_extract_pages),
+                    HelpAction(Icons.Default.ContentCopy,             R.string.action_duplicate_pages, R.string.help_item_duplicate_pages),
+                    HelpAction(Icons.Default.Delete,                  R.string.action_delete_pages,    R.string.help_item_delete_pages)
                 )
             ),
             HelpSection(
-                icon = Icons.AutoMirrored.Filled.RotateRight,
-                titleRes = R.string.help_section_pdf_page_changes,
+                icon = Icons.Default.BorderColor,
+                titleRes = R.string.sheet_section_edit,
                 actions = listOf(
-                    HelpAction(Icons.AutoMirrored.Filled.RotateRight, R.string.action_rotate, R.string.help_item_rotate),
-                    HelpAction(Icons.Default.Delete, R.string.action_delete_pages, R.string.help_item_delete_pages),
-                    HelpAction(Icons.Default.PictureAsPdf, R.string.action_extract_pages, R.string.help_item_extract_pages),
-                    HelpAction(Icons.Default.ContentCopy, R.string.action_duplicate_pages, R.string.help_item_duplicate_pages)
+                    HelpAction(Icons.Default.BorderColor,                       R.string.action_annotate_pdf,   R.string.help_item_annotate_pdf),
+                    HelpAction(Icons.Default.Draw,                              R.string.action_sign_pdf,       R.string.help_item_sign_pdf),
+                    HelpAction(Icons.Default.FormatListNumbered,               R.string.action_page_numbers,  R.string.help_item_page_numbers),
+                    HelpAction(Icons.AutoMirrored.Filled.BrandingWatermark,    R.string.action_text_watermark, R.string.help_item_watermark),
+                    HelpAction(Icons.Default.Block,                             R.string.action_redact_pdf,     R.string.help_item_redact_pdf)
                 )
             ),
             HelpSection(
-                icon = Icons.Default.FormatListNumbered,
-                titleRes = R.string.help_section_pdf_marks,
+                icon = Icons.Default.QrCodeScanner,
+                titleRes = R.string.sheet_section_analyse,
                 actions = listOf(
-                    HelpAction(Icons.Default.DriveFileRenameOutline, R.string.action_rename,       R.string.help_item_rename),
-                    HelpAction(Icons.Default.Info,                   R.string.action_pdf_metadata, R.string.help_item_pdf_metadata),
-                    HelpAction(Icons.Default.FormatListNumbered,    R.string.action_page_numbers, R.string.help_item_page_numbers),
-                    HelpAction(Icons.AutoMirrored.Filled.BrandingWatermark, R.string.action_text_watermark, R.string.help_item_watermark),
-                    HelpAction(Icons.Default.BorderColor,  R.string.action_annotate_pdf,   R.string.help_item_annotate_pdf),
-                    HelpAction(Icons.Default.Draw,         R.string.action_sign_pdf,       R.string.help_item_sign_pdf)
+                    HelpAction(Icons.Default.QrCodeScanner, R.string.action_scan_qr_codes,    R.string.help_item_scan_qr_codes),
+                    HelpAction(Icons.Default.FindInPage,    R.string.action_remove_text_layer, R.string.help_item_remove_text_layer)
                 )
             ),
             HelpSection(
-                icon = Icons.Default.PictureAsPdf,
-                titleRes = R.string.help_section_pdf_output,
+                icon = Icons.Default.Print,
+                titleRes = R.string.sheet_section_export,
                 actions = listOf(
-                    HelpAction(Icons.Default.Print, R.string.action_print_pdf, R.string.help_item_print_pdf),
-                    HelpAction(Icons.Default.QrCodeScanner, R.string.action_scan_qr_codes, R.string.help_item_scan_qr_codes),
-                    HelpAction(Icons.Default.Compress, R.string.action_compress_pdf, R.string.help_item_compress_pdf),
+                    HelpAction(Icons.Default.Print,        R.string.action_print_pdf,     R.string.help_item_print_pdf),
+                    HelpAction(Icons.Default.Image,        R.string.action_export_as_jpg, R.string.help_item_export_as_jpg),
                     HelpAction(Icons.Default.InvertColors, R.string.action_grayscale_pdf, R.string.help_item_grayscale_pdf),
-                    HelpAction(Icons.Default.Image, R.string.action_export_as_jpg, R.string.help_item_export_as_jpg),
-                    HelpAction(Icons.Default.Lock, R.string.action_protect_pdf, R.string.help_item_protect_pdf),
-                    HelpAction(Icons.Default.Block, R.string.action_redact_pdf, R.string.help_item_redact_pdf),
-                    HelpAction(Icons.Default.LockOpen, R.string.action_unlock_pdf, R.string.help_item_unlock_pdf),
-                    HelpAction(Icons.Default.NoEncryption, R.string.action_remove_password, R.string.help_item_remove_password),
-                    HelpAction(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage, R.string.help_item_restrict_usage),
-                    HelpAction(Icons.Default.FindInPage, R.string.action_remove_text_layer, R.string.help_item_remove_text_layer)
+                    HelpAction(Icons.Default.Compress,     R.string.action_compress_pdf,  R.string.help_item_compress_pdf)
+                )
+            ),
+            HelpSection(
+                icon = Icons.Default.Lock,
+                titleRes = R.string.sheet_section_security,
+                actions = listOf(
+                    HelpAction(Icons.Default.Lock,               R.string.action_protect_pdf,     R.string.help_item_protect_pdf),
+                    HelpAction(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage,  R.string.help_item_restrict_usage),
+                    HelpAction(Icons.Default.LockOpen,           R.string.action_unlock_pdf,      R.string.help_item_unlock_pdf),
+                    HelpAction(Icons.Default.NoEncryption,       R.string.action_remove_password, R.string.help_item_remove_password)
                 )
             )
         )

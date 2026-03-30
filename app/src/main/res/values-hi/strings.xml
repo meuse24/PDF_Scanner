@@ -409,6 +409,10 @@
     <string name="sheet_section_output">आउटपुट</string>
     <string name="sheet_section_security">सुरक्षा</string>
     <string name="sheet_section_ocr">OCR</string>
+    <string name="sheet_section_document">दस्तावेज़</string>
+    <string name="sheet_section_analyse">विश्लेषण और टेक्स्ट</string>
+    <string name="sheet_section_export">निर्यात और रूपांतरण</string>
+    <string name="help_section_archive_search">संग्रह और खोज</string>
     <string name="sheet_header_meta">%1$d पृष्ठ · %2$s</string>
     <string name="label_bulk_share">साझा करें</string>
     <string name="label_bulk_export">निर्यात</string>

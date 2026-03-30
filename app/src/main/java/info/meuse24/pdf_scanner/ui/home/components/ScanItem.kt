@@ -348,45 +348,48 @@ private fun PdfActionSheet(
         }
         HorizontalDivider()
 
-        // ── BEARBEITEN ───────────────────────────────────────────────────────
-        SheetSection(R.string.sheet_section_edit)
-        SheetItem(Icons.Default.DriveFileRenameOutline, R.string.action_rename, true)      { onAction(ScanAction.Rename) }
+        // ── DOKUMENT ─────────────────────────────────────────────────────────
+        SheetSection(R.string.sheet_section_document)
+        SheetItem(Icons.Default.DriveFileRenameOutline, R.string.action_rename,       true) { onAction(ScanAction.Rename) }
         SheetItem(Icons.Default.Info,                   R.string.action_pdf_metadata, true) { onAction(ScanAction.PdfMetadata) }
-        SheetItem(Icons.Default.BorderColor,            R.string.action_annotate_pdf, notEncrypted) { onAction(ScanAction.Annotate) }
-        SheetItem(Icons.Default.Draw,        R.string.action_sign_pdf,      notEncrypted) { onAction(ScanAction.Signature) }
 
         // ── SEITEN ───────────────────────────────────────────────────────────
         SheetSection(R.string.sheet_section_pages)
-        SheetItem(Icons.AutoMirrored.Filled.RotateRight, R.string.action_rotate,          notEncrypted)              { onAction(ScanAction.Rotate) }
         SheetItem(Icons.Default.SwapVert,                R.string.action_reorder,         notEncrypted && multiPage) { onAction(ScanAction.Reorder) }
+        SheetItem(Icons.AutoMirrored.Filled.RotateRight, R.string.action_rotate,          notEncrypted)              { onAction(ScanAction.Rotate) }
         SheetItem(Icons.Default.ContentCut,              R.string.action_split,           notEncrypted && multiPage) { onAction(ScanAction.Split) }
-        SheetItem(Icons.Default.Delete,                  R.string.action_delete_pages,    notEncrypted && multiPage) { onAction(ScanAction.DeletePages) }
         SheetItem(Icons.Default.PictureAsPdf,            R.string.action_extract_pages,   notEncrypted && multiPage) { onAction(ScanAction.ExtractPages) }
         SheetItem(Icons.Default.ContentCopy,             R.string.action_duplicate_pages, true)                      { onAction(ScanAction.DuplicatePages) }
+        SheetItem(Icons.Default.Delete,                  R.string.action_delete_pages,    notEncrypted && multiPage) { onAction(ScanAction.DeletePages) }
 
-        // ── AUSGABE ──────────────────────────────────────────────────────────
-        SheetSection(R.string.sheet_section_output)
-        SheetItem(Icons.Default.FormatListNumbered,              R.string.action_page_numbers,  notEncrypted)                         { onAction(ScanAction.PageNumbers) }
-        SheetItem(Icons.AutoMirrored.Filled.BrandingWatermark,   R.string.action_text_watermark, notEncrypted)                        { onAction(ScanAction.TextWatermark) }
-        SheetItem(Icons.Default.Print,                           R.string.action_print_pdf,     notEncrypted)                         { onAction(ScanAction.Print) }
-        SheetItem(Icons.Default.Image,                           R.string.action_export_as_jpg, notEncrypted)                         { onAction(ScanAction.ExportAsJpg) }
-        SheetItem(Icons.Default.QrCodeScanner,                   R.string.action_scan_qr_codes, notEncrypted)                        { onAction(ScanAction.ScanQrCodes) }
-        SheetItem(Icons.Default.InvertColors,                    R.string.action_grayscale_pdf, notEncrypted)                         { onAction(ScanAction.Grayscale) }
-        SheetItem(Icons.Default.Compress,                        R.string.action_compress_pdf,  notEncrypted && !record.isSearchable) { onAction(ScanAction.CompressPdf) }
+        // ── BEARBEITEN ───────────────────────────────────────────────────────
+        SheetSection(R.string.sheet_section_edit)
+        SheetItem(Icons.Default.BorderColor,                        R.string.action_annotate_pdf,   notEncrypted) { onAction(ScanAction.Annotate) }
+        SheetItem(Icons.Default.Draw,                               R.string.action_sign_pdf,       notEncrypted) { onAction(ScanAction.Signature) }
+        SheetItem(Icons.Default.FormatListNumbered,                 R.string.action_page_numbers,   notEncrypted) { onAction(ScanAction.PageNumbers) }
+        SheetItem(Icons.AutoMirrored.Filled.BrandingWatermark,      R.string.action_text_watermark, notEncrypted) { onAction(ScanAction.TextWatermark) }
+        SheetItem(Icons.Default.Block,                              R.string.action_redact_pdf,     notEncrypted) { onAction(ScanAction.Redact) }
+
+        // ── ANALYSIEREN & TEXT ────────────────────────────────────────────────
+        SheetSection(R.string.sheet_section_analyse)
+        SheetItem(Icons.Default.QrCodeScanner, R.string.action_scan_qr_codes,    notEncrypted) { onAction(ScanAction.ScanQrCodes) }
+        if (record.isSearchable && notEncrypted) {
+            SheetItem(Icons.Default.FindInPage, R.string.action_remove_text_layer, true) { onAction(ScanAction.RemoveTextLayer) }
+        }
+
+        // ── EXPORT & UMWANDELN ────────────────────────────────────────────────
+        SheetSection(R.string.sheet_section_export)
+        SheetItem(Icons.Default.Print,        R.string.action_print_pdf,     notEncrypted)                         { onAction(ScanAction.Print) }
+        SheetItem(Icons.Default.Image,        R.string.action_export_as_jpg, notEncrypted)                         { onAction(ScanAction.ExportAsJpg) }
+        SheetItem(Icons.Default.InvertColors, R.string.action_grayscale_pdf, notEncrypted)                         { onAction(ScanAction.Grayscale) }
+        SheetItem(Icons.Default.Compress,     R.string.action_compress_pdf,  notEncrypted && !record.isSearchable) { onAction(ScanAction.CompressPdf) }
 
         // ── SCHUTZ ───────────────────────────────────────────────────────────
         SheetSection(R.string.sheet_section_security)
-        SheetItem(Icons.Default.Lock,               R.string.action_protect_pdf,     notEncrypted)         { onAction(ScanAction.ProtectPdf) }
-        SheetItem(Icons.Default.Block,              R.string.action_redact_pdf,      notEncrypted)         { onAction(ScanAction.Redact) }
-        SheetItem(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage,  notEncrypted)         { onAction(ScanAction.RestrictUsage) }
-        SheetItem(Icons.Default.LockOpen,           R.string.action_unlock_pdf,      record.isEncrypted)   { onAction(ScanAction.UnlockPdf) }
-        SheetItem(Icons.Default.NoEncryption,       R.string.action_remove_password, record.isEncrypted)   { onAction(ScanAction.RemovePassword) }
-
-        // ── OCR — nur sichtbar wenn durchsuchbar und nicht verschlüsselt ─────
-        if (record.isSearchable && notEncrypted) {
-            SheetSection(R.string.sheet_section_ocr)
-            SheetItem(Icons.Default.FindInPage, R.string.action_remove_text_layer, true) { onAction(ScanAction.RemoveTextLayer) }
-        }
+        SheetItem(Icons.Default.Lock,               R.string.action_protect_pdf,     notEncrypted)       { onAction(ScanAction.ProtectPdf) }
+        SheetItem(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage,  notEncrypted)       { onAction(ScanAction.RestrictUsage) }
+        SheetItem(Icons.Default.LockOpen,           R.string.action_unlock_pdf,      record.isEncrypted) { onAction(ScanAction.UnlockPdf) }
+        SheetItem(Icons.Default.NoEncryption,       R.string.action_remove_password, record.isEncrypted) { onAction(ScanAction.RemovePassword) }
 
         Spacer(Modifier.height(8.dp))
     }

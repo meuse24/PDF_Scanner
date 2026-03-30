@@ -409,6 +409,10 @@
     <string name="sheet_section_output">Salida</string>
     <string name="sheet_section_security">Seguridad</string>
     <string name="sheet_section_ocr">OCR</string>
+    <string name="sheet_section_document">Documento</string>
+    <string name="sheet_section_analyse">Análisis y texto</string>
+    <string name="sheet_section_export">Exportar y convertir</string>
+    <string name="help_section_archive_search">Archivo y búsqueda</string>
     <string name="sheet_header_meta">%1$d págs. · %2$s</string>
     <string name="label_bulk_share">Compartir</string>
     <string name="label_bulk_export">Exportar</string>

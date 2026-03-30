@@ -409,6 +409,10 @@
     <string name="sheet_section_output">出力</string>
     <string name="sheet_section_security">セキュリティ</string>
     <string name="sheet_section_ocr">OCR</string>
+    <string name="sheet_section_document">ドキュメント</string>
+    <string name="sheet_section_analyse">解析とテキスト</string>
+    <string name="sheet_section_export">エクスポートと変換</string>
+    <string name="help_section_archive_search">アーカイブと検索</string>
     <string name="sheet_header_meta">%1$d ページ · %2$s</string>
     <string name="label_bulk_share">共有</string>
     <string name="label_bulk_export">書き出し</string>

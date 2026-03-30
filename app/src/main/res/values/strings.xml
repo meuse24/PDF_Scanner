@@ -437,6 +437,10 @@
     <string name="sheet_section_output">Output</string>
     <string name="sheet_section_security">Security</string>
     <string name="sheet_section_ocr">OCR</string>
+    <string name="sheet_section_document">Document</string>
+    <string name="sheet_section_analyse">Analyse &amp; Text</string>
+    <string name="sheet_section_export">Export &amp; Convert</string>
+    <string name="help_section_archive_search">Archive &amp; Search</string>
     <!-- PDF Action Bottom Sheet: document header -->
     <string name="sheet_header_meta">%1$d pages · %2$s</string>
     <!-- Bulk action bar: compact labels -->

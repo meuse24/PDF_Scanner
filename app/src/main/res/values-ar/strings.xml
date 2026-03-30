@@ -409,6 +409,10 @@
     <string name="sheet_section_output">إخراج</string>
     <string name="sheet_section_security">حماية</string>
     <string name="sheet_section_ocr">OCR</string>
+    <string name="sheet_section_document">المستند</string>
+    <string name="sheet_section_analyse">تحليل ونص</string>
+    <string name="sheet_section_export">تصدير وتحويل</string>
+    <string name="help_section_archive_search">الأرشيف والبحث</string>
     <string name="sheet_header_meta">%1$d صفحات · %2$s</string>
     <string name="label_bulk_share">مشاركة</string>
     <string name="label_bulk_export">تصدير</string>

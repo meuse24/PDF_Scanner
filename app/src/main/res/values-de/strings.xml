@@ -95,7 +95,7 @@
     <string name="help_section_ocr">OCR und Textextraktion</string>
     <string name="help_item_extract_text">Textextraktion (OCR) liest alle Seiten und zeigt den erkannten Text in einem Bereich an, aus dem du ihn kopieren oder teilen kannst.</string>
     <string name="help_item_make_searchable">Durchsuchbar machen ergänzt eine unsichtbare Textebene im PDF, speichert den erkannten OCR-Text lokal für die Suche in der Ablage.</string>
-    <string name="help_item_ocr_language">Vor OCR oder Durchsuchbar machen wählst du die Sprache des Dokuments. Das Hindi-Modell wird beim ersten Einsatz heruntergeladen.</string>
+    <string name="help_item_ocr_language">OCR und Durchsuchbar machen nutzen standardmäßig den Automatikmodus — funktioniert offline für lateinische Schriften. Sprachmodelle für Hindi, Chinesisch, Japanisch und Koreanisch werden beim ersten Einsatz über Google Play Services geladen. CJK-Schriften werden für durchsuchbares PDF nicht unterstützt — nutze „Text extrahieren" zum Indexieren.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Über das Hamburger-Menü (oben links) erreichst du die Ablage, den Scanner, die Hilfe und den Info-Screen.</string>
     <string name="help_section_notes">Hinweise</string>
@@ -115,7 +115,7 @@
     <string name="info_label_async">Asynchronität</string>
     <string name="info_label_platform">Plattform</string>
     <string name="info_label_ocr_languages">OCR-Sprachen</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (offline) + ZH · JA · HI (Download beim 1. Aufruf)</string>
+    <string name="info_ocr_languages_value">Automatisch (offline) · EN · DE · ES · FR · PT · RU · AR · HI · ZH · JA · KO (Download beim 1. Aufruf)</string>
     <string name="info_section_libraries">Bibliotheken</string>
     <string name="info_section_source">Quellcode</string>
     <string name="info_repository_label">GitHub-Repository</string>
@@ -130,17 +130,23 @@
     <string name="privacy_keyword_4">Privat</string>
     <string name="privacy_point_1">Die App speichert PDFs, Vorschaubilder, Bild-zu-PDF-Ergebnisse, geschwärzte Kopien und optionalen durchsuchbaren OCR-Text lokal auf Ihrem Gerät.</string>
     <string name="privacy_point_2">Dokumente oder Inhalte werden nicht automatisch hochgeladen. Teilen, Drucken oder Exportieren erfolgt nur, wenn Sie es ausdrücklich auslösen. Sicheres Schwärzen erzeugt eine neue Kopie; das Original bleibt erhalten, bis Sie es löschen.</string>
-    <string name="privacy_point_3">Scan- und OCR-Funktionen nutzen Google Play Services. Für die Fehleranalyse können technische Diagnosedaten übertragen werden. Sprachmodelle für Chinesisch, Japanisch und Hindi sowie herunterladbare Schriftarten können beim ersten Einsatz über Play Services geladen werden; Dokumentinhalte werden von der App nicht gesendet.</string>
+    <string name="privacy_point_3">Scan- und OCR-Funktionen nutzen Google Play Services. Für die Fehleranalyse können technische Diagnosedaten übertragen werden. Der automatische Modus verwendet ein integriertes Lateinerkenner-Modell, das offline funktioniert. Die Sprachmodelle für Hindi, Chinesisch, Japanisch und Koreanisch können beim ersten manuellen Einsatz über Play Services geladen werden; Dokumentinhalte werden von der App nicht gesendet.</string>
     <string name="privacy_point_4">Die App selbst erhebt keine personenbezogenen Daten, nutzt kein eigenes Analytics-System und fordert keine eigene Netzwerkberechtigung an.</string>
     <string name="privacy_footer">Stand: 29. März 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Text extrahieren</string>
+    <string name="ocr_language_auto">Automatisch</string>
     <string name="ocr_result_title">Extrahierter Text</string>
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">Kein Bild für Texterkennung verfügbar</string>
     <string name="ocr_no_text_found">Kein Text im Dokument gefunden</string>
+    <string name="ocr_no_text_auto_hint">Kein Text erkannt. Bei Hindi, Chinesisch, Japanisch oder Koreanisch bitte die Sprache manuell auswählen.</string>
+    <string name="ocr_low_confidence_warning">Die Erkennungsgenauigkeit ist niedrig (%1$d%%). Der Text könnte Fehler enthalten.</string>
     <string name="ocr_failed">Texterkennung fehlgeschlagen</string>
+    <string name="ocr_model_preparing">OCR-Sprachmodell wird vorbereitet…</string>
+    <string name="ocr_model_downloading">OCR-Sprachmodell wird heruntergeladen…</string>
+    <string name="ocr_model_installing">OCR-Sprachmodell wird installiert…</string>
     <string name="action_copy">Kopieren</string>
     <string name="action_share_text">Text teilen</string>
     <string name="ocr_copied">Text kopiert</string>
@@ -155,6 +161,8 @@
     <string name="searchable_success_multi">%1$d PDFs sind jetzt durchsuchbar</string>
     <string name="searchable_failed">Durchsuchbares PDF konnte nicht erstellt werden</string>
     <string name="searchable_nothing_to_do">Die ausgewaehlten PDFs sind bereits durchsuchbar</string>
+    <string name="searchable_unsupported_script">Durchsuchbares PDF wird für Chinesisch, Japanisch und Koreanisch nicht unterstützt – CJK-Schriften können nicht zuverlässig in einen PDF-Textlayer eingebettet werden. Mit „Text extrahieren” lässt sich der Inhalt für die App-Suche indexieren.</string>
+    <string name="searchable_blank_ocr_warning">OCR abgeschlossen, aber für %1$d Dokument(e) wurde kein Text erkannt. Versuche, die Sprache manuell auszuwählen.</string>
     <string name="searchable_badge">Durchsuchbar</string>
 
     <string name="info_section_credits">Credits</string>
@@ -468,3 +476,4 @@
 
     <!-- Images to PDF -->
 </resources>
+

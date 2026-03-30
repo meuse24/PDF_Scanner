@@ -38,7 +38,11 @@ class RedactPdfWorkflow @Inject constructor(
         return try {
             val outputRecord = redactPdfUseCase(record, rects, scansDir)
             if (makeSearchable) {
-                when (val searchableResult = makeSearchableWorkflow(listOf(outputRecord), languageCode)) {
+                when (val searchableResult = makeSearchableWorkflow(
+                    records = listOf(outputRecord),
+                    languageCode = languageCode,
+                    force = false
+                )) {
                     is WorkflowResult.Success -> Unit
                     is WorkflowResult.Failure -> {
                         runCatching { deleteScansUseCase(listOf(outputRecord)) }

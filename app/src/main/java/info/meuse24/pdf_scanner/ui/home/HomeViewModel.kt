@@ -19,9 +19,12 @@ import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
+import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
+import info.meuse24.pdf_scanner.ui.ocr.OCR_LANGUAGE_AUTO
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
 import info.meuse24.pdf_scanner.util.DispatcherProvider
+import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.ResourceProvider
 import info.meuse24.pdf_scanner.util.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,9 +33,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 import java.util.Locale
 import javax.inject.Inject
@@ -92,6 +97,9 @@ class HomeViewModel @Inject constructor(
     private val _ocrProgress = MutableStateFlow<Pair<Int, Int>?>(null)
     val ocrProgress: StateFlow<Pair<Int, Int>?> = _ocrProgress.asStateFlow()
 
+    private val _ocrStatusText = MutableStateFlow<String?>(null)
+    val ocrStatusText: StateFlow<String?> = _ocrStatusText.asStateFlow()
+
     /** true während merge Operationen */
     private val _editLoading = MutableStateFlow(false)
     val editLoading: StateFlow<Boolean> = _editLoading.asStateFlow()
@@ -102,6 +110,10 @@ class HomeViewModel @Inject constructor(
 
     fun setPendingImageUris(uris: List<Uri>) { _pendingImageUris.value = uris }
     fun clearPendingImageUris() { _pendingImageUris.value = emptyList() }
+
+    private var backfillTriggered = false
+
+    init { triggerSilentBackfill() }
 
     private val scansDir get() = storageProvider.scansDir()
 
@@ -119,13 +131,21 @@ class HomeViewModel @Inject constructor(
             try {
                 if (makeSearchable) _ocrLoading.value = true
                 importScanUseCase(
-                    pdfUri, pageCount, filename, thumbnailUri, makeSearchable, languageCode
-                ) { cur, tot -> _ocrProgress.value = cur to tot }
+                    pdfUri = pdfUri,
+                    pageCount = pageCount,
+                    filename = filename,
+                    thumbnailUri = thumbnailUri,
+                    makeSearchable = makeSearchable,
+                    languageCode = languageCode,
+                    onProgress = { cur, tot -> _ocrProgress.value = cur to tot },
+                    onStatus = ::updateOcrStatus
+                )
             } catch (e: Exception) {
                 _error.value = e.message ?: resourceProvider.getString(R.string.error_save_failed)
             } finally {
                 _ocrLoading.value  = false
                 _ocrProgress.value = null
+                _ocrStatusText.value = null
             }
         }
     }
@@ -201,11 +221,23 @@ class HomeViewModel @Inject constructor(
         _ocrLoading.value = true
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                _ocrText.value = extractTextUseCase(validRecords, languageCode)
+                val (text, stats) = extractTextUseCase(validRecords, languageCode, ::updateOcrStatus)
+                _ocrText.value = text
+                
+                // Warnung bei niedriger Confidence (Phasen 6 & 7)
+                if (stats != null && stats.confidence < 0.3f && text.isNotBlank()) {
+                    val confidencePercent = (stats.confidence * 100).toInt()
+                    _error.value = resourceProvider.getString(R.string.ocr_low_confidence_warning, confidencePercent)
+                }
+            } catch (e: OcrNoTextException) {
+                val msgRes = if (languageCode == OCR_LANGUAGE_AUTO) R.string.ocr_no_text_auto_hint
+                             else R.string.ocr_no_text_found
+                _error.value = resourceProvider.getString(msgRes)
             } catch (e: Exception) {
                 _error.value = resourceProvider.getString(R.string.ocr_failed)
             } finally {
                 _ocrLoading.value = false
+                _ocrStatusText.value = null
             }
         }
     }
@@ -217,9 +249,15 @@ class HomeViewModel @Inject constructor(
         _ocrLoading.value = true
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                when (val result = makeSearchableWorkflow(records, languageCode) { cur, tot ->
-                    _ocrProgress.value = cur to tot
-                }) {
+                when (
+                    val result = makeSearchableWorkflow(
+                        records = records,
+                        languageCode = languageCode,
+                        force = true,
+                        onProgress = { cur, tot -> _ocrProgress.value = cur to tot },
+                        onStatus = ::updateOcrStatus
+                    )
+                ) {
                     is WorkflowResult.Success -> {
                         val data = result.value
                         _success.value = if (data.processedCount == 1) {
@@ -227,12 +265,19 @@ class HomeViewModel @Inject constructor(
                         } else {
                             resourceProvider.getString(R.string.searchable_success_multi, data.processedCount)
                         }
+                        // Warnung wenn OCR für einzelne Dokumente keinen Text erkannt hat (Phase 7)
+                        if (data.blankOcrCount > 0) {
+                            _error.value = resourceProvider.getString(
+                                R.string.searchable_blank_ocr_warning, data.blankOcrCount
+                            )
+                        }
                     }
                     is WorkflowResult.Failure -> handleWorkflowFailure("SearchablePDF", result.error)
                 }
             } finally {
                 _ocrLoading.value  = false
                 _ocrProgress.value = null
+                _ocrStatusText.value = null
             }
         }
     }
@@ -306,6 +351,49 @@ class HomeViewModel @Inject constructor(
     private fun handleWorkflowFailure(tag: String, error: ScanWorkflowError) {
         Log.e(tag, "workflow failed: $error", error.cause)
         _error.value = workflowErrorMapper.map(error)
+    }
+
+    /**
+     * Backfill (Phase 8): Records mit isSearchable=true aber fehlendem extractedText stammen
+     * aus einer Zeit vor dem FTS-Index. Einmalig pro Session OCR nachholen und DB aktualisieren.
+     * Läuft still im Hintergrund — max. 10 Dokumente pro Session, kein UI-Feedback.
+     */
+    private fun triggerSilentBackfill() {
+        if (backfillTriggered) return
+        backfillTriggered = true
+        viewModelScope.launch(dispatcherProvider.io) {
+            val allScans = withTimeoutOrNull(10_000L) {
+                repository.getAllScans().first()
+            } ?: return@launch
+            val candidates = allScans
+                .filter { it.isSearchable && it.extractedText == null && File(it.filepath).exists() }
+                .take(10)
+            if (candidates.isEmpty()) return@launch
+            for (record in candidates) {
+                runCatching {
+                    val (text, _) = extractTextUseCase(listOf(record), OCR_LANGUAGE_AUTO)
+                    if (text.isNotBlank()) {
+                        repository.markSearchableWithContent(
+                            id       = record.id,
+                            fileSize = File(record.filepath).length(),
+                            text     = text,
+                            tags     = null
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateOcrStatus(status: OcrPipelineStatus) {
+        _ocrStatusText.value = when (status) {
+            OcrPipelineStatus.PreparingModel ->
+                resourceProvider.getString(R.string.ocr_model_preparing)
+            OcrPipelineStatus.DownloadingModel ->
+                resourceProvider.getString(R.string.ocr_model_downloading)
+            OcrPipelineStatus.InstallingModel ->
+                resourceProvider.getString(R.string.ocr_model_installing)
+        }
     }
 }
 

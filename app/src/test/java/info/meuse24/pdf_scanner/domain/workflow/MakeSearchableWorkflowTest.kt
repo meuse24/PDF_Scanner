@@ -93,4 +93,18 @@ class MakeSearchableWorkflowTest {
         assertEquals(1, data.processedCount)
         assertEquals("scan_7", data.firstFilename)
     }
+
+    @Test
+    fun `force=true erzwingt Verarbeitung auch bei bereits durchsuchbaren Scans`() = runTest {
+        var invocations = 0
+        val record = record(1L, isSearchable = true, extractedText = "Existiert")
+        val result = workflow { _, _ -> invocations++ }(
+            records = listOf(record),
+            languageCode = "de",
+            force = true
+        )
+
+        assertTrue(result is WorkflowResult.Success)
+        assertEquals(1, invocations)
+    }
 }

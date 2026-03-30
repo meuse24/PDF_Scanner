@@ -48,8 +48,12 @@ class SearchableAndRoundTripInstrumentedTest {
     private val resolver = context.contentResolver
     private val storageProvider = AndroidStorageProvider(context)
     private val resourceProvider = AndroidResourceProvider(context)
+    private val ocrManager = OcrManager()
+    private val ocrModelInstaller = AndroidOcrModelInstaller(context)
+    private val ocrPipeline = OcrPipeline(ocrManager, ocrModelInstaller)
+    private val textRecognizerRunner = MlKitTextRecognizerRunner()
     private val pdfEditor = PdfEditor()
-    private val searchablePdfBuilder = SearchablePdfBuilder(OcrManager())
+    private val searchablePdfBuilder = SearchablePdfBuilder(ocrPipeline, textRecognizerRunner, DefaultDispatcherProvider())
     private val scansDir: File
         get() = storageProvider.scansDir()
 
@@ -72,7 +76,7 @@ class SearchableAndRoundTripInstrumentedTest {
             lines = listOf("SCAN TEST", "1234")
         )
 
-        val extracted = searchablePdfBuilder.makeSearchable(source, "en") { _, _ -> }
+        val extracted = searchablePdfBuilder.makeSearchable(source, "en", onProgress = { _, _ -> })
         val pdfText = extractPdfText(source)
 
         assertTrue(normalizeText(extracted).contains("SCANTEST"))
@@ -126,9 +130,9 @@ class SearchableAndRoundTripInstrumentedTest {
         pdfEditor.mergePdfs(listOf(vectorPart, imagePart), mixed)
 
         val progress = mutableListOf<Pair<Int, Int>>()
-        val extracted = searchablePdfBuilder.makeSearchable(mixed, "en") { current, total ->
-            progress += current to total
-        }
+        val extracted = searchablePdfBuilder.makeSearchable(mixed, "en", onProgress = { current, total ->
+            progress.add(current to total)
+        })
         val pdfText = normalizeText(extractPdfText(mixed))
         val normalizedExtracted = normalizeText(extracted)
 

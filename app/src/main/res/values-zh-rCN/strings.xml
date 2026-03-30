@@ -95,7 +95,7 @@
     <string name="help_section_ocr">OCR 与文本提取</string>
     <string name="help_item_extract_text">文本提取（OCR）会读取全部页面，并在面板中显示识别出的文本，你可以复制或分享这些内容。</string>
     <string name="help_item_make_searchable">设为可搜索会为 PDF 添加不可见文本层，将提取出的 OCR 文本本地保存用于档案搜索。</string>
-    <string name="help_item_ocr_language">在执行 OCR 或设为可搜索之前，请先选择文档语言。印地语模型会在首次使用时下载。</string>
+    <string name="help_item_ocr_language">OCR 和设为可搜索默认使用自动模式——对拉丁文字可离线使用。印地语、中文、日语和韩语模型首次使用时通过 Google Play Services 下载。CJK 文字不支持可搜索 PDF——请使用"提取文字"来为其建立索引。</string>
     <string name="help_section_navigation">导航</string>
     <string name="help_nav_text">通过左上角的汉堡菜单可访问文件库、扫描仪、帮助和关于页面。</string>
     <string name="help_section_notes">注意事项</string>
@@ -115,7 +115,7 @@
     <string name="info_label_async">异步处理</string>
     <string name="info_label_platform">平台</string>
     <string name="info_label_ocr_languages">OCR 支持语言</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR（离线）+ ZH · JA · HI（首次使用时下载）</string>
+    <string name="info_ocr_languages_value">自动（离线）· EN · DE · ES · FR · PT · RU · AR · HI · ZH · JA · KO（首次使用时下载）</string>
     <string name="info_section_libraries">依赖库</string>
     <string name="info_section_source">源代码</string>
     <string name="info_repository_label">GitHub 仓库</string>
@@ -130,17 +130,22 @@
     <string name="privacy_keyword_4">私密</string>
     <string name="privacy_point_1">本应用会将 PDF、预览图、已遮蔽副本和可选的可搜索 OCR 文本保存在您的设备本地。</string>
     <string name="privacy_point_2">不会自动上传任何文档或内容。只有在您明确触发时才会进行分享或导出。安全遮蔽会创建一份新副本；原始文件会一直保留，直到您删除它。</string>
-    <string name="privacy_point_3">扫描和 OCR 功能使用 Google Play 服务。为进行错误分析，可能会传输技术诊断数据。中文、日文和印地语语言模型以及可下载字体，可能会在首次使用时通过 Play Services 获取；本应用不会发送您的文档内容。</string>
+    <string name="privacy_point_3">扫描和 OCR 功能使用 Google Play 服务。为进行错误分析，可能会传输技术诊断数据。自动模式使用内置的拉丁文字识别器，可离线工作。印地语、中文、日语和韩语的语言模型可能会在首次手动使用时通过 Play Services 获取；本应用不会发送您的文档内容。</string>
     <string name="privacy_point_4">应用本身不收集个人数据，不使用自有分析服务，也不请求自有网络权限。</string>
     <string name="privacy_footer">更新时间：2026年3月29日</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">提取文本</string>
+    <string name="ocr_language_auto">自动</string>
     <string name="ocr_result_title">提取的文本</string>
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">没有可用于文本提取的图片</string>
     <string name="ocr_no_text_found">此文档中未找到文本</string>
+    <string name="ocr_no_text_auto_hint">未识别到文本。对于印地语文档，请手动选择印地语作为语言。</string>
     <string name="ocr_failed">文本提取失败</string>
+    <string name="ocr_model_preparing">正在准备 OCR 语言模型…</string>
+    <string name="ocr_model_downloading">正在下载 OCR 语言模型…</string>
+    <string name="ocr_model_installing">正在安装 OCR 语言模型…</string>
     <string name="action_copy">复制</string>
     <string name="action_share_text">分享文本</string>
     <string name="ocr_copied">文本已复制</string>
@@ -160,6 +165,8 @@
     <string name="searchable_success_multi">%1$d 个 PDF 现在可搜索</string>
     <string name="searchable_failed">无法创建可搜索 PDF</string>
     <string name="searchable_nothing_to_do">所选PDF已可搜索</string>
+    <string name="searchable_unsupported_script">不支持为中文、日文或韩文创建可搜索PDF——CJK字体无法可靠地嵌入PDF文本层。请使用”提取文字”将内容索引到应用内搜索。</string>
+    <string name="searchable_blank_ocr_warning">OCR已完成，但%1$d个文档未能识别到文本。请尝试手动选择语言以获得更好的结果。</string>
     <string name="searchable_badge">可搜索</string>
 
     <!-- Merge -->
@@ -464,5 +471,6 @@
 
     <!-- Images to PDF -->
 </resources>
+
 
 

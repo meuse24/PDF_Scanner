@@ -95,7 +95,7 @@
     <string name="help_section_ocr">OCR y extracción de texto</string>
     <string name="help_item_extract_text">Extracción de texto (OCR) lee todas las páginas y muestra el texto reconocido en un panel donde puedes copiarlo o compartirlo.</string>
     <string name="help_item_make_searchable">Hacer buscable añade una capa de texto invisible al PDF, guarda localmente el texto OCR extraído para la búsqueda del archivo.</string>
-    <string name="help_item_ocr_language">Antes de OCR o Hacer buscable, elige el idioma del documento. El modelo hindi se descarga en el primer uso.</string>
+    <string name="help_item_ocr_language">OCR y Hacer buscable usan el modo Automático por defecto — funciona sin conexión para escrituras latinas. Los modelos de hindi, chino, japonés y coreano se descargan en el primer uso a través de Google Play Services. Los scripts CJK no son compatibles con PDF buscable — usa «Extraer texto» para indexarlos.</string>
     <string name="help_section_navigation">Navegación</string>
     <string name="help_nav_text">Usa el menú hamburguesa (arriba a la izquierda) para acceder al Archivo, Escáner, Ayuda e Info.</string>
     <string name="help_section_notes">Notas</string>
@@ -115,7 +115,7 @@
     <string name="info_label_async">Asincronía</string>
     <string name="info_label_platform">Plataforma</string>
     <string name="info_label_ocr_languages">Idiomas OCR</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (sin conexión) + ZH · JA · HI (descarga en el 1.er uso)</string>
+    <string name="info_ocr_languages_value">Automático (sin conexión) · EN · DE · ES · FR · PT · RU · AR · HI · ZH · JA · KO (descarga en el 1.er uso)</string>
     <string name="info_section_libraries">Bibliotecas</string>
     <string name="info_section_source">Código fuente</string>
     <string name="info_repository_label">Repositorio GitHub</string>
@@ -130,17 +130,22 @@
     <string name="privacy_keyword_4">Privado</string>
     <string name="privacy_point_1">Esta app almacena localmente en tu dispositivo los PDF, las imágenes de vista previa, las copias redactadas y el texto OCR buscable opcional.</string>
     <string name="privacy_point_2">Ningún documento ni contenido se sube automáticamente. Compartir o exportar solo ocurre cuando lo activas explícitamente. La redacción segura crea una copia nueva; el original permanece hasta que lo elimines.</string>
-    <string name="privacy_point_3">Las funciones de escaneo y OCR usan Google Play Services. Pueden transmitirse datos técnicos de diagnóstico para el análisis de errores. Los modelos de idioma para chino, japonés e hindi, así como las fuentes descargables, pueden obtenerse mediante Play Services en el primer uso; el contenido de tus documentos no es enviado por esta app.</string>
+    <string name="privacy_point_3">Las funciones de escaneo y OCR usan Google Play Services. Pueden transmitirse datos técnicos de diagnóstico para el análisis de errores. El modo automático usa un reconocedor de texto latino integrado que funciona sin conexión. Los modelos de idioma para hindi, chino, japonés y coreano pueden obtenerse mediante Play Services en el primer uso manual; el contenido de tus documentos no es enviado por esta app.</string>
     <string name="privacy_point_4">La app no recopila datos personales, no usa analítica propia y no solicita un permiso de red propio.</string>
     <string name="privacy_footer">Actualizado: 29 de marzo de 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Extraer texto</string>
+    <string name="ocr_language_auto">Automático</string>
     <string name="ocr_result_title">Texto extraído</string>
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">No hay imagen disponible para la extracción de texto</string>
     <string name="ocr_no_text_found">No se encontró texto en este documento</string>
+    <string name="ocr_no_text_auto_hint">No se reconoció texto. Para documentos en hindi, selecciona Hindi manualmente como idioma.</string>
     <string name="ocr_failed">Error en la extracción de texto</string>
+    <string name="ocr_model_preparing">Preparando el modelo de idioma OCR…</string>
+    <string name="ocr_model_downloading">Descargando el modelo de idioma OCR…</string>
+    <string name="ocr_model_installing">Instalando el modelo de idioma OCR…</string>
     <string name="action_copy">Copiar</string>
     <string name="action_share_text">Compartir texto</string>
     <string name="ocr_copied">Texto copiado</string>
@@ -160,6 +165,8 @@
     <string name="searchable_success_multi">%1$d PDFs ya son buscables</string>
     <string name="searchable_failed">No se pudo crear el PDF con búsqueda</string>
     <string name="searchable_nothing_to_do">Los PDFs seleccionados ya permiten búsqueda</string>
+    <string name="searchable_unsupported_script">El PDF con búsqueda no está disponible para chino, japonés o coreano — las fuentes CJK no se pueden incrustar de forma fiable en la capa de texto del PDF. Usa «Extraer texto» para indexar el contenido en la búsqueda de la app.</string>
+    <string name="searchable_blank_ocr_warning">OCR completado, pero no se reconoció texto en %1$d documento(s). Intenta seleccionar el idioma manualmente.</string>
     <string name="searchable_badge">Buscable</string>
 
     <!-- Merge -->

@@ -2,14 +2,17 @@ package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
-import info.meuse24.pdf_scanner.util.OcrManager
+import info.meuse24.pdf_scanner.util.OcrPipeline
+import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
+import info.meuse24.pdf_scanner.util.TextRecognizerRunner
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.mockito.Mockito.mock
 import java.io.File
 
 /**
@@ -61,7 +64,7 @@ class MakeSearchableUseCaseTest {
         val alreadySearchable = record(1L, isSearchable = true, extractedText = "Rechnung")
         val notYetSearchable  = record(2L, isSearchable = false)
 
-        val count = useCase(listOf(alreadySearchable, notYetSearchable), "de")
+        val (count, _) = useCase(listOf(alreadySearchable, notYetSearchable), "de")
 
         assertEquals(1, count)
         assertEquals(1, processedFiles.size)
@@ -73,7 +76,7 @@ class MakeSearchableUseCaseTest {
         val (useCase, dao) = makeUseCase()
 
         // Beide Records haben isSearchable=true + extractedText gesetzt → werden übersprungen
-        val result = useCase(
+        val (result, _) = useCase(
             listOf(
                 record(1L, isSearchable = true, extractedText = "Text A"),
                 record(2L, isSearchable = true, extractedText = "Text B")
@@ -93,7 +96,7 @@ class MakeSearchableUseCaseTest {
         // Simuliert v4-Migration: isSearchable=true, aber extractedText noch nicht gespeichert
         val legacyRecord = record(1L, isSearchable = true, extractedText = null)
 
-        val count = useCase(listOf(legacyRecord), "de")
+        val (count, _) = useCase(listOf(legacyRecord), "de")
 
         assertEquals(1, count)
         assertEquals(1, processedFiles.size)
@@ -132,11 +135,16 @@ class MakeSearchableUseCaseTest {
 
 class FakeSearchablePdfBuilder(
     private val onMakeSearchable: (File, String) -> Unit
-) : SearchablePdfBuilder(OcrManager()) {
+) : SearchablePdfBuilder(
+    ocrPipeline = mock(OcrPipeline::class.java),
+    textRecognizerRunner = mock(TextRecognizerRunner::class.java),
+    dispatcherProvider = info.meuse24.pdf_scanner.testutil.TestDispatcherProvider(kotlinx.coroutines.test.StandardTestDispatcher())
+) {
     override suspend fun makeSearchable(
         pdfFile:      File,
         languageCode: String,
-        onProgress:   (Int, Int) -> Unit
+        onProgress:   (Int, Int) -> Unit,
+        onStatus:     (OcrPipelineStatus) -> Unit
     ): String {
         onMakeSearchable(pdfFile, languageCode)
         return ""

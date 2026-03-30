@@ -9,7 +9,10 @@ import info.meuse24.pdf_scanner.domain.usecase.QrCodeResult
 import info.meuse24.pdf_scanner.domain.usecase.ScanQrCodesUseCase
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
+import info.meuse24.pdf_scanner.util.OcrModelInstaller
+import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.QrCodeScanner
+import org.mockito.Mockito.mock
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -165,12 +168,13 @@ private class BlockingQrCodeScanner(
     private val onScan: suspend () -> Unit = {},
     private val results: List<QrCodeResult> = emptyList(),
     private val exception: Exception? = null
-) : QrCodeScanner() {
+) : QrCodeScanner(mock(OcrModelInstaller::class.java)) {
     var invocationCount: Int = 0
 
     override suspend fun scan(
         pdfFile: File,
-        onProgress: (page: Int, total: Int) -> Unit
+        onProgress: (page: Int, total: Int) -> Unit,
+        onStatus: (OcrPipelineStatus) -> Unit
     ): List<QrCodeResult> {
         invocationCount += 1
         onProgress(1, 1)

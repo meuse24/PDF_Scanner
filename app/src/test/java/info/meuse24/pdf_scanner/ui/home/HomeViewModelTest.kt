@@ -9,6 +9,8 @@ import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
+import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
+import info.meuse24.pdf_scanner.ui.ocr.OCR_LANGUAGE_AUTO
 import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
@@ -75,10 +77,13 @@ class HomeViewModelTest {
 
         resourceProvider = FakeResourceProvider(
             strings = mapOf(
-                R.string.ocr_no_image to "No image available",
-                R.string.rename_error_exists to "Filename already exists",
-                R.string.rename_error_failed to "Rename failed",
-                R.string.rename_success to "Renamed to %s"
+                R.string.ocr_no_image         to "No image available",
+                R.string.ocr_no_text_auto_hint to "No text: try Hindi manually",
+                R.string.ocr_no_text_found    to "No text found",
+                R.string.ocr_failed           to "OCR failed",
+                R.string.rename_error_exists  to "Filename already exists",
+                R.string.rename_error_failed  to "Rename failed",
+                R.string.rename_success       to "Renamed to %s"
             )
         )
         storageProvider = TestStorageProvider(tmpFolder.root)
@@ -107,6 +112,68 @@ class HomeViewModelTest {
         assertEquals("No image available", viewModel.error.value)
         assertFalse(viewModel.ocrLoading.value)
         assertNull(viewModel.ocrText.value)
+    }
+
+    @Test
+    fun `extractTexts shows auto hint when OcrNoTextException in automatic mode`() = runTest(testDispatcher) {
+        val pdf = File(tmpFolder.root, "doc.pdf").apply { writeText("pdf") }
+        val record = ScanRecord(id = 1L, filename = "doc", filepath = pdf.absolutePath,
+            timestamp = 0L, pageCount = 1, fileSize = 0L)
+
+        val viewModel = buildViewModel(extractTextUseCase = fakeExtract { _, _ -> throw OcrNoTextException() })
+        viewModel.extractTexts(listOf(record), OCR_LANGUAGE_AUTO)
+        advanceUntilIdle()
+
+        assertEquals("No text: try Hindi manually", viewModel.error.value)
+        assertNull(viewModel.ocrText.value)
+        assertFalse(viewModel.ocrLoading.value)
+    }
+
+    @Test
+    fun `extractTexts shows low confidence warning when confidence is below 30 percent`() = runTest(testDispatcher) {
+        val pdf = File(tmpFolder.root, "low_quality.pdf").apply { writeText("pdf") }
+        val record = ScanRecord(id = 1L, filename = "low_quality", filepath = pdf.absolutePath,
+            timestamp = 0L, pageCount = 1, fileSize = 0L)
+
+        resourceProvider.strings += R.string.ocr_low_confidence_warning to "Low confidence: %d%%"
+
+        val stats = info.meuse24.pdf_scanner.util.OcrResultStats(0.25f, "en", 0f)
+        val viewModel = buildViewModel(extractTextUseCase = fakeExtract { _, _ -> "Extracted with errors" to stats })
+        viewModel.extractTexts(listOf(record), "en")
+        advanceUntilIdle()
+
+        assertEquals("Extracted with errors", viewModel.ocrText.value)
+        assertEquals("Low confidence: 25%", viewModel.error.value)
+    }
+
+    @Test
+    fun `extractTexts shows no-text-found when OcrNoTextException in manual mode`() = runTest(testDispatcher) {
+        val pdf = File(tmpFolder.root, "doc2.pdf").apply { writeText("pdf") }
+        val record = ScanRecord(id = 2L, filename = "doc2", filepath = pdf.absolutePath,
+            timestamp = 0L, pageCount = 1, fileSize = 0L)
+
+        val viewModel = buildViewModel(extractTextUseCase = fakeExtract { _, _ -> throw OcrNoTextException() })
+        viewModel.extractTexts(listOf(record), "hi")
+        advanceUntilIdle()
+
+        assertEquals("No text found", viewModel.error.value)
+        assertNull(viewModel.ocrText.value)
+        assertFalse(viewModel.ocrLoading.value)
+    }
+
+    @Test
+    fun `extractTexts shows generic error on unexpected exception`() = runTest(testDispatcher) {
+        val pdf = File(tmpFolder.root, "doc3.pdf").apply { writeText("pdf") }
+        val record = ScanRecord(id = 3L, filename = "doc3", filepath = pdf.absolutePath,
+            timestamp = 0L, pageCount = 1, fileSize = 0L)
+
+        val viewModel = buildViewModel(extractTextUseCase = fakeExtract { _, _ -> throw RuntimeException("render crash") })
+        viewModel.extractTexts(listOf(record), OCR_LANGUAGE_AUTO)
+        advanceUntilIdle()
+
+        assertEquals("OCR failed", viewModel.error.value)
+        assertNull(viewModel.ocrText.value)
+        assertFalse(viewModel.ocrLoading.value)
     }
 
     @Test
@@ -144,7 +211,9 @@ class HomeViewModelTest {
         )
     }
 
-    private fun buildViewModel(): HomeViewModel {
+    private fun buildViewModel(
+        extractTextUseCase: ExtractTextUseCase = this.extractTextUseCase
+    ): HomeViewModel {
         return HomeViewModel(
             repository = repository,
             importScanUseCase = importScanUseCase,
@@ -161,4 +230,21 @@ class HomeViewModelTest {
             dispatcherProvider = TestDispatcherProvider(testDispatcher)
         )
     }
+
+    /** Erstellt eine anonyme ExtractTextUseCase-Subklasse, die den Block als invoke-Body nutzt. */
+    private fun fakeExtract(block: suspend (List<ScanRecord>, String) -> Pair<String, info.meuse24.pdf_scanner.util.OcrResultStats?>): ExtractTextUseCase =
+        object : ExtractTextUseCase(
+            ocrPipeline = mock(info.meuse24.pdf_scanner.util.OcrPipeline::class.java),
+            inputImageLoader = mock(info.meuse24.pdf_scanner.util.OcrInputImageLoader::class.java),
+            pdfPageInputImageLoader = mock(info.meuse24.pdf_scanner.util.PdfPageInputImageLoader::class.java),
+            dispatcherProvider = TestDispatcherProvider(testDispatcher),
+            textRecognizerRunner = mock(info.meuse24.pdf_scanner.util.TextRecognizerRunner::class.java)
+        ) {
+            override suspend fun invoke(
+                records: List<ScanRecord>,
+                languageCode: String,
+                onStatus: (info.meuse24.pdf_scanner.util.OcrPipelineStatus) -> Unit
+            ): Pair<String, info.meuse24.pdf_scanner.util.OcrResultStats?> =
+                block(records, languageCode)
+        }
 }

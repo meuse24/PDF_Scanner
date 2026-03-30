@@ -7,9 +7,11 @@ import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactPdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
-import info.meuse24.pdf_scanner.util.OcrManager
+import info.meuse24.pdf_scanner.util.OcrPipeline
+import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.PdfEditor
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
+import info.meuse24.pdf_scanner.util.TextRecognizerRunner
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -257,11 +259,16 @@ private class FakeRedactionPdfEditor(
 private class FakeSearchablePdfBuilder(
     private val returnedText: String = "",
     private val throwable: Throwable? = null
-) : SearchablePdfBuilder(mock(OcrManager::class.java)) {
+) : SearchablePdfBuilder(
+    ocrPipeline = mock(OcrPipeline::class.java),
+    textRecognizerRunner = mock(TextRecognizerRunner::class.java),
+    dispatcherProvider = info.meuse24.pdf_scanner.testutil.TestDispatcherProvider(kotlinx.coroutines.test.StandardTestDispatcher())
+) {
     override suspend fun makeSearchable(
         pdfFile: File,
         languageCode: String,
-        onProgress: (current: Int, total: Int) -> Unit
+        onProgress: (current: Int, total: Int) -> Unit,
+        onStatus: (OcrPipelineStatus) -> Unit
     ): String {
         throwable?.let { throw it }
         return returnedText

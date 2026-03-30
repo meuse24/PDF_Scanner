@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
-import com.google.mlkit.vision.common.InputImage
+import android.util.Log
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
 import com.tom_roush.pdfbox.pdmodel.font.PDFont
@@ -13,15 +13,12 @@ import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
 import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
 import com.tom_roush.pdfbox.pdmodel.graphics.state.RenderingMode
 import com.tom_roush.pdfbox.util.Matrix
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 /**
  * Erstellt ein durchsuchbares PDF, indem über jede Seite des Originals eine
@@ -38,20 +35,15 @@ import kotlin.coroutines.resumeWithException
  */
 @Singleton
 open class SearchablePdfBuilder @Inject constructor(
-    private val ocrManager: OcrManager,
-    private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider()
+    private val ocrPipeline: OcrPipeline,
+    private val textRecognizerRunner: TextRecognizerRunner,
+    private val dispatcherProvider: DispatcherProvider
 ) {
-    companion object {
-        private const val RENDER_DPI = 150f
-        private const val POINTS_PER_INCH = 72f
-        private val RENDER_SCALE = RENDER_DPI / POINTS_PER_INCH // ≈ 2.083
-    }
+    // Renderparameter: PDF_OCR_RENDER_SCALE + PDF_OCR_MAX_BITMAP_SIDE aus PdfPageInputImageLoader.kt
 
-    /** Ein OCR-Wort (Element-Ebene) mit seiner Bounding Box. */
-    private data class WordData(val text: String, val bbox: Rect)
+    /** Ein OCR-Wort (Element-Ebene) mit seiner Bounding Box, Winkel und erkannter Sprache. */
+    private data class WordData(val text: String, val bbox: Rect, val angle: Float = 0f, val language: String? = null)
     private data class PageData(
-        val widthPts: Float,
-        val heightPts: Float,
         val bitmapW: Int,
         val bitmapH: Int,
         val words: List<WordData>
@@ -60,60 +52,31 @@ open class SearchablePdfBuilder @Inject constructor(
     open suspend fun makeSearchable(
         pdfFile: File,
         languageCode: String,
-        onProgress: (current: Int, total: Int) -> Unit
+        onProgress: (current: Int, total: Int) -> Unit,
+        onStatus: (OcrPipelineStatus) -> Unit = {}
     ): String = withContext(dispatcherProvider.io) {
 
-        val recognizer = ocrManager.getRecognizer(languageCode)
-        val pageResults = mutableListOf<PageData>()
-
-        // ── Phase 1: Rendern + OCR — jeweils eine Seite, Bitmap sofort recyceln ──
-        // Nur EINE Bitmap (≈ 4 MB bei A4/150 DPI) gleichzeitig im Heap.
-        // Recognizer in try-finally: wird auch bei OCR-Fehler mitten in der Schleife
-        // sauber geschlossen.
-        try {
-            ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
-                PdfRenderer(pfd).use { renderer ->
-                    val total = renderer.pageCount
-                    repeat(total) { i ->
-                        onProgress(i + 1, total)
-                        renderer.openPage(i).use { page ->
-                            val widthPts = page.width.toFloat()
-                            val heightPts = page.height.toFloat()
-                            val bitmapW = (widthPts * RENDER_SCALE).toInt().coerceAtLeast(1)
-                            val bitmapH = (heightPts * RENDER_SCALE).toInt().coerceAtLeast(1)
-
-                            val bitmap = Bitmap.createBitmap(bitmapW, bitmapH, Bitmap.Config.ARGB_8888)
-                            bitmap.eraseColor(Color.WHITE)
-                            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-
-                            val ocrText = try {
-                                suspendCancellableCoroutine { cont ->
-                                    recognizer.process(InputImage.fromBitmap(bitmap, 0))
-                                        .addOnSuccessListener { cont.resume(it) }
-                                        .addOnFailureListener { cont.resumeWithException(it) }
-                                    cont.invokeOnCancellation { recognizer.close() }
-                                }
-                            } finally {
-                                bitmap.recycle() // immer freigeben — auch bei OCR-Fehler
-                            }
-
-                            // Element-Ebene (Wörter) für präzise Textauswahl im PDF-Viewer
-                            val words = ocrText.textBlocks.flatMap { block ->
-                                block.lines.flatMap { line ->
-                                    line.elements.mapNotNull { element ->
-                                        val bbox = element.boundingBox ?: return@mapNotNull null
-                                        WordData(element.text, Rect(bbox))
-                                    }
-                                }
-                            }
-                            pageResults.add(PageData(widthPts, heightPts, bitmapW, bitmapH, words))
-                        }
-                    }
+        val result = ocrPipeline.runWithFallback(
+            languageCode = languageCode,
+            usage = OcrUsage.SEARCHABLE_PDF,
+            onStatus = onStatus,
+            emptyValue = { emptyList<PageData>() },
+            isSuccess = { pages, stats ->
+                val hasWords = pages.any { it.words.isNotEmpty() }
+                if (languageCode == "auto" && stats != null) {
+                    // Für Searchable PDF sind wir im Automatik-Modus strenger,
+                    // da ein falscher Font/RTL-Logik das PDF visuell nicht ändert,
+                    // aber die Durchsuchbarkeit zerstört.
+                    // Hinweis: Entscheidung basiert auf den Stats der ersten erfolgreichen Seite.
+                    hasWords && stats.confidence > 0.6f
+                } else {
+                    hasWords
                 }
-            } // PdfRenderer hier geschlossen — PdfBox kann jetzt dieselbe Datei öffnen
-        } finally {
-            recognizer.close()
+            }
+        ) { recognizer, _ ->
+            collectPageResults(pdfFile, recognizer, onProgress)
         }
+        val pageResults = result.value
 
         // Collect full extracted text for indexing
         val extractedText = pageResults.joinToString("\n\n") { pd ->
@@ -150,8 +113,9 @@ open class SearchablePdfBuilder @Inject constructor(
                         val pdfX    = word.bbox.left   * scaleX
                         val pdfY    = pageH - word.bbox.bottom * scaleY
 
-                        // RTL (Arabisch): Text am rechten Rand der BoundingBox verankern
-                        val anchorX = if (languageCode == "ar") {
+                        // RTL-Anker (Arabisch) auf Elementebene prüfen
+                        val isRtl = if (languageCode == "auto") word.language == "ar" else languageCode == "ar"
+                        val anchorX = if (isRtl) {
                             (word.bbox.right * scaleX).coerceAtLeast(0f)
                         } else {
                             pdfX
@@ -167,10 +131,24 @@ open class SearchablePdfBuilder @Inject constructor(
                             val hScale   = if (rawWidth > 0f && bboxW > 0f) bboxW / rawWidth
                                            else fontSize
 
-                            // Textmatrix [hScale 0 0 fontSize anchorX pdfY]
-                            cs.setTextMatrix(Matrix(hScale, 0f, 0f, fontSize, anchorX, pdfY))
+                            // Textmatrix berechnen: Rotation + Skalierung
+                            // ML Kit liefert Winkel im Uhrzeigersinn (θ), PDF dreht gegen den Uhrzeigersinn.
+                            // Matrix für Rotation (θ) und Skalierung (h, v):
+                            // [ h*cos(θ)  h*sin(θ)  v*-sin(θ)  v*cos(θ)  x  y ]
+                            val theta = Math.toRadians(-word.angle.toDouble())
+                            val cos = Math.cos(theta).toFloat()
+                            val sin = Math.sin(theta).toFloat()
+
+                            cs.setTextMatrix(Matrix(
+                                hScale * cos, hScale * sin,
+                                fontSize * -sin, fontSize * cos,
+                                anchorX, pdfY
+                            ))
                             cs.showText(safeText)
-                        } catch (_: Exception) { }
+
+                        } catch (e: Exception) {
+                            Log.w("SearchablePdfBuilder", "Word skip at page $i: ${word.text}", e)
+                        }
                     }
                     cs.endText()
                 }
@@ -185,6 +163,55 @@ open class SearchablePdfBuilder @Inject constructor(
         Files.move(tempFile.toPath(), pdfFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
 
         extractedText
+    }
+
+    private suspend fun collectPageResults(
+        pdfFile: File,
+        recognizer: com.google.mlkit.vision.text.TextRecognizer,
+        onProgress: (current: Int, total: Int) -> Unit
+    ): Pair<List<PageData>, OcrResultStats?> {
+        val pageResults = mutableListOf<PageData>()
+        var firstStats: OcrResultStats? = null
+
+        ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+            PdfRenderer(pfd).use { renderer ->
+                val total = renderer.pageCount
+                repeat(total) { i ->
+                    onProgress(i + 1, total)
+                    renderer.openPage(i).use { page ->
+                        val (bitmapW, bitmapH) = ocrBitmapSize(page.width, page.height)
+
+                        val bitmap = Bitmap.createBitmap(bitmapW, bitmapH, Bitmap.Config.ARGB_8888)
+                        val (ocrText, ocrStats) = try {
+                            bitmap.eraseColor(Color.WHITE)
+                            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                            textRecognizerRunner.recognizeWithStats(
+                                recognizer,
+                                com.google.mlkit.vision.common.InputImage.fromBitmap(bitmap, 0)
+                            )
+                        } finally {
+                            bitmap.recycle()
+                        }
+
+                        if (firstStats == null && ocrText.text.isNotBlank()) {
+                            firstStats = ocrStats
+                        }
+
+                        val words = ocrText.textBlocks.flatMap { block ->
+                            block.lines.flatMap { line ->
+                                line.elements.mapNotNull { element ->
+                                    val bbox = element.boundingBox ?: return@mapNotNull null
+                                    WordData(element.text, Rect(bbox), element.angle, element.recognizedLanguage)
+                                }
+                            }
+                        }
+                        pageResults.add(PageData(bitmapW, bitmapH, words))
+                    }
+                }
+            }
+        }
+
+        return pageResults to firstStats
     }
 
     /**
@@ -211,9 +238,19 @@ open class SearchablePdfBuilder @Inject constructor(
                     add("/system/fonts/DroidSansArabic.ttf")
                     add("/system/fonts/NotoSansArabic-VF.ttf")
                 }
+                "zh", "ja", "ko" -> {
+                    // CJK-Unterstützung ist auf Android herstellerabhängig.
+                    // NotoSansCJK ist oft eine .ttc (Collection), die PdfBox nicht nativ lädt.
+                    add("/system/fonts/NotoSansCJK-Regular.ttc")
+                    add("/system/fonts/NotoSansSC-Regular.otf")
+                    add("/system/fonts/NotoSansJP-Regular.otf")
+                    add("/system/fonts/NotoSansKR-Regular.otf")
+                    add("/system/fonts/DroidSansFallback.ttf")
+                }
                 else -> Unit
             }
             add("/system/fonts/Roboto-Regular.ttf")
+            add("/system/fonts/NotoSans-Regular.ttf")
             add("/system/fonts/DroidSans.ttf")
         }
 

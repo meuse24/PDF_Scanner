@@ -152,7 +152,7 @@ internal fun HomeBulkLanguageDialog(
 }
 
 @Composable
-internal fun HomeLoadingDialog(progressText: String? = null) {
+internal fun HomeLoadingDialog(statusText: String? = null) {
     AlertDialog(
         onDismissRequest = {},
         title = null,
@@ -162,10 +162,10 @@ internal fun HomeLoadingDialog(progressText: String? = null) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 ScannerLoadingAnimation()
-                if (progressText != null) {
+                if (statusText != null) {
                     androidx.compose.foundation.layout.Spacer(Modifier.height(8.dp))
                     Text(
-                        text = progressText,
+                        text = statusText,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.outline
                     )

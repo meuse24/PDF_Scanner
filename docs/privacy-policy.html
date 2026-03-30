@@ -497,10 +497,12 @@
             <h3 style="font-size:1.05rem;margin:16px 0 6px;">ML Kit Text Recognition (OCR)</h3>
             <p>
                 The app includes an optional <strong>text extraction (OCR)</strong> feature powered by
-                <strong>ML Kit Text Recognition</strong>. All text recognition runs entirely on-device
-                using a bundled Latin model. Document images are never transmitted to Google servers or
-                any other external service. Extracted text can optionally be stored locally in the app
-                database when the user creates a searchable PDF.
+                <strong>ML Kit Text Recognition</strong>. The <em>automatic</em> mode uses a bundled
+                Latin text recognizer that works fully offline — no download required. Selecting
+                <em>Hindi</em> manually triggers a GMS-unbundled model download via Google Play Services
+                on first use. Document images are never transmitted to Google servers or any other
+                external service. Extracted text can optionally be stored locally in the app database
+                when the user creates a searchable PDF.
             </p>
             <p>
                 The same ML Kit update and metrics conditions described above also apply to this component.

@@ -4,6 +4,7 @@ import android.net.Uri
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.util.FileUtil
+import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
 import java.util.Locale
 import javax.inject.Inject
@@ -24,7 +25,8 @@ class ImportScanUseCase @Inject constructor(
         thumbnailUri:   Uri?    = null,
         makeSearchable: Boolean = false,
         languageCode:   String  = Locale.getDefault().language,
-        onProgress:     (Int, Int) -> Unit = { _, _ -> }
+        onProgress:     (Int, Int) -> Unit = { _, _ -> },
+        onStatus:       (OcrPipelineStatus) -> Unit = {}
     ): ScanRecord {
         val savedFile     = fileUtil.savePdfFromUri(pdfUri, filename)
         val baseName      = savedFile.nameWithoutExtension
@@ -35,7 +37,7 @@ class ImportScanUseCase @Inject constructor(
         var isSearchable  = false
         var extractedText: String? = null
         if (makeSearchable) {
-            val text = searchablePdfBuilder.makeSearchable(savedFile, languageCode, onProgress)
+            val text = searchablePdfBuilder.makeSearchable(savedFile, languageCode, onProgress, onStatus)
             isSearchable  = true
             extractedText = text.ifBlank { null }
         }

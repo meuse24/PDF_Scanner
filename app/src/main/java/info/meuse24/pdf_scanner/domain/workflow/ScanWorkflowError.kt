@@ -6,6 +6,7 @@ sealed interface ScanWorkflowError {
     data object NothingSelected : ScanWorkflowError
     data object NotEnoughScans : ScanWorkflowError
     data object NoEligibleScans : ScanWorkflowError
+    data object SearchableUnsupportedForScript : ScanWorkflowError
     data object InvalidSplitSelection : ScanWorkflowError
     data object InvalidPageSelection : ScanWorkflowError
     data object InvalidPageOrder : ScanWorkflowError

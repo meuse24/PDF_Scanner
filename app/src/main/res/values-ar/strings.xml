@@ -95,7 +95,7 @@
     <string name="help_section_ocr">OCR واستخراج النص</string>
     <string name="help_item_extract_text">يقوم استخراج النص (OCR) بقراءة جميع الصفحات ويعرض النص المتعرف عليه في لوحة يمكنك منها نسخه أو مشاركته.</string>
     <string name="help_item_make_searchable">يضيف جعل الملف قابلاً للبحث طبقة نص غير مرئية إلى ملف PDF، ويخزن نص OCR المستخرج محلياً للبحث في الأرشيف.</string>
-    <string name="help_item_ocr_language">اختر لغة المستند قبل OCR أو جعل الملف قابلاً للبحث. يتم تنزيل نموذج اللغة الهندية عند أول استخدام.</string>
+    <string name="help_item_ocr_language">يستخدم OCR وجعل الملف قابلاً للبحث الوضع التلقائي افتراضياً — يعمل بدون إنترنت للخطوط اللاتينية. يتم تنزيل نماذج الهندية والصينية واليابانية والكورية عند أول استخدام عبر Google Play Services. لا تدعم الخطوط CJK ملفات PDF القابلة للبحث — استخدم «استخراج النص» لفهرستها.</string>
     <string name="help_section_navigation">التنقل</string>
     <string name="help_nav_text">استخدم قائمة الهامبرغر (أعلى اليسار) للوصول إلى الأرشيف والماسح والمساعدة والمعلومات.</string>
     <string name="help_section_notes">ملاحظات</string>
@@ -115,7 +115,7 @@
     <string name="info_label_async">المعالجة غير المتزامنة</string>
     <string name="info_label_platform">المنصة</string>
     <string name="info_label_ocr_languages">لغات OCR</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (بدون إنترنت) + ZH · JA · HI (تنزيل عند الاستخدام الأول)</string>
+    <string name="info_ocr_languages_value">تلقائي (بدون إنترنت) · EN · DE · ES · FR · PT · RU · AR · HI · ZH · JA · KO (تنزيل عند الاستخدام الأول)</string>
     <string name="info_section_libraries">المكتبات</string>
     <string name="info_section_source">الكود المصدري</string>
     <string name="info_repository_label">مستودع GitHub</string>
@@ -130,17 +130,22 @@
     <string name="privacy_keyword_4">خاص</string>
     <string name="privacy_point_1">يخزن هذا التطبيق ملفات PDF وصور المعاينة والنسخ المطموسة ونص OCR القابل للبحث اختيارياً محلياً على جهازك.</string>
     <string name="privacy_point_2">لا يتم رفع أي مستندات أو محتوى تلقائياً. لا تحدث المشاركة أو التصدير إلا عندما تقوم أنت بتشغيلهما صراحةً. ينشئ الطمس الآمن نسخة جديدة؛ ويبقى الأصل موجوداً حتى تحذفه.</string>
-    <string name="privacy_point_3">تستخدم وظائف المسح وOCR خدمات Google Play. قد تُرسل بيانات تشخيصية تقنية لتحليل الأخطاء. قد يتم جلب نماذج اللغة للصينية واليابانية والهندية، وكذلك الخطوط القابلة للتنزيل، عبر Play Services عند أول استخدام؛ ولا يرسل هذا التطبيق محتوى مستنداتك.</string>
+    <string name="privacy_point_3">تستخدم وظائف المسح وOCR خدمات Google Play. قد تُرسل بيانات تشخيصية تقنية لتحليل الأخطاء. يستخدم الوضع التلقائي نموذج تعرف نصي لاتيني مدمجًا يعمل بدون اتصال. قد يتم جلب نماذج اللغة للهندية والصينية واليابانية والكورية عبر Play Services عند أول استخدام يدوي؛ ولا يرسل هذا التطبيق محتوى مستنداتك.</string>
     <string name="privacy_point_4">لا يجمع التطبيق نفسه بيانات شخصية، ولا يستخدم تحليلات خاصة به، ولا يطلب إذناً شبكياً خاصاً به.</string>
     <string name="privacy_footer">آخر تحديث: 29 مارس 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">استخراج النص</string>
+    <string name="ocr_language_auto">تلقائي</string>
     <string name="ocr_result_title">النص المستخرج</string>
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">لا توجد صورة متاحة لاستخراج النص</string>
     <string name="ocr_no_text_found">لم يُعثر على نص في هذا المستند</string>
+    <string name="ocr_no_text_auto_hint">لم يُتعرَّف على أي نص. للمستندات بالهندية، اختر الهندية يدوياً كلغة.</string>
     <string name="ocr_failed">فشل استخراج النص</string>
+    <string name="ocr_model_preparing">جارٍ تجهيز نموذج لغة OCR…</string>
+    <string name="ocr_model_downloading">جارٍ تنزيل نموذج لغة OCR…</string>
+    <string name="ocr_model_installing">جارٍ تثبيت نموذج لغة OCR…</string>
     <string name="action_copy">نسخ</string>
     <string name="action_share_text">مشاركة النص</string>
     <string name="ocr_copied">تم نسخ النص</string>
@@ -160,6 +165,8 @@
     <string name="searchable_success_multi">%1$d ملفات PDF أصبحت قابلة للبحث</string>
     <string name="searchable_failed">فشل إنشاء PDF قابل للبحث</string>
     <string name="searchable_nothing_to_do">ملفات PDF المحددة قابلة للبحث بالفعل</string>
+    <string name="searchable_unsupported_script">لا يدعم PDF القابل للبحث اللغة الصينية أو اليابانية أو الكورية — لا يمكن تضمين خطوط CJK بشكل موثوق. استخدم "استخراج النص" لفهرسة المحتوى للبحث داخل التطبيق.</string>
+    <string name="searchable_blank_ocr_warning">اكتمل التعرف الضوئي، لكن لم يُتعرَّف على نص في %1$d مستند(ات). جرِّب اختيار اللغة يدويًا للحصول على نتائج أفضل.</string>
     <string name="searchable_badge">قابل للبحث</string>
 
     <!-- Merge -->

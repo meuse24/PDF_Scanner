@@ -89,7 +89,8 @@ fun RedactScreen(
     val pageBitmap by viewModel.documentPageBitmap.collectAsStateWithLifecycle()
     val resources = LocalResources.current
     val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
-    val ocrLanguages = remember(displayLocale) { buildOcrLanguageOptions(displayLocale) }
+    val ocrAutoLabel = stringResource(R.string.ocr_language_auto)
+    val ocrLanguages = remember(displayLocale, ocrAutoLabel) { buildOcrLanguageOptions(ocrAutoLabel, displayLocale) }
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()

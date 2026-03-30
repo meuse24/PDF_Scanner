@@ -95,7 +95,7 @@
     <string name="help_section_ocr">OCR и извлечение текста</string>
     <string name="help_item_extract_text">Извлечение текста (OCR) читает все страницы и показывает распознанный текст в панели, откуда его можно копировать или отправлять.</string>
     <string name="help_item_make_searchable">Сделать PDF доступным для поиска добавляет в PDF невидимый текстовый слой, сохраняет извлечённый OCR-текст локально для поиска по архиву.</string>
-    <string name="help_item_ocr_language">Перед OCR или Сделать доступным для поиска выберите язык документа. Модель хинди загружается при первом использовании.</string>
+    <string name="help_item_ocr_language">OCR и «Сделать доступным для поиска» по умолчанию используют автоматический режим — работает офлайн для латинских письменностей. Модели для хинди, китайского, японского и корейского загружаются при первом использовании через Google Play Services. Сценарии CJK не поддерживаются для доступного для поиска PDF — используйте «Извлечь текст» для индексации.</string>
     <string name="help_section_navigation">Навигация</string>
     <string name="help_nav_text">Используйте меню-гамбургер (вверху слева) для доступа к Архиву, Сканеру, Справке и разделу «О приложении».</string>
     <string name="help_section_notes">Примечания</string>
@@ -115,7 +115,7 @@
     <string name="info_label_async">Асинхронность</string>
     <string name="info_label_platform">Платформа</string>
     <string name="info_label_ocr_languages">Языки OCR</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (офлайн) + ZH · JA · HI (загр. при 1-м исп.)</string>
+    <string name="info_ocr_languages_value">Авто (офлайн) · EN · DE · ES · FR · PT · RU · AR · HI · ZH · JA · KO (загр. при 1-м исп.)</string>
     <string name="info_section_libraries">Библиотеки</string>
     <string name="info_section_source">Исходный код</string>
     <string name="info_repository_label">Репозиторий GitHub</string>
@@ -130,17 +130,22 @@
     <string name="privacy_keyword_4">Конфиденциально</string>
     <string name="privacy_point_1">Приложение локально хранит на вашем устройстве PDF-файлы, изображения предпросмотра, отредактированные копии и необязательный OCR-текст.</string>
     <string name="privacy_point_2">Документы и содержимое не загружаются автоматически. Передача или экспорт происходят только после вашего явного действия. Безопасное редактирование создаёт новую копию; оригинал остаётся, пока вы его не удалите.</string>
-    <string name="privacy_point_3">Функции сканирования и OCR используют Google Play Services. Для анализа ошибок могут передаваться технические диагностические данные. Языковые модели для китайского, японского и хинди, а также загружаемые шрифты могут быть получены через Play Services при первом использовании; содержимое ваших документов этим приложением не отправляется.</string>
+    <string name="privacy_point_3">Функции сканирования и OCR используют Google Play Services. Для анализа ошибок могут передаваться технические диагностические данные. Автоматический режим использует встроенную модель распознавания латинского текста, работающую офлайн. Языковые модели для хинди, китайского, японского и корейского могут быть получены через Play Services при первом ручном использовании; содержимое ваших документов этим приложением не отправляется.</string>
     <string name="privacy_point_4">Само приложение не собирает персональные данные, не использует собственную аналитику и не запрашивает собственное сетевое разрешение.</string>
     <string name="privacy_footer">Актуально: 29 марта 2026 г.</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Извлечь текст</string>
+    <string name="ocr_language_auto">Автоматически</string>
     <string name="ocr_result_title">Извлечённый текст</string>
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">Нет изображения для извлечения текста</string>
     <string name="ocr_no_text_found">Текст в документе не найден</string>
+    <string name="ocr_no_text_auto_hint">Текст не распознан. Для документов на хинди выберите хинди вручную в качестве языка.</string>
     <string name="ocr_failed">Ошибка извлечения текста</string>
+    <string name="ocr_model_preparing">Подготовка языковой модели OCR…</string>
+    <string name="ocr_model_downloading">Загрузка языковой модели OCR…</string>
+    <string name="ocr_model_installing">Установка языковой модели OCR…</string>
     <string name="action_copy">Копировать</string>
     <string name="action_share_text">Поделиться текстом</string>
     <string name="ocr_copied">Текст скопирован</string>
@@ -160,6 +165,8 @@
     <string name="searchable_success_multi">%1$d PDF доступны для поиска</string>
     <string name="searchable_failed">Не удалось создать PDF с поиском</string>
     <string name="searchable_nothing_to_do">Выбранные PDF уже доступны для поиска</string>
+    <string name="searchable_unsupported_script">Доступный для поиска PDF не поддерживается для китайского, японского или корейского — шрифты CJK нельзя надёжно встроить в PDF. Используйте «Извлечь текст» для индексации в поиске приложения.</string>
+    <string name="searchable_blank_ocr_warning">OCR завершён, но текст не распознан для %1$d документа(ов). Попробуйте выбрать язык вручную.</string>
     <string name="searchable_badge">Поисковый</string>
 
     <!-- Merge -->

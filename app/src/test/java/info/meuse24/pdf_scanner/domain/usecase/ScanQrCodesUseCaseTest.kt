@@ -1,7 +1,10 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.util.OcrModelInstaller
+import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.QrCodeScanner
+import org.mockito.Mockito.mock
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -98,13 +101,14 @@ class ScanQrCodesUseCaseTest {
 private class FakeQrCodeScanner(
     private val results: List<QrCodeResult> = emptyList(),
     private val onScan: suspend (File, (Int, Int) -> Unit) -> Unit = { _, _ -> }
-) : QrCodeScanner() {
+) : QrCodeScanner(mock(OcrModelInstaller::class.java)) {
     var invocationCount: Int = 0
     var lastFile: File? = null
 
     override suspend fun scan(
         pdfFile: File,
-        onProgress: (page: Int, total: Int) -> Unit
+        onProgress: (page: Int, total: Int) -> Unit,
+        onStatus: (OcrPipelineStatus) -> Unit
     ): List<QrCodeResult> {
         invocationCount += 1
         lastFile = pdfFile

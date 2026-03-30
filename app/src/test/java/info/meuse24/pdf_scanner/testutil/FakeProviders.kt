@@ -7,7 +7,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import java.io.File
 
 class FakeResourceProvider(
-    private val strings: Map<Int, String> = emptyMap(),
+    var strings: Map<Int, String> = emptyMap(),
     private val fallback: String = "stub"
 ) : ResourceProvider {
     override fun getString(resId: Int): String = strings[resId] ?: fallback

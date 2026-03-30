@@ -13,6 +13,7 @@ class WorkflowErrorMapper @Inject constructor(
         ScanWorkflowError.NothingSelected -> resourceProvider.getString(R.string.workflow_nothing_selected)
         ScanWorkflowError.NotEnoughScans -> resourceProvider.getString(R.string.merge_not_enough_scans)
         ScanWorkflowError.NoEligibleScans -> resourceProvider.getString(R.string.searchable_nothing_to_do)
+        ScanWorkflowError.SearchableUnsupportedForScript -> resourceProvider.getString(R.string.searchable_unsupported_script)
         ScanWorkflowError.InvalidSplitSelection -> resourceProvider.getString(R.string.split_no_points)
         ScanWorkflowError.InvalidPageSelection -> resourceProvider.getString(R.string.page_selection_invalid)
         ScanWorkflowError.InvalidPageOrder -> resourceProvider.getString(R.string.reorder_invalid_order)

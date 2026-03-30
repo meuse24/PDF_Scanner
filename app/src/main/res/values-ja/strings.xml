@@ -95,7 +95,7 @@
     <string name="help_section_ocr">OCRとテキスト抽出</string>
     <string name="help_item_extract_text">テキスト抽出（OCR）はすべてのページを読み取り、認識したテキストをコピーまたは共有できるパネルに表示します。</string>
     <string name="help_item_make_searchable">検索可能にするでは、PDF に不可視のテキストレイヤーを追加し、抽出した OCR テキストをアーカイブ検索用にローカル保存。</string>
-    <string name="help_item_ocr_language">OCRまたは検索可能にする前に、ドキュメントの言語を選択します。ヒンディー語モデルは初回利用時にダウンロードされます。</string>
+    <string name="help_item_ocr_language">OCRと検索可能にする機能はデフォルトで自動モードを使用します — ラテン文字の文書でオフラインで動作します。ヒンディー語・中国語・日本語・韓国語のモデルは Google Play Services 経由で初回使用時にダウンロードされます。CJK文字は検索可能PDFに対応していません — インデックス化には「テキストを抽出」をご利用ください。</string>
     <string name="help_section_navigation">ナビゲーション</string>
     <string name="help_nav_text">左上のハンバーガーメニューからアーカイブ・スキャナー・ヘルプ・情報にアクセスできます。</string>
     <string name="help_section_notes">注意事項</string>
@@ -115,7 +115,7 @@
     <string name="info_label_async">非同期処理</string>
     <string name="info_label_platform">プラットフォーム</string>
     <string name="info_label_ocr_languages">OCR対応言語</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR（オフライン）+ ZH · JA · HI（初回起動時にダウンロード）</string>
+    <string name="info_ocr_languages_value">自動（オフライン）· EN · DE · ES · FR · PT · RU · AR · HI · ZH · JA · KO（初回起動時にダウンロード）</string>
     <string name="info_section_libraries">ライブラリ</string>
     <string name="info_section_source">ソースコード</string>
     <string name="info_repository_label">GitHub リポジトリ</string>
@@ -130,17 +130,22 @@
     <string name="privacy_keyword_4">プライベート</string>
     <string name="privacy_point_1">このアプリは PDF、プレビュー画像、黒塗りコピー、任意の検索可能 OCR テキストを端末上にローカル保存します。</string>
     <string name="privacy_point_2">文書や内容が自動的にアップロードされることはありません。共有やエクスポートは、ユーザーが明示的に実行した場合にのみ行われます。安全な黒塗りでは新しいコピーが作成され、元ファイルは削除するまで残ります。</string>
-    <string name="privacy_point_3">スキャンおよび OCR 機能は Google Play Services を使用します。エラー解析のために技術的な診断データが送信される場合があります。中国語・日本語・ヒンディー語の言語モデルやダウンロード可能フォントは初回利用時に Play Services 経由で取得されることがありますが、文書の内容がこのアプリから送信されることはありません。</string>
+    <string name="privacy_point_3">スキャンおよび OCR 機能は Google Play Services を使用します。エラー解析のために技術的な診断データが送信される場合があります。自動モードはオフラインで動作する組み込みのラテン文字認識モデルを使用します。ヒンディー語・中国語・日本語・韓国語の言語モデルは初回の手動使用時に Play Services 経由で取得されることがありますが、文書の内容がこのアプリから送信されることはありません。</string>
     <string name="privacy_point_4">アプリ自体は個人データを収集せず、独自の分析も行わず、独自のネットワーク権限も要求しません。</string>
     <string name="privacy_footer">最終更新：2026年3月29日</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">テキストを抽出</string>
+    <string name="ocr_language_auto">自動</string>
     <string name="ocr_result_title">抽出されたテキスト</string>
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">テキスト抽出に使用できる画像がありません</string>
     <string name="ocr_no_text_found">このドキュメントにテキストが見つかりません</string>
+    <string name="ocr_no_text_auto_hint">テキストを認識できませんでした。ヒンディー語の文書の場合は、言語としてヒンディー語を手動で選択してください。</string>
     <string name="ocr_failed">テキスト抽出に失敗しました</string>
+    <string name="ocr_model_preparing">OCR 言語モデルを準備しています…</string>
+    <string name="ocr_model_downloading">OCR 言語モデルをダウンロードしています…</string>
+    <string name="ocr_model_installing">OCR 言語モデルをインストールしています…</string>
     <string name="action_copy">コピー</string>
     <string name="action_share_text">テキストを共有</string>
     <string name="ocr_copied">テキストをコピーしました</string>
@@ -160,6 +165,8 @@
     <string name="searchable_success_multi">%1$d 件の PDF が検索可能になりました</string>
     <string name="searchable_failed">検索可能な PDF を作成できませんでした</string>
     <string name="searchable_nothing_to_do">選択したPDFは既に検索可能です</string>
+    <string name="searchable_unsupported_script">中国語、日本語、韓国語では検索可能PDFはサポートされていません—CJKフォントをPDFテキストレイヤーに確実に埋め込むことができないためです。「テキストを抽出」を使用してアプリ内検索用にコンテンツをインデックスしてください。</string>
+    <string name="searchable_blank_ocr_warning">OCRが完了しましたが、%1$d件のドキュメントでテキストが認識されませんでした。より良い結果を得るには、言語を手動で選択してみてください。</string>
     <string name="searchable_badge">検索可能</string>
 
     <!-- Merge -->

@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.FindInPage
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.FolderOpen
@@ -172,7 +173,8 @@ fun HelpScreen() {
                 titleRes = R.string.sheet_section_analyse,
                 actions = listOf(
                     HelpAction(Icons.Default.QrCodeScanner, R.string.action_scan_qr_codes,    R.string.help_item_scan_qr_codes),
-                    HelpAction(Icons.Default.FindInPage,    R.string.action_remove_text_layer, R.string.help_item_remove_text_layer)
+                    HelpAction(Icons.Default.FindInPage,    R.string.action_remove_text_layer, R.string.help_item_remove_text_layer),
+                    HelpAction(Icons.Default.Language,      R.string.dialog_ocr_language,      R.string.help_item_ocr_language)
                 )
             ),
             HelpSection(

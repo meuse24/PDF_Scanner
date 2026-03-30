@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -31,7 +32,7 @@ internal suspend fun <T : QrScannerResource, R> useQrScannerResource(
 }
 
 private class MlKitQrProcessor(
-    private val scanner: com.google.mlkit.vision.barcode.BarcodeScanner
+    private val scanner: BarcodeScanner
 ) : QrScannerResource {
     override fun close() {
         scanner.close()
@@ -44,25 +45,30 @@ private class MlKitQrProcessor(
     }
 }
 
-open class QrCodeScanner @Inject constructor() {
+open class QrCodeScanner @Inject constructor(
+    private val ocrModelInstaller: OcrModelInstaller
+) {
 
     companion object {
-        private const val RENDER_DPI = 96f
+        private const val RENDER_DPI = 150f // Höhere DPI für bessere Barcode-Erkennung
         private const val POINTS_PER_INCH = 72f
         private val RENDER_SCALE = RENDER_DPI / POINTS_PER_INCH
     }
 
     open suspend fun scan(
         pdfFile: File,
-        onProgress: (page: Int, total: Int) -> Unit = { _, _ -> }
+        onProgress: (page: Int, total: Int) -> Unit = { _, _ -> },
+        onStatus: (OcrPipelineStatus) -> Unit = {}
     ): List<QrCodeResult> {
-        val processor = MlKitQrProcessor(
-            BarcodeScanning.getClient(
-            BarcodeScannerOptions.Builder()
-                .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-                .build()
-        )
-        )
+        val options = BarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
+            .build()
+        val scanner = BarcodeScanning.getClient(options)
+
+        // Sicherstellen, dass das Barcode-Modell heruntergeladen wurde
+        ocrModelInstaller.ensureBarcodeModelAvailable(scanner, onStatus)
+
+        val processor = MlKitQrProcessor(scanner)
 
         return useQrScannerResource(processor) { activeProcessor ->
             ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->

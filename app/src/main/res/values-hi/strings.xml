@@ -95,7 +95,7 @@
     <string name="help_section_ocr">OCR और टेक्स्ट निष्कर्षण</string>
     <string name="help_item_extract_text">टेक्स्ट निष्कर्षण (OCR) सभी पृष्ठ पढ़ता है और पहचाने गए टेक्स्ट को एक पैनल में दिखाता है जहाँ से आप उसे कॉपी या साझा कर सकते हैं।</string>
     <string name="help_item_make_searchable">खोज योग्य बनाएं PDF में एक अदृश्य टेक्स्ट लेयर जोड़ता है, निकाले गए OCR टेक्स्ट को आर्काइव खोज के लिए स्थानीय रूप से सहेजता है।</string>
-    <string name="help_item_ocr_language">OCR या खोज योग्य बनाएं से पहले दस्तावेज़ की भाषा चुनें। हिंदी मॉडल पहले उपयोग पर डाउनलोड होता है।</string>
+    <string name="help_item_ocr_language">OCR और खोज योग्य बनाएं डिफ़ॉल्ट रूप से स्वचालित मोड का उपयोग करते हैं — लैटिन लिपि के दस्तावेज़ों के लिए ऑफ़लाइन काम करता है। हिंदी, चीनी, जापानी और कोरियाई मॉडल Google Play Services के ज़रिए पहले उपयोग पर डाउनलोड होते हैं। CJK लिपियाँ खोज योग्य PDF के लिए समर्थित नहीं हैं — अनुक्रमण के लिए «टेक्स्ट निकालें» का उपयोग करें।</string>
     <string name="help_section_navigation">नेविगेशन</string>
     <string name="help_nav_text">ऊपर बाईं ओर हैमबर्गर मेनू से संग्रह, स्कैनर, सहायता और जानकारी तक पहुंचें।</string>
     <string name="help_section_notes">नोट्स</string>
@@ -115,7 +115,7 @@
     <string name="info_label_async">असंक्रमण</string>
     <string name="info_label_platform">प्लेटफ़ॉर्म</string>
     <string name="info_label_ocr_languages">OCR भाषाएँ</string>
-    <string name="info_ocr_languages_value">EN · DE · ES · FR · PT · RU · AR (ऑफ़लाइन) + ZH · JA · HI (पहले उपयोग पर डाउनलोड)</string>
+    <string name="info_ocr_languages_value">स्वचालित (ऑफ़लाइन) · EN · DE · ES · FR · PT · RU · AR · HI · ZH · JA · KO (पहले उपयोग पर डाउनलोड)</string>
     <string name="info_section_libraries">लाइब्रेरी</string>
     <string name="info_section_source">सोर्स कोड</string>
     <string name="info_repository_label">GitHub रिपॉजिटरी</string>
@@ -130,17 +130,22 @@
     <string name="privacy_keyword_4">निजी</string>
     <string name="privacy_point_1">यह ऐप PDF, प्रीव्यू छवियाँ, रिडैक्टेड कॉपियाँ और वैकल्पिक खोजयोग्य OCR टेक्स्ट आपके डिवाइस पर स्थानीय रूप से संग्रहीत करता है।</string>
     <string name="privacy_point_2">कोई दस्तावेज़ या सामग्री अपने आप अपलोड नहीं की जाती। शेयर या एक्सपोर्ट केवल तभी होता है जब आप उसे स्पष्ट रूप से शुरू करते हैं। सुरक्षित रिडैक्शन एक नई कॉपी बनाता है; मूल फ़ाइल तब तक रहती है जब तक आप उसे हटाते नहीं हैं।</string>
-    <string name="privacy_point_3">स्कैन और OCR फ़ंक्शन Google Play Services का उपयोग करते हैं। त्रुटि विश्लेषण के लिए तकनीकी डायग्नोस्टिक डेटा भेजा जा सकता है। चीनी, जापानी और हिंदी के भाषा मॉडल, तथा डाउनलोड योग्य फ़ॉन्ट, पहली बार उपयोग पर Play Services के माध्यम से प्राप्त किए जा सकते हैं; इस ऐप द्वारा आपके दस्तावेज़ों की सामग्री नहीं भेजी जाती।</string>
+    <string name="privacy_point_3">स्कैन और OCR फ़ंक्शन Google Play Services का उपयोग करते हैं। त्रुटि विश्लेषण के लिए तकनीकी डायग्नोस्टिक डेटा भेजा जा सकता है। स्वचालित मोड एक अंतर्निहित लैटिन टेक्स्ट पहचानकर्ता का उपयोग करता है जो ऑफ़लाइन काम करता है। हिंदी, चीनी, जापानी और कोरियाई भाषा मॉडल पहली बार मैन्युअल उपयोग पर Play Services के माध्यम से प्राप्त किए जा सकते हैं; इस ऐप द्वारा आपके दस्तावेज़ों की सामग्री नहीं भेजी जाती।</string>
     <string name="privacy_point_4">ऐप स्वयं कोई व्यक्तिगत डेटा एकत्र नहीं करता, अपनी विश्लेषण सेवा का उपयोग नहीं करता, और अपनी अलग नेटवर्क अनुमति नहीं मांगता।</string>
     <string name="privacy_footer">अपडेट: 29 मार्च 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">टेक्स्ट निकालें</string>
+    <string name="ocr_language_auto">स्वचालित</string>
     <string name="ocr_result_title">निकाला गया टेक्स्ट</string>
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">टेक्स्ट निष्कर्षण के लिए कोई छवि उपलब्ध नहीं</string>
     <string name="ocr_no_text_found">इस दस्तावेज़ में कोई टेक्स्ट नहीं मिला</string>
+    <string name="ocr_no_text_auto_hint">कोई टेक्स्ट नहीं पहचाना गया। हिंदी दस्तावेज़ों के लिए हिंदी को मैन्युअल रूप से भाषा के रूप में चुनें।</string>
     <string name="ocr_failed">टेक्स्ट निष्कर्षण विफल</string>
+    <string name="ocr_model_preparing">OCR भाषा मॉडल तैयार किया जा रहा है…</string>
+    <string name="ocr_model_downloading">OCR भाषा मॉडल डाउनलोड किया जा रहा है…</string>
+    <string name="ocr_model_installing">OCR भाषा मॉडल इंस्टॉल किया जा रहा है…</string>
     <string name="action_copy">कॉपी करें</string>
     <string name="action_share_text">टेक्स्ट साझा करें</string>
     <string name="ocr_copied">टेक्स्ट कॉपी हो गया</string>
@@ -160,6 +165,8 @@
     <string name="searchable_success_multi">%1$d PDF अब खोज योग्य हैं</string>
     <string name="searchable_failed">खोज योग्य PDF बनाने में विफल</string>
     <string name="searchable_nothing_to_do">चुने गए PDF पहले से खोज योग्य हैं</string>
+    <string name="searchable_unsupported_script">चीनी, जापानी या कोरियाई के लिए सर्चेबल PDF समर्थित नहीं है — CJK फ़ॉन्ट को PDF टेक्स्ट लेयर में विश्वसनीय रूप से एम्बेड नहीं किया जा सकता। आत्मा खोज के लिए सामग्री इंडेक्स करने हेतु “टेक्स्ट निकालें” का उपयोग करें।</string>
+    <string name="searchable_blank_ocr_warning">OCR पूर्ण हुआ, लेकिन %1$d दस्तावेज़ में कोई टेक्स्ट नहीं पहचाना गया। बेहतर परिणाम के लिए भाषा मैन्युअल रूप से चुनने का प्रयास करें।</string>
     <string name="searchable_badge">खोज योग्य</string>
 
     <!-- Merge -->
@@ -464,5 +471,6 @@
 
     <!-- Images to PDF -->
 </resources>
+
 
 

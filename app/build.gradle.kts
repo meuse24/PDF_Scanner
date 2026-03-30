@@ -105,6 +105,7 @@ dependencies {
     implementation(libs.mlkit.text.chinese)
     implementation(libs.mlkit.text.japanese)
     implementation(libs.mlkit.text.devanagari)
+    implementation(libs.mlkit.text.korean)
     implementation(libs.mlkit.barcode.scanning)
 
     // PdfBox-Android – searchable PDF generation

@@ -150,6 +150,7 @@ fun HomeScreen(
     val ocrText        by viewModel.ocrText.collectAsStateWithLifecycle()
     val ocrLoading     by viewModel.ocrLoading.collectAsStateWithLifecycle()
     val ocrProgress    by viewModel.ocrProgress.collectAsStateWithLifecycle()
+    val ocrStatusText  by viewModel.ocrStatusText.collectAsStateWithLifecycle()
     val editLoading    by viewModel.editLoading.collectAsStateWithLifecycle()
     val context   = LocalContext.current
     val resources = LocalResources.current
@@ -163,7 +164,8 @@ fun HomeScreen(
     val actionShareTextLabel = stringResource(R.string.action_share_text)
     val ocrCopiedMessage = stringResource(R.string.ocr_copied)
     val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
-    val ocrLanguages = remember(displayLocale) { buildOcrLanguageOptions(displayLocale) }
+    val ocrAutoLabel = stringResource(R.string.ocr_language_auto)
+    val ocrLanguages = remember(displayLocale, ocrAutoLabel) { buildOcrLanguageOptions(ocrAutoLabel, displayLocale) }
 
     var pendingImport      by remember { mutableStateOf<PendingImport?>(null) }
     var showAddSheet       by remember { mutableStateOf(false) }
@@ -534,7 +536,7 @@ fun HomeScreen(
     // ── OCR-Lade-Overlay ──────────────────────────────────────────────────────
     if (ocrLoading) {
         HomeLoadingDialog(
-            progressText = ocrProgress?.let { progress ->
+            statusText = ocrStatusText ?: ocrProgress?.let { progress ->
                 resources.getString(R.string.searchable_progress, progress.first, progress.second)
                 }
             )

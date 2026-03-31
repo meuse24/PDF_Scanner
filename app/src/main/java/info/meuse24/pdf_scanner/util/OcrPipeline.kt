@@ -37,6 +37,18 @@ data class OcrPipelineResult<T>(
     val stats: OcrResultStats? = null
 )
 
+/** Zentrale Konfidenz-Schwellenwerte für alle OCR-Pfade. */
+object OcrThresholds {
+    /** Auto-Modus Extraktion: Ergebnis akzeptieren wenn Konfidenz > Schwelle oder Text lang genug. */
+    const val MIN_CONFIDENCE_EXTRACT = 0.5f
+    /** Auto-Modus Searchable-PDF: Strengere Schwelle, da falscher Font die Durchsuchbarkeit zerstört. */
+    const val MIN_CONFIDENCE_SEARCHABLE = 0.6f
+    /** Unter dieser Schwelle wird dem Nutzer eine Qualitätswarnung angezeigt. */
+    const val LOW_CONFIDENCE_WARNING = 0.3f
+    /** Auto-Modus: Unter dieser Schwelle + keine erkannte Sprache → "Erkennung unsicher"-Hinweis. */
+    const val AUTO_DETECTION_UNCERTAIN = 0.6f
+}
+
 @Singleton
 open class OcrPipeline @Inject constructor(
     private val ocrManager: OcrManager,
@@ -51,8 +63,10 @@ open class OcrPipeline @Inject constructor(
         block: suspend (recognizer: TextRecognizer, script: OcrScript) -> Pair<T, OcrResultStats?>
     ): OcrPipelineResult<T> {
         val plan = ocrManager.recognitionPlan(languageCode, usage, Locale.getDefault())
-        var lastValue = emptyValue()
-        var lastStats: OcrResultStats? = null
+        // Bestes Ergebnis tracken: höchste Konfidenz gewinnt, falls kein Skript isSuccess besteht.
+        var bestValue = emptyValue()
+        var bestStats: OcrResultStats? = null
+        var bestScript = plan.firstOrNull() ?: OcrScript.LATIN
 
         for (script in plan) {
             val recognizer = ocrManager.getRecognizer(script)
@@ -63,8 +77,13 @@ open class OcrPipeline @Inject constructor(
                     onStatus = onStatus
                 )
                 val (value, stats) = block(recognizer, script)
-                lastValue = value
-                lastStats = stats
+                val newConf = stats?.confidence ?: 0f
+                val bestConf = bestStats?.confidence ?: -1f
+                if (newConf > bestConf) {
+                    bestValue = value
+                    bestStats = stats
+                    bestScript = script
+                }
                 if (isSuccess(value, stats)) {
                     return OcrPipelineResult(value, script, stats)
                 }
@@ -73,6 +92,6 @@ open class OcrPipeline @Inject constructor(
             }
         }
 
-        return OcrPipelineResult(lastValue, plan.lastOrNull() ?: OcrScript.LATIN, lastStats)
+        return OcrPipelineResult(bestValue, bestScript, bestStats)
     }
 }

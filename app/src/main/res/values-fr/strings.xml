@@ -472,5 +472,8 @@
     <string name="help_item_pdf_metadata">Touchez Infos PDF pour voir et modifier les métadonnées intégrées d\'un document : titre, auteur, application créatrice, sujet, mots-clés et dates de création et de modification. Les champs modifiables sont réenregistrés dans le même fichier PDF.</string>
 
     <!-- Images to PDF -->
+
+    <string name="ocr_low_confidence_warning">Le niveau de confiance est faible (%1$d%%). Le texte reconnu peut contenir des erreurs.</string>
 </resources>
+
 

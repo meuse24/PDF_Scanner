@@ -71,7 +71,7 @@ open class SearchablePdfBuilder @Inject constructor(
                     // da ein falscher Font/RTL-Logik das PDF visuell nicht ändert,
                     // aber die Durchsuchbarkeit zerstört.
                     // Hinweis: Entscheidung basiert auf den Stats der ersten erfolgreichen Seite.
-                    hasWords && stats.confidence > 0.6f
+                    hasWords && stats.confidence > OcrThresholds.MIN_CONFIDENCE_SEARCHABLE
                 } else {
                     hasWords
                 }
@@ -256,8 +256,12 @@ open class SearchablePdfBuilder @Inject constructor(
                     add("/system/fonts/NotoSansArabic-VF.ttf")
                 }
                 "zh", "ja", "ko" -> {
-                    // CJK-Unterstützung ist auf Android herstellerabhängig.
-                    // NotoSansCJK ist oft eine .ttc (Collection), die PdfBox nicht nativ lädt.
+                    // Hinweis: Dieser Zweig ist aktuell nicht erreichbar, da CJK-Sprachen
+                    // bereits in MakeSearchableWorkflow abgefangen werden
+                    // (ScanWorkflowError.SearchableUnsupportedForScript).
+                    // Verbleibt als Vorbereitung für zukünftige CJK-Unterstützung.
+                    // CJK-Fonts auf Android sind herstellerabhängig; .ttc-Collections
+                    // werden von PdfBox-Android nicht nativ unterstützt.
                     add("/system/fonts/NotoSansCJK-Regular.ttc")
                     add("/system/fonts/NotoSansSC-Regular.otf")
                     add("/system/fonts/NotoSansJP-Regular.otf")

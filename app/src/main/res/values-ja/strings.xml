@@ -472,6 +472,9 @@
     <string name="help_item_pdf_metadata">「PDF 情報」をタップすると、ドキュメントに埋め込まれたメタデータ（タイトル、著者、作成アプリ、件名、キーワード、作成日、更新日）を確認して編集できます。編集可能な項目は同じ PDF ファイルに書き戻されます。</string>
 
     <!-- Images to PDF -->
+
+    <string name="ocr_low_confidence_warning">信頼度が低いです（%1$d%%）。認識されたテキストに誤りが含まれる可能性があります。</string>
 </resources>
+
 
 

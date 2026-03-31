@@ -27,6 +27,7 @@ import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.OcrResultStats
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
+import info.meuse24.pdf_scanner.util.OcrThresholds
 import info.meuse24.pdf_scanner.util.ResourceProvider
 import info.meuse24.pdf_scanner.util.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -380,7 +381,10 @@ class HomeViewModel @Inject constructor(
                             text     = text,
                             tags     = null
                         )
+                        Log.d("Backfill", "Text nacherfasst: ${record.filename}")
                     }
+                }.onFailure { e ->
+                    Log.w("Backfill", "Nacherfassung fehlgeschlagen: ${record.filename}", e)
                 }
             }
         }
@@ -404,7 +408,7 @@ class HomeViewModel @Inject constructor(
     ) {
         if (text.isBlank() || stats == null) return
 
-        if (stats.confidence < 0.3f) {
+        if (stats.confidence < OcrThresholds.LOW_CONFIDENCE_WARNING) {
             val confidencePercent = (stats.confidence * 100).toInt()
             _error.value = resourceProvider.getString(R.string.ocr_low_confidence_warning, confidencePercent)
             return
@@ -413,7 +417,7 @@ class HomeViewModel @Inject constructor(
         if (
             languageCode == OCR_LANGUAGE_AUTO &&
             stats.recognizedLanguage.isNullOrBlank() &&
-            stats.confidence < 0.6f
+            stats.confidence < OcrThresholds.AUTO_DETECTION_UNCERTAIN
         ) {
             _error.value = resourceProvider.getString(R.string.ocr_auto_detection_uncertain)
         }

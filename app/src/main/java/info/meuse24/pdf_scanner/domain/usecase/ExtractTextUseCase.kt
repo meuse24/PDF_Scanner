@@ -7,6 +7,7 @@ import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.OcrPipeline
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.OcrInputImageLoader
+import info.meuse24.pdf_scanner.util.OcrThresholds
 import info.meuse24.pdf_scanner.util.OcrUsage
 import info.meuse24.pdf_scanner.util.OcrResultStats
 import info.meuse24.pdf_scanner.util.PdfPageInputImageLoader
@@ -46,10 +47,10 @@ open class ExtractTextUseCase @Inject constructor(
             isSuccess = { text, stats ->
                 val isNotEmpty = text.isNotBlank()
                 if (languageCode == "auto" && stats != null) {
-                    // Im Automatik-Modus: nur akzeptieren wenn Vertrauen hoch genug (z.B. > 50%)
-                    // oder wenn Text sehr lang ist (Plattentext).
+                    // Im Automatik-Modus: nur akzeptieren wenn Vertrauen hoch genug
+                    // oder wenn Text sehr lang ist (Fließtext ohne klare Konfidenz).
                     // Hinweis: Entscheidung basiert auf den Stats der ersten erfolgreichen Seite.
-                    isNotEmpty && (stats.confidence > 0.5f || text.length > 200)
+                    isNotEmpty && (stats.confidence > OcrThresholds.MIN_CONFIDENCE_EXTRACT || text.length > 200)
                 } else {
                     isNotEmpty
                 }

@@ -79,7 +79,11 @@ class RedactPdfWorkflow @Inject constructor(
                 )) {
                     is WorkflowResult.Success -> Unit
                     is WorkflowResult.Failure -> {
-                        runCatching { deleteScansUseCase(listOf(outputRecord)) }
+                        // SearchableUnsupportedForScript ist eine bekannte Einschränkung (CJK-Skript):
+                        // Die Schwärzung selbst war erfolgreich — kein Rollback, Fehler durchleiten.
+                        if (searchableResult.error != ScanWorkflowError.SearchableUnsupportedForScript) {
+                            runCatching { deleteScansUseCase(listOf(outputRecord)) }
+                        }
                         return WorkflowResult.Failure(mapSearchableFollowUpError(searchableResult.error))
                     }
                 }
@@ -100,7 +104,8 @@ class RedactPdfWorkflow @Inject constructor(
 internal fun mapSearchableFollowUpError(error: ScanWorkflowError): ScanWorkflowError {
     return when (error) {
         is ScanWorkflowError.OcrFailed,
-        is ScanWorkflowError.StorageWriteFailed -> error
+        is ScanWorkflowError.StorageWriteFailed,
+        ScanWorkflowError.SearchableUnsupportedForScript -> error
         else -> ScanWorkflowError.RedactionFailed(
             IllegalStateException("Unexpected searchable follow-up failure after redaction: $error", error.cause)
         )

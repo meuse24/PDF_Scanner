@@ -352,16 +352,25 @@ internal fun RedactSaveOptionsDialog(
 }
 
 @Composable
-internal fun RedactProgressDialog() {
+internal fun RedactProgressDialog(statusText: String? = null) {
     AlertDialog(
         onDismissRequest = {},
         title = null,
         text = {
-            androidx.compose.foundation.layout.Box(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CircularProgressIndicator()
+                if (statusText != null) {
+                    Text(
+                        text = statusText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         },
         confirmButton = {}

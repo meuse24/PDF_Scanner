@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
@@ -35,6 +36,7 @@ import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.PdfEditor
 import info.meuse24.pdf_scanner.util.PdfMetadata
+import info.meuse24.pdf_scanner.util.ResourceProvider
 import info.meuse24.pdf_scanner.util.StorageProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,6 +65,7 @@ class DocumentEditViewModel @Inject constructor(
     private val updatePdfMetadataWorkflow: UpdatePdfMetadataWorkflow,
     private val pdfEditor: PdfEditor,
     private val errorMapper: WorkflowErrorMapper,
+    private val resourceProvider: ResourceProvider,
     private val storageProvider: StorageProvider,
     private val dispatcherProvider: DispatcherProvider,
     savedStateHandle: SavedStateHandle
@@ -81,6 +84,9 @@ class DocumentEditViewModel @Inject constructor(
 
     private val _success = MutableStateFlow(false)
     val success: StateFlow<Boolean> = _success.asStateFlow()
+
+    private val _ocrStatusText = MutableStateFlow<String?>(null)
+    val ocrStatusText: StateFlow<String?> = _ocrStatusText.asStateFlow()
 
     private val scansDir get() = storageProvider.scansDir()
 
@@ -234,12 +240,24 @@ class DocumentEditViewModel @Inject constructor(
         _editLoading.value = true
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                when (val result = redactPdfWorkflow(record, rects, scansDir, makeSearchable, languageCode)) {
+                if (makeSearchable) {
+                    _ocrStatusText.value = resourceProvider.getString(R.string.ocr_model_preparing)
+                }
+                when (
+                    val result = redactPdfWorkflow(
+                        record = record,
+                        rects = rects,
+                        scansDir = scansDir,
+                        makeSearchable = makeSearchable,
+                        languageCode = languageCode
+                    )
+                ) {
                     is WorkflowResult.Success -> _success.value = true
                     is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
                 }
             } finally {
                 _editLoading.value = false
+                _ocrStatusText.value = null
             }
         }
     }

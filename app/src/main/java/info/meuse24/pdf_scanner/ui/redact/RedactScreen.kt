@@ -84,6 +84,7 @@ fun RedactScreen(
 ) {
     val record by viewModel.record.collectAsStateWithLifecycle()
     val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
+    val ocrStatusText by viewModel.ocrStatusText.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
     val success by viewModel.success.collectAsStateWithLifecycle()
     val pageBitmap by viewModel.documentPageBitmap.collectAsStateWithLifecycle()
@@ -375,7 +376,7 @@ fun RedactScreen(
     }
 
     if (editLoading) {
-        RedactProgressDialog()
+        RedactProgressDialog(statusText = ocrStatusText)
     }
 
     error?.let { message ->

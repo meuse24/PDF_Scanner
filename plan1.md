@@ -21,7 +21,7 @@ Der Plan orientiert sich an Android/Kotlin- und Clean-Architecture-Prinzipien: U
 
 Stand dieses Dokuments: 31. März 2026
 
-- **Phase 1–9 sind funktional umgesetzt; Phase 7/9 sind inhaltlich weitgehend abgeschlossen.**
+- **Phase 1–9 sind umgesetzt; die priorisierten OCR-Verbesserungen sind abgeschlossen.**
 - Gemeinsame OCR-Pipeline, Auto-Fallback, Modellinstallation, Sprachabdeckung (inkl. Koreanisch), Metadaten-Nutzung, CJK-Guard, Backfill sowie aktualisierte Help-/Info-/Privacy-Texte sind implementiert.
 - Neu seit 31.03.2026: app-eigene OCR-Fonts (Assets) für reproduzierbarere Searchable-PDF-Ergebnisse und differenzierte OCR-Fehlerhinweise (Auto-unsicher, Modell-Download fehlgeschlagen, niedrige Qualität).
 
@@ -750,7 +750,7 @@ Das verhindert:
 
 Status:
 
-- ✅ weitgehend abgeschlossen; SearchableUnsupportedForScript als Fehlertyp inkl. Übersetzungen vorhanden; differenzierte OCR-Hinweise fuer "auto-Erkennung unsicher", "Qualitaet niedrig" und "Modell-Download fehlgeschlagen" sind implementiert
+- ✅ abgeschlossen; SearchableUnsupportedForScript als Fehlertyp inkl. Übersetzungen vorhanden; differenzierte OCR-Hinweise fuer "auto-Erkennung unsicher", "Qualitaet niedrig" und "Modell-Download fehlgeschlagen" sind implementiert; im Redaction-Follow-up wird waehrend optionalem OCR ein dedizierter Fortschrittsdialog mit Statushinweis angezeigt
 
 Ziel:
 
@@ -809,7 +809,7 @@ Begruendung:
 
 Status:
 
-- ✅ weitgehend abgeschlossen; Hilfe-/Info-/Privacy-Texte spiegeln OCR-Auto-Modus, Play-Services-Download, Sprachmodell-Grenzen und CJK-Einschraenkungen wider (inkl. docs/privacy-policy.html und lokalisierter Strings)
+- ✅ abgeschlossen; Hilfe-/Info-/Privacy-Texte spiegeln OCR-Auto-Modus, Play-Services-Download, Sprachmodell-Grenzen und CJK-Einschraenkungen wider (inkl. docs/privacy-policy.html und lokalisierter Strings)
 
 Ziel:
 

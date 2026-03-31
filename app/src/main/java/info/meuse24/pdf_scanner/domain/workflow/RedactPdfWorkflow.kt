@@ -4,6 +4,7 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactPdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
+import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.PdfEditor
 import java.io.File
 import java.io.IOException
@@ -23,6 +24,38 @@ class RedactPdfWorkflow @Inject constructor(
         scansDir: File,
         makeSearchable: Boolean = false,
         languageCode: String = "en"
+    ): WorkflowResult<RedactPdfWorkflowResult> = execute(
+        record = record,
+        rects = rects,
+        scansDir = scansDir,
+        makeSearchable = makeSearchable,
+        languageCode = languageCode,
+        onStatus = {}
+    )
+
+    suspend fun invokeWithStatus(
+        record: ScanRecord,
+        rects: List<RedactionRect>,
+        scansDir: File,
+        makeSearchable: Boolean = false,
+        languageCode: String = "en",
+        onStatus: (OcrPipelineStatus) -> Unit = {}
+    ): WorkflowResult<RedactPdfWorkflowResult> = execute(
+        record = record,
+        rects = rects,
+        scansDir = scansDir,
+        makeSearchable = makeSearchable,
+        languageCode = languageCode,
+        onStatus = onStatus
+    )
+
+    private suspend fun execute(
+        record: ScanRecord,
+        rects: List<RedactionRect>,
+        scansDir: File,
+        makeSearchable: Boolean,
+        languageCode: String,
+        onStatus: (OcrPipelineStatus) -> Unit
     ): WorkflowResult<RedactPdfWorkflowResult> {
         val input = File(record.filepath)
         if (!input.exists()) {
@@ -41,7 +74,8 @@ class RedactPdfWorkflow @Inject constructor(
                 when (val searchableResult = makeSearchableWorkflow(
                     records = listOf(outputRecord),
                     languageCode = languageCode,
-                    force = false
+                    force = false,
+                    onStatus = onStatus
                 )) {
                     is WorkflowResult.Success -> Unit
                     is WorkflowResult.Failure -> {

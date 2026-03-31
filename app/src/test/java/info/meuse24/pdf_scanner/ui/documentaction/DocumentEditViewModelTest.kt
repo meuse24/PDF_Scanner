@@ -135,6 +135,7 @@ class DocumentEditViewModelTest {
             updatePdfMetadataWorkflow = updatePdfMetadataWorkflow,
             pdfEditor = pdfEditor,
             errorMapper = errorMapper,
+            resourceProvider = FakeResourceProvider(),
             storageProvider = TestStorageProvider(tmpFolder.root),
             dispatcherProvider = TestDispatcherProvider(testDispatcher),
             savedStateHandle = savedState

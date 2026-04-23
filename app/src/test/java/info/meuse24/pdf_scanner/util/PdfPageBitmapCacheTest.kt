@@ -36,6 +36,22 @@ class PdfPageBitmapCacheTest {
         assertSame(second, cache.get(PdfPageBitmapCacheKey(1, 100)))
     }
 
+    @Test
+    fun `overwriting same key updates byte budget before eviction`() {
+        val cache = PdfPageBitmapCache(maxBytes = 10)
+        val key = PdfPageBitmapCacheKey(0, 100)
+        val large = renderedPage(pageIndex = 0, targetWidthPx = 100, bytes = 9)
+        val small = renderedPage(pageIndex = 0, targetWidthPx = 100, bytes = 4)
+        val second = renderedPage(pageIndex = 1, targetWidthPx = 100, bytes = 5)
+
+        cache.put(key, large)
+        cache.put(key, small)
+        cache.put(PdfPageBitmapCacheKey(1, 100), second)
+
+        assertSame(small, cache.get(key))
+        assertSame(second, cache.get(PdfPageBitmapCacheKey(1, 100)))
+    }
+
     private fun renderedPage(
         pageIndex: Int,
         targetWidthPx: Int,

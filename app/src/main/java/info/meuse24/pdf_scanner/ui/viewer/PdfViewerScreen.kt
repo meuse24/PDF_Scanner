@@ -1,8 +1,8 @@
 package info.meuse24.pdf_scanner.ui.viewer
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.print.PrintManager
-import android.text.format.Formatter
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -28,41 +28,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.BrandingWatermark
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
-import androidx.compose.material.icons.automirrored.filled.RotateRight
-import androidx.compose.material.icons.filled.AdminPanelSettings
-import androidx.compose.material.icons.filled.Block
-import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Compress
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.ContentCut
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FindInPage
-import androidx.compose.material.icons.filled.FormatListNumbered
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.InvertColors
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LockOpen
-import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.Print
-import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -76,6 +54,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -83,7 +62,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -93,17 +74,22 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.ui.components.DocumentEditSheet
+import info.meuse24.pdf_scanner.ui.components.ScanAction
 import info.meuse24.pdf_scanner.ui.shared.clampPanOffset
 import info.meuse24.pdf_scanner.util.PdfPrintAdapter
 import info.meuse24.pdf_scanner.util.buildPdfShareIntent
 import info.meuse24.pdf_scanner.util.openPdfExternally
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.withContext
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,11 +134,12 @@ fun PdfViewerScreen(
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val density = LocalDensity.current
         val viewportWidthPx = with(density) { maxWidth.roundToPx() }.coerceAtLeast(64)
+        val recordThumbnail = rememberViewerThumbnail(state.record?.thumbnailPath)
 
         LaunchedEffect(listState, state.pageCount, viewportWidthPx) {
             snapshotFlow {
                 listState.layoutInfo.visibleItemsInfo.map { it.index }
-            }.collect { visible ->
+            }.distinctUntilChanged().collect { visible ->
                 viewModel.onVisiblePagesChanged(visible, viewportWidthPx)
             }
         }
@@ -189,12 +176,13 @@ fun PdfViewerScreen(
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     items(
-                        items = List(state.pageCount) { it },
+                        count = state.pageCount,
                         key = { pageIndex -> "${state.record?.filepath}_${state.record?.fileSize}_$pageIndex" }
                     ) { pageIndex ->
                         PdfPageCard(
                             pageIndex = pageIndex,
                             pageState = state.pages[pageIndex],
+                            thumbnail = if (pageIndex == 0) recordThumbnail else null,
                             onClick = { zoomPageIndex = pageIndex }
                         )
                     }
@@ -249,7 +237,10 @@ fun PdfViewerScreen(
                 pageState = state.pages[zoomIndex],
                 viewportWidthPx = viewportWidthPx,
                 onClose = { zoomPageIndex = null },
-                onZoomChanged = { scale ->
+                onPrefetchZoom = {
+                    viewModel.prefetchZoomRender(zoomIndex, viewportWidthPx)
+                },
+                onZoomScaleChanged = { scale ->
                     viewModel.requestZoomRender(zoomIndex, viewportWidthPx, scale)
                 }
             )
@@ -262,31 +253,37 @@ fun PdfViewerScreen(
                 onDismissRequest = { editSheetVisible = false },
                 sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
             ) {
-                ViewerEditSheet(
+                DocumentEditSheet(
                     record = record,
-                    onActionSelected = { action ->
+                    showRenameAction = false,
+                    showPrintAction = false,
+                    showExportAsJpgAction = false,
+                    onAction = { action ->
                         editSheetVisible = false
                         when (action) {
-                            ViewerEditAction.Split -> onNavigateToSplit(record.id)
-                            ViewerEditAction.Reorder -> onNavigateToReorder(record.id)
-                            ViewerEditAction.Rotate -> onNavigateToRotate(record.id)
-                            ViewerEditAction.DeletePages -> onNavigateToDeletePages(record.id)
-                            ViewerEditAction.ExtractPages -> onNavigateToExtractPages(record.id)
-                            ViewerEditAction.DuplicatePages -> onNavigateToDuplicatePages(record.id)
-                            ViewerEditAction.PageNumbers -> onNavigateToPageNumbers(record.id)
-                            ViewerEditAction.TextWatermark -> onNavigateToTextWatermark(record.id)
-                            ViewerEditAction.CompressPdf -> onNavigateToCompressPdf(record.id)
-                            ViewerEditAction.ProtectPdf -> onNavigateToProtectPdf(record.id)
-                            ViewerEditAction.UnlockPdf -> onNavigateToUnlockPdf(record.id)
-                            ViewerEditAction.Signature -> onNavigateToSignature(record.id)
-                            ViewerEditAction.RemoveTextLayer -> onNavigateToRemoveTextLayer(record.id)
-                            ViewerEditAction.RemovePassword -> onNavigateToRemovePassword(record.id)
-                            ViewerEditAction.RestrictUsage -> onNavigateToRestrictUsage(record.id)
-                            ViewerEditAction.Annotate -> onNavigateToAnnotate(record.id)
-                            ViewerEditAction.Redact -> onNavigateToRedact(record.id)
-                            ViewerEditAction.Grayscale -> onNavigateToGrayscale(record.id)
-                            ViewerEditAction.PdfMetadata -> onNavigateToPdfMetadata(record.id)
-                            ViewerEditAction.ScanQrCodes -> onNavigateToQrScan(record.id)
+                            ScanAction.Split -> onNavigateToSplit(record.id)
+                            ScanAction.Reorder -> onNavigateToReorder(record.id)
+                            ScanAction.Rotate -> onNavigateToRotate(record.id)
+                            ScanAction.DeletePages -> onNavigateToDeletePages(record.id)
+                            ScanAction.ExtractPages -> onNavigateToExtractPages(record.id)
+                            ScanAction.DuplicatePages -> onNavigateToDuplicatePages(record.id)
+                            ScanAction.PageNumbers -> onNavigateToPageNumbers(record.id)
+                            ScanAction.TextWatermark -> onNavigateToTextWatermark(record.id)
+                            ScanAction.CompressPdf -> onNavigateToCompressPdf(record.id)
+                            ScanAction.ProtectPdf -> onNavigateToProtectPdf(record.id)
+                            ScanAction.UnlockPdf -> onNavigateToUnlockPdf(record.id)
+                            ScanAction.Signature -> onNavigateToSignature(record.id)
+                            ScanAction.RemoveTextLayer -> onNavigateToRemoveTextLayer(record.id)
+                            ScanAction.RemovePassword -> onNavigateToRemovePassword(record.id)
+                            ScanAction.RestrictUsage -> onNavigateToRestrictUsage(record.id)
+                            ScanAction.Annotate -> onNavigateToAnnotate(record.id)
+                            ScanAction.Redact -> onNavigateToRedact(record.id)
+                            ScanAction.Grayscale -> onNavigateToGrayscale(record.id)
+                            ScanAction.PdfMetadata -> onNavigateToPdfMetadata(record.id)
+                            ScanAction.ScanQrCodes -> onNavigateToQrScan(record.id)
+                            ScanAction.ExportAsJpg,
+                            ScanAction.Print,
+                            ScanAction.Rename -> Unit
                         }
                     }
                 )
@@ -357,9 +354,23 @@ private fun ViewerErrorState(
 }
 
 @Composable
+private fun rememberViewerThumbnail(thumbnailPath: String?): ImageBitmap? {
+    val thumbnail by produceState<ImageBitmap?>(initialValue = null, key1 = thumbnailPath) {
+        value = withContext(Dispatchers.IO) {
+            val path = thumbnailPath ?: return@withContext null
+            val file = File(path)
+            if (!file.exists()) return@withContext null
+            BitmapFactory.decodeFile(file.absolutePath)?.asImageBitmap()
+        }
+    }
+    return thumbnail
+}
+
+@Composable
 private fun PdfPageCard(
     pageIndex: Int,
     pageState: PdfViewerPageState?,
+    thumbnail: ImageBitmap?,
     onClick: () -> Unit
 ) {
     Surface(
@@ -393,6 +404,14 @@ private fun PdfPageCard(
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(24.dp)
+                    )
+                }
+                thumbnail != null -> {
+                    Image(
+                        painter = BitmapPainter(thumbnail),
+                        contentDescription = stringResource(R.string.cd_pdf_document),
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
                 else -> {
@@ -479,7 +498,8 @@ private fun PdfZoomOverlay(
     pageState: PdfViewerPageState?,
     viewportWidthPx: Int,
     onClose: () -> Unit,
-    onZoomChanged: (Float) -> Unit
+    onPrefetchZoom: () -> Unit,
+    onZoomScaleChanged: (Float) -> Unit
 ) {
     BackHandler(onBack = onClose)
 
@@ -498,11 +518,11 @@ private fun PdfZoomOverlay(
         scale = newScale
         offsetX = clamped.x
         offsetY = clamped.y
-        onZoomChanged(newScale)
+        onZoomScaleChanged(newScale)
     }
 
-    LaunchedEffect(pageIndex) {
-        onZoomChanged(2f)
+    LaunchedEffect(pageIndex, viewportWidthPx) {
+        if (viewportWidthPx > 0) onPrefetchZoom()
     }
 
     Box(
@@ -562,183 +582,7 @@ private fun PdfZoomOverlay(
         }
 
         LaunchedEffect(viewportWidthPx) {
-            if (viewportWidthPx > 0) onZoomChanged(scale)
+            if (viewportWidthPx > 0) onZoomScaleChanged(scale)
         }
     }
-}
-
-@Composable
-private fun ViewerEditSheet(
-    record: ScanRecord,
-    onActionSelected: (ViewerEditAction) -> Unit
-) {
-    val context = LocalContext.current
-    val notEncrypted = !record.isEncrypted
-    val multiPage = record.pageCount >= 2
-    val sizeStr = remember(record.fileSize, context) {
-        Formatter.formatShortFileSize(context, record.fileSize.coerceAtLeast(0L))
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .navigationBarsPadding()
-            .padding(bottom = 16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 12.dp)
-        ) {
-            Text(
-                text = record.filename,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(Modifier.height(2.dp))
-            Text(
-                text = stringResource(R.string.sheet_header_meta, record.pageCount, sizeStr),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline
-            )
-        }
-        HorizontalDivider()
-
-        SheetSection(R.string.sheet_section_document)
-        SheetItem(Icons.Default.Info, R.string.action_pdf_metadata, true) {
-            onActionSelected(ViewerEditAction.PdfMetadata)
-        }
-
-        SheetSection(R.string.sheet_section_pages)
-        SheetItem(Icons.Default.SwapVert, R.string.action_reorder, notEncrypted && multiPage) {
-            onActionSelected(ViewerEditAction.Reorder)
-        }
-        SheetItem(Icons.AutoMirrored.Filled.RotateRight, R.string.action_rotate, notEncrypted) {
-            onActionSelected(ViewerEditAction.Rotate)
-        }
-        SheetItem(Icons.Default.ContentCut, R.string.action_split, notEncrypted && multiPage) {
-            onActionSelected(ViewerEditAction.Split)
-        }
-        SheetItem(Icons.Default.Image, R.string.action_extract_pages, notEncrypted && multiPage) {
-            onActionSelected(ViewerEditAction.ExtractPages)
-        }
-        SheetItem(Icons.Default.ContentCopy, R.string.action_duplicate_pages, true) {
-            onActionSelected(ViewerEditAction.DuplicatePages)
-        }
-        SheetItem(Icons.Default.Delete, R.string.action_delete_pages, notEncrypted && multiPage) {
-            onActionSelected(ViewerEditAction.DeletePages)
-        }
-
-        SheetSection(R.string.sheet_section_edit)
-        SheetItem(Icons.Default.BorderColor, R.string.action_annotate_pdf, notEncrypted) {
-            onActionSelected(ViewerEditAction.Annotate)
-        }
-        SheetItem(Icons.Default.Draw, R.string.action_sign_pdf, notEncrypted) {
-            onActionSelected(ViewerEditAction.Signature)
-        }
-        SheetItem(Icons.Default.FormatListNumbered, R.string.action_page_numbers, notEncrypted) {
-            onActionSelected(ViewerEditAction.PageNumbers)
-        }
-        SheetItem(Icons.AutoMirrored.Filled.BrandingWatermark, R.string.action_text_watermark, notEncrypted) {
-            onActionSelected(ViewerEditAction.TextWatermark)
-        }
-        SheetItem(Icons.Default.Block, R.string.action_redact_pdf, notEncrypted) {
-            onActionSelected(ViewerEditAction.Redact)
-        }
-
-        SheetSection(R.string.sheet_section_analyse)
-        SheetItem(Icons.Default.QrCodeScanner, R.string.action_scan_qr_codes, notEncrypted) {
-            onActionSelected(ViewerEditAction.ScanQrCodes)
-        }
-        if (record.isSearchable && notEncrypted) {
-            SheetItem(Icons.Default.FindInPage, R.string.action_remove_text_layer, true) {
-                onActionSelected(ViewerEditAction.RemoveTextLayer)
-            }
-        }
-
-        SheetSection(R.string.sheet_section_export)
-        SheetItem(Icons.Default.InvertColors, R.string.action_grayscale_pdf, notEncrypted) {
-            onActionSelected(ViewerEditAction.Grayscale)
-        }
-        SheetItem(Icons.Default.Compress, R.string.action_compress_pdf, notEncrypted && !record.isSearchable) {
-            onActionSelected(ViewerEditAction.CompressPdf)
-        }
-
-        SheetSection(R.string.sheet_section_security)
-        SheetItem(Icons.Default.Lock, R.string.action_protect_pdf, notEncrypted) {
-            onActionSelected(ViewerEditAction.ProtectPdf)
-        }
-        SheetItem(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage, notEncrypted) {
-            onActionSelected(ViewerEditAction.RestrictUsage)
-        }
-        SheetItem(Icons.Default.LockOpen, R.string.action_unlock_pdf, record.isEncrypted) {
-            onActionSelected(ViewerEditAction.UnlockPdf)
-        }
-        SheetItem(Icons.Default.NoEncryption, R.string.action_remove_password, record.isEncrypted) {
-            onActionSelected(ViewerEditAction.RemovePassword)
-        }
-    }
-}
-
-@Composable
-private fun SheetSection(titleRes: Int) {
-    Text(
-        text = stringResource(titleRes).uppercase(),
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 4.dp)
-    )
-}
-
-@Composable
-private fun SheetItem(
-    icon: ImageVector,
-    textRes: Int,
-    enabled: Boolean,
-    onClick: () -> Unit
-) {
-    val contentColor = if (enabled) {
-        MaterialTheme.colorScheme.onSurface
-    } else {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 24.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(icon, contentDescription = null, tint = contentColor, modifier = Modifier.size(24.dp))
-        Spacer(Modifier.width(16.dp))
-        Text(text = stringResource(textRes), style = MaterialTheme.typography.bodyMedium, color = contentColor)
-    }
-}
-
-private enum class ViewerEditAction {
-    Split,
-    Reorder,
-    Rotate,
-    DeletePages,
-    ExtractPages,
-    DuplicatePages,
-    PageNumbers,
-    TextWatermark,
-    CompressPdf,
-    ProtectPdf,
-    UnlockPdf,
-    Signature,
-    RemoveTextLayer,
-    RemovePassword,
-    RestrictUsage,
-    Annotate,
-    Redact,
-    Grayscale,
-    PdfMetadata,
-    ScanQrCodes
 }

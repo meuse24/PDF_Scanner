@@ -100,7 +100,7 @@ import info.meuse24.pdf_scanner.ui.home.components.HomeRenameDialog
 import info.meuse24.pdf_scanner.ui.home.components.HomeSaveImportDialog
 import info.meuse24.pdf_scanner.ui.home.components.MergeDialog
 import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
-import info.meuse24.pdf_scanner.ui.home.components.ScanAction
+import info.meuse24.pdf_scanner.ui.components.ScanAction
 import info.meuse24.pdf_scanner.ui.home.components.ScanItem
 import info.meuse24.pdf_scanner.ui.home.components.ScannerLoadingAnimation
 import info.meuse24.pdf_scanner.ui.home.components.SelectionTitleBar

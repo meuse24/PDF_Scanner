@@ -17,6 +17,7 @@ import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderFailure
 import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderer
 import info.meuse24.pdf_scanner.util.RenderedPdfPage
 import info.meuse24.pdf_scanner.util.ResourceProvider
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,11 +26,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
 private const val SAVED_CURRENT_PAGE = "pdf_viewer_current_page"
 private const val SAVED_ZOOM_SCALE = "pdf_viewer_zoom_scale"
+private val PDF_VIEWER_ZOOM_SCALE_STEPS = floatArrayOf(1f, 1.5f, 2f, 3f, 4f, 5f)
 
 @HiltViewModel
 class PdfViewerViewModel @Inject constructor(
@@ -45,8 +49,10 @@ class PdfViewerViewModel @Inject constructor(
 
     private val bitmapCache = PdfPageBitmapCache()
     private val renderJobs = ConcurrentHashMap<Int, RenderJob>()
+    private val documentHandleRef = AtomicReference<PdfDocumentBitmapHandle?>(null)
+    private val isCleared = AtomicBoolean(false)
 
-    private var documentHandle: PdfDocumentBitmapHandle? = null
+    @Volatile
     private var documentKey: String? = null
     private var openDocumentJob: Job? = null
     private var visiblePageIndexes: Set<Int> = setOf(savedStateHandle[SAVED_CURRENT_PAGE] ?: 0)
@@ -102,8 +108,13 @@ class PdfViewerViewModel @Inject constructor(
 
     fun requestZoomRender(pageIndex: Int, viewportWidthPx: Int, zoomScale: Float) {
         setZoomScale(zoomScale)
-        val width = (viewportWidthPx * zoomScale).roundToInt().coerceAtLeast(viewportWidthPx)
-        renderPage(pageIndex, width, PDF_VIEWER_ZOOM_MAX_BITMAP_SIDE_PX)
+        val (width, maxSide) = zoomRenderDimensions(viewportWidthPx, zoomScale)
+        renderPage(pageIndex, width, maxSide, cacheResult = false)
+    }
+
+    fun prefetchZoomRender(pageIndex: Int, viewportWidthPx: Int) {
+        val (width, maxSide) = zoomRenderDimensions(viewportWidthPx, 2f)
+        renderPage(pageIndex, width, maxSide, cacheResult = false)
     }
 
     fun setZoomScale(scale: Float) {
@@ -126,6 +137,8 @@ class PdfViewerViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(transientMessage = resourceProvider.getString(R.string.export_success, displayName))
                 }
+            } catch (exception: CancellationException) {
+                throw exception
             } catch (_: Exception) {
                 _uiState.update {
                     it.copy(transientMessage = resourceProvider.getString(R.string.error_export_failed))
@@ -140,6 +153,7 @@ class PdfViewerViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        isCleared.set(true)
         cancelRenderJobs()
         openDocumentJob?.cancel()
         closeDocument()
@@ -149,7 +163,7 @@ class PdfViewerViewModel @Inject constructor(
     private fun onRecordChanged(record: ScanRecord) {
         _uiState.update { it.copy(record = record) }
         val nextKey = "${record.filepath}:${record.fileSize}"
-        if (nextKey == documentKey && documentHandle != null) return
+        if (nextKey == documentKey && documentHandleRef.get() != null) return
 
         documentKey = nextKey
         cancelRenderJobs()
@@ -185,7 +199,7 @@ class PdfViewerViewModel @Inject constructor(
             it.copy(
                 loading = true,
                 errorMessage = null,
-                pageCount = record.pageCount.coerceAtLeast(0),
+                pageCount = 0,
                 pages = emptyMap()
             )
         }
@@ -210,13 +224,14 @@ class PdfViewerViewModel @Inject constructor(
                     }
                     return@launch
                 }
-                documentHandle = handle
-                val current = _uiState.value.currentPageIndex.coerceIn(0, handle.pageCount - 1)
+                val actualPageCount = handle.pageCount
+                if (!setDocumentHandle(handle, nextKey)) return@launch
+                val current = _uiState.value.currentPageIndex.coerceIn(0, actualPageCount - 1)
                 _uiState.update {
                     it.copy(
                         loading = false,
                         errorMessage = null,
-                        pageCount = handle.pageCount,
+                        pageCount = actualPageCount,
                         currentPageIndex = current
                     )
                 }
@@ -230,6 +245,8 @@ class PdfViewerViewModel @Inject constructor(
                         pages = emptyMap()
                     )
                 }
+            } catch (exception: CancellationException) {
+                throw exception
             } catch (_: Exception) {
                 _uiState.update {
                     it.copy(
@@ -245,7 +262,7 @@ class PdfViewerViewModel @Inject constructor(
 
     private fun renderVisiblePages() {
         val pageCount = _uiState.value.pageCount
-        if (documentHandle == null || pageCount <= 0 || targetWidthPx <= 0) return
+        if (documentHandleRef.get() == null || pageCount <= 0 || targetWidthPx <= 0) return
 
         val keepPages = visiblePageIndexes
             .flatMap { pageIndex ->
@@ -272,12 +289,19 @@ class PdfViewerViewModel @Inject constructor(
         }
     }
 
-    private fun renderPage(pageIndex: Int, targetWidthPx: Int, maxBitmapSidePx: Int) {
-        val handle = documentHandle ?: return
+    private fun renderPage(
+        pageIndex: Int,
+        targetWidthPx: Int,
+        maxBitmapSidePx: Int,
+        cacheResult: Boolean = true
+    ) {
+        val handle = documentHandleRef.get() ?: return
         val key = PdfPageBitmapCacheKey(pageIndex, targetWidthPx)
-        bitmapCache.get(key)?.let { cached ->
-            applyRenderedPage(cached, loading = false)
-            return
+        if (cacheResult) {
+            bitmapCache.get(key)?.let { cached ->
+                applyRenderedPage(cached, loading = false)
+                return
+            }
         }
 
         val existing = _uiState.value.pages[pageIndex]
@@ -304,10 +328,14 @@ class PdfViewerViewModel @Inject constructor(
             try {
                 val rendered = handle.renderPage(pageIndex, targetWidthPx, maxBitmapSidePx)
                 if (documentKey != expectedDocumentKey) return@launch
-                bitmapCache.put(key, rendered)
+                if (cacheResult) {
+                    bitmapCache.put(key, rendered)
+                }
                 applyRenderedPage(rendered, loading = false)
             } catch (exception: PdfPageBitmapRenderException) {
                 applyPageError(pageIndex, mapFailure(exception.failure))
+            } catch (exception: CancellationException) {
+                throw exception
             } catch (_: Exception) {
                 applyPageError(pageIndex, resourceProvider.getString(R.string.pdf_viewer_renderer_failed))
             } finally {
@@ -354,8 +382,40 @@ class PdfViewerViewModel @Inject constructor(
     }
 
     private fun closeDocument() {
-        documentHandle?.close()
-        documentHandle = null
+        documentHandleRef.getAndSet(null)?.close()
+    }
+
+    private fun setDocumentHandle(handle: PdfDocumentBitmapHandle, expectedKey: String): Boolean {
+        if (
+            isCleared.get() ||
+            documentKey != expectedKey ||
+            !documentHandleRef.compareAndSet(null, handle)
+        ) {
+            handle.close()
+            return false
+        }
+        if (isCleared.get()) {
+            if (documentHandleRef.compareAndSet(handle, null)) {
+                handle.close()
+            }
+            return false
+        }
+        return true
+    }
+
+    private fun zoomRenderDimensions(viewportWidthPx: Int, zoomScale: Float): Pair<Int, Int> {
+        val safeViewportWidth = viewportWidthPx.coerceAtLeast(64)
+        val scaleStep = PDF_VIEWER_ZOOM_SCALE_STEPS.firstOrNull { zoomScale <= it }
+            ?: PDF_VIEWER_ZOOM_SCALE_STEPS.last()
+        val maxSide = minOf(
+            PDF_VIEWER_ZOOM_MAX_BITMAP_SIDE_PX,
+            (safeViewportWidth * 2).coerceAtLeast(PDF_VIEWER_FIT_MAX_BITMAP_SIDE_PX)
+        )
+        val width = (safeViewportWidth * scaleStep)
+            .roundToInt()
+            .coerceAtLeast(safeViewportWidth)
+            .coerceAtMost(maxSide)
+        return width to maxSide
     }
 
     private fun mapFailure(failure: PdfPageBitmapRenderFailure): String = when (failure) {

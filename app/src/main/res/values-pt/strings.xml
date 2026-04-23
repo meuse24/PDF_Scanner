@@ -105,11 +105,11 @@
     <string name="help_item_reorder">Abra o menu de três pontos e escolha Reordenar páginas para alterar a ordem por arrastar e soltar ou com os botões para cima e para baixo.</string>
     <string name="help_item_delete">Use Excluir para mover PDFs selecionados para a lixeira. Eles podem ser restaurados por 30 dias ou excluídos permanentemente na Lixeira.</string>
     <string name="help_section_ocr">OCR e extração de texto</string>
-    <string name="help_item_extract_text">A Extração de texto (OCR) lê todas as páginas e mostra o texto reconhecido em um painel onde você pode copiá-lo ou compartilhá-lo.</string>
+    <string name="help_item_extract_text">A Extração de texto (OCR) lê todas as páginas. Para um único documento, abre a revisão OCR com texto por página, idioma reconhecido e qualidade. Para vários documentos, continua a mostrar um painel combinado de onde pode copiar ou partilhar o resultado.</string>
     <string name="help_item_make_searchable">Tornar pesquisável adiciona uma camada de texto invisível ao PDF, guarda localmente o texto OCR extraído para pesquisa no arquivo.</string>
     <string name="help_item_ocr_language">OCR e Tornar pesquisável usam o modo Automático por padrão — funciona offline para scripts latinos. Os modelos para hindi, chinês, japonês e coreano são baixados no primeiro uso via Google Play Services. Scripts CJK não são suportados para PDF pesquisável — use «Extrair texto» para indexá-los.</string>
     <string name="help_section_navigation">Navegação</string>
-    <string name="help_nav_text">Use o menu hambúrguer (canto superior esquerdo) para acessar o Arquivo, Scanner, Ajuda e Info.</string>
+    <string name="help_nav_text">Use o menu hambúrguer (canto superior esquerdo) para acessar o Arquivo, a Lixeira, Configurações, Ajuda, Info e Privacidade.</string>
     <string name="help_section_notes">Observações</string>
     <string name="help_note1">O app não requer acesso direto à câmera — o ML Kit Document Scanner funciona como um processo separado do sistema.</string>
     <string name="help_note2">Todos os PDFs são armazenados localmente no diretório do app e não saem do dispositivo.</string>
@@ -133,8 +133,8 @@
     <string name="info_repository_label">Repositório GitHub</string>
     <string name="info_section_privacy">Privacidade</string>
     <string name="info_section_features">Funcionalidades</string>
-    <string name="info_features_body">A app digitaliza, importa, cria e visualiza PDFs dentro da app, executa OCR no dispositivo, guarda localmente texto OCR pesquisável e oferece edição de páginas, proteção, assinaturas, destaques, redação segura e reconstrução OCR opcional para cópias redigidas.</string>
-    <string name="info_privacy_body">Sem anúncios, sem conta e sem backend próprio. PDFs, miniaturas e texto OCR opcional permanecem no armazenamento da app no seu dispositivo. Partilhar e exportar só acontecem quando o utilizador o aciona. A redação segura cria localmente uma cópia saneada separada. A digitalização, o OCR e os downloads de modelos ou fontes dependem dos Google Play Services; esta app não envia o conteúdo dos seus documentos.</string>
+    <string name="info_features_body">A app digitaliza, importa, cria, anexa e visualiza PDFs dentro da app, mantém documentos eliminados na lixeira por 30 dias, executa OCR no dispositivo, guarda localmente o texto OCR e os metadados de qualidade para pesquisa no arquivo e revisão OCR, e oferece edição de páginas, anotações, assinaturas, edição de metadados, escala de cinzentos, proteção e redação segura com reconstrução OCR opcional para cópias redigidas.</string>
+    <string name="info_privacy_body">Sem anúncios, sem conta e sem backend próprio. PDFs, miniaturas, cópias geradas, itens da lixeira, texto OCR e metadados de qualidade OCR permanecem no armazenamento da app no seu dispositivo até os exportar, partilhar ou eliminar permanentemente. A digitalização, o OCR e os downloads de modelos ou fontes dependem dos Google Play Services; esta app não envia o conteúdo dos seus documentos.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
     <string name="privacy_keyword_2">Offline</string>

@@ -25,6 +25,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -120,18 +121,25 @@ fun AppendScreen(
             }
     }
 
-    LaunchedEffect(error) {
-        val message = error ?: return@LaunchedEffect
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-        viewModel.clearError()
-    }
-
-    LaunchedEffect(success, record?.id) {
+    LaunchedEffect(success) {
         val message = success ?: return@LaunchedEffect
         val scanId = record?.id ?: return@LaunchedEffect
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         viewModel.clearSuccess()
         onAppendComplete(scanId)
+    }
+
+    error?.let { message ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearError,
+            title = { Text(stringResource(R.string.error_title)) },
+            text = { Text(message) },
+            confirmButton = {
+                TextButton(onClick = viewModel::clearError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
     }
 
     if (editLoading) {
@@ -226,6 +234,7 @@ fun AppendScreen(
             }
         }
     }
+
 }
 
 @Composable

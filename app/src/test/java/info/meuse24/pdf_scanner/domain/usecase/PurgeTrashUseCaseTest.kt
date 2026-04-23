@@ -18,6 +18,22 @@ class PurgeTrashUseCaseTest {
     val tmpFolder = TemporaryFolder()
 
     @Test
+    fun `purgeSelected delegates to delete scans use case`() = runTest {
+        val pdf = tmpFolder.newFile("selected.pdf")
+        val record = scanRecord(7L, pdf, System.currentTimeMillis())
+        val scanDao = PurgeFakeScanDao()
+        val useCase = PurgeTrashUseCase(
+            repository = TrashRepository(PurgeFakeTrashDao(records = listOf(record))),
+            deleteScansUseCase = DeleteScansUseCase(ScanRepository(scanDao))
+        )
+
+        val deleted = useCase.purgeSelected(listOf(record))
+
+        assertEquals(true, deleted)
+        assertEquals(listOf(7L), scanDao.deletedIds)
+    }
+
+    @Test
     fun `purgeExpired deletes only records older than threshold`() = runTest {
         val expiredPdf = tmpFolder.newFile("expired.pdf")
         val activePdf = tmpFolder.newFile("active.pdf")

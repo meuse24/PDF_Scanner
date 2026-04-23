@@ -10,7 +10,10 @@
     <string name="append_source_pdf_title">Append PDF</string>
     <string name="append_source_pdf_subtitle">Import another PDF and add its pages at the end.</string>
     <string name="append_images_hint">Choose the page layout for the selected images before appending them.</string>
-    <string name="append_success">%1$d pages appended</string>
+    <plurals name="append_success">
+        <item quantity="one">%1$d page appended</item>
+        <item quantity="other">%1$d pages appended</item>
+    </plurals>
     <string name="append_error">Appending pages failed</string>
     <string name="append_target_encrypted">Remove the PDF password before appending pages.</string>
 </resources>

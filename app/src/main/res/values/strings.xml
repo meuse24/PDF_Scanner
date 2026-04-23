@@ -127,11 +127,11 @@
     <string name="help_item_reorder">Open the three-dot menu and choose Reorder pages to rearrange pages via drag and drop or the up and down buttons.</string>
     <string name="help_item_delete">Use Delete to move selected PDFs to trash. They can be restored for 30 days or deleted permanently from Trash.</string>
     <string name="help_section_ocr">OCR and Text Extraction</string>
-    <string name="help_item_extract_text">Text Extraction (OCR) reads all pages and shows the recognized text in a panel where you can copy or share it.</string>
+    <string name="help_item_extract_text">Text Extraction (OCR) reads all pages. For a single document it opens OCR Review with per-page text, recognized language, and quality. For multiple documents it shows a combined panel where you can copy or share the result.</string>
     <string name="help_item_make_searchable">Make Searchable adds an invisible text layer to the PDF, stores the extracted OCR text locally for archive search.</string>
     <string name="help_item_ocr_language">OCR and Make Searchable use Automatic mode by default — works offline for Latin-script documents. Hindi, Chinese, Japanese, and Korean models are downloaded on first use via Google Play Services. Chinese, Japanese, and Korean are not supported for searchable PDF — use Extract Text to index them for search.</string>
     <string name="help_section_navigation">Navigation</string>
-    <string name="help_nav_text">Use the hamburger menu (top left) to access the Archive, Scanner, Help, and Info screens.</string>
+    <string name="help_nav_text">Use the hamburger menu (top left) to access the Archive, Trash, Settings, Help, Info, and Privacy screens.</string>
     <string name="help_section_notes">Notes</string>
     <string name="help_note1">The app does not require direct camera access — the ML Kit Document Scanner runs as a separate system process.</string>
     <string name="help_note2">All PDFs are stored locally in the app directory and do not leave the device.</string>
@@ -157,8 +157,8 @@
     <string name="info_repository_label">GitHub Repository</string>
     <string name="info_section_privacy">Privacy</string>
     <string name="info_section_features">Capabilities</string>
-    <string name="info_features_body">The app scans, imports, creates and views PDFs in-app, performs on-device OCR, stores searchable OCR text locally for archive search, and offers page editing, annotations, signatures, metadata updates, grayscale conversion, protection, and secure redaction with optional OCR rebuild for redacted copies.</string>
-    <string name="info_privacy_body">No ads, no account, and no own backend. PDFs, thumbnails, generated copies, redacted files, and optional OCR text stay in app storage on your device until you export or share them. Scanning, OCR, and downloadable models or fonts rely on Google Play Services; this app does not upload document content itself.</string>
+    <string name="info_features_body">The app scans, imports, creates, appends, and views PDFs in-app, keeps deleted documents in trash for 30 days, performs on-device OCR, stores OCR text and quality metadata locally for archive search and OCR review, and offers page editing, annotations, signatures, metadata updates, grayscale conversion, protection, and secure redaction with optional OCR rebuild for redacted copies.</string>
+    <string name="info_privacy_body">No ads, no account, and no own backend. PDFs, thumbnails, generated copies, deleted items in trash, OCR text, and OCR quality metadata stay in app storage on your device until you export, share, or permanently delete them. Scanning, OCR, and downloadable models or fonts rely on Google Play Services; this app does not upload document content itself.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
     <string name="privacy_keyword_2">Offline</string>

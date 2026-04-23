@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ocr_review_title">OCR Review</string>
-    <string name="ocr_review_quality_title">Recognition quality</string>
-    <string name="ocr_review_language_title">Recognized language</string>
-    <string name="ocr_review_language_unknown">Unknown</string>
-    <string name="ocr_review_low_warning">Low OCR confidence. Check the text before copying or sharing it.</string>
+    <string name="ocr_review_title">Révision OCR</string>
+    <string name="ocr_review_quality_title">Qualité de reconnaissance</string>
+    <string name="ocr_review_language_title">Langue reconnue</string>
+    <string name="ocr_review_language_unknown">Inconnue</string>
+    <string name="ocr_review_low_warning">Faible confiance OCR. Vérifiez le texte avant de le copier ou de le partager.</string>
     <string name="ocr_review_actions_title">Actions</string>
-    <string name="ocr_review_run_ocr">Run OCR</string>
+    <string name="ocr_review_run_ocr">Lancer l’OCR</string>
     <string name="ocr_review_page_header">Page %1$d</string>
-    <string name="ocr_review_no_text">No text recognized.</string>
-    <string name="ocr_review_load_failed">Could not load OCR text.</string>
-    <string name="ocr_review_reextract_failed">OCR could not be updated.</string>
-    <string name="ocr_review_missing_record">This document is no longer available.</string>
+    <string name="ocr_review_no_text">Aucun texte reconnu.</string>
+    <string name="ocr_review_load_failed">Impossible de charger le texte OCR.</string>
+    <string name="ocr_review_reextract_failed">Impossible de mettre à jour l’OCR.</string>
+    <string name="ocr_review_missing_record">Ce document n’est plus disponible.</string>
     <string name="ocr_quality_badge_percent">%1$d%%</string>
     <string name="ocr_quality_badge_unknown">OCR</string>
 </resources>

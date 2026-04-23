@@ -7,13 +7,17 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - Scan documents to PDF with Google's ML Kit Document Scanner
 - Import existing PDFs into the app archive
 - View PDFs directly in the app with PdfRenderer, page scrolling, zoom, print, share, export, and external-open fallback
+- Extract OCR text and create searchable PDFs with automatic/manual language selection and on-demand ML Kit model downloads
+- Review OCR text per page with recognized language and quality badges
 - Create PDFs from gallery images with A4 layouts:
   - 1 image per page
   - 2 images per page
   - 4 images per page
-- Search by filename and OCR text
+- Append scanned pages, gallery images, or another PDF to an existing document
+- Search by filename and stored OCR text
 - Scan PDFs for QR codes and inspect URLs, Wi-Fi credentials, and raw payloads locally
 - Merge, split, reorder, rotate, extract, duplicate, and delete pages
+- Recover deleted documents from an in-app trash for 30 days before permanent purge
 - Add annotations with marks, rectangles, ovals, text notes, and zoom-aware editing
 - Add page numbers, text watermarks, and signatures
 - Compress PDFs, protect them with passwords, unlock them, remove text layers, convert to grayscale, and restrict usage

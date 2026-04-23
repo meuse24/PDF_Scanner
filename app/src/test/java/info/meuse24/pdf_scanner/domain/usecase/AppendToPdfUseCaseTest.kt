@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -102,6 +103,58 @@ class AppendToPdfUseCaseTest {
     }
 
     @Test
+    fun `encrypted target throws append target encrypted exception`() = runTest {
+        val targetFile = TestPdfFactory.createPdf(
+            File(tmpFolder.root, "target_encrypted.pdf"),
+            listOf(TestPdfPage(420f, 600f))
+        )
+        val sourceTemp = TestPdfFactory.createPdf(
+            File(tmpFolder.root, "source_for_encrypted_target.pdf"),
+            listOf(TestPdfPage(430f, 610f))
+        )
+        val useCase = AppendToPdfUseCase(
+            fileUtil = StubFileUtil(sourceTemp, tmpFolder.root),
+            pdfEditor = SelectiveEncryptedPdfEditor(encryptedFiles = setOf(targetFile.name)),
+            repository = ScanRepository(FakeScanDao()),
+            imagePdfBuilder = StubImagePdfBuilder(sourceTemp, pageCount = 1, rootDir = tmpFolder.root)
+        )
+
+        try {
+            useCase(record(10L, targetFile, pageCount = 1, isSearchable = false), AppendSource.Pdf(mock(Uri::class.java)))
+            fail("Expected AppendTargetEncryptedException")
+        } catch (_: AppendTargetEncryptedException) {
+            assertTrue(targetFile.exists())
+            assertTrue(sourceTemp.exists())
+        }
+    }
+
+    @Test
+    fun `encrypted source throws append source encrypted exception and deletes temp file`() = runTest {
+        val targetFile = TestPdfFactory.createPdf(
+            File(tmpFolder.root, "target_for_encrypted_source.pdf"),
+            listOf(TestPdfPage(420f, 600f))
+        )
+        val sourceTemp = TestPdfFactory.createPdf(
+            File(tmpFolder.root, "source_encrypted.pdf"),
+            listOf(TestPdfPage(430f, 610f))
+        )
+        val useCase = AppendToPdfUseCase(
+            fileUtil = StubFileUtil(sourceTemp, tmpFolder.root),
+            pdfEditor = SelectiveEncryptedPdfEditor(encryptedFiles = setOf(sourceTemp.name)),
+            repository = ScanRepository(FakeScanDao()),
+            imagePdfBuilder = StubImagePdfBuilder(sourceTemp, pageCount = 1, rootDir = tmpFolder.root)
+        )
+
+        try {
+            useCase(record(10L, targetFile, pageCount = 1, isSearchable = false), AppendSource.Pdf(mock(Uri::class.java)))
+            fail("Expected AppendSourceEncryptedException")
+        } catch (_: AppendSourceEncryptedException) {
+            assertTrue(targetFile.exists())
+            assertFalse(sourceTemp.exists())
+        }
+    }
+
+    @Test
     fun `merge failure leaves target intact and does not invalidate repository`() = runTest {
         val targetFile = TestPdfFactory.createPdf(
             File(tmpFolder.root, "target_failure.pdf"),
@@ -171,4 +224,10 @@ private class FailingMergePdfEditor : JvmAppendPdfEditor() {
     override fun mergePdfs(inputs: List<File>, output: File) {
         throw IOException("disk full")
     }
+}
+
+private class SelectiveEncryptedPdfEditor(
+    private val encryptedFiles: Set<String>
+) : JvmAppendPdfEditor() {
+    override fun isPdfEncrypted(input: File): Boolean = input.name in encryptedFiles
 }

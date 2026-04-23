@@ -230,12 +230,11 @@ class HomeViewModel @Inject constructor(
                     ids.size,
                     ids.size
                 )
+                _lastTrashed.value = emptyList()
             } catch (_: RestoreMissingFileException) {
                 _error.value = resourceProvider.getString(R.string.error_restore_missing_file)
             } catch (_: Exception) {
                 _error.value = resourceProvider.getString(R.string.error_restore_failed)
-            } finally {
-                _lastTrashed.value = emptyList()
             }
         }
     }
@@ -302,9 +301,11 @@ class HomeViewModel @Inject constructor(
                     _ocrText.value = null
                     _ocrReviewRequestId.value = validRecords.single().id
                 } else {
+                    // TODO(F3): Bulk OCR still uses the legacy sheet until the review flow can
+                    // represent aggregated multi-record results with quality metadata.
                     _ocrText.value = buildCombinedOcrText(validRecords, results)
                 }
-                maybeReportOcrWarning(languageCode, firstStats)
+                maybeWarnAboutUncertainAutoMode(languageCode, firstStats)
             } catch (e: OcrNoTextException) {
                 val msgRes = if (languageCode == OCR_LANGUAGE_AUTO) R.string.ocr_no_text_auto_hint
                              else R.string.ocr_no_text_found
@@ -485,7 +486,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun maybeReportOcrWarning(languageCode: String, stats: OcrResultStats?) {
+    private fun maybeWarnAboutUncertainAutoMode(languageCode: String, stats: OcrResultStats?) {
         if (stats == null) return
         if (
             languageCode == OCR_LANGUAGE_AUTO &&

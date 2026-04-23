@@ -58,6 +58,7 @@ class WorkflowErrorMapper @Inject constructor(
         is ScanWorkflowError.GrayscaleFailed -> resourceProvider.getString(R.string.grayscale_error)
         is ScanWorkflowError.PdfMetadataFailed -> resourceProvider.getString(R.string.metadata_error)
         ScanWorkflowError.AppendTargetEncrypted -> resourceProvider.getString(R.string.append_target_encrypted)
+        ScanWorkflowError.AppendSourceEncrypted -> resourceProvider.getString(R.string.append_target_encrypted)
         is ScanWorkflowError.AppendFailed -> resourceProvider.getString(R.string.append_error)
     }
 

@@ -10,7 +10,10 @@
     <string name="append_source_pdf_title">PDF anhängen</string>
     <string name="append_source_pdf_subtitle">Importiere ein weiteres PDF und füge dessen Seiten am Ende hinzu.</string>
     <string name="append_images_hint">Wähle das Seitenlayout für die ausgewählten Bilder, bevor du sie anhängst.</string>
-    <string name="append_success">%1$d Seiten angehängt</string>
+    <plurals name="append_success">
+        <item quantity="one">%1$d Seite angehängt</item>
+        <item quantity="other">%1$d Seiten angehängt</item>
+    </plurals>
     <string name="append_error">Anhängen der Seiten fehlgeschlagen</string>
     <string name="append_target_encrypted">Entferne zuerst das PDF-Passwort, bevor du Seiten anhängst.</string>
 </resources>

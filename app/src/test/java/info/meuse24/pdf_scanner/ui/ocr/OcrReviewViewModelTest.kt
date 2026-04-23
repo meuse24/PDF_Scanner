@@ -70,7 +70,7 @@ class OcrReviewViewModelTest {
             extractedText = "First page\n\nSecond page",
             ocrConfidence = 0.78f,
             ocrLanguage = "en",
-            ocrPageTextJson = listOf("First page", "Second page").toOcrPageTextJson()
+            ocrPageTextJson = "[\"First page\",\"Second page\"]"
         )
         recordsFlow.value = listOf(record)
         val extractTextUseCase = RecordingExtractTextUseCase()
@@ -81,10 +81,27 @@ class OcrReviewViewModelTest {
 
         val state = viewModel.uiState.value
         assertEquals("First page\n\nSecond page", state.text)
-        assertEquals(listOf("First page", "Second page"), state.pageTexts)
         assertEquals(0.78f, state.confidence)
         assertEquals("en", state.recognizedLanguage)
         assertEquals(info.meuse24.pdf_scanner.util.OcrQuality.HIGH, state.quality)
+        assertTrue(extractTextUseCase.invocations.isEmpty())
+        collection.cancel()
+    }
+
+    @Test
+    fun `legacy cached text without page json stays a single block`() = runTest(dispatcher) {
+        val record = scanRecord(
+            extractedText = "Paragraph one\n\nParagraph two",
+            ocrPageTextJson = null
+        )
+        recordsFlow.value = listOf(record)
+        val extractTextUseCase = RecordingExtractTextUseCase()
+
+        val viewModel = buildViewModel(extractTextUseCase, record.id)
+        val collection = backgroundScope.launch { viewModel.uiState.collect() }
+        advanceUntilIdle()
+
+        assertEquals(listOf("Paragraph one\n\nParagraph two"), viewModel.uiState.value.pageTexts)
         assertTrue(extractTextUseCase.invocations.isEmpty())
         collection.cancel()
     }
@@ -137,6 +154,28 @@ class OcrReviewViewModelTest {
     }
 
     @Test
+    fun `reExtract failure keeps cached text and reports update error`() = runTest(dispatcher) {
+        val record = scanRecord(
+            extractedText = "Old text",
+            ocrPageTextJson = listOf("Old text").toOcrPageTextJson()
+        )
+        recordsFlow.value = listOf(record)
+        val extractTextUseCase = RecordingExtractTextUseCase { _, _ -> throw IllegalStateException("boom") }
+        val viewModel = buildViewModel(extractTextUseCase, record.id)
+        val collection = backgroundScope.launch { viewModel.uiState.collect() }
+        advanceUntilIdle()
+
+        viewModel.reExtract("en")
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals("Old text", state.text)
+        assertEquals(listOf("Old text"), state.pageTexts)
+        assertEquals("Update failed", state.error)
+        collection.cancel()
+    }
+
+    @Test
     fun `missing cached text triggers OCR and surfaces no-text error`() = runTest(dispatcher) {
         val record = scanRecord(extractedText = null, ocrPageTextJson = null)
         recordsFlow.value = listOf(record)
@@ -148,6 +187,22 @@ class OcrReviewViewModelTest {
 
         assertEquals("No text recognized", viewModel.uiState.value.error)
         assertEquals(1, extractTextUseCase.invocations.size)
+        collection.cancel()
+    }
+
+    @Test
+    fun `clearError resets error state`() = runTest(dispatcher) {
+        val record = scanRecord(extractedText = null, ocrPageTextJson = null)
+        recordsFlow.value = listOf(record)
+        val extractTextUseCase = RecordingExtractTextUseCase { _, _ -> throw OcrNoTextException() }
+        val viewModel = buildViewModel(extractTextUseCase, record.id)
+        val collection = backgroundScope.launch { viewModel.uiState.collect() }
+        advanceUntilIdle()
+
+        viewModel.clearError()
+        advanceUntilIdle()
+
+        assertNull(viewModel.uiState.value.error)
         collection.cancel()
     }
 

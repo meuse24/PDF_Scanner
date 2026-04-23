@@ -47,5 +47,19 @@ class WorkflowErrorMapperTest {
 
         assertEquals("searchable failed", message)
     }
-}
 
+    @Test
+    fun `maps AppendSourceEncrypted to append encrypted message`() {
+        val mapper = WorkflowErrorMapper(
+            FakeResourceProvider(
+                strings = mapOf(
+                    R.string.append_target_encrypted to "remove password before appending"
+                )
+            )
+        )
+
+        val message = mapper.map(ScanWorkflowError.AppendSourceEncrypted)
+
+        assertEquals("remove password before appending", message)
+    }
+}

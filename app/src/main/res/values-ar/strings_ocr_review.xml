@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ocr_review_title">OCR Review</string>
-    <string name="ocr_review_quality_title">Recognition quality</string>
-    <string name="ocr_review_language_title">Recognized language</string>
-    <string name="ocr_review_language_unknown">Unknown</string>
-    <string name="ocr_review_low_warning">Low OCR confidence. Check the text before copying or sharing it.</string>
-    <string name="ocr_review_actions_title">Actions</string>
-    <string name="ocr_review_run_ocr">Run OCR</string>
-    <string name="ocr_review_page_header">Page %1$d</string>
-    <string name="ocr_review_no_text">No text recognized.</string>
-    <string name="ocr_review_load_failed">Could not load OCR text.</string>
-    <string name="ocr_review_reextract_failed">OCR could not be updated.</string>
-    <string name="ocr_review_missing_record">This document is no longer available.</string>
+    <string name="ocr_review_title">مراجعة OCR</string>
+    <string name="ocr_review_quality_title">جودة التعرّف</string>
+    <string name="ocr_review_language_title">اللغة المتعرّف عليها</string>
+    <string name="ocr_review_language_unknown">غير معروفة</string>
+    <string name="ocr_review_low_warning">ثقة OCR منخفضة. تحقّق من النص قبل نسخه أو مشاركته.</string>
+    <string name="ocr_review_actions_title">الإجراءات</string>
+    <string name="ocr_review_run_ocr">تشغيل OCR</string>
+    <string name="ocr_review_page_header">الصفحة %1$d</string>
+    <string name="ocr_review_no_text">لم يتم التعرّف على أي نص.</string>
+    <string name="ocr_review_load_failed">تعذّر تحميل نص OCR.</string>
+    <string name="ocr_review_reextract_failed">تعذّر تحديث OCR.</string>
+    <string name="ocr_review_missing_record">لم يعد هذا المستند متاحًا.</string>
     <string name="ocr_quality_badge_percent">%1$d%%</string>
     <string name="ocr_quality_badge_unknown">OCR</string>
 </resources>

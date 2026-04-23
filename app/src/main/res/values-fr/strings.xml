@@ -105,11 +105,11 @@
     <string name="help_item_reorder">Ouvre le menu à trois points et choisis Réorganiser les pages pour changer l\'ordre par glisser-déposer ou avec les boutons haut et bas.</string>
     <string name="help_item_delete">Utilise Supprimer pour déplacer les PDF sélectionnés vers la corbeille. Ils peuvent être restaurés pendant 30 jours ou supprimés définitivement depuis la corbeille.</string>
     <string name="help_section_ocr">OCR et extraction de texte</string>
-    <string name="help_item_extract_text">L\'extraction de texte (OCR) lit toutes les pages et affiche le texte reconnu dans un panneau où tu peux le copier ou le partager.</string>
+    <string name="help_item_extract_text">L\'extraction de texte (OCR) lit toutes les pages. Pour un seul document, elle ouvre la revue OCR avec le texte page par page, la langue reconnue et la qualité. Pour plusieurs documents, elle affiche toujours un panneau combiné d\'où vous pouvez copier ou partager le résultat.</string>
     <string name="help_item_make_searchable">Rendre consultable ajoute une couche de texte invisible au PDF, enregistre localement le texte OCR extrait pour la recherche dans l’archive.</string>
     <string name="help_item_ocr_language">L\'OCR et Rendre consultable utilisent le mode Automatique par défaut — fonctionne hors ligne pour les écritures latines. Les modèles pour le hindi, le chinois, le japonais et le coréen sont téléchargés lors de la première utilisation via Google Play Services. Les scripts CJK ne sont pas pris en charge pour le PDF consultable — utilisez « Extraire le texte » pour les indexer.</string>
     <string name="help_section_navigation">Navigation</string>
-    <string name="help_nav_text">Utilise le menu hamburger (en haut à gauche) pour accéder aux Archives, au Scanner, à l\'Aide et à l\'Info.</string>
+    <string name="help_nav_text">Utilisez le menu hamburger (en haut à gauche) pour accéder aux Archives, à la Corbeille, aux Paramètres, à l\'Aide, à l\'Info et à la Confidentialité.</string>
     <string name="help_section_notes">Remarques</string>
     <string name="help_note1">L\'app ne nécessite pas d\'accès direct à la caméra : le ML Kit Document Scanner s\'exécute comme un processus système séparé.</string>
     <string name="help_note2">Tous les PDFs sont stockés localement dans le répertoire de l\'app et ne quittent pas l\'appareil.</string>
@@ -133,8 +133,8 @@
     <string name="info_repository_label">Dépôt GitHub</string>
     <string name="info_section_privacy">Confidentialité</string>
     <string name="info_section_features">Fonctions</string>
-    <string name="info_features_body">L’app numérise, importe, crée et affiche les PDF dans l’app, exécute l’OCR sur l’appareil, stocke localement le texte OCR consultable pour la recherche dans l’archive, et propose l’édition de pages, la protection, les signatures, le surlignage, le caviardage sécurisé et une reconstruction OCR optionnelle pour les copies caviardées.</string>
-    <string name="info_privacy_body">Pas de publicité, pas de compte et pas de backend propre. Les PDF, miniatures et le texte OCR optionnel restent dans le stockage de l’app sur votre appareil. Le partage et l’export n’ont lieu que lorsque vous les déclenchez. Le caviardage sécurisé crée localement une copie assainie distincte. La numérisation, l’OCR et les téléchargements de modèles ou de polices dépendent de Google Play Services ; cette app ne téléverse pas le contenu de vos documents.</string>
+    <string name="info_features_body">L’app numérise, importe, crée, complète et affiche les PDF dans l’app, conserve les documents supprimés dans la corbeille pendant 30 jours, exécute l’OCR sur l’appareil, stocke localement le texte OCR et les métadonnées de qualité pour la recherche dans l’archive et la revue OCR, et propose l’édition de pages, les annotations, les signatures, l’édition des métadonnées, le niveau de gris, la protection et le caviardage sécurisé avec reconstruction OCR optionnelle pour les copies caviardées.</string>
+    <string name="info_privacy_body">Pas de publicité, pas de compte et pas de backend propre. Les PDF, miniatures, copies générées, éléments de la corbeille, texte OCR et métadonnées de qualité OCR restent dans le stockage de l’app sur votre appareil jusqu’à leur export, leur partage ou leur suppression définitive. La numérisation, l’OCR et les téléchargements de modèles ou de polices dépendent de Google Play Services ; cette app ne téléverse pas le contenu de vos documents.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
     <string name="privacy_keyword_2">Hors ligne</string>

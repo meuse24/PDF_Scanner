@@ -2,7 +2,9 @@ package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.domain.usecase.AppendResult
+import info.meuse24.pdf_scanner.domain.usecase.AppendSourceEncryptedException
 import info.meuse24.pdf_scanner.domain.usecase.AppendSource
+import info.meuse24.pdf_scanner.domain.usecase.AppendTargetMissingException
 import info.meuse24.pdf_scanner.domain.usecase.AppendTargetEncryptedException
 import info.meuse24.pdf_scanner.domain.usecase.AppendToPdfUseCase
 import java.io.File
@@ -24,7 +26,7 @@ class AppendToPdfWorkflow @Inject constructor(
     ): WorkflowResult<AppendToPdfWorkflowResult> {
         if (!File(target.filepath).exists()) {
             return WorkflowResult.Failure(
-                ScanWorkflowError.AppendFailed(IllegalStateException("Target PDF missing"))
+                ScanWorkflowError.AppendFailed(AppendTargetMissingException())
             )
         }
         if (target.isEncrypted) {
@@ -42,6 +44,8 @@ class AppendToPdfWorkflow @Inject constructor(
             )
         } catch (_: AppendTargetEncryptedException) {
             WorkflowResult.Failure(ScanWorkflowError.AppendTargetEncrypted)
+        } catch (_: AppendSourceEncryptedException) {
+            WorkflowResult.Failure(ScanWorkflowError.AppendSourceEncrypted)
         } catch (exception: IOException) {
             WorkflowResult.Failure(ScanWorkflowError.StorageWriteFailed(exception))
         } catch (throwable: Throwable) {

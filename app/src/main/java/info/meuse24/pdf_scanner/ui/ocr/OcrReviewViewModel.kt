@@ -135,8 +135,5 @@ private fun ScanRecord?.pageTexts(): List<String> {
     if (cachedPages.isNotEmpty()) return cachedPages
     val fullText = extractedText?.trim().orEmpty()
     if (fullText.isBlank()) return emptyList()
-    return fullText.split("\n\n")
-        .map { it.trim() }
-        .filter { it.isNotEmpty() }
-        .ifEmpty { listOf(fullText) }
+    return listOf(fullText)
 }

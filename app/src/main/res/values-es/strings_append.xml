@@ -10,7 +10,10 @@
     <string name="append_source_pdf_title">Anexar PDF</string>
     <string name="append_source_pdf_subtitle">Importa otro PDF y agrega sus páginas al final.</string>
     <string name="append_images_hint">Elige el diseño de página para las imágenes seleccionadas antes de anexarlas.</string>
-    <string name="append_success">%1$d páginas anexadas</string>
+    <plurals name="append_success">
+        <item quantity="one">%1$d página anexada</item>
+        <item quantity="other">%1$d páginas anexadas</item>
+    </plurals>
     <string name="append_error">No se pudieron anexar las páginas</string>
     <string name="append_target_encrypted">Quita la contraseña del PDF antes de anexar páginas.</string>
 </resources>

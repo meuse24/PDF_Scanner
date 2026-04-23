@@ -308,17 +308,24 @@ fun OcrReviewScreen(
     }
 }
 
-private fun displayLanguageName(
+internal fun displayLanguageName(
     languageCode: String?,
     displayLocale: Locale,
     unknownLabel: String
 ): String {
-    if (languageCode.isNullOrBlank()) return unknownLabel
-    val displayName = Locale.forLanguageTag(languageCode)
+    val normalizedCode = languageCode?.trim().orEmpty()
+    if (normalizedCode.isBlank() || normalizedCode.equals("und", ignoreCase = true)) {
+        return unknownLabel
+    }
+
+    val displayName = Locale.forLanguageTag(normalizedCode)
         .getDisplayLanguage(displayLocale)
         .trim()
-    return if (displayName.isBlank()) {
-        languageCode.uppercase(displayLocale)
+    return if (
+        displayName.isBlank() ||
+        displayName.equals(normalizedCode, ignoreCase = true)
+    ) {
+        unknownLabel
     } else {
         displayName.replaceFirstChar { char ->
             if (char.isLowerCase()) char.titlecase(displayLocale) else char.toString()

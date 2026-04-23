@@ -112,8 +112,8 @@ fun InfoScreen() {
                 InfoRow("Hilt (Dagger)",                    "2.59.2")
                 InfoRow("Navigation Compose",               "2.9.7")
                 InfoRow("Hilt Navigation Compose",          "1.3.0")
-                InfoRow("KSP",                              "2.2.10-2.0.2")
-                InfoRow("Android Gradle Plugin",            "9.1.0")
+                InfoRow("KSP",                              "2.3.2")
+                InfoRow("Android Gradle Plugin",            "9.1.1")
             }
         }
         item {

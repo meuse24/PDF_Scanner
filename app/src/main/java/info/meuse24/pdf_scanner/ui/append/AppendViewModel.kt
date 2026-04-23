@@ -93,8 +93,9 @@ class AppendViewModel @Inject constructor(
                 when (val result = appendWorkflow(target, source)) {
                     is WorkflowResult.Success -> {
                         onSuccess()
-                        _success.value = resourceProvider.getString(
-                            R.string.append_success,
+                        _success.value = resourceProvider.getQuantityString(
+                            R.plurals.append_success,
+                            result.value.appendedPageCount,
                             result.value.appendedPageCount
                         )
                     }

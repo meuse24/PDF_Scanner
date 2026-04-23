@@ -10,7 +10,10 @@
     <string name="append_source_pdf_title">PDF जोड़ें</string>
     <string name="append_source_pdf_subtitle">किसी दूसरे PDF को आयात करें और उसके पेज अंत में जोड़ें।</string>
     <string name="append_images_hint">जोड़ने से पहले चुनी गई छवियों के लिए पेज लेआउट चुनें।</string>
-    <string name="append_success">%1$d पेज जोड़े गए</string>
+    <plurals name="append_success">
+        <item quantity="one">%1$d पेज जोड़ा गया</item>
+        <item quantity="other">%1$d पेज जोड़े गए</item>
+    </plurals>
     <string name="append_error">पेज जोड़ना विफल रहा</string>
     <string name="append_target_encrypted">पेज जोड़ने से पहले PDF का पासवर्ड हटाएँ।</string>
 </resources>

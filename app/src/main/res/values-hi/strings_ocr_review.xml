@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ocr_review_title">OCR Review</string>
-    <string name="ocr_review_quality_title">Recognition quality</string>
-    <string name="ocr_review_language_title">Recognized language</string>
-    <string name="ocr_review_language_unknown">Unknown</string>
-    <string name="ocr_review_low_warning">Low OCR confidence. Check the text before copying or sharing it.</string>
-    <string name="ocr_review_actions_title">Actions</string>
-    <string name="ocr_review_run_ocr">Run OCR</string>
-    <string name="ocr_review_page_header">Page %1$d</string>
-    <string name="ocr_review_no_text">No text recognized.</string>
-    <string name="ocr_review_load_failed">Could not load OCR text.</string>
-    <string name="ocr_review_reextract_failed">OCR could not be updated.</string>
-    <string name="ocr_review_missing_record">This document is no longer available.</string>
+    <string name="ocr_review_title">OCR समीक्षा</string>
+    <string name="ocr_review_quality_title">पहचान गुणवत्ता</string>
+    <string name="ocr_review_language_title">पहचानी गई भाषा</string>
+    <string name="ocr_review_language_unknown">अज्ञात</string>
+    <string name="ocr_review_low_warning">OCR विश्वास कम है। कॉपी या साझा करने से पहले टेक्स्ट जाँचें।</string>
+    <string name="ocr_review_actions_title">क्रियाएँ</string>
+    <string name="ocr_review_run_ocr">OCR चलाएँ</string>
+    <string name="ocr_review_page_header">पृष्ठ %1$d</string>
+    <string name="ocr_review_no_text">कोई टेक्स्ट नहीं पहचाना गया।</string>
+    <string name="ocr_review_load_failed">OCR टेक्स्ट लोड नहीं किया जा सका।</string>
+    <string name="ocr_review_reextract_failed">OCR अपडेट नहीं किया जा सका।</string>
+    <string name="ocr_review_missing_record">यह दस्तावेज़ अब उपलब्ध नहीं है।</string>
     <string name="ocr_quality_badge_percent">%1$d%%</string>
     <string name="ocr_quality_badge_unknown">OCR</string>
 </resources>

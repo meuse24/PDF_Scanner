@@ -105,11 +105,11 @@
     <string name="help_item_reorder">打开三点菜单并选择重新排列页面，即可通过拖放或上下按钮调整顺序。</string>
     <string name="help_item_delete">使用删除可将选中的 PDF 移到回收站。30 天内可以恢复，也可以在回收站中永久删除。</string>
     <string name="help_section_ocr">OCR 与文本提取</string>
-    <string name="help_item_extract_text">文本提取（OCR）会读取全部页面，并在面板中显示识别出的文本，你可以复制或分享这些内容。</string>
+    <string name="help_item_extract_text">文本提取（OCR）会读取全部页面。对于单个文档，它会打开 OCR 审核界面，显示逐页文本、识别语言和质量。对于多个文档，仍会显示一个合并面板，你可以从中复制或分享结果。</string>
     <string name="help_item_make_searchable">设为可搜索会为 PDF 添加不可见文本层，将提取出的 OCR 文本本地保存用于档案搜索。</string>
     <string name="help_item_ocr_language">OCR 和设为可搜索默认使用自动模式——对拉丁文字可离线使用。印地语、中文、日语和韩语模型首次使用时通过 Google Play Services 下载。CJK 文字不支持可搜索 PDF——请使用"提取文字"来为其建立索引。</string>
     <string name="help_section_navigation">导航</string>
-    <string name="help_nav_text">通过左上角的汉堡菜单可访问文件库、扫描仪、帮助和关于页面。</string>
+    <string name="help_nav_text">通过左上角的汉堡菜单可访问文件库、回收站、设置、帮助、关于和隐私页面。</string>
     <string name="help_section_notes">注意事项</string>
     <string name="help_note1">应用无需直接调用相机权限——ML Kit 文档扫描仪作为独立的系统进程运行。</string>
     <string name="help_note2">所有 PDF 文件均保存在应用本地目录中，不会离开您的设备。</string>
@@ -133,8 +133,8 @@
     <string name="info_repository_label">GitHub 仓库</string>
     <string name="info_section_privacy">隐私</string>
     <string name="info_section_features">功能</string>
-    <string name="info_features_body">本应用可扫描、导入、创建并在应用内查看 PDF，在设备本地执行 OCR，并将可搜索 OCR 文本保存在本地以供档案搜索，同时提供页面编辑、保护、签名、高亮、安全遮蔽以及对已遮蔽副本的可选 OCR 重建功能。</string>
-    <string name="info_privacy_body">无广告、无需账号、没有自有后端。PDF、缩略图和可选 OCR 文本都会保留在您设备上的应用存储中。分享和导出仅在您主动触发时发生。安全遮蔽会在本地创建一份单独的净化副本。扫描、OCR 以及模型和字体下载依赖 Google Play 服务；本应用不会上传文档内容。</string>
+    <string name="info_features_body">本应用可在应用内扫描、导入、创建、追加并查看 PDF，将已删除文档在回收站中保留 30 天，在设备本地执行 OCR，并将 OCR 文本和质量元数据保存在本地，用于文件库搜索和 OCR 审核。同时还提供页面编辑、批注、签名、元数据编辑、灰度转换、保护以及安全遮蔽，并可为遮蔽副本选择性重建 OCR。</string>
+    <string name="info_privacy_body">无广告、无需账号、没有自有后端。PDF、缩略图、生成的副本、回收站项目、OCR 文本和 OCR 质量元数据都会保留在您设备上的应用存储中，直到您导出、分享或永久删除它们。扫描、OCR 以及模型和字体下载依赖 Google Play 服务；本应用不会上传文档内容。</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">本地</string>
     <string name="privacy_keyword_2">离线</string>

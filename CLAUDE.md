@@ -58,11 +58,14 @@ domain/
 └── usecase/
     ├── ImportFileUseCase.kt       # Externe PDF per FilePicker importieren: kopieren + validieren + isEncrypted + Thumbnail + DB-Insert
     │                              # Beschädigte PDFs werden auf error_pdf_invalid normalisiert; importierte Artefakte werden bereinigt
-    ├── ImportScanUseCase.kt       # PDF kopieren + optional Thumbnail + optional OCR-Textlayer
+    ├── ImportScanUseCase.kt       # PDF kopieren + optional Thumbnail + optional OCR-Textlayer; persistiert OCR-Stats/-Seitentexte
     ├── ExportScanUseCase.kt       # MediaStore.Downloads Export (IS_PENDING-Pattern)
     ├── DeleteScansUseCase.kt      # Dateilöschung + Thumbnail + DB-Delete
-    ├── ExtractTextUseCase.kt      # OCR: PdfRenderer alle Seiten + Thumbnail-Fallback (dedupliziert)
-    ├── MakeSearchableUseCase.kt   # OCR-Textlayer einfügen; überspringt bereits durchsuchbare Records
+    ├── TrashScansUseCase.kt       # Soft-Delete in den Papierkorb; gibt betroffene IDs für Undo zurück
+    ├── RestoreScansUseCase.kt     # Stellt Papierkorb-Einträge wieder her; prüft auf fehlende PDF-Dateien
+    ├── PurgeTrashUseCase.kt       # Löscht ausgewählte/abgelaufene Papierkorb-Einträge endgültig via DeleteScansUseCase
+    ├── ExtractTextUseCase.kt      # OCR: PdfRenderer alle Seiten + Thumbnail-Fallback; liefert OcrDocumentResult(recordId, fullText, pageTexts, stats)
+    ├── MakeSearchableUseCase.kt   # OCR-Textlayer einfügen; überspringt bereits durchsuchbare Records; persistiert confidence/language/pageTextJson
     ├── MergePdfsUseCase.kt        # PDFs zusammenführen + Thumbnail + DB-Insert
     ├── SplitPdfUseCase.kt         # PDF aufteilen + Thumbnails + DB-InsertAll
     ├── ReorderPagesUseCase.kt     # Seiten umsortieren; saveAsCopy=true/_Sortiert, false=atomar überschreiben
@@ -74,7 +77,9 @@ domain/
     ├── RestrictUsageUseCase.kt    # restrictUsage() aufrufen → isSearchable=false
     ├── HighlightPdfUseCase.kt     # applyHighlight() für Strokes + Rects + Thumbnail + DB-Insert → Suffix _Markiert
     ├── AnnotatePdfUseCase.kt      # applyAnnotations() für Strokes + Rects + Ovals + TextAnnotations + Thumbnail + DB-Insert → Suffix _Annotiert
-    ├── CreatePdfFromImagesUseCase.kt # Bilder (URI→ByteArray) zu neuem PDF mit Thumbnail + DB-Insert; meldet skippedCount zurück
+    ├── CreatePdfFromImagesUseCase.kt # Bilder via ImagePdfBuilder zu neuem PDF mit Thumbnail + DB-Insert; meldet skippedCount zurück
+    ├── AppendToPdfUseCase.kt      # Hängt Scan/PDF/Bilder atomar an bestehendes PDF an; invalidiert Searchable/OCR-Metadaten
+    ├── ImagePdfBuilder.kt         # Baut aus Bild-URIs ein PDF oder Temp-PDF ohne DB-Insert
     ├── ImagePageLayout.kt         # SINGLE / TWO_PER_PAGE / FOUR_PER_PAGE
     ├── AnnotationModel.kt         # AnnotationStroke, AnnotationRect, AnnotationOval, AnnotationText, AnnotationShapeStyle + Defaults
     ├── HighlightStroke.kt         # data class: Freihand-Markierung mit points + pageIndex + strokeWidthFraction
@@ -119,7 +124,6 @@ ui/
 │       │                          # Sheet-Sektionen: Dokument · Seiten · Bearbeiten · Analysieren & Text · Export & Umwandeln · Schutz
 │                          # „Analysieren & Text" zeigt Remove text layer nur wenn isSearchable && !isEncrypted
 │       │                          # SheetItem: enabled = alpha 0.38f + clickable(enabled=false); icon FindInPage für Textebene entfernen
-│       │                          # ScanAction sealed interface (Split/Reorder/Rotate/…/Rename/Annotate/RemoveTextLayer/Grayscale/PdfMetadata/…)
 │       │                          # onAction: (ScanAction) → Unit; Tags als farbige Badges (tertiaryContainer)
 │       ├── SelectionTitleBar.kt   # ✕ · „X ausgewählt" (selection_count) · SelectAll-Icon
 │       ├── BulkActionBar.kt       # Icon+Label: Teilen · Export · Merge (MergeType) · Text (TextSnippet) · OCR (FindInPage) · Löschen (rot)
@@ -132,6 +136,7 @@ ui/
 │   ├── ScanPreviewCard.kt         # Dokument-Vorschaukarte (Thumbnail + Dateiname + Seitenzahl)
 │   └── ActionScreenContent.kt     # Gemeinsames Layout für Aktions-Screens:
 │                                  # Titel · Beschreibung · ScanPreviewCard · Formular-Slot · Bestätigen-Button
+│   └── DocumentEditSheet.kt       # Gemeinsames More-/Bearbeiten-Sheet für Ablage + Viewer; enthält ScanAction
 ├── overlay/
 │   └── OverlayActionScreens.kt    # PageNumbersScreen, TextWatermarkScreen — nutzen DocumentEditViewModel
 ├── documentaction/
@@ -156,10 +161,17 @@ ui/
 │                                  # Auswahl über generischen blauen Handle; Textnotizen zusätzlich editierbar
 │                                  # Snap nur im Bearbeiten, Zoom mit eigener reduzierter Toolbar
 │                                  # Farbe/Stift als Dropdowns; Undo/Clear icon-basiert; annotate_* in allen 10 Locales
+├── append/
+│   ├── AppendScreen.kt            # Quellenwahl für zusätzliche Seiten (Scan/Bilder/PDF); Fehlerdialog, Erfolg → Viewer
+│   └── AppendViewModel.kt         # Pending-Image-Bridge + AppendWorkflow-Dispatch + lokalisierte Erfolgsmeldung
 ├── imagestopdf/
 │   ├── ImagesToPdfScreen.kt       # Vorschauraster + Dateiname + Layoutwahl (1/2/4 Bilder pro A4-Seite)
 │   │                              # A4-Canvas-Vorschau; Erfolg navigiert über HomeViewModel-URI-Bridge zurück
 │   └── ImagesToPdfViewModel.kt    # CreatePdfFromImagesUseCase-Dispatch + skippedCount/error/success
+├── ocr/
+│   ├── OcrReviewScreen.kt         # Einzel-Dokument-OCR-Prüfung mit Sprache, Qualitätsbadge, Re-OCR, Copy/Share
+│   ├── OcrReviewViewModel.kt      # Lädt Cache/Backfill, persistiert Re-OCR-Stats und hält Fehler-/Loading-State
+│   └── OcrQualityBadge.kt         # Badge für HIGH/MEDIUM/LOW/UNKNOWN in Review und Archivliste
 ├── redact/
 │   ├── RedactModels.kt            # Saver + Konstanten
 │   ├── RedactInteractionHelpers.kt # Rechteck-Erzeugung, Min-Area, Draft-/Applied-Farben
@@ -180,23 +192,32 @@ ui/
 ├── reorder/
 │   ├── ReorderViewModel.kt        # Seiten-Thumbnails, Reihenfolge + ReorderPagesWorkflow
 │   └── ReorderScreen.kt
+├── settings/
+│   ├── SettingsScreen.kt          # Theme, Default-OCR, Default-Sortierung
+│   └── SettingsViewModel.kt       # Persistiert AppSettings
 ├── signature/
 │   └── SignatureScreen.kt         # Freihand-Zeichen-Pad + Seiten-/Größenauswahl — nutzt DocumentEditViewModel
+├── trash/
+│   ├── TrashScreen.kt             # Papierkorb-Liste mit Restore/Purge/Empty-Flow und 30-Tage-Hinweis
+│   └── TrashViewModel.kt          # Beobachtet TrashRepository; Restore/Purge + Auto-Cleanup beim Öffnen
 ├── highlight/                     # Kein aktiver UI-Screen mehr; nur noch Backend-Highlight-Workflows bleiben erhalten
 ├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
-│                                  # Hilfe-Texte decken Dokument hinzufügen (Scan + PDF-Import), Archiv-Basisaktionen,
-│                                  # In-App-Viewer, Suche/OCR/Highlight-Snap/Privacy-Verhalten ab
-├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig; zusätzliche Karten für Funktionen + Privacy inkl. Viewer
+│                                  # Hilfe-Texte decken Dokument hinzufügen, Papierkorb, Seiten anhängen,
+│                                  # OCR-Prüfung, In-App-Viewer, Suche/OCR/Highlight-Snap/Privacy-Verhalten ab
+├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig; Funktionen/Privacy inkl. Trash, Append, OCR-Review
 └── privacy/PrivacyScreen.kt       # Privacy-Übersicht; Texte betonen lokale Speicherung, OCR-Text und Play-Services-Abhängigkeit
 
 data/
 ├── local/
-│   ├── ScanRecord.kt              # Room @Entity (id, filename, filepath, thumbnailPath, pageCount, fileSize, isSearchable, isEncrypted, extracted_text, tags)
+│   ├── ScanRecord.kt              # Room @Entity inkl. extracted_text, tags, ocr_confidence, ocr_language, ocr_page_text_json, deleted_at
 │   ├── ScanRecordFts.kt           # @Fts4(contentEntity = ScanRecord::class) — indiziert filename + extracted_text
-│   ├── ScanDao.kt                 # getAllScans(): Flow, insert, delete, markSearchable, markSearchableWithContent(id, fileSize, text, tags), searchScansFlow(query), updateFilenameAndPath(id, filename, filepath, thumbnailPath)
-│   └── AppDatabase.kt             # Version 5, "pdf_scanner_db", MIGRATION_1_2 + _2_3 + _3_4 + _4_5
+│   ├── ScanDao.kt                 # Filtert Ablage auf deleted_at IS NULL; OCR-/Append-Updates via markSearchableWithContent, updateExtractedTextAndOcrStats, invalidateAfterAppend
+│   ├── TrashDao.kt                # getTrashedScans(), softDelete(), restore(), findExpiredTrash(), getScansByIds()
+│   └── AppDatabase.kt             # Version 7, "pdf_scanner_db", MIGRATION_1_2 + _2_3 + _3_4 + _4_5 + _5_6 + _6_7
 │                                  # MIGRATION_4_5: 2× ALTER TABLE, CREATE VIRTUAL TABLE fts4, 4 Trigger, INSERT INTO fts
-└── repository/ScanRepository.kt   # searchScansFlow(query) + markSearchableWithContent(id, fileSize, text, tags) + updateFilenameAndPath(id, filename, filepath, thumbnailPath)
+│                                  # MIGRATION_5_6: deleted_at INTEGER; MIGRATION_6_7: ocr_confidence/ocr_language/ocr_page_text_json
+├── repository/ScanRepository.kt   # Ablage-Flow + OCR-/Append-Updates (markSearchableWithContent, updateExtractedTextAndOcrStats, invalidateAfterAppend)
+└── repository/TrashRepository.kt  # Papierkorb-Flow + Soft-Delete/Restore/Expired-Lookups
 
 domain/usecase/AutoTagUseCase.kt   # INAKTIV — nicht mehr in ImportScanUseCase/MakeSearchableUseCase eingebunden
                                    # Klasse + Tests (AutoTagUseCaseTest.kt) bleiben erhalten; tags-Spalte bleibt in DB (immer null)
@@ -212,15 +233,17 @@ domain/workflow/HighlightPdfWorkflow.kt     # Prüft: Datei existiert + (strokes
 domain/workflow/AnnotatePdfWorkflow.kt      # Prüft: Datei existiert + (strokes|rects|ovals|comments nicht leer) + nicht verschlüsselt → AnnotatePdfUseCase
                                             # fängt IOException → StorageWriteFailed; Throwable → AnnotateFailed
 docs/privacy-policy.html            # Veröffentlichtes Privacy-Dokument (EN/DE) muss mit In-App-Privacy konsistent bleiben
-di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3 + MIGRATION_3_4 + MIGRATION_4_5
+di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao + TrashDao, MIGRATION_1_2 + MIGRATION_2_3 + MIGRATION_3_4 + MIGRATION_4_5 + MIGRATION_5_6 + MIGRATION_6_7
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
 util/PdfDocumentIntents.kt         # FileProvider-URI + ACTION_VIEW/ACTION_SEND Helpers für Viewer/Home
 util/PdfPageBitmapRenderer.kt      # PdfRenderer-Handle für In-App-Viewer; ein Renderer pro Dokument, Mutex für openPage, OOM-Fallback
 util/PdfPageBitmapCache.kt         # ViewModel-gebundener Bitmap-Cache nach Byte-Budget
-util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
-util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, onProgress): String — Phase1 PdfRenderer+OCR, Phase2 PdfBox
-                                   # Rückgabe: extrahierter Volltext (für lokale DB-Speicherung)
-                                   # ZH/JA NICHT als searchable PDF unterstützt (TTC/OTC-Fonts können nicht eingebettet werden)
+util/OcrPipeline.kt                # Gemeinsame OCR-Pipeline für Textextraktion/Searchable/Follow-up; Auto-Fallback + Qualitätsstats
+util/OcrModelInstaller.kt          # ModuleInstallClient für kontrollierte GMS-Downloads unbundled OCR-Modelle
+util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI/ZH/JA/KO GMS-unbundled; ZH/JA/KO nur OCR-Text
+util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, onProgress): SearchableResult — Phase1 PdfRenderer+OCR, Phase2 PdfBox
+                                   # Rückgabe: extractedText + pageTexts + stats (für lokale DB-Speicherung/OCR-Prüfung)
+                                   # ZH/JA/KO NICHT als searchable PDF unterstützt (TTC/OTC-Fonts können nicht eingebettet werden)
 util/PdfEditor.kt                  # Öffentliche PDF-API: Merge/Split/Reorder/Rotate/Delete/Thumbnail/Highlight/Annotate/Redaction/Image→PDF
 util/PdfEditorCore.kt              # writePdf/editPdf/writeDerivedPdf + page/range helpers
 util/PdfEditorAnnotationOps.kt     # Annotation-/Textline-Export-Helfer
@@ -257,9 +280,14 @@ util/PdfEditorImageOps.kt          # A4-Zellenlayout + fitInside für Images-to-
 - **Fehler in HomeScreen** → `viewModel.reportError(String)` → `_error: StateFlow` → AlertDialog
 - **Fehler in Edit-Screens** → eigener `_error: StateFlow<String?>` im jeweiligen ViewModel → AlertDialog im Screen
 - **Erfolg in HomeScreen** → `_success: StateFlow<String?>` → Toast + `clearSuccess()`
-- **Erfolg in Edit-Screens** → `_success: StateFlow<Boolean>` → `LaunchedEffect` → `onNavigateBack()`
-- **OCR** nutzt PdfRenderer über alle Seiten; Fallback auf `thumbnailPath` wenn PDF fehlt
+- **Erfolg in Edit-Screens** ist screen-spezifisch: oft `_success: StateFlow<Boolean>` → `LaunchedEffect` → `onNavigateBack()`, Append nutzt lokalisierte Erfolgsmeldung + Viewer-Navigation
+- **OCR** läuft über `OcrPipeline`; Auto ist Default, manuelle Sprache bleibt möglich, unbundled ML-Kit-Modelle werden bei Bedarf via `ModuleInstallClient` geladen
+- **Searchable PDF** nutzt app-eigene Fonts für unterstützte Skripte; ZH/JA/KO sind für OCR-Text erlaubt, aber nicht für Searchable-PDF-Textlayer
+- **OCR-Input** nutzt PdfRenderer über alle Seiten; Fallback auf `thumbnailPath` wenn PDF fehlt
 - **In-App-Viewer** nutzt `PdfPageBitmapRenderer`; `PdfRenderer.openPage()` ist per Mutex serialisiert, sichtbare Seiten ±1 werden gerendert
+- **Viewer-Handle-Cleanup:** `PdfViewerViewModel` hält das Dokument-Handle atomar; `CancellationException` nicht schlucken, `onCleared()` muss File-Descriptors zuverlässig schließen
+- **Viewer-Cache:** Fit-width-Bitmaps bleiben im byte-budgetierten Cache; Zoom-Renderings werden quantisiert und nicht in diesen Cache geschrieben
+- **Löschen aus der Ablage** ist Soft-Delete in den Papierkorb; endgültige Dateilöschung passiert nur über Purge/Retention-Cleanup
 - PDFs in `context.filesDir/scans/`; FileProvider-Authority: `${applicationId}.fileprovider`
 - Externe PDF-Importe laufen über `ActivityResultContracts.OpenDocument()` mit MIME `application/pdf`
 - Importierte PDFs werden sofort in `filesDir/scans/` kopiert und anschließend wie normale `ScanRecord`s behandelt
@@ -267,7 +295,7 @@ util/PdfEditorImageOps.kt          # A4-Zellenlayout + fitInside für Images-to-
 - Export: `MediaStore.Downloads` (API 29+), IS_PENDING-Pattern, bei Fehler `resolver.delete()`
 - Backup: `android:allowBackup="false"`; zusätzlich schließen `backup_rules.xml` + `data_extraction_rules.xml` `filesDir/scans/` und die DB-Dateien (`pdf_scanner_db`, `-wal`, `-shm`, `-journal`) aus
 - **Aktions-Screens** (Overlay + DocumentAction) nutzen `ActionScreenContent` aus `ui/components/`
-- **ScanItem-Aktionen** via `ScanAction` sealed interface — kein direktes Navigieren aus dem Item heraus
+- **Dokument-Aktionen** via `ScanAction` in `DocumentEditSheet` — kein direktes Navigieren aus `ScanItem`/Sheet heraus
 - **PDF öffnen** aus der Ablage navigiert auf `Screen.Viewer`; externer Viewer ist nur noch explizite Aktion im Viewer
 
 ## Mehrfachauswahl
@@ -278,7 +306,7 @@ util/PdfEditorImageOps.kt          # A4-Zellenlayout + fitInside für Images-to-
 - **BulkActionBar** (bottom): Icon+Label-Buttons — Teilen · Export · Merge (MergeType) · Text · OCR (FindInPage) · Löschen (rot)
   - Share: `ACTION_SEND` (1 Item) vs. `ACTION_SEND_MULTIPLE` (mehrere)
   - Delete: Einzel-Dialog mit Dateiname (`confirm_delete_single`) vs. Bulk-Dialog (`confirm_delete_multi`)
-  - OCR: `extractTexts(records, lang)` → `ExtractTextUseCase` — Sprachauswahl-Dialog; `— filename —` Trenner nur bei >1
+  - OCR: `extractTexts(records, lang)` → `ExtractTextUseCase` — Einzel-Dokument navigiert zur OCR-Prüfung; bei >1 bleibt das kombinierte Result-Sheet mit `— filename —`-Trennern
   - MakeSearchable: `makeSearchableScans(records, lang)` → `MakeSearchableUseCase` — bereits durchsuchbare werden übersprungen
   - MakeSearchable-Button immer aktiv; Klick ohne nicht-durchsuchbare PDF → `reportError(searchable_nothing_to_do)`
   - Params: `extractEnabled` (`Boolean`); `makeSearchableEnabled` immer `true`
@@ -290,11 +318,15 @@ util/PdfEditorImageOps.kt          # A4-Zellenlayout + fitInside für Images-to-
 test/
 ├── domain/usecase/
 │   ├── DeleteScansUseCaseTest.kt           # Dateilöschung, Thumbnail, Fehlerpfad, Mehrfach-Delete
+│   ├── TrashScansUseCaseTest.kt            # Soft-Delete + Guard gegen ungültige IDs
+│   ├── RestoreScansUseCaseTest.kt          # Restore + Missing-File-Fehlerpfad
+│   ├── PurgeTrashUseCaseTest.kt            # purgeExpired + purgeSelected
+│   ├── AppendToPdfUseCaseTest.kt           # Merge/Images/Encrypted source+target/Original-Integrität
 │   ├── MakeSearchableUseCaseTest.kt        # Idempotenz, DB-Updates, fehlende Dateien, Progress
 │   ├── ImportFileUseCaseTest.kt            # Dateiimport, Invalid-PDF-Cleanup, verschlüsselte PDFs ohne Thumbnail
 │   ├── AutoTagUseCaseTest.kt               # 7 Tests: leer, dt. Invoice, engl. Contract, IBAN, Multi-Tag, irrelevant, sortiert
 │   ├── FakeScanDao (in DeleteScansUseCaseTest)          # In-Memory ScanDao-Implementierung
-│   └── FakeSearchablePdfBuilder (in MakeSearchableUseCaseTest)  # Überschreibt makeSearchable → gibt String zurück
+│   └── FakeSearchablePdfBuilder (in MakeSearchableUseCaseTest)  # Überschreibt makeSearchable → gibt SearchableResult zurück
 ├── domain/workflow/
 │   ├── *WorkflowTest.kt                    # Merge/Split/Reorder/Rotate/Delete/Extract/Duplicate
 │   ├── *WorkflowTest.kt                    # PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Searchable/Redaction
@@ -303,16 +335,21 @@ test/
 ├── ui/
 │   ├── split/SplitViewModelTest.kt         # editLoading-Guard, Success/Failure, clearError (5 Tests)
 │   ├── reorder/ReorderViewModelTest.kt     # editLoading-Guard, Success/Failure, clearError (4 Tests)
+│   ├── append/AppendViewModelTest.kt       # Guard, Success/Failure, clearError, clearSuccess
 │   ├── documentaction/DocumentEditViewModelTest.kt  # inkl. applyRedactions Success/Failure + OCR-Parameter
+│   ├── trash/TrashViewModelTest.kt         # Flow laden, Restore, Purge, clearError/clearSuccess
 │   ├── domain/usecase/CreatePdfFromImagesUseCaseTest.kt # Seitenanzahl, unreadable images, Thumbnail + DB-Insert
 │   ├── home/HomeImportFilenameSuggestionTest.kt     # DISPLAY_NAME → Dateinamensvorschlag ohne .pdf
+│   ├── home/HomeViewModelTest.kt           # u.a. Undo nach Trash-Restore-Fehler erhalten
 │   ├── ui/imagestopdf/ImagesToPdfViewModelTest.kt   # editLoading-Guard, Erfolg, Fehler, clearError
+│   ├── ui/ocr/OcrReviewViewModelTest.kt    # Cache/Backfill/Re-OCR/Fehler/clearError
 │   ├── ui/qrscan/QrScanViewModelTest.kt             # Scan-Guard, Erfolg/Fehler, verschlüsselte PDFs
 │   ├── ui/viewer/PdfViewerViewModelTest.kt          # ScanRecord laden, sichtbare Seiten ±1 rendern, Fehler-Mapping
 │   ├── annotate/AnnotateInteractionHelpersTest.kt   # Hit-Testing, Auswahl, Move, Mutationen für Stroke/Rect/Oval/Text
 │   └── ui/shared/PdfViewportMathTest.kt             # clampPanOffset + inverse Zoom/Pan-Mathematik + Snap-Hilfsfunktionen
 └── util/
     ├── QrCodeScannerTest.kt                 # Resource-close-Helfer für QR-Scanner-Lifecycle
+    ├── OcrQualityTest.kt                    # UNKNOWN/HIGH/MEDIUM/LOW inkl. Grenzwerte 0.0/1.0
     ├── PdfPageBitmapCacheTest.kt            # LRU/Byte-Budget und Retain-Window für Viewer-Bitmaps
     ├── PdfEditorTest.kt                    # buildRanges + resolveUniqueFilename + mapDisplayToPdfCoord + mergeTextBoxesToLines
     ├── PdfEditorRealIntegrationTest.kt     # echte PDF-Dateien im JVM-Lauf: protect/unlock, restrict/removePassword, reorder, duplicate/delete, rotate, merge/split
@@ -349,15 +386,15 @@ Testabhängigkeiten: `junit:4.13.2` + `kotlinx-coroutines-test:1.10.1` + `mockit
 | Bibliothek | Version |
 |---|---|
 | Kotlin | 2.2.10 |
-| AGP | 9.1.0 |
-| KSP | 2.2.10-2.0.2 |
+| AGP | 9.1.1 |
+| KSP | 2.3.2 |
 | Hilt | 2.59.2 |
 | Room | 2.8.4 |
 | Navigation Compose | 2.9.7 |
 | ML Kit Document Scanner | 16.0.0 |
 | ML Kit Barcode Scanning | 17.3.0 |
 | ML Kit Text Recognition | 16.0.1 |
-| ML Kit Text (HI/ZH/JA) | 16.0.1 (GMS unbundled; ZH/JA nur OCR-Text, kein searchable PDF) |
+| ML Kit Text (HI/ZH/JA/KO) | 16.0.1 (GMS unbundled; ZH/JA/KO nur OCR-Text, kein searchable PDF) |
 | PdfBox-Android | 2.0.27.0 |
 | Compose BOM | 2026.03.00 |
 | ui-text-google-fonts | via BOM (1.9.0) |
@@ -365,10 +402,10 @@ Testabhängigkeiten: `junit:4.13.2` + `kotlinx-coroutines-test:1.10.1` + `mockit
 
 Versionen zentral in `gradle/libs.versions.toml`. Gradle-Besonderheiten:
 - `android.disallowKotlinSourceSets=false` in `gradle.properties` (KSP + AGP 9)
-- `ksp.workers.max=1` in `gradle.properties` — verhindert Race Condition in KSP 2.2.x (Storage already registered)
+- `ksp.workers.max=1` in `gradle.properties` — defensiver Workaround gegen KSP Worker-Races
 - Builds ohne Configuration-Cache stabiler: `--no-configuration-cache` bei Problemen
 - `buildFeatures { buildConfig = true }` für `BuildConfig.VERSION_NAME` / `VERSION_CODE`
-- App-Release-Stand: `versionName "2.0"`, `versionCode 6`
+- App-Release-Stand: `versionName "2.1"`, `versionCode 7`
 - `org.gradle.caching=true`, `org.gradle.parallel=true`, `org.gradle.configuration-cache=true` aktiv
 - `PDFBoxResourceLoader.init(this)` in `PdfScannerApp.onCreate()` erforderlich
 
@@ -376,4 +413,4 @@ Versionen zentral in `gradle/libs.versions.toml`. Gradle-Besonderheiten:
 
 - **DM Sans** (body/title) + **Space Grotesk** (display/headline) via GMS Downloadable Fonts (`ui-text-google-fonts`); Zertifikate in `res/values/font_certs.xml`
 - Gradient-Hintergrund in `AppNavigation.kt`: `primaryContainer(18%) → surface(0%) → secondaryContainer(10%)`
-- Adaptives Icon: `ic_launcher_background.xml` (Indigo→Teal) + `ic_launcher_foreground.xml` (Safe Zone 18–90 im 108dp-Canvas)
+- Adaptives Icon: `ic_launcher_foreground.xml` nutzt `@drawable/app_icon`; legacy `mipmap-*` Launcher-PNGs sind aus `app_icon.png` abgeleitet

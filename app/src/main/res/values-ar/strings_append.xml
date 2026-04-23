@@ -10,7 +10,14 @@
     <string name="append_source_pdf_title">إلحاق PDF</string>
     <string name="append_source_pdf_subtitle">استورد ملف PDF آخر وأضف صفحاته في النهاية.</string>
     <string name="append_images_hint">اختر تخطيط الصفحة للصور المحددة قبل إلحاقها.</string>
-    <string name="append_success">تم إلحاق %1$d صفحة</string>
+    <plurals name="append_success">
+        <item quantity="zero">لم يتم إلحاق أي صفحات</item>
+        <item quantity="one">تم إلحاق صفحة واحدة</item>
+        <item quantity="two">تم إلحاق صفحتين</item>
+        <item quantity="few">تم إلحاق %1$d صفحات</item>
+        <item quantity="many">تم إلحاق %1$d صفحة</item>
+        <item quantity="other">تم إلحاق %1$d صفحة</item>
+    </plurals>
     <string name="append_error">فشل إلحاق الصفحات</string>
     <string name="append_target_encrypted">أزل كلمة مرور PDF أولاً قبل إلحاق الصفحات.</string>
 </resources>

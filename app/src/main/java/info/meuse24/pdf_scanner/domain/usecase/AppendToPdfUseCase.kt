@@ -20,7 +20,11 @@ data class AppendResult(
     val appendedPageCount: Int
 )
 
-class AppendTargetEncryptedException : IllegalStateException("target pdf is encrypted")
+class AppendTargetMissingException : IllegalStateException()
+
+class AppendTargetEncryptedException : IllegalStateException()
+
+class AppendSourceEncryptedException : IllegalStateException()
 
 open class AppendToPdfUseCase @Inject constructor(
     private val fileUtil: FileUtil,
@@ -33,7 +37,9 @@ open class AppendToPdfUseCase @Inject constructor(
         source: AppendSource
     ): AppendResult {
         val targetFile = File(target.filepath)
-        require(targetFile.exists()) { "Target PDF missing" }
+        if (!targetFile.exists()) {
+            throw AppendTargetMissingException()
+        }
         if (target.isEncrypted || pdfEditor.isPdfEncrypted(targetFile)) {
             throw AppendTargetEncryptedException()
         }
@@ -46,11 +52,11 @@ open class AppendToPdfUseCase @Inject constructor(
 
         try {
             if (pdfEditor.isPdfEncrypted(sourcePdf)) {
-                throw IllegalStateException("Source PDF is encrypted")
+                throw AppendSourceEncryptedException()
             }
 
             val appendedPageCount = pdfEditor.getPageCount(sourcePdf)
-            require(appendedPageCount > 0) { "Source PDF has no pages" }
+            require(appendedPageCount > 0)
 
             pdfEditor.mergePdfs(listOf(targetFile, sourcePdf), targetFile)
 

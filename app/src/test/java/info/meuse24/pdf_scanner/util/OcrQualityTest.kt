@@ -14,10 +14,12 @@ class OcrQualityTest {
 
     @Test
     fun `confidence thresholds map to expected quality`() {
+        assertEquals(OcrQuality.HIGH, 1.0f.toQuality())
         assertEquals(OcrQuality.HIGH, 0.70f.toQuality())
         assertEquals(OcrQuality.MEDIUM, 0.69f.toQuality())
         assertEquals(OcrQuality.MEDIUM, 0.30f.toQuality())
         assertEquals(OcrQuality.LOW, 0.29f.toQuality())
+        assertEquals(OcrQuality.LOW, 0.0f.toQuality())
     }
 
     @Test

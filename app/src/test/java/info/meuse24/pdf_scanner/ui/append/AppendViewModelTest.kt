@@ -71,8 +71,10 @@ class AppendViewModelTest {
         `when`(repository.getAllScans()).thenReturn(flowOf(listOf(record)))
         resourceProvider = FakeResourceProvider(
             strings = mapOf(
-                R.string.append_success to "%d pages appended",
                 R.string.append_error to "Append failed"
+            ),
+            plurals = mapOf(
+                R.plurals.append_success to "%d pages appended"
             )
         )
     }
@@ -143,6 +145,21 @@ class AppendViewModelTest {
         assertEquals("Append failed", viewModel.error.value)
         viewModel.clearError()
         assertNull(viewModel.error.value)
+        recordObserver.cancel()
+    }
+
+    @Test
+    fun `clearSuccess resets success state`() = runTest(dispatcher) {
+        appendUseCase.handler = { _, _ -> AppendResult(pageCount = 4, fileSize = 90L, appendedPageCount = 1) }
+        val viewModel = buildViewModel()
+        val recordObserver = observeRecord(viewModel)
+
+        runCurrent()
+        viewModel.appendPdf(mock(android.net.Uri::class.java))
+        advanceUntilIdle()
+        viewModel.clearSuccess()
+
+        assertNull(viewModel.success.value)
         recordObserver.cancel()
     }
 

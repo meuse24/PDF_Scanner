@@ -52,6 +52,7 @@ import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Search
@@ -102,6 +103,7 @@ fun HelpScreen() {
                 titleRes = R.string.help_group_drawer_menu,
                 actions = listOf(
                     HelpAction(Icons.Default.FolderOpen, R.string.nav_archive, R.string.help_desc_archive),
+                    HelpAction(Icons.Default.Delete, R.string.nav_trash, R.string.trash_empty_body),
                     HelpAction(Icons.AutoMirrored.Filled.Help, R.string.nav_help, R.string.help_desc_help),
                     HelpAction(Icons.Default.Info, R.string.nav_info, R.string.help_desc_info),
                     HelpAction(Icons.Default.PrivacyTip, R.string.nav_privacy, R.string.help_desc_privacy)
@@ -150,6 +152,7 @@ fun HelpScreen() {
                 titleRes = R.string.sheet_section_pages,
                 actions = listOf(
                     HelpAction(Icons.Default.SwapVert,                R.string.action_reorder,         R.string.help_item_reorder),
+                    HelpAction(Icons.Default.PostAdd,                 R.string.action_append_pages,    R.string.append_pages_body),
                     HelpAction(Icons.AutoMirrored.Filled.RotateRight, R.string.action_rotate,          R.string.help_item_rotate),
                     HelpAction(Icons.Default.ContentCut,              R.string.action_split,           R.string.help_item_split),
                     HelpAction(Icons.Default.PictureAsPdf,            R.string.action_extract_pages,   R.string.help_item_extract_pages),

@@ -8,8 +8,10 @@ class TrashScansUseCase @Inject constructor(
     private val repository: TrashRepository
 ) {
     suspend operator fun invoke(records: List<ScanRecord>): List<Long> {
-        val ids = records.map { it.id }.filter { it > 0L }
-        if (ids.isEmpty()) return emptyList()
+        if (records.isEmpty()) return emptyList()
+        require(records.all { it.id > 0L }) { "TrashScansUseCase requires persisted records" }
+
+        val ids = records.map { it.id }
         repository.softDelete(ids, System.currentTimeMillis())
         return ids
     }

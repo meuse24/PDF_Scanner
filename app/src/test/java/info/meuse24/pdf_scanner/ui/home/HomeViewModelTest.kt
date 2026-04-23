@@ -2,7 +2,9 @@ package info.meuse24.pdf_scanner.ui.home
 
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.local.TrashDao
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.data.repository.TrashRepository
 import info.meuse24.pdf_scanner.data.repository.SettingsRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
@@ -25,6 +27,7 @@ import info.meuse24.pdf_scanner.util.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -94,9 +97,16 @@ class HomeViewModelTest {
                 R.string.ocr_auto_detection_uncertain to "Automatic detection uncertain",
                 R.string.ocr_model_download_failed to "Model download failed",
                 R.string.ocr_failed           to "OCR failed",
+                R.string.error_delete_failed  to "Delete failed",
+                R.string.error_restore_missing_file to "Restore missing file",
+                R.string.error_restore_failed to "Restore failed",
                 R.string.rename_error_exists  to "Filename already exists",
                 R.string.rename_error_failed  to "Rename failed",
                 R.string.rename_success       to "Renamed to %s"
+            ),
+            plurals = mapOf(
+                R.plurals.trash_moved to "%d moved to trash",
+                R.plurals.trash_restored to "%d restored"
             )
         )
         storageProvider = TestStorageProvider(tmpFolder.root)
@@ -279,8 +289,64 @@ class HomeViewModelTest {
         )
     }
 
+    @Test
+    fun `restoreLastTrashed clears ids after successful restore`() = runTest(testDispatcher) {
+        val file = File(tmpFolder.root, "restore-ok.pdf").apply { writeText("pdf") }
+        val record = ScanRecord(
+            id = 11L,
+            filename = "restore-ok",
+            filepath = file.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = file.length()
+        )
+        val trashRepository = TrashRepository(HomeFakeTrashDao(listOf(record)))
+        val viewModel = buildViewModel(
+            trashScansUseCase = TrashScansUseCase(trashRepository),
+            restoreScansUseCase = RestoreScansUseCase(trashRepository)
+        )
+
+        viewModel.deleteScans(listOf(record))
+        advanceUntilIdle()
+        viewModel.restoreLastTrashed()
+        advanceUntilIdle()
+
+        assertEquals(emptyList<Long>(), viewModel.lastTrashed.value)
+        assertEquals("1 restored", viewModel.success.value)
+        assertNull(viewModel.error.value)
+    }
+
+    @Test
+    fun `restoreLastTrashed keeps ids when restore fails`() = runTest(testDispatcher) {
+        val missingFile = File(tmpFolder.root, "restore-missing.pdf")
+        val record = ScanRecord(
+            id = 12L,
+            filename = "restore-missing",
+            filepath = missingFile.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = 0L
+        )
+        val trashRepository = TrashRepository(HomeFakeTrashDao(listOf(record)))
+        val viewModel = buildViewModel(
+            trashScansUseCase = TrashScansUseCase(trashRepository),
+            restoreScansUseCase = RestoreScansUseCase(trashRepository)
+        )
+
+        viewModel.deleteScans(listOf(record))
+        advanceUntilIdle()
+        viewModel.restoreLastTrashed()
+        advanceUntilIdle()
+
+        assertEquals(listOf(12L), viewModel.lastTrashed.value)
+        assertEquals("Restore missing file", viewModel.error.value)
+        assertNull(viewModel.success.value)
+    }
+
     private fun buildViewModel(
-        extractTextUseCase: ExtractTextUseCase = this.extractTextUseCase
+        extractTextUseCase: ExtractTextUseCase = this.extractTextUseCase,
+        trashScansUseCase: TrashScansUseCase = this.trashScansUseCase,
+        restoreScansUseCase: RestoreScansUseCase = this.restoreScansUseCase
     ): HomeViewModel {
         return HomeViewModel(
             repository = repository,
@@ -317,4 +383,33 @@ class HomeViewModelTest {
             ): List<OcrDocumentResult> =
                 block(records, languageCode)
         }
+}
+
+private class HomeFakeTrashDao(
+    initialRecords: List<ScanRecord>
+) : TrashDao {
+    private val records = initialRecords.associateBy { it.id }.toMutableMap()
+
+    override fun getTrashedScans(): Flow<List<ScanRecord>> = flowOf(
+        records.values.filter { it.deletedAt != null }
+    )
+
+    override suspend fun getScansByIds(ids: List<Long>): List<ScanRecord> =
+        ids.mapNotNull(records::get)
+
+    override suspend fun softDelete(ids: List<Long>, timestamp: Long) {
+        ids.forEach { id ->
+            val record = records[id] ?: return@forEach
+            records[id] = record.copy(deletedAt = timestamp)
+        }
+    }
+
+    override suspend fun restore(ids: List<Long>) {
+        ids.forEach { id ->
+            val record = records[id] ?: return@forEach
+            records[id] = record.copy(deletedAt = null)
+        }
+    }
+
+    override suspend fun findExpiredTrash(threshold: Long): List<ScanRecord> = emptyList()
 }

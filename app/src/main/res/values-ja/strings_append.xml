@@ -10,7 +10,10 @@
     <string name="append_source_pdf_title">PDF を追加</string>
     <string name="append_source_pdf_subtitle">別の PDF を読み込み、末尾にページを追加します。</string>
     <string name="append_images_hint">追加する前に、選択した画像のページレイアウトを選んでください。</string>
-    <string name="append_success">%1$d ページを追加しました</string>
+    <plurals name="append_success">
+        <item quantity="one">%1$d ページを追加しました</item>
+        <item quantity="other">%1$d ページを追加しました</item>
+    </plurals>
     <string name="append_error">ページの追加に失敗しました</string>
     <string name="append_target_encrypted">ページを追加する前に PDF のパスワードを解除してください。</string>
 </resources>

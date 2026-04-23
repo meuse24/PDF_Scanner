@@ -10,7 +10,12 @@
     <string name="append_source_pdf_title">Добавить PDF</string>
     <string name="append_source_pdf_subtitle">Импортируйте другой PDF и добавьте его страницы в конец.</string>
     <string name="append_images_hint">Перед добавлением выберите макет страницы для выбранных изображений.</string>
-    <string name="append_success">Добавлено страниц: %1$d</string>
+    <plurals name="append_success">
+        <item quantity="one">Добавлена %1$d страница</item>
+        <item quantity="few">Добавлено %1$d страницы</item>
+        <item quantity="many">Добавлено %1$d страниц</item>
+        <item quantity="other">Добавлено %1$d страницы</item>
+    </plurals>
     <string name="append_error">Не удалось добавить страницы</string>
     <string name="append_target_encrypted">Сначала удалите пароль PDF, затем добавляйте страницы.</string>
 </resources>

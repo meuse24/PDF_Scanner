@@ -293,7 +293,7 @@ private fun TrashItem(
             .format(Date(record.deletedAt ?: 0L))
     }
     val remainingDays = remember(record.deletedAt) {
-        val deletedAt = record.deletedAt ?: System.currentTimeMillis()
+        val deletedAt = record.deletedAt ?: return@remember 0
         val remaining = deletedAt + TrashConstants.RETENTION_MILLIS - System.currentTimeMillis()
         ceil(remaining.coerceAtLeast(0L).toDouble() / TimeUnit.DAYS.toMillis(1).toDouble())
             .toInt()

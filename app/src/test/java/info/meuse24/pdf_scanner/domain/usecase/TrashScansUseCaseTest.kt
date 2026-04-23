@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 
 class TrashScansUseCaseTest {
@@ -37,6 +38,19 @@ class TrashScansUseCaseTest {
 
         assertTrue(ids.isEmpty())
         assertTrue(dao.softDeletedIds.isEmpty())
+    }
+
+    @Test
+    fun `invalid id fails fast`() = runTest {
+        val dao = FakeTrashDao()
+        val useCase = TrashScansUseCase(TrashRepository(dao))
+
+        try {
+            useCase(listOf(scanRecord(id = 0L)))
+            fail("Expected IllegalArgumentException")
+        } catch (_: IllegalArgumentException) {
+            assertTrue(dao.softDeletedIds.isEmpty())
+        }
     }
 }
 

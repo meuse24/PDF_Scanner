@@ -11,7 +11,7 @@
     <string name="ocr_review_no_text">Kein Text erkannt.</string>
     <string name="ocr_review_load_failed">OCR-Text konnte nicht geladen werden.</string>
     <string name="ocr_review_reextract_failed">OCR konnte nicht aktualisiert werden.</string>
-    <string name="ocr_review_missing_record">Dieses Dokument ist nicht mehr verfugbar.</string>
+    <string name="ocr_review_missing_record">Dieses Dokument ist nicht mehr verfügbar.</string>
     <string name="ocr_quality_badge_percent">%1$d%%</string>
     <string name="ocr_quality_badge_unknown">OCR</string>
 </resources>

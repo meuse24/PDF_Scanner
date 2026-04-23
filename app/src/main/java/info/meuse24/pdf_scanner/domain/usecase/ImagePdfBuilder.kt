@@ -27,7 +27,7 @@ open class ImagePdfBuilder @Inject constructor(
         layout: ImagePageLayout,
         outputFile: File
     ): ImagePdfBuildResult {
-        require(imageUris.isNotEmpty()) { "Bildliste darf nicht leer sein" }
+        require(imageUris.isNotEmpty())
 
         val imageBytes: List<ByteArray?> = imageUris.map { uri ->
             runCatching {
@@ -36,7 +36,7 @@ open class ImagePdfBuilder @Inject constructor(
         }
 
         val skippedCount = imageBytes.count { it == null }
-        require(skippedCount < imageUris.size) { "Kein Bild konnte gelesen werden" }
+        require(skippedCount < imageUris.size)
 
         try {
             pdfEditor.createPdfFromImages(imageBytes, layout, outputFile)

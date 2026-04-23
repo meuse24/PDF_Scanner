@@ -10,6 +10,9 @@ sealed class Screen(val route: String) {
     data object Viewer : Screen("viewer/{scanId}") {
         fun createRoute(scanId: Long) = "viewer/$scanId"
     }
+    data object OcrReview : Screen("ocr-review/{scanId}") {
+        fun createRoute(scanId: Long) = "ocr-review/$scanId"
+    }
     data object Split   : Screen("split/{scanId}") {
         fun createRoute(scanId: Long) = "split/$scanId"
     }

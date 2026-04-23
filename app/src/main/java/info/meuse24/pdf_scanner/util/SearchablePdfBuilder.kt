@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import android.util.Log
+import info.meuse24.pdf_scanner.domain.usecase.SearchableResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
@@ -57,7 +58,7 @@ open class SearchablePdfBuilder @Inject constructor(
         languageCode: String,
         onProgress: (current: Int, total: Int) -> Unit,
         onStatus: (OcrPipelineStatus) -> Unit = {}
-    ): String = withContext(dispatcherProvider.io) {
+    ): SearchableResult = withContext(dispatcherProvider.io) {
 
         val result = ocrPipeline.runWithFallback(
             languageCode = languageCode,
@@ -82,9 +83,10 @@ open class SearchablePdfBuilder @Inject constructor(
         val pageResults = result.value
 
         // Collect full extracted text for indexing
-        val extractedText = pageResults.joinToString("\n\n") { pd ->
-            pd.words.joinToString(" ") { it.text }
-        }.trim()
+        val pageTexts = pageResults.map { page ->
+            page.words.joinToString(" ") { it.text }.trim()
+        }
+        val extractedText = pageTexts.joinToString("\n\n").trim()
 
         // ── Phase 2: Textlayer per PdfBox einfügen ──────────────────────────────
         val tempFile = File(pdfFile.parent, "${pdfFile.nameWithoutExtension}_searchable_tmp.pdf")
@@ -165,7 +167,11 @@ open class SearchablePdfBuilder @Inject constructor(
         // der Aufrufer kann dann kein isSearchable setzen.
         Files.move(tempFile.toPath(), pdfFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
 
-        extractedText
+        SearchableResult(
+            extractedText = extractedText,
+            pageTexts = pageTexts,
+            stats = result.stats
+        )
     }
 
     private suspend fun collectPageResults(

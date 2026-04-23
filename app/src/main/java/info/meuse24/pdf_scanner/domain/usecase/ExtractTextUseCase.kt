@@ -24,7 +24,7 @@ class OcrNoTextException : Exception()
  * Dedupliziert die frühere extractText/extractTexts-Logik aus HomeViewModel.
  * Bei mehreren Records wird der Dateiname als Trenner eingefügt.
  *
- * @return erkannter Text (nie leer)
+ * @return strukturierte OCR-Ergebnisse pro Record
  * @throws OcrNoTextException wenn OCR lief, aber kein Text erkannt wurde
  */
 open class ExtractTextUseCase @Inject constructor(
@@ -38,19 +38,20 @@ open class ExtractTextUseCase @Inject constructor(
         records: List<ScanRecord>,
         languageCode: String,
         onStatus: (OcrPipelineStatus) -> Unit = {}
-    ): Pair<String, OcrResultStats?> {
+    ): List<OcrDocumentResult> {
         val result = ocrPipeline.runWithFallback(
             languageCode = languageCode,
             usage = OcrUsage.EXTRACT_TEXT,
             onStatus = onStatus,
-            emptyValue = { "" },
-            isSuccess = { text, stats ->
-                val isNotEmpty = text.isNotBlank()
+            emptyValue = { emptyList<OcrDocumentResult>() },
+            isSuccess = { documents, stats ->
+                val totalTextLength = documents.sumOf { it.fullText.length }
+                val isNotEmpty = documents.any { it.fullText.isNotBlank() }
                 if (languageCode == "auto" && stats != null) {
                     // Im Automatik-Modus: nur akzeptieren wenn Vertrauen hoch genug
                     // oder wenn Text sehr lang ist (Fließtext ohne klare Konfidenz).
                     // Hinweis: Entscheidung basiert auf den Stats der ersten erfolgreichen Seite.
-                    isNotEmpty && (stats.confidence > OcrThresholds.MIN_CONFIDENCE_EXTRACT || text.length > 200)
+                    isNotEmpty && (stats.confidence > OcrThresholds.MIN_CONFIDENCE_EXTRACT || totalTextLength > 200)
                 } else {
                     isNotEmpty
                 }
@@ -59,38 +60,34 @@ open class ExtractTextUseCase @Inject constructor(
             extractFromRecordsWithStats(records, recognizer)
         }
 
-        if (result.value.isBlank()) throw OcrNoTextException()
-        return result.value to result.stats
+        if (result.value.none { it.fullText.isNotBlank() }) throw OcrNoTextException()
+        return result.value
     }
 
     private suspend fun extractFromRecordsWithStats(
         records: List<ScanRecord>,
         recognizer: TextRecognizer
-    ): Pair<String, OcrResultStats?> {
-        val results = StringBuilder()
+    ): Pair<List<OcrDocumentResult>, OcrResultStats?> {
+        val results = mutableListOf<OcrDocumentResult>()
         var firstStats: OcrResultStats? = null
 
         for (record in records) {
-            val (text, stats) = extractFromRecordWithStats(record, recognizer)
-            if (text.isNotBlank()) {
-                if (results.isNotEmpty()) results.append("\n\n")
-                if (records.size > 1) {
-                    results.append("— ${record.filename} —\n")
-                }
-                results.append(text)
-                if (firstStats == null) firstStats = stats
+            val document = extractFromRecordWithStats(record, recognizer)
+            results += document
+            if (firstStats == null && document.fullText.isNotBlank()) {
+                firstStats = document.stats
             }
         }
 
-        return results.toString() to firstStats
+        return results to firstStats
     }
 
     private suspend fun extractFromRecordWithStats(
         record: ScanRecord,
         recognizer: TextRecognizer
-    ): Pair<String, OcrResultStats?> {
+    ): OcrDocumentResult {
         val pdfFile = File(record.filepath)
-        val pageTexts = StringBuilder()
+        val pageTexts = mutableListOf<String>()
         var firstStats: OcrResultStats? = null
 
         if (pdfFile.exists()) {
@@ -98,8 +95,7 @@ open class ExtractTextUseCase @Inject constructor(
                 pdfPageInputImageLoader.forEachPageImage(pdfFile) { pageImage ->
                     val (ocrText, ocrStats) = textRecognizerRunner.recognizeWithStats(recognizer, pageImage)
                     if (ocrText.text.isNotBlank()) {
-                        if (pageTexts.isNotEmpty()) pageTexts.append("\n\n")
-                        pageTexts.append(ocrText.text)
+                        pageTexts += ocrText.text
                         if (firstStats == null) firstStats = ocrStats
                     }
                 }
@@ -110,11 +106,16 @@ open class ExtractTextUseCase @Inject constructor(
             }
             val (ocrText, ocrStats) = textRecognizerRunner.recognizeWithStats(recognizer, image)
             if (ocrText.text.isNotBlank()) {
-                pageTexts.append(ocrText.text)
+                pageTexts += ocrText.text
                 firstStats = ocrStats
             }
         }
 
-        return pageTexts.toString() to firstStats
+        return OcrDocumentResult(
+            recordId = record.id,
+            fullText = pageTexts.joinToString("\n\n"),
+            pageTexts = pageTexts,
+            stats = firstStats
+        )
     }
 }

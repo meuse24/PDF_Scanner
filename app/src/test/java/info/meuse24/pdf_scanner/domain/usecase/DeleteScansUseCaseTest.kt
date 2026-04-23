@@ -113,10 +113,20 @@ class DeleteScansUseCaseTest {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class FakeScanDao : ScanDao {
+    data class SearchableWithContentUpdate(
+        val id: Long,
+        val fileSize: Long,
+        val text: String?,
+        val confidence: Float?,
+        val language: String?,
+        val pageTextJson: String?
+    )
+
     val inserted  = mutableListOf<ScanRecord>()
     val deleted   = mutableListOf<ScanRecord>()
     val searchableUpdates = mutableListOf<Pair<Long, Long>>() // id to fileSize
-    val searchableWithContentUpdates = mutableListOf<Triple<Long, Long, String?>>() // id, fileSize, text
+    val searchableWithContentUpdates = mutableListOf<SearchableWithContentUpdate>()
+    val extractedTextAndOcrUpdates = mutableListOf<SearchableWithContentUpdate>()
     val fileSizeUpdates   = mutableListOf<Pair<Long, Long>>()
     val pageMetricUpdates = mutableListOf<Triple<Long, Int, Long>>()
     val appendInvalidations = mutableListOf<Triple<Long, Long, Int>>()
@@ -130,8 +140,29 @@ class FakeScanDao : ScanDao {
     override suspend fun insertAll(records: List<ScanRecord>)    { inserted.addAll(records) }
     override suspend fun delete(record: ScanRecord)              { deleted.add(record) }
     override suspend fun markSearchable(id: Long, fileSize: Long) { searchableUpdates.add(id to fileSize) }
-    override suspend fun markSearchableWithContent(id: Long, fileSize: Long, text: String?, tags: String?) {
-        searchableWithContentUpdates.add(Triple(id, fileSize, text))
+    override suspend fun markSearchableWithContent(
+        id: Long,
+        fileSize: Long,
+        text: String?,
+        tags: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    ) {
+        searchableWithContentUpdates.add(
+            SearchableWithContentUpdate(id, fileSize, text, confidence, language, pageTextJson)
+        )
+    }
+    override suspend fun updateExtractedTextAndOcrStats(
+        id: Long,
+        text: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    ) {
+        extractedTextAndOcrUpdates.add(
+            SearchableWithContentUpdate(id, 0L, text, confidence, language, pageTextJson)
+        )
     }
     override suspend fun updateFileSize(id: Long, fileSize: Long) { fileSizeUpdates.add(id to fileSize) }
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {

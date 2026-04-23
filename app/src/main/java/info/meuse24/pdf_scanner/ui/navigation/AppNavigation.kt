@@ -84,6 +84,7 @@ import info.meuse24.pdf_scanner.ui.documentaction.UnlockPdfScreen
 import info.meuse24.pdf_scanner.ui.annotate.AnnotateScreen
 import info.meuse24.pdf_scanner.ui.append.AppendScreen
 import info.meuse24.pdf_scanner.ui.imagestopdf.ImagesToPdfScreen
+import info.meuse24.pdf_scanner.ui.ocr.OcrReviewScreen
 import info.meuse24.pdf_scanner.ui.redact.RedactScreen
 import info.meuse24.pdf_scanner.ui.signature.SignatureScreen
 import info.meuse24.pdf_scanner.ui.overlay.PageNumbersScreen
@@ -335,6 +336,7 @@ fun AppNavigation(
                             onNavigateToGrayscale       = { scanId -> navController.navigate(Screen.Grayscale.createRoute(scanId)) },
                             onNavigateToPdfMetadata     = { scanId -> navController.navigate(Screen.PdfMetadata.createRoute(scanId)) },
                             onNavigateToQrScan          = { scanId -> navController.navigate(Screen.QrScan.createRoute(scanId)) },
+                            onNavigateToOcrReview       = { scanId -> navController.navigate(Screen.OcrReview.createRoute(scanId)) },
                             onNavigateToViewer          = { scanId -> navController.navigate(Screen.Viewer.createRoute(scanId)) },
                             onNavigateToImagesToPdf     = { navController.navigate(Screen.ImagesToPdf.route) }
                         )
@@ -354,6 +356,12 @@ fun AppNavigation(
                     }
                     composable(Screen.Info.route)    { InfoScreen() }
                     composable(Screen.Privacy.route) { PrivacyScreen() }
+                    composable(
+                        route = Screen.OcrReview.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        OcrReviewScreen()
+                    }
                     composable(
                         route = Screen.Viewer.route,
                         arguments = listOf(navArgument("scanId") { type = NavType.LongType })
@@ -583,6 +591,7 @@ private fun AppBarTitle(
             currentRoute == Screen.Settings.route -> stringResource(R.string.nav_settings)
             currentRoute == Screen.Info.route -> stringResource(R.string.nav_info)
             currentRoute == Screen.Privacy.route -> stringResource(R.string.nav_privacy)
+            currentRoute?.startsWith("ocr-review/") == true -> stringResource(R.string.ocr_review_title)
             currentRoute?.startsWith("viewer/") == true -> stringResource(R.string.pdf_viewer_screen_title)
             currentRoute?.startsWith("split/") == true -> stringResource(R.string.split_screen_title)
             currentRoute?.startsWith("reorder/") == true -> stringResource(R.string.reorder_screen_title)

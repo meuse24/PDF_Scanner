@@ -9,6 +9,7 @@ import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
+import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
 import info.meuse24.pdf_scanner.domain.usecase.RestoreScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.TrashScansUseCase
@@ -142,20 +143,30 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `extractTexts shows low confidence warning when confidence is below 30 percent`() = runTest(testDispatcher) {
+    fun `extractTexts navigates to review for single result and keeps toast quiet on low confidence`() = runTest(testDispatcher) {
         val pdf = File(tmpFolder.root, "low_quality.pdf").apply { writeText("pdf") }
         val record = ScanRecord(id = 1L, filename = "low_quality", filepath = pdf.absolutePath,
             timestamp = 0L, pageCount = 1, fileSize = 0L)
 
-        resourceProvider.strings += R.string.ocr_low_confidence_warning to "Low confidence: %d%%"
-
         val stats = info.meuse24.pdf_scanner.util.OcrResultStats(0.25f, "en", 0f)
-        val viewModel = buildViewModel(extractTextUseCase = fakeExtract { _, _ -> "Extracted with errors" to stats })
+        val viewModel = buildViewModel(
+            extractTextUseCase = fakeExtract { records, _ ->
+                listOf(
+                    OcrDocumentResult(
+                        recordId = records.single().id,
+                        fullText = "Extracted with errors",
+                        pageTexts = listOf("Extracted with errors"),
+                        stats = stats
+                    )
+                )
+            }
+        )
         viewModel.extractTexts(listOf(record), "en")
         advanceUntilIdle()
 
-        assertEquals("Extracted with errors", viewModel.ocrText.value)
-        assertEquals("Low confidence: 25%", viewModel.error.value)
+        assertNull(viewModel.ocrText.value)
+        assertEquals(1L, viewModel.ocrReviewRequestId.value)
+        assertNull(viewModel.error.value)
     }
 
     @Test
@@ -195,11 +206,23 @@ class HomeViewModelTest {
             timestamp = 0L, pageCount = 1, fileSize = 0L)
 
         val stats = info.meuse24.pdf_scanner.util.OcrResultStats(0.55f, null, 0f)
-        val viewModel = buildViewModel(extractTextUseCase = fakeExtract { _, _ -> "Ambiguous text" to stats })
+        val viewModel = buildViewModel(
+            extractTextUseCase = fakeExtract { records, _ ->
+                listOf(
+                    OcrDocumentResult(
+                        recordId = records.single().id,
+                        fullText = "Ambiguous text",
+                        pageTexts = listOf("Ambiguous text"),
+                        stats = stats
+                    )
+                )
+            }
+        )
         viewModel.extractTexts(listOf(record), OCR_LANGUAGE_AUTO)
         advanceUntilIdle()
 
-        assertEquals("Ambiguous text", viewModel.ocrText.value)
+        assertNull(viewModel.ocrText.value)
+        assertEquals(4L, viewModel.ocrReviewRequestId.value)
         assertEquals("Automatic detection uncertain", viewModel.error.value)
     }
 
@@ -279,7 +302,7 @@ class HomeViewModelTest {
     }
 
     /** Erstellt eine anonyme ExtractTextUseCase-Subklasse, die den Block als invoke-Body nutzt. */
-    private fun fakeExtract(block: suspend (List<ScanRecord>, String) -> Pair<String, info.meuse24.pdf_scanner.util.OcrResultStats?>): ExtractTextUseCase =
+    private fun fakeExtract(block: suspend (List<ScanRecord>, String) -> List<OcrDocumentResult>): ExtractTextUseCase =
         object : ExtractTextUseCase(
             ocrPipeline = mock(info.meuse24.pdf_scanner.util.OcrPipeline::class.java),
             inputImageLoader = mock(info.meuse24.pdf_scanner.util.OcrInputImageLoader::class.java),
@@ -291,7 +314,7 @@ class HomeViewModelTest {
                 records: List<ScanRecord>,
                 languageCode: String,
                 onStatus: (info.meuse24.pdf_scanner.util.OcrPipelineStatus) -> Unit
-            ): Pair<String, info.meuse24.pdf_scanner.util.OcrResultStats?> =
+            ): List<OcrDocumentResult> =
                 block(records, languageCode)
         }
 }

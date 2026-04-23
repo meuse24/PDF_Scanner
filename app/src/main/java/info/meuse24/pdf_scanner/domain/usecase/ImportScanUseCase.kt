@@ -6,6 +6,7 @@ import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.util.FileUtil
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
+import info.meuse24.pdf_scanner.util.toOcrPageTextJson
 import java.util.Locale
 import javax.inject.Inject
 
@@ -36,10 +37,16 @@ class ImportScanUseCase @Inject constructor(
 
         var isSearchable  = false
         var extractedText: String? = null
+        var ocrConfidence: Float? = null
+        var ocrLanguage: String? = null
+        var ocrPageTextJson: String? = null
         if (makeSearchable) {
-            val text = searchablePdfBuilder.makeSearchable(savedFile, languageCode, onProgress, onStatus)
+            val searchableResult = searchablePdfBuilder.makeSearchable(savedFile, languageCode, onProgress, onStatus)
             isSearchable  = true
-            extractedText = text.ifBlank { null }
+            extractedText = searchableResult.extractedText.ifBlank { null }
+            ocrConfidence = searchableResult.stats?.confidence
+            ocrLanguage = searchableResult.stats?.recognizedLanguage
+            ocrPageTextJson = searchableResult.pageTexts.toOcrPageTextJson()
         }
 
         val record = ScanRecord(
@@ -51,7 +58,10 @@ class ImportScanUseCase @Inject constructor(
             thumbnailPath = thumbnailPath,
             isSearchable  = isSearchable,
             extractedText = extractedText,
-            tags          = null
+            tags          = null,
+            ocrConfidence = ocrConfidence,
+            ocrLanguage = ocrLanguage,
+            ocrPageTextJson = ocrPageTextJson
         )
         repository.saveScan(record)
         return record

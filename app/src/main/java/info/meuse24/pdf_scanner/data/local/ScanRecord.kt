@@ -17,5 +17,8 @@ data class ScanRecord(
     @ColumnInfo(name = "is_encrypted", defaultValue = "0") val isEncrypted: Boolean = false,
     @ColumnInfo(name = "extracted_text") val extractedText: String? = null,
     val tags: String? = null,
+    @ColumnInfo(name = "ocr_confidence") val ocrConfidence: Float? = null,
+    @ColumnInfo(name = "ocr_language") val ocrLanguage: String? = null,
+    @ColumnInfo(name = "ocr_page_text_json") val ocrPageTextJson: String? = null,
     @ColumnInfo(name = "deleted_at") val deletedAt: Long? = null
 )

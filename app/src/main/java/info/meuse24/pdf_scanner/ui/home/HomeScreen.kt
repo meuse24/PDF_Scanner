@@ -141,6 +141,7 @@ fun HomeScreen(
     onNavigateToGrayscale:          (Long) -> Unit = {},
     onNavigateToPdfMetadata:        (Long) -> Unit = {},
     onNavigateToQrScan:             (Long) -> Unit = {},
+    onNavigateToOcrReview:          (Long) -> Unit = {},
     onNavigateToViewer:             (Long) -> Unit = {},
     onNavigateToImagesToPdf:        () -> Unit     = {},
     viewModel:                      HomeViewModel  = hiltViewModel()
@@ -155,6 +156,7 @@ fun HomeScreen(
     val trashMessage   by viewModel.trashMessage.collectAsStateWithLifecycle()
     val lastTrashed    by viewModel.lastTrashed.collectAsStateWithLifecycle()
     val ocrText        by viewModel.ocrText.collectAsStateWithLifecycle()
+    val ocrReviewRequestId by viewModel.ocrReviewRequestId.collectAsStateWithLifecycle()
     val ocrLoading     by viewModel.ocrLoading.collectAsStateWithLifecycle()
     val ocrProgress    by viewModel.ocrProgress.collectAsStateWithLifecycle()
     val ocrStatusText  by viewModel.ocrStatusText.collectAsStateWithLifecycle()
@@ -316,6 +318,12 @@ fun HomeScreen(
             viewModel.restoreLastTrashed()
         }
         viewModel.clearTrashMessage()
+    }
+
+    LaunchedEffect(ocrReviewRequestId) {
+        val scanId = ocrReviewRequestId ?: return@LaunchedEffect
+        onNavigateToOcrReview(scanId)
+        viewModel.clearOcrReviewRequest()
     }
 
     // ── Scroll-Haptic-Tick ────────────────────────────────────────────────────
@@ -535,9 +543,9 @@ fun HomeScreen(
         HomeLoadingDialog(
             statusText = ocrStatusText ?: ocrProgress?.let { progress ->
                 resources.getString(R.string.searchable_progress, progress.first, progress.second)
-                }
-            )
-        }
+            }
+        )
+    }
 
     // ── Edit-Lade-Overlay ─────────────────────────────────────────────────────
     if (editLoading) {

@@ -3,6 +3,7 @@ package info.meuse24.pdf_scanner.domain.usecase
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
+import info.meuse24.pdf_scanner.util.toOcrPageTextJson
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
 import java.io.File
 import javax.inject.Inject
@@ -33,13 +34,16 @@ class MakeSearchableUseCase @Inject constructor(
         for (record in pending) {
             val pdfFile = File(record.filepath)
             if (!pdfFile.exists()) continue
-            val text = searchablePdfBuilder.makeSearchable(pdfFile, languageCode, onProgress, onStatus)
-            if (text.isBlank()) blankOcrCount++
+            val searchableResult = searchablePdfBuilder.makeSearchable(pdfFile, languageCode, onProgress, onStatus)
+            if (searchableResult.extractedText.isBlank()) blankOcrCount++
             repository.markSearchableWithContent(
-                id       = record.id,
+                id = record.id,
                 fileSize = pdfFile.length(),
-                text     = text.ifBlank { null },
-                tags     = null
+                text = searchableResult.extractedText.ifBlank { null },
+                tags = null,
+                confidence = searchableResult.stats?.confidence,
+                language = searchableResult.stats?.recognizedLanguage,
+                pageTextJson = searchableResult.pageTexts.toOcrPageTextJson()
             )
         }
         return pending.size to blankOcrCount

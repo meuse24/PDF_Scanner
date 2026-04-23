@@ -8,6 +8,7 @@ import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactPdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
+import info.meuse24.pdf_scanner.domain.usecase.SearchableResult
 import info.meuse24.pdf_scanner.util.OcrPipeline
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.PdfEditor
@@ -176,8 +177,8 @@ class RedactPdfWorkflowTest {
         assertTrue(result is WorkflowResult.Success)
         assertEquals(1, dao.searchableWithContentUpdates.size)
         val update = dao.searchableWithContentUpdates.single()
-        assertEquals(1L, update.first)
-        assertEquals("visible text", update.third)
+        assertEquals(1L, update.id)
+        assertEquals("visible text", update.text)
     }
 
     @Test
@@ -271,8 +272,12 @@ private class FakeSearchablePdfBuilder(
         languageCode: String,
         onProgress: (current: Int, total: Int) -> Unit,
         onStatus: (OcrPipelineStatus) -> Unit
-    ): String {
+    ): SearchableResult {
         throwable?.let { throw it }
-        return returnedText
+        return SearchableResult(
+            extractedText = returnedText,
+            pageTexts = listOfNotNull(returnedText.takeIf { it.isNotBlank() }),
+            stats = null
+        )
     }
 }

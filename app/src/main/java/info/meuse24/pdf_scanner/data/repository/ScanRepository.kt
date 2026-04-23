@@ -14,8 +14,22 @@ class ScanRepository @Inject constructor(private val dao: ScanDao) {
     suspend fun saveScans(records: List<ScanRecord>) = dao.insertAll(records)
     suspend fun deleteScan(record: ScanRecord) = dao.delete(record)
     suspend fun markSearchable(id: Long, fileSize: Long) = dao.markSearchable(id, fileSize)
-    suspend fun markSearchableWithContent(id: Long, fileSize: Long, text: String?, tags: String?) =
-        dao.markSearchableWithContent(id, fileSize, text, tags)
+    suspend fun markSearchableWithContent(
+        id: Long,
+        fileSize: Long,
+        text: String?,
+        tags: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    ) = dao.markSearchableWithContent(id, fileSize, text, tags, confidence, language, pageTextJson)
+    suspend fun updateExtractedTextAndOcrStats(
+        id: Long,
+        text: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    ) = dao.updateExtractedTextAndOcrStats(id, text, confidence, language, pageTextJson)
     suspend fun updateFileSize(id: Long, fileSize: Long) = dao.updateFileSize(id, fileSize)
     suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) =
         dao.updatePageMetrics(id, pageCount, fileSize)

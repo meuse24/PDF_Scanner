@@ -70,7 +70,22 @@ private class PurgeFakeScanDao : info.meuse24.pdf_scanner.data.local.ScanDao {
     override suspend fun delete(record: ScanRecord) {
         deletedIds += record.id
     }
-    override suspend fun markSearchableWithContent(id: Long, fileSize: Long, text: String?, tags: String?) = Unit
+    override suspend fun markSearchableWithContent(
+        id: Long,
+        fileSize: Long,
+        text: String?,
+        tags: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    ) = Unit
+    override suspend fun updateExtractedTextAndOcrStats(
+        id: Long,
+        text: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    ) = Unit
     override suspend fun markSearchable(id: Long, fileSize: Long) = Unit
     override suspend fun updateFileSize(id: Long, fileSize: Long) = Unit
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) = Unit

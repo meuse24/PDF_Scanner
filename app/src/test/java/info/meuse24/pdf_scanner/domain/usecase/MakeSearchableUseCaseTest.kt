@@ -3,6 +3,7 @@ package info.meuse24.pdf_scanner.domain.usecase
 import android.content.Context
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.usecase.SearchableResult
 import info.meuse24.pdf_scanner.util.OcrPipeline
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
@@ -112,7 +113,7 @@ class MakeSearchableUseCaseTest {
         useCase(listOf(rec), "en")
 
         assertEquals(1, dao.searchableWithContentUpdates.size)
-        assertEquals(42L, dao.searchableWithContentUpdates[0].first)
+        assertEquals(42L, dao.searchableWithContentUpdates[0].id)
     }
 
     @Test
@@ -147,8 +148,12 @@ class FakeSearchablePdfBuilder(
         languageCode: String,
         onProgress:   (Int, Int) -> Unit,
         onStatus:     (OcrPipelineStatus) -> Unit
-    ): String {
+    ): SearchableResult {
         onMakeSearchable(pdfFile, languageCode)
-        return ""
+        return SearchableResult(
+            extractedText = "",
+            pageTexts = emptyList(),
+            stats = null
+        )
     }
 }

@@ -202,7 +202,22 @@ internal class FakeImagesScanDao : ScanDao {
     override suspend fun insertAll(records: List<ScanRecord>) {}
     override suspend fun delete(record: ScanRecord) {}
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
-    override suspend fun markSearchableWithContent(id: Long, fileSize: Long, text: String?, tags: String?) {}
+    override suspend fun markSearchableWithContent(
+        id: Long,
+        fileSize: Long,
+        text: String?,
+        tags: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    ) {}
+    override suspend fun updateExtractedTextAndOcrStats(
+        id: Long,
+        text: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    ) {}
     override suspend fun markSearchable(id: Long, fileSize: Long) {}
     override suspend fun updateFileSize(id: Long, fileSize: Long) {}
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {}

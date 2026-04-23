@@ -76,9 +76,13 @@ class ExtractTextUseCaseTest {
                 record("second", secondThumb)
             ),
             languageCode = "de"
-        ).first
+        )
 
-        assertEquals("— first —\nAlpha\n\n— second —\nBeta", result)
+        assertEquals(2, result.size)
+        assertEquals("Alpha", result[0].fullText)
+        assertEquals("Beta", result[1].fullText)
+        assertEquals(listOf("Alpha"), result[0].pageTexts)
+        assertEquals(listOf("Beta"), result[1].pageTexts)
         verify(recognizer).close()
         verify(inputImageLoader).loadFromFile(firstThumb)
         verify(inputImageLoader).loadFromFile(secondThumb)
@@ -165,9 +169,10 @@ class ExtractTextUseCaseTest {
                 )
             ),
             languageCode = "en"
-        ).first
+        ).single()
 
-        assertEquals("Alpha\n\nBeta", result)
+        assertEquals("Alpha\n\nBeta", result.fullText)
+        assertEquals(listOf("Alpha", "Beta"), result.pageTexts)
         assertEquals(listOf(pdfFile), pdfPageInputImageLoader.sourceFiles)
         assertEquals(0, inputImageLoader.calls)
         verify(recognizer).close()

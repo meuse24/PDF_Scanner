@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ocr_review_title">OCR-Prüfung</string>
+    <string name="ocr_review_quality_title">Erkennungsqualität</string>
+    <string name="ocr_review_language_title">Erkannte Sprache</string>
+    <string name="ocr_review_language_unknown">Unbekannt</string>
+    <string name="ocr_review_low_warning">Niedrige OCR-Konfidenz. Prüfe den Text vor dem Kopieren oder Teilen.</string>
+    <string name="ocr_review_actions_title">Aktionen</string>
+    <string name="ocr_review_run_ocr">OCR starten</string>
+    <string name="ocr_review_page_header">Seite %1$d</string>
+    <string name="ocr_review_no_text">Kein Text erkannt.</string>
+    <string name="ocr_review_load_failed">OCR-Text konnte nicht geladen werden.</string>
+    <string name="ocr_review_reextract_failed">OCR konnte nicht aktualisiert werden.</string>
+    <string name="ocr_review_missing_record">Dieses Dokument ist nicht mehr verfugbar.</string>
+    <string name="ocr_quality_badge_percent">%1$d%%</string>
+    <string name="ocr_quality_badge_unknown">OCR</string>
+</resources>

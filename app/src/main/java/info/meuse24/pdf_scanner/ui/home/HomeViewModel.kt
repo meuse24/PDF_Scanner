@@ -36,6 +36,7 @@ import info.meuse24.pdf_scanner.util.AppSettings
 import info.meuse24.pdf_scanner.util.AppSortOrder
 import info.meuse24.pdf_scanner.util.ResourceProvider
 import info.meuse24.pdf_scanner.util.StorageProvider
+import info.meuse24.pdf_scanner.util.toOcrPageTextJson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -109,6 +110,9 @@ class HomeViewModel @Inject constructor(
 
     private val _ocrText = MutableStateFlow<String?>(null)
     val ocrText: StateFlow<String?> = _ocrText.asStateFlow()
+
+    private val _ocrReviewRequestId = MutableStateFlow<Long?>(null)
+    val ocrReviewRequestId: StateFlow<Long?> = _ocrReviewRequestId.asStateFlow()
 
     private val _ocrLoading = MutableStateFlow(false)
     val ocrLoading: StateFlow<Boolean> = _ocrLoading.asStateFlow()
@@ -282,9 +286,25 @@ class HomeViewModel @Inject constructor(
         _ocrLoading.value = true
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                val (text, stats) = extractTextUseCase(validRecords, languageCode, ::updateOcrStatus)
-                _ocrText.value = text
-                maybeReportOcrWarning(languageCode, text, stats)
+                val results = extractTextUseCase(validRecords, languageCode, ::updateOcrStatus)
+                results.forEach { document ->
+                    repository.updateExtractedTextAndOcrStats(
+                        id = document.recordId,
+                        text = document.fullText.ifBlank { null },
+                        confidence = document.stats?.confidence,
+                        language = document.stats?.recognizedLanguage,
+                        pageTextJson = document.pageTexts.toOcrPageTextJson()
+                    )
+                }
+
+                val firstStats = results.firstOrNull { it.fullText.isNotBlank() }?.stats
+                if (validRecords.size == 1) {
+                    _ocrText.value = null
+                    _ocrReviewRequestId.value = validRecords.single().id
+                } else {
+                    _ocrText.value = buildCombinedOcrText(validRecords, results)
+                }
+                maybeReportOcrWarning(languageCode, firstStats)
             } catch (e: OcrNoTextException) {
                 val msgRes = if (languageCode == OCR_LANGUAGE_AUTO) R.string.ocr_no_text_auto_hint
                              else R.string.ocr_no_text_found
@@ -397,6 +417,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun clearOcrText() { _ocrText.value = null }
+    fun clearOcrReviewRequest() { _ocrReviewRequestId.value = null }
     fun reportError(message: String) { _error.value = message }
     fun clearError() { _error.value = null }
     fun clearSuccess() { _success.value = null }
@@ -433,13 +454,16 @@ class HomeViewModel @Inject constructor(
             if (candidates.isEmpty()) return@launch
             for (record in candidates) {
                 runCatching {
-                    val (text, _) = extractTextUseCase(listOf(record), OCR_LANGUAGE_AUTO)
-                    if (text.isNotBlank()) {
+                    val result = extractTextUseCase(listOf(record), OCR_LANGUAGE_AUTO).singleOrNull()
+                    if (result != null && result.fullText.isNotBlank()) {
                         repository.markSearchableWithContent(
-                            id       = record.id,
+                            id = record.id,
                             fileSize = File(record.filepath).length(),
-                            text     = text,
-                            tags     = null
+                            text = result.fullText,
+                            tags = null,
+                            confidence = result.stats?.confidence,
+                            language = result.stats?.recognizedLanguage,
+                            pageTextJson = result.pageTexts.toOcrPageTextJson()
                         )
                         Log.d("Backfill", "Text nacherfasst: ${record.filename}")
                     }
@@ -461,19 +485,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun maybeReportOcrWarning(
-        languageCode: String,
-        text: String,
-        stats: OcrResultStats?
-    ) {
-        if (text.isBlank() || stats == null) return
-
-        if (stats.confidence < OcrThresholds.LOW_CONFIDENCE_WARNING) {
-            val confidencePercent = (stats.confidence * 100).toInt()
-            _error.value = resourceProvider.getString(R.string.ocr_low_confidence_warning, confidencePercent)
-            return
-        }
-
+    private fun maybeReportOcrWarning(languageCode: String, stats: OcrResultStats?) {
+        if (stats == null) return
         if (
             languageCode == OCR_LANGUAGE_AUTO &&
             stats.recognizedLanguage.isNullOrBlank() &&
@@ -482,6 +495,23 @@ class HomeViewModel @Inject constructor(
             _error.value = resourceProvider.getString(R.string.ocr_auto_detection_uncertain)
         }
     }
+}
+
+private fun buildCombinedOcrText(
+    records: List<ScanRecord>,
+    results: List<info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult>
+): String {
+    val filenamesById = records.associateBy({ it.id }, { it.filename })
+    return results
+        .filter { it.fullText.isNotBlank() }
+        .joinToString("\n\n") { result ->
+            val filename = filenamesById[result.recordId]
+            if (results.size > 1 && filename != null) {
+                "— $filename —\n${result.fullText}"
+            } else {
+                result.fullText
+            }
+        }
 }
 
 private fun AppSortOrder.toUiSortOrder(): SortOrder = when (this) {

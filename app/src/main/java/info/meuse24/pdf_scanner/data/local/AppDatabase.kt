@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [ScanRecord::class, ScanRecordFts::class], version = 6, exportSchema = false)
+@Database(entities = [ScanRecord::class, ScanRecordFts::class], version = 7, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun scanDao(): ScanDao
     abstract fun trashDao(): TrashDao
@@ -73,6 +73,14 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE scan_records ADD COLUMN deleted_at INTEGER")
+            }
+        }
+
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE scan_records ADD COLUMN ocr_confidence REAL")
+                db.execSQL("ALTER TABLE scan_records ADD COLUMN ocr_language TEXT")
+                db.execSQL("ALTER TABLE scan_records ADD COLUMN ocr_page_text_json TEXT")
             }
         }
     }

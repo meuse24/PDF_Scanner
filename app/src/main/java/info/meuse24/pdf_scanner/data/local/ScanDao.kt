@@ -31,8 +31,28 @@ interface ScanDao {
     @Delete
     suspend fun delete(record: ScanRecord)
 
-    @Query("UPDATE scan_records SET is_searchable = 1, fileSize = :fileSize, extracted_text = :text, tags = :tags WHERE id = :id")
-    suspend fun markSearchableWithContent(id: Long, fileSize: Long, text: String?, tags: String?)
+    @Query(
+        """
+        UPDATE scan_records
+        SET is_searchable = 1,
+            fileSize = :fileSize,
+            extracted_text = :text,
+            tags = :tags,
+            ocr_confidence = :confidence,
+            ocr_language = :language,
+            ocr_page_text_json = :pageTextJson
+        WHERE id = :id
+        """
+    )
+    suspend fun markSearchableWithContent(
+        id: Long,
+        fileSize: Long,
+        text: String?,
+        tags: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    )
 
     @Query("UPDATE scan_records SET is_searchable = 1, fileSize = :fileSize WHERE id = :id")
     suspend fun markSearchable(id: Long, fileSize: Long)
@@ -46,9 +66,30 @@ interface ScanDao {
     @Query(
         """
         UPDATE scan_records
+        SET extracted_text = :text,
+            ocr_confidence = :confidence,
+            ocr_language = :language,
+            ocr_page_text_json = :pageTextJson
+        WHERE id = :id
+        """
+    )
+    suspend fun updateExtractedTextAndOcrStats(
+        id: Long,
+        text: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    )
+
+    @Query(
+        """
+        UPDATE scan_records
         SET is_searchable = 0,
             extracted_text = NULL,
             tags = NULL,
+            ocr_confidence = NULL,
+            ocr_language = NULL,
+            ocr_page_text_json = NULL,
             pageCount = :pageCount,
             fileSize = :fileSize
         WHERE id = :id

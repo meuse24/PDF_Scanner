@@ -59,6 +59,9 @@ import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.ui.components.DocumentEditSheet
 import info.meuse24.pdf_scanner.ui.components.ScanAction
+import info.meuse24.pdf_scanner.ui.ocr.OcrQualityBadge
+import info.meuse24.pdf_scanner.util.toQuality
+import info.meuse24.pdf_scanner.util.toQualityPercent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -184,13 +187,19 @@ internal fun ScanItem(
                     )
                     if (record.isSearchable) {
                         Spacer(Modifier.height(2.dp))
-                        Badge(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor   = MaterialTheme.colorScheme.onSecondaryContainer
-                        ) {
-                            Text(
-                                stringResource(R.string.searchable_badge),
-                                style = MaterialTheme.typography.labelSmall
+                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Badge(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor   = MaterialTheme.colorScheme.onSecondaryContainer
+                            ) {
+                                Text(
+                                    stringResource(R.string.searchable_badge),
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+                            OcrQualityBadge(
+                                quality = record.ocrConfidence.toQuality(),
+                                percent = record.ocrConfidence.toQualityPercent()
                             )
                         }
                     }

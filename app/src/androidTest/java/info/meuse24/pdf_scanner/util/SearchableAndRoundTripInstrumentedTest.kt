@@ -84,8 +84,9 @@ class SearchableAndRoundTripInstrumentedTest {
         val extracted = searchablePdfBuilder.makeSearchable(source, "en", onProgress = { _, _ -> })
         val pdfText = extractPdfText(source)
 
-        assertTrue(normalizeText(extracted).contains("SCANTEST"))
-        assertTrue(normalizeText(extracted).contains("1234"))
+        assertTrue(normalizeText(extracted.extractedText).contains("SCANTEST"))
+        assertTrue(normalizeText(extracted.extractedText).contains("1234"))
+        assertEquals(1, extracted.pageTexts.size)
         assertTrue(normalizeText(pdfText).contains("SCANTEST"))
         assertTrue(normalizeText(pdfText).contains("1234"))
     }
@@ -107,14 +108,17 @@ class SearchableAndRoundTripInstrumentedTest {
             fileSize = source.length()
         )
 
-        val count = useCase(listOf(record), "en")
+        val (count, blankOcrCount) = useCase(listOf(record), "en")
 
         assertEquals(1, count)
+        assertEquals(0, blankOcrCount)
         assertEquals(1, dao.searchableUpdates.size)
         val update = dao.searchableUpdates.single()
         assertEquals(42L, update.id)
         assertTrue(normalizeText(update.text).contains("PDFSCANNER"))
         assertTrue(normalizeText(update.text).contains("5678"))
+        assertNotNull(update.pageTextJson)
+        assertTrue(update.pageTextJson.fromOcrPageTextJson().isNotEmpty())
         assertTrue(normalizeText(extractPdfText(source)).contains("PDFSCANNER"))
     }
 
@@ -139,7 +143,7 @@ class SearchableAndRoundTripInstrumentedTest {
             progress.add(current to total)
         })
         val pdfText = normalizeText(extractPdfText(mixed))
-        val normalizedExtracted = normalizeText(extracted)
+        val normalizedExtracted = normalizeText(extracted.extractedText)
 
         assertEquals(listOf(1 to 3, 2 to 3, 3 to 3), progress)
         assertEquals(3, pdfEditor.getPageCount(mixed))
@@ -281,6 +285,9 @@ class SearchableAndRoundTripInstrumentedTest {
         assertTrue(File(record.thumbnailPath!!).exists())
         assertTrue(normalizeText(record.extractedText).contains("IMPORTSCAN"))
         assertTrue(normalizeText(record.extractedText).contains("2468"))
+        assertNotNull(record.ocrConfidence)
+        assertNotNull(record.ocrPageTextJson)
+        assertTrue(record.ocrPageTextJson.fromOcrPageTextJson().isNotEmpty())
         assertTrue(normalizeText(extractPdfText(File(record.filepath))).contains("IMPORTSCAN"))
     }
 
@@ -564,7 +571,14 @@ private fun loadDeviceFont(document: PDDocument): PDFont {
 }
 
 private class TrackingScanDao : ScanDao {
-    data class SearchableUpdate(val id: Long, val fileSize: Long, val text: String?)
+    data class SearchableUpdate(
+        val id: Long,
+        val fileSize: Long,
+        val text: String?,
+        val confidence: Float?,
+        val language: String?,
+        val pageTextJson: String?
+    )
 
     val searchableUpdates = mutableListOf<SearchableUpdate>()
     val inserted = mutableListOf<ScanRecord>()
@@ -586,9 +600,25 @@ private class TrackingScanDao : ScanDao {
 
     override suspend fun markSearchable(id: Long, fileSize: Long) = Unit
 
-    override suspend fun markSearchableWithContent(id: Long, fileSize: Long, text: String?, tags: String?) {
-        searchableUpdates.add(SearchableUpdate(id, fileSize, text))
+    override suspend fun markSearchableWithContent(
+        id: Long,
+        fileSize: Long,
+        text: String?,
+        tags: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    ) {
+        searchableUpdates.add(SearchableUpdate(id, fileSize, text, confidence, language, pageTextJson))
     }
+
+    override suspend fun updateExtractedTextAndOcrStats(
+        id: Long,
+        text: String?,
+        confidence: Float?,
+        language: String?,
+        pageTextJson: String?
+    ) = Unit
 
     override suspend fun updateFileSize(id: Long, fileSize: Long) = Unit
 

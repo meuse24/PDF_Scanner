@@ -125,7 +125,7 @@
     <string name="help_item_merge">Select at least two PDFs and tap Merge to combine them into a new document.</string>
     <string name="help_item_split">Open the three-dot menu on a multi-page PDF and choose Split pages to create multiple PDFs at selected split points.</string>
     <string name="help_item_reorder">Open the three-dot menu and choose Reorder pages to rearrange pages via drag and drop or the up and down buttons.</string>
-    <string name="help_item_delete">Use Delete to remove selected PDFs from the archive. The app also removes the stored file and thumbnail.</string>
+    <string name="help_item_delete">Use Delete to move selected PDFs to trash. They can be restored for 30 days or deleted permanently from Trash.</string>
     <string name="help_section_ocr">OCR and Text Extraction</string>
     <string name="help_item_extract_text">Text Extraction (OCR) reads all pages and shows the recognized text in a panel where you can copy or share it.</string>
     <string name="help_item_make_searchable">Make Searchable adds an invisible text layer to the PDF, stores the extracted OCR text locally for archive search.</string>
@@ -168,7 +168,7 @@
     <string name="privacy_point_2">Documents are not uploaded automatically. Sharing, printing, and exporting only happen when you explicitly trigger them. Secure redaction creates a new copy; the original remains until you delete it.</string>
     <string name="privacy_point_3">The scan and OCR functions use Google Play Services. Technical diagnostic data may be transmitted for error analysis. The automatic mode uses a bundled Latin text recognizer that works offline. Language models for Hindi, Chinese, Japanese, and Korean may be fetched via Play Services on first manual use — the content of your documents is not sent by this app.</string>
     <string name="privacy_point_4">The app itself collects no personal data, uses no own analytics, and requests no own network permission.</string>
-    <string name="privacy_footer">Last updated: March 29, 2026</string>
+    <string name="privacy_footer">Last updated: April 23, 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Extract text</string>

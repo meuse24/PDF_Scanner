@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import info.meuse24.pdf_scanner.data.local.AppDatabase
 import info.meuse24.pdf_scanner.data.local.ScanDao
+import info.meuse24.pdf_scanner.data.local.TrashDao
 import javax.inject.Singleton
 
 @Module
@@ -23,10 +24,14 @@ object DatabaseModule {
                 AppDatabase.MIGRATION_1_2,
                 AppDatabase.MIGRATION_2_3,
                 AppDatabase.MIGRATION_3_4,
-                AppDatabase.MIGRATION_4_5
+                AppDatabase.MIGRATION_4_5,
+                AppDatabase.MIGRATION_5_6
             )
             .build()
 
     @Provides
     fun provideScanDao(db: AppDatabase): ScanDao = db.scanDao()
+
+    @Provides
+    fun provideTrashDao(db: AppDatabase): TrashDao = db.trashDao()
 }

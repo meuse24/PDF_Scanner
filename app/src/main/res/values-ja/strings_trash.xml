@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_trash">ゴミ箱</string>
+    <string name="action_undo">元に戻す</string>
+    <string name="action_more">その他のオプション</string>
+    <string name="action_move_to_trash">ゴミ箱に移動</string>
+    <string name="action_restore">復元</string>
+    <string name="action_delete_forever">完全に削除</string>
+    <string name="action_empty_trash">ゴミ箱を空にする</string>
+    <string name="confirm_trash_title">ゴミ箱に移動しますか？</string>
+    <string name="confirm_trash_single">%1$s をゴミ箱に移動しますか？</string>
+    <string name="confirm_trash_multi">%1$d 件の文書をゴミ箱に移動しますか？</string>
+    <string name="error_restore_missing_file">PDF ファイルが見つからないため復元できません。</string>
+    <string name="error_restore_failed">復元に失敗しました</string>
+    <string name="trash_retention_hint">項目は %1$d 日後に完全に削除されます。</string>
+    <string name="trash_item_meta">削除済み %1$s · %2$d ページ · %3$s</string>
+    <string name="trash_confirm_purge_title">完全に削除しますか？</string>
+    <string name="trash_confirm_purge_message">PDF ファイルとサムネイルを含む %1$d 件の項目を完全に削除します。</string>
+    <string name="trash_confirm_empty_title">ゴミ箱を空にしますか？</string>
+    <string name="trash_confirm_empty_message">ゴミ箱内のすべての項目が、PDF ファイルとサムネイルを含めて完全に削除されます。</string>
+    <string name="trash_empty_title">ゴミ箱は空です</string>
+    <string name="trash_empty_body">削除した文書は 30 日間ここに表示されます。</string>
+    <string name="privacy_keyword_6">ゴミ箱</string>
+    <string name="privacy_point_6">文書を削除すると、まずアプリ内のローカルのゴミ箱に最大 30 日間残ります。完全に削除するかゴミ箱を空にすると、それより早く削除されます。</string>
+    <plurals name="trash_moved">
+        <item quantity="one">%1$d 件の文書をゴミ箱に移動しました</item>
+        <item quantity="other">%1$d 件の文書をゴミ箱に移動しました</item>
+    </plurals>
+    <plurals name="trash_restored">
+        <item quantity="one">%1$d 件の文書を復元しました</item>
+        <item quantity="other">%1$d 件の文書を復元しました</item>
+    </plurals>
+    <plurals name="trash_purged">
+        <item quantity="one">%1$d 件の文書を完全に削除しました</item>
+        <item quantity="other">%1$d 件の文書を完全に削除しました</item>
+    </plurals>
+    <plurals name="trash_days_remaining">
+        <item quantity="one">%1$d 日後に完全に削除</item>
+        <item quantity="other">%1$d 日後に完全に削除</item>
+    </plurals>
+</resources>

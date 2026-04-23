@@ -9,10 +9,17 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ScanDao {
-    @Query("SELECT * FROM scan_records ORDER BY timestamp DESC")
+    @Query("SELECT * FROM scan_records WHERE deleted_at IS NULL ORDER BY timestamp DESC")
     fun getAllScans(): Flow<List<ScanRecord>>
 
-    @Query("SELECT * FROM scan_records WHERE id IN (SELECT docid FROM scan_records_fts WHERE scan_records_fts MATCH :query) ORDER BY timestamp DESC")
+    @Query(
+        """
+        SELECT * FROM scan_records
+        WHERE deleted_at IS NULL
+          AND id IN (SELECT docid FROM scan_records_fts WHERE scan_records_fts MATCH :query)
+        ORDER BY timestamp DESC
+        """
+    )
     fun searchScansFlow(query: String): Flow<List<ScanRecord>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -21,6 +21,9 @@ import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
+import info.meuse24.pdf_scanner.domain.usecase.RestoreMissingFileException
+import info.meuse24.pdf_scanner.domain.usecase.RestoreScansUseCase
+import info.meuse24.pdf_scanner.domain.usecase.TrashScansUseCase
 import info.meuse24.pdf_scanner.ui.ocr.OCR_LANGUAGE_AUTO
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
@@ -57,7 +60,8 @@ class HomeViewModel @Inject constructor(
     private val importFileUseCase:   ImportFileUseCase,
     private val exportScanUseCase:   ExportScanUseCase,
     private val exportAsJpgUseCase:  ExportAsJpgUseCase,
-    private val deleteScansUseCase:  DeleteScansUseCase,
+    private val trashScansUseCase:   TrashScansUseCase,
+    private val restoreScansUseCase: RestoreScansUseCase,
     private val extractTextUseCase:  ExtractTextUseCase,
     private val makeSearchableWorkflow: MakeSearchableWorkflow,
     private val mergePdfsWorkflow:   MergePdfsWorkflow,
@@ -96,6 +100,12 @@ class HomeViewModel @Inject constructor(
 
     private val _success = MutableStateFlow<String?>(null)
     val success: StateFlow<String?> = _success.asStateFlow()
+
+    private val _trashMessage = MutableStateFlow<String?>(null)
+    val trashMessage: StateFlow<String?> = _trashMessage.asStateFlow()
+
+    private val _lastTrashed = MutableStateFlow<List<Long>>(emptyList())
+    val lastTrashed: StateFlow<List<Long>> = _lastTrashed.asStateFlow()
 
     private val _ocrText = MutableStateFlow<String?>(null)
     val ocrText: StateFlow<String?> = _ocrText.asStateFlow()
@@ -189,8 +199,40 @@ class HomeViewModel @Inject constructor(
 
     fun deleteScans(records: List<ScanRecord>) {
         viewModelScope.launch(dispatcherProvider.io) {
-            val allDeleted = deleteScansUseCase(records)
-            if (!allDeleted) _error.value = resourceProvider.getString(R.string.error_delete_failed)
+            try {
+                val ids = trashScansUseCase(records)
+                if (ids.isNotEmpty()) {
+                    _lastTrashed.value = ids
+                    _trashMessage.value = resourceProvider.getQuantityString(
+                        R.plurals.trash_moved,
+                        ids.size,
+                        ids.size
+                    )
+                }
+            } catch (_: Exception) {
+                _error.value = resourceProvider.getString(R.string.error_delete_failed)
+            }
+        }
+    }
+
+    fun restoreLastTrashed() {
+        val ids = _lastTrashed.value
+        if (ids.isEmpty()) return
+        viewModelScope.launch(dispatcherProvider.io) {
+            try {
+                restoreScansUseCase(ids)
+                _success.value = resourceProvider.getQuantityString(
+                    R.plurals.trash_restored,
+                    ids.size,
+                    ids.size
+                )
+            } catch (_: RestoreMissingFileException) {
+                _error.value = resourceProvider.getString(R.string.error_restore_missing_file)
+            } catch (_: Exception) {
+                _error.value = resourceProvider.getString(R.string.error_restore_failed)
+            } finally {
+                _lastTrashed.value = emptyList()
+            }
         }
     }
 
@@ -358,6 +400,7 @@ class HomeViewModel @Inject constructor(
     fun reportError(message: String) { _error.value = message }
     fun clearError() { _error.value = null }
     fun clearSuccess() { _success.value = null }
+    fun clearTrashMessage() { _trashMessage.value = null }
 
     private fun sanitizeFtsQuery(raw: String): String {
         return raw.trim()

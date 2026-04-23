@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_trash">Корзина</string>
+    <string name="action_undo">Отменить</string>
+    <string name="action_more">Дополнительные параметры</string>
+    <string name="action_move_to_trash">Переместить в корзину</string>
+    <string name="action_restore">Восстановить</string>
+    <string name="action_delete_forever">Удалить навсегда</string>
+    <string name="action_empty_trash">Очистить корзину</string>
+    <string name="confirm_trash_title">Переместить в корзину?</string>
+    <string name="confirm_trash_single">Переместить %1$s в корзину?</string>
+    <string name="confirm_trash_multi">Переместить %1$d документов в корзину?</string>
+    <string name="error_restore_missing_file">PDF-файл отсутствует и не может быть восстановлен.</string>
+    <string name="error_restore_failed">Не удалось восстановить</string>
+    <string name="trash_retention_hint">Элементы удаляются навсегда через %1$d дней.</string>
+    <string name="trash_item_meta">Удалено %1$s · %2$d стр. · %3$s</string>
+    <string name="trash_confirm_purge_title">Удалить навсегда?</string>
+    <string name="trash_confirm_purge_message">Это навсегда удалит %1$d элемент(ов), включая PDF-файлы и миниатюры.</string>
+    <string name="trash_confirm_empty_title">Очистить корзину?</string>
+    <string name="trash_confirm_empty_message">Все элементы в корзине будут удалены навсегда, включая PDF-файлы и миниатюры.</string>
+    <string name="trash_empty_title">Корзина пуста</string>
+    <string name="trash_empty_body">Удаленные документы будут отображаться здесь 30 дней.</string>
+    <string name="privacy_keyword_6">Корзина</string>
+    <string name="privacy_point_6">Когда вы удаляете документ, он сначала хранится локально в корзине приложения до 30 дней. Он удаляется раньше, если вы удалите его навсегда или очистите корзину.</string>
+    <plurals name="trash_moved">
+        <item quantity="one">%1$d документ перемещен в корзину</item>
+        <item quantity="few">%1$d документа перемещены в корзину</item>
+        <item quantity="many">%1$d документов перемещено в корзину</item>
+        <item quantity="other">%1$d документа перемещены в корзину</item>
+    </plurals>
+    <plurals name="trash_restored">
+        <item quantity="one">%1$d документ восстановлен</item>
+        <item quantity="few">%1$d документа восстановлены</item>
+        <item quantity="many">%1$d документов восстановлено</item>
+        <item quantity="other">%1$d документа восстановлены</item>
+    </plurals>
+    <plurals name="trash_purged">
+        <item quantity="one">%1$d документ удален навсегда</item>
+        <item quantity="few">%1$d документа удалены навсегда</item>
+        <item quantity="many">%1$d документов удалено навсегда</item>
+        <item quantity="other">%1$d документа удалены навсегда</item>
+    </plurals>
+    <plurals name="trash_days_remaining">
+        <item quantity="one">Окончательное удаление через %1$d день</item>
+        <item quantity="few">Окончательное удаление через %1$d дня</item>
+        <item quantity="many">Окончательное удаление через %1$d дней</item>
+        <item quantity="other">Окончательное удаление через %1$d дня</item>
+    </plurals>
+</resources>

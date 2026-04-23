@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_trash">Trash</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_more">More options</string>
+    <string name="action_move_to_trash">Move to trash</string>
+    <string name="action_restore">Restore</string>
+    <string name="action_delete_forever">Delete permanently</string>
+    <string name="action_empty_trash">Empty trash</string>
+    <string name="confirm_trash_title">Move to trash?</string>
+    <string name="confirm_trash_single">Move %1$s to trash?</string>
+    <string name="confirm_trash_multi">Move %1$d documents to trash?</string>
+    <string name="error_restore_missing_file">The PDF file is missing and cannot be restored.</string>
+    <string name="error_restore_failed">Restore failed</string>
+    <string name="trash_retention_hint">Items are permanently deleted after %1$d days.</string>
+    <string name="trash_item_meta">Deleted %1$s · %2$d p. · %3$s</string>
+    <string name="trash_confirm_purge_title">Delete permanently?</string>
+    <string name="trash_confirm_purge_message">This permanently deletes %1$d item(s), including PDF files and thumbnails.</string>
+    <string name="trash_confirm_empty_title">Empty trash?</string>
+    <string name="trash_confirm_empty_message">All items in trash will be permanently deleted, including PDF files and thumbnails.</string>
+    <string name="trash_empty_title">Trash is empty</string>
+    <string name="trash_empty_body">Deleted documents will appear here for 30 days.</string>
+    <string name="privacy_keyword_6">Trash</string>
+    <string name="privacy_point_6">When you delete a document, it first stays locally in the app trash for up to 30 days. It is removed earlier if you delete it permanently or empty the trash.</string>
+    <plurals name="trash_moved">
+        <item quantity="one">%1$d document moved to trash</item>
+        <item quantity="other">%1$d documents moved to trash</item>
+    </plurals>
+    <plurals name="trash_restored">
+        <item quantity="one">%1$d document restored</item>
+        <item quantity="other">%1$d documents restored</item>
+    </plurals>
+    <plurals name="trash_purged">
+        <item quantity="one">%1$d document permanently deleted</item>
+        <item quantity="other">%1$d documents permanently deleted</item>
+    </plurals>
+    <plurals name="trash_days_remaining">
+        <item quantity="one">Permanently deleted in %1$d day</item>
+        <item quantity="other">Permanently deleted in %1$d days</item>
+    </plurals>
+</resources>

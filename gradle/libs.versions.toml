@@ -50,6 +50,7 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 document-scanner = { group = "com.google.android.gms", name = "play-services-mlkit-document-scanner", version.ref = "documentScanner" }
 mlkit-text-recognition  = { group = "com.google.mlkit",              name = "text-recognition",                               version.ref = "mlkitTextRecognition" }
 mlkit-text-chinese      = { group = "com.google.android.gms",        name = "play-services-mlkit-text-recognition-chinese",    version.ref = "mlkitTextChinese" }

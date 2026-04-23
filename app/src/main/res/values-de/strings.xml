@@ -105,7 +105,7 @@
     <string name="help_item_merge">Wähle mindestens zwei PDFs aus und tippe auf Zusammenführen, um daraus ein neues Dokument zu erstellen.</string>
     <string name="help_item_split">Öffne das Dreipunkt-Menü eines mehrseitigen PDFs und wähle Seiten aufteilen, um an markierten Trennpunkten mehrere PDFs zu erzeugen.</string>
     <string name="help_item_reorder">Öffne das Dreipunkt-Menü und wähle Seiten neu anordnen, um Seiten per Drag and Drop oder mit den Auf- und Ab-Tasten umzulegen.</string>
-    <string name="help_item_delete">Mit Löschen entfernst du ausgewählte PDFs aus der Ablage. Die App löscht dabei auch die gespeicherte Datei und das Thumbnail.</string>
+    <string name="help_item_delete">Mit Löschen verschiebst du ausgewählte PDFs in den Papierkorb. Dort kannst du sie 30 Tage lang wiederherstellen oder endgültig löschen.</string>
     <string name="help_section_ocr">OCR und Textextraktion</string>
     <string name="help_item_extract_text">Textextraktion (OCR) liest alle Seiten und zeigt den erkannten Text in einem Bereich an, aus dem du ihn kopieren oder teilen kannst.</string>
     <string name="help_item_make_searchable">Durchsuchbar machen ergänzt eine unsichtbare Textebene im PDF, speichert den erkannten OCR-Text lokal für die Suche in der Ablage.</string>
@@ -146,7 +146,7 @@
     <string name="privacy_point_2">Dokumente oder Inhalte werden nicht automatisch hochgeladen. Teilen, Drucken oder Exportieren erfolgt nur, wenn Sie es ausdrücklich auslösen. Sicheres Schwärzen erzeugt eine neue Kopie; das Original bleibt erhalten, bis Sie es löschen.</string>
     <string name="privacy_point_3">Scan- und OCR-Funktionen nutzen Google Play Services. Für die Fehleranalyse können technische Diagnosedaten übertragen werden. Der automatische Modus verwendet ein integriertes Lateinerkenner-Modell, das offline funktioniert. Die Sprachmodelle für Hindi, Chinesisch, Japanisch und Koreanisch können beim ersten manuellen Einsatz über Play Services geladen werden; Dokumentinhalte werden von der App nicht gesendet.</string>
     <string name="privacy_point_4">Die App selbst erhebt keine personenbezogenen Daten, nutzt kein eigenes Analytics-System und fordert keine eigene Netzwerkberechtigung an.</string>
-    <string name="privacy_footer">Stand: 29. März 2026</string>
+    <string name="privacy_footer">Stand: 23. April 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Text extrahieren</string>

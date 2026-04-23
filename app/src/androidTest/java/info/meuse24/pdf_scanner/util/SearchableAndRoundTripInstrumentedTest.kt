@@ -53,7 +53,12 @@ class SearchableAndRoundTripInstrumentedTest {
     private val ocrPipeline = OcrPipeline(ocrManager, ocrModelInstaller)
     private val textRecognizerRunner = MlKitTextRecognizerRunner()
     private val pdfEditor = PdfEditor()
-    private val searchablePdfBuilder = SearchablePdfBuilder(ocrPipeline, textRecognizerRunner, DefaultDispatcherProvider())
+    private val searchablePdfBuilder = SearchablePdfBuilder(
+        context,
+        ocrPipeline,
+        textRecognizerRunner,
+        DefaultDispatcherProvider()
+    )
     private val scansDir: File
         get() = storageProvider.scansDir()
 

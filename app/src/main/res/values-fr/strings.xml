@@ -103,7 +103,7 @@
     <string name="help_item_merge">Sélectionne au moins deux PDF puis appuie sur Fusionner pour les combiner dans un nouveau document.</string>
     <string name="help_item_split">Ouvre le menu à trois points d\'un PDF de plusieurs pages et choisis Fractionner les pages pour créer plusieurs PDF aux points sélectionnés.</string>
     <string name="help_item_reorder">Ouvre le menu à trois points et choisis Réorganiser les pages pour changer l\'ordre par glisser-déposer ou avec les boutons haut et bas.</string>
-    <string name="help_item_delete">Utilise Supprimer pour retirer des PDF sélectionnés des archives. L\'application supprime aussi le fichier enregistré et la miniature.</string>
+    <string name="help_item_delete">Utilise Supprimer pour déplacer les PDF sélectionnés vers la corbeille. Ils peuvent être restaurés pendant 30 jours ou supprimés définitivement depuis la corbeille.</string>
     <string name="help_section_ocr">OCR et extraction de texte</string>
     <string name="help_item_extract_text">L\'extraction de texte (OCR) lit toutes les pages et affiche le texte reconnu dans un panneau où tu peux le copier ou le partager.</string>
     <string name="help_item_make_searchable">Rendre consultable ajoute une couche de texte invisible au PDF, enregistre localement le texte OCR extrait pour la recherche dans l’archive.</string>
@@ -144,7 +144,7 @@
     <string name="privacy_point_2">Aucun document ni contenu n’est téléversé automatiquement. Le partage ou l’export n’ont lieu que lorsque vous les déclenchez explicitement. Le caviardage sécurisé crée une nouvelle copie ; l’original reste présent jusqu’à sa suppression.</string>
     <string name="privacy_point_3">Les fonctions de numérisation et d’OCR utilisent Google Play Services. Des données techniques de diagnostic peuvent être transmises pour l’analyse d’erreurs. Le mode automatique utilise un reconnaisseur de texte latin intégré fonctionnant hors ligne. Les modèles de langue pour le hindi, le chinois, le japonais et le coréen peuvent être récupérés via Play Services lors de la première utilisation manuelle ; le contenu de vos documents n\’est pas envoyé par cette app.</string>
     <string name="privacy_point_4">L’app ne collecte aucune donnée personnelle, n’utilise pas d’analytique propre et ne demande pas sa propre autorisation réseau.</string>
-    <string name="privacy_footer">Mise à jour : 29 mars 2026</string>
+    <string name="privacy_footer">Mise à jour : 23 avril 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Extraire le texte</string>

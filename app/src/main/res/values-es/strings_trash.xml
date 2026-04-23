@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_trash">Papelera</string>
+    <string name="action_undo">Deshacer</string>
+    <string name="action_more">Más opciones</string>
+    <string name="action_move_to_trash">Mover a la papelera</string>
+    <string name="action_restore">Restaurar</string>
+    <string name="action_delete_forever">Eliminar definitivamente</string>
+    <string name="action_empty_trash">Vaciar papelera</string>
+    <string name="confirm_trash_title">¿Mover a la papelera?</string>
+    <string name="confirm_trash_single">¿Mover %1$s a la papelera?</string>
+    <string name="confirm_trash_multi">¿Mover %1$d documentos a la papelera?</string>
+    <string name="error_restore_missing_file">Falta el archivo PDF y no se puede restaurar.</string>
+    <string name="error_restore_failed">No se pudo restaurar</string>
+    <string name="trash_retention_hint">Los elementos se eliminan definitivamente después de %1$d días.</string>
+    <string name="trash_item_meta">Eliminado %1$s · %2$d pág. · %3$s</string>
+    <string name="trash_confirm_purge_title">¿Eliminar definitivamente?</string>
+    <string name="trash_confirm_purge_message">Esto elimina definitivamente %1$d elemento(s), incluidos los PDF y miniaturas.</string>
+    <string name="trash_confirm_empty_title">¿Vaciar papelera?</string>
+    <string name="trash_confirm_empty_message">Todos los elementos de la papelera se eliminarán definitivamente, incluidos los PDF y miniaturas.</string>
+    <string name="trash_empty_title">La papelera está vacía</string>
+    <string name="trash_empty_body">Los documentos eliminados aparecerán aquí durante 30 días.</string>
+    <string name="privacy_keyword_6">Papelera</string>
+    <string name="privacy_point_6">Cuando eliminas un documento, primero permanece localmente en la papelera de la app hasta 30 días. Se elimina antes si lo borras definitivamente o vacías la papelera.</string>
+    <plurals name="trash_moved">
+        <item quantity="one">%1$d documento movido a la papelera</item>
+        <item quantity="other">%1$d documentos movidos a la papelera</item>
+    </plurals>
+    <plurals name="trash_restored">
+        <item quantity="one">%1$d documento restaurado</item>
+        <item quantity="other">%1$d documentos restaurados</item>
+    </plurals>
+    <plurals name="trash_purged">
+        <item quantity="one">%1$d documento eliminado definitivamente</item>
+        <item quantity="other">%1$d documentos eliminados definitivamente</item>
+    </plurals>
+    <plurals name="trash_days_remaining">
+        <item quantity="one">Eliminación definitiva en %1$d día</item>
+        <item quantity="other">Eliminación definitiva en %1$d días</item>
+    </plurals>
+</resources>

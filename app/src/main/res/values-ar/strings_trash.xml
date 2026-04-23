@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_trash">سلة المهملات</string>
+    <string name="action_undo">تراجع</string>
+    <string name="action_more">خيارات إضافية</string>
+    <string name="action_move_to_trash">نقل إلى سلة المهملات</string>
+    <string name="action_restore">استعادة</string>
+    <string name="action_delete_forever">حذف نهائي</string>
+    <string name="action_empty_trash">إفراغ سلة المهملات</string>
+    <string name="confirm_trash_title">نقل إلى سلة المهملات؟</string>
+    <string name="confirm_trash_single">نقل %1$s إلى سلة المهملات؟</string>
+    <string name="confirm_trash_multi">نقل %1$d مستندات إلى سلة المهملات؟</string>
+    <string name="error_restore_missing_file">ملف PDF مفقود ولا يمكن استعادته.</string>
+    <string name="error_restore_failed">فشلت الاستعادة</string>
+    <string name="trash_retention_hint">يتم حذف العناصر نهائيًا بعد %1$d يومًا.</string>
+    <string name="trash_item_meta">تم الحذف %1$s · %2$d صفحة · %3$s</string>
+    <string name="trash_confirm_purge_title">حذف نهائي؟</string>
+    <string name="trash_confirm_purge_message">سيؤدي ذلك إلى حذف %1$d عنصر/عناصر نهائيًا، بما في ذلك ملفات PDF والصور المصغرة.</string>
+    <string name="trash_confirm_empty_title">إفراغ سلة المهملات؟</string>
+    <string name="trash_confirm_empty_message">سيتم حذف كل العناصر في سلة المهملات نهائيًا، بما في ذلك ملفات PDF والصور المصغرة.</string>
+    <string name="trash_empty_title">سلة المهملات فارغة</string>
+    <string name="trash_empty_body">ستظهر المستندات المحذوفة هنا لمدة 30 يومًا.</string>
+    <string name="privacy_keyword_6">سلة المهملات</string>
+    <string name="privacy_point_6">عند حذف مستند، يبقى أولًا محليًا في سلة مهملات التطبيق لمدة تصل إلى 30 يومًا. تتم إزالته قبل ذلك إذا حذفته نهائيًا أو أفرغت سلة المهملات.</string>
+    <plurals name="trash_moved">
+        <item quantity="zero">لم يتم نقل أي مستند إلى سلة المهملات</item>
+        <item quantity="one">تم نقل مستند واحد إلى سلة المهملات</item>
+        <item quantity="two">تم نقل مستندين إلى سلة المهملات</item>
+        <item quantity="few">تم نقل %1$d مستندات إلى سلة المهملات</item>
+        <item quantity="many">تم نقل %1$d مستندًا إلى سلة المهملات</item>
+        <item quantity="other">تم نقل %1$d مستندات إلى سلة المهملات</item>
+    </plurals>
+    <plurals name="trash_restored">
+        <item quantity="zero">لم تتم استعادة أي مستند</item>
+        <item quantity="one">تمت استعادة مستند واحد</item>
+        <item quantity="two">تمت استعادة مستندين</item>
+        <item quantity="few">تمت استعادة %1$d مستندات</item>
+        <item quantity="many">تمت استعادة %1$d مستندًا</item>
+        <item quantity="other">تمت استعادة %1$d مستندات</item>
+    </plurals>
+    <plurals name="trash_purged">
+        <item quantity="zero">لم يتم حذف أي مستند نهائيًا</item>
+        <item quantity="one">تم حذف مستند واحد نهائيًا</item>
+        <item quantity="two">تم حذف مستندين نهائيًا</item>
+        <item quantity="few">تم حذف %1$d مستندات نهائيًا</item>
+        <item quantity="many">تم حذف %1$d مستندًا نهائيًا</item>
+        <item quantity="other">تم حذف %1$d مستندات نهائيًا</item>
+    </plurals>
+    <plurals name="trash_days_remaining">
+        <item quantity="zero">حذف نهائي اليوم</item>
+        <item quantity="one">حذف نهائي خلال يوم واحد</item>
+        <item quantity="two">حذف نهائي خلال يومين</item>
+        <item quantity="few">حذف نهائي خلال %1$d أيام</item>
+        <item quantity="many">حذف نهائي خلال %1$d يومًا</item>
+        <item quantity="other">حذف نهائي خلال %1$d أيام</item>
+    </plurals>
+</resources>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_trash">ट्रैश</string>
+    <string name="action_undo">पूर्ववत करें</string>
+    <string name="action_more">और विकल्प</string>
+    <string name="action_move_to_trash">ट्रैश में ले जाएं</string>
+    <string name="action_restore">बहाल करें</string>
+    <string name="action_delete_forever">स्थायी रूप से हटाएं</string>
+    <string name="action_empty_trash">ट्रैश खाली करें</string>
+    <string name="confirm_trash_title">ट्रैश में ले जाएं?</string>
+    <string name="confirm_trash_single">%1$s को ट्रैश में ले जाएं?</string>
+    <string name="confirm_trash_multi">%1$d दस्तावेज़ों को ट्रैश में ले जाएं?</string>
+    <string name="error_restore_missing_file">PDF फ़ाइल उपलब्ध नहीं है और बहाल नहीं की जा सकती।</string>
+    <string name="error_restore_failed">बहाल नहीं हो सका</string>
+    <string name="trash_retention_hint">आइटम %1$d दिनों के बाद स्थायी रूप से हटाए जाते हैं।</string>
+    <string name="trash_item_meta">हटाया गया %1$s · %2$d पेज · %3$s</string>
+    <string name="trash_confirm_purge_title">स्थायी रूप से हटाएं?</string>
+    <string name="trash_confirm_purge_message">यह %1$d आइटम को PDF फ़ाइलों और थंबनेल सहित स्थायी रूप से हटा देगा।</string>
+    <string name="trash_confirm_empty_title">ट्रैश खाली करें?</string>
+    <string name="trash_confirm_empty_message">ट्रैश के सभी आइटम PDF फ़ाइलों और थंबनेल सहित स्थायी रूप से हटा दिए जाएंगे।</string>
+    <string name="trash_empty_title">ट्रैश खाली है</string>
+    <string name="trash_empty_body">हटाए गए दस्तावेज़ 30 दिनों तक यहां दिखाई देंगे।</string>
+    <string name="privacy_keyword_6">ट्रैश</string>
+    <string name="privacy_point_6">जब आप कोई दस्तावेज़ हटाते हैं, तो वह पहले ऐप के स्थानीय ट्रैश में 30 दिनों तक रहता है। यदि आप उसे स्थायी रूप से हटाते हैं या ट्रैश खाली करते हैं, तो वह पहले ही हटा दिया जाता है।</string>
+    <plurals name="trash_moved">
+        <item quantity="one">%1$d दस्तावेज़ ट्रैश में ले जाया गया</item>
+        <item quantity="other">%1$d दस्तावेज़ ट्रैश में ले जाए गए</item>
+    </plurals>
+    <plurals name="trash_restored">
+        <item quantity="one">%1$d दस्तावेज़ बहाल किया गया</item>
+        <item quantity="other">%1$d दस्तावेज़ बहाल किए गए</item>
+    </plurals>
+    <plurals name="trash_purged">
+        <item quantity="one">%1$d दस्तावेज़ स्थायी रूप से हटाया गया</item>
+        <item quantity="other">%1$d दस्तावेज़ स्थायी रूप से हटाए गए</item>
+    </plurals>
+    <plurals name="trash_days_remaining">
+        <item quantity="one">%1$d दिन में स्थायी रूप से हटेगा</item>
+        <item quantity="other">%1$d दिनों में स्थायी रूप से हटेगा</item>
+    </plurals>
+</resources>

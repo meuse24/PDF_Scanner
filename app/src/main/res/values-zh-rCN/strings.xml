@@ -103,7 +103,7 @@
     <string name="help_item_merge">至少选择两个 PDF，然后点击合并，将它们组合成一个新文档。</string>
     <string name="help_item_split">打开多页 PDF 的三点菜单并选择分割页面，即可在选定分割点生成多个 PDF。</string>
     <string name="help_item_reorder">打开三点菜单并选择重新排列页面，即可通过拖放或上下按钮调整顺序。</string>
-    <string name="help_item_delete">使用删除可将选中的 PDF 从文件库中移除。应用也会删除已保存的文件和缩略图。</string>
+    <string name="help_item_delete">使用删除可将选中的 PDF 移到回收站。30 天内可以恢复，也可以在回收站中永久删除。</string>
     <string name="help_section_ocr">OCR 与文本提取</string>
     <string name="help_item_extract_text">文本提取（OCR）会读取全部页面，并在面板中显示识别出的文本，你可以复制或分享这些内容。</string>
     <string name="help_item_make_searchable">设为可搜索会为 PDF 添加不可见文本层，将提取出的 OCR 文本本地保存用于档案搜索。</string>
@@ -144,7 +144,7 @@
     <string name="privacy_point_2">不会自动上传任何文档或内容。只有在您明确触发时才会进行分享或导出。安全遮蔽会创建一份新副本；原始文件会一直保留，直到您删除它。</string>
     <string name="privacy_point_3">扫描和 OCR 功能使用 Google Play 服务。为进行错误分析，可能会传输技术诊断数据。自动模式使用内置的拉丁文字识别器，可离线工作。印地语、中文、日语和韩语的语言模型可能会在首次手动使用时通过 Play Services 获取；本应用不会发送您的文档内容。</string>
     <string name="privacy_point_4">应用本身不收集个人数据，不使用自有分析服务，也不请求自有网络权限。</string>
-    <string name="privacy_footer">更新时间：2026年3月29日</string>
+    <string name="privacy_footer">更新时间：2026年4月23日</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">提取文本</string>

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
@@ -97,6 +98,7 @@ import info.meuse24.pdf_scanner.ui.settings.SettingsScreen
 import info.meuse24.pdf_scanner.ui.settings.SettingsViewModel
 import info.meuse24.pdf_scanner.ui.split.SplitScreen
 import info.meuse24.pdf_scanner.ui.theme.ThemeMode
+import info.meuse24.pdf_scanner.ui.trash.TrashScreen
 import info.meuse24.pdf_scanner.ui.viewer.PdfViewerScreen
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -123,6 +125,7 @@ fun AppNavigation(
 
     // Drawer-Geste nur auf Top-Level-Screens erlauben
     val drawerGesturesEnabled = currentRoute == Screen.Ablage.route
+        || currentRoute == Screen.Trash.route
         || currentRoute == Screen.Settings.route
         || currentRoute == Screen.Help.route
         || currentRoute == Screen.Info.route
@@ -176,6 +179,18 @@ fun AppNavigation(
                 ) {
                     navController.navigate(Screen.Ablage.route) {
                         popUpTo(Screen.Ablage.route) { inclusive = true }
+                    }
+                    closeDrawer()
+                }
+
+                DrawerItem(
+                    icon     = Icons.Default.Delete,
+                    label    = stringResource(R.string.nav_trash),
+                    selected = currentRoute == Screen.Trash.route
+                ) {
+                    navController.navigate(Screen.Trash.route) {
+                        popUpTo(Screen.Ablage.route)
+                        launchSingleTop = true
                     }
                     closeDrawer()
                 }
@@ -323,6 +338,7 @@ fun AppNavigation(
                         )
                     }
                     composable(Screen.Help.route)    { HelpScreen() }
+                    composable(Screen.Trash.route)   { TrashScreen() }
                     composable(Screen.Settings.route) {
                         val settingsViewModel: SettingsViewModel = hiltViewModel()
                         val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
@@ -547,6 +563,7 @@ private fun AppBarTitle(
     Text(
         text = when {
             currentRoute == Screen.Help.route -> stringResource(R.string.nav_help)
+            currentRoute == Screen.Trash.route -> stringResource(R.string.nav_trash)
             currentRoute == Screen.Settings.route -> stringResource(R.string.nav_settings)
             currentRoute == Screen.Info.route -> stringResource(R.string.nav_info)
             currentRoute == Screen.Privacy.route -> stringResource(R.string.nav_privacy)

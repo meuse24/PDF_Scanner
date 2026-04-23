@@ -33,11 +33,11 @@ internal fun HomeDeleteDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.confirm_delete_title)) },
-        text = { Text(stringResource(R.string.confirm_delete_single, record.filename)) },
+        title = { Text(stringResource(R.string.confirm_trash_title)) },
+        text = { Text(stringResource(R.string.confirm_trash_single, record.filename)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.cd_delete), color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.action_move_to_trash))
             }
         },
         dismissButton = {
@@ -54,11 +54,11 @@ internal fun HomeBulkDeleteDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.confirm_delete_title)) },
-        text = { Text(stringResource(R.string.confirm_delete_multi, selectedCount)) },
+        title = { Text(stringResource(R.string.confirm_trash_title)) },
+        text = { Text(stringResource(R.string.confirm_trash_multi, selectedCount)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.cd_delete), color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.action_move_to_trash))
             }
         },
         dismissButton = {

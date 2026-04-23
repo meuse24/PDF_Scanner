@@ -1,6 +1,6 @@
 # Datenschutzerklaerung fuer PDF Scanner
 
-Stand: 21. Maerz 2026
+Stand: 23. April 2026
 
 Diese Datenschutzerklaerung gilt fuer die Android-App **PDF Scanner** mit dem Paketnamen `info.meuse24.pdf_scanner`.
 
@@ -69,7 +69,7 @@ Ab diesem Zeitpunkt richtet sich die weitere Verarbeitung nach der Datenschutzer
 
 ## 7. Speicherdauer
 
-Lokal gespeicherte Scans, Vorschaubilder und Metadaten bleiben auf dem Geraet, bis sie durch den Nutzer in der App geloescht oder die App deinstalliert wird. Exportierte oder geteilte Kopien koennen ausserhalb der App weiter bestehen.
+Lokal gespeicherte Scans, Vorschaubilder und Metadaten bleiben auf dem Geraet, bis sie durch den Nutzer in der App geloescht oder die App deinstalliert wird. Beim Loeschen in der App werden Dokumente zunaechst lokal in den Papierkorb verschoben und dort bis zu 30 Tage aufbewahrt. Sie werden frueher entfernt, wenn der Nutzer sie endgueltig loescht oder den Papierkorb leert. Exportierte oder geteilte Kopien koennen ausserhalb der App weiter bestehen.
 
 ## 8. Rechtsgrundlagen nach DSGVO
 

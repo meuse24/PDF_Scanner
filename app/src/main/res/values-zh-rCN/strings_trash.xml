@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_trash">回收站</string>
+    <string name="action_undo">撤销</string>
+    <string name="action_more">更多选项</string>
+    <string name="action_move_to_trash">移到回收站</string>
+    <string name="action_restore">恢复</string>
+    <string name="action_delete_forever">永久删除</string>
+    <string name="action_empty_trash">清空回收站</string>
+    <string name="confirm_trash_title">移到回收站？</string>
+    <string name="confirm_trash_single">将 %1$s 移到回收站？</string>
+    <string name="confirm_trash_multi">将 %1$d 个文档移到回收站？</string>
+    <string name="error_restore_missing_file">PDF 文件缺失，无法恢复。</string>
+    <string name="error_restore_failed">恢复失败</string>
+    <string name="trash_retention_hint">项目将在 %1$d 天后永久删除。</string>
+    <string name="trash_item_meta">已删除 %1$s · %2$d 页 · %3$s</string>
+    <string name="trash_confirm_purge_title">永久删除？</string>
+    <string name="trash_confirm_purge_message">这会永久删除 %1$d 个项目，包括 PDF 文件和缩略图。</string>
+    <string name="trash_confirm_empty_title">清空回收站？</string>
+    <string name="trash_confirm_empty_message">回收站中的所有项目都将永久删除，包括 PDF 文件和缩略图。</string>
+    <string name="trash_empty_title">回收站为空</string>
+    <string name="trash_empty_body">已删除的文档会在这里保留 30 天。</string>
+    <string name="privacy_keyword_6">回收站</string>
+    <string name="privacy_point_6">删除文档后，它会先在应用的本地回收站中保留最多 30 天。如果你永久删除或清空回收站，它会更早被移除。</string>
+    <plurals name="trash_moved">
+        <item quantity="one">已将 %1$d 个文档移到回收站</item>
+        <item quantity="other">已将 %1$d 个文档移到回收站</item>
+    </plurals>
+    <plurals name="trash_restored">
+        <item quantity="one">已恢复 %1$d 个文档</item>
+        <item quantity="other">已恢复 %1$d 个文档</item>
+    </plurals>
+    <plurals name="trash_purged">
+        <item quantity="one">已永久删除 %1$d 个文档</item>
+        <item quantity="other">已永久删除 %1$d 个文档</item>
+    </plurals>
+    <plurals name="trash_days_remaining">
+        <item quantity="one">%1$d 天后永久删除</item>
+        <item quantity="other">%1$d 天后永久删除</item>
+    </plurals>
+</resources>

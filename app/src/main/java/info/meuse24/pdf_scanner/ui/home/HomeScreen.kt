@@ -52,6 +52,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -147,6 +151,8 @@ fun HomeScreen(
     val sortOrder      by viewModel.sortOrder.collectAsStateWithLifecycle()
     val error          by viewModel.error.collectAsStateWithLifecycle()
     val success        by viewModel.success.collectAsStateWithLifecycle()
+    val trashMessage   by viewModel.trashMessage.collectAsStateWithLifecycle()
+    val lastTrashed    by viewModel.lastTrashed.collectAsStateWithLifecycle()
     val ocrText        by viewModel.ocrText.collectAsStateWithLifecycle()
     val ocrLoading     by viewModel.ocrLoading.collectAsStateWithLifecycle()
     val ocrProgress    by viewModel.ocrProgress.collectAsStateWithLifecycle()
@@ -156,6 +162,7 @@ fun HomeScreen(
     val resources = LocalResources.current
     val clipboard = LocalClipboard.current
     val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     val haptic    = LocalHapticFeedback.current
     val errorDeviceUnsupported = stringResource(R.string.error_device_unsupported)
     val errorScannerUnavailable = stringResource(R.string.error_scanner_unavailable)
@@ -297,6 +304,19 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(trashMessage, lastTrashed) {
+        val msg = trashMessage ?: return@LaunchedEffect
+        val result = snackbarHostState.showSnackbar(
+            message = msg,
+            actionLabel = resources.getString(R.string.action_undo),
+            duration = SnackbarDuration.Short
+        )
+        if (result == SnackbarResult.ActionPerformed) {
+            viewModel.restoreLastTrashed()
+        }
+        viewModel.clearTrashMessage()
+    }
+
     // ── Scroll-Haptic-Tick ────────────────────────────────────────────────────
     val listState = rememberLazyListState()
     LaunchedEffect(listState) {
@@ -417,6 +437,13 @@ fun HomeScreen(
                 modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp, vertical = if (isSelectionMode) 84.dp else 16.dp)
+        )
     }
 
     // ── Einzellösch-Bestätigung ───────────────────────────────────────────────

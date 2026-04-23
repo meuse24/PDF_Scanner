@@ -8,12 +8,18 @@ import java.io.File
 
 class FakeResourceProvider(
     var strings: Map<Int, String> = emptyMap(),
+    var plurals: Map<Int, String> = emptyMap(),
     private val fallback: String = "stub"
 ) : ResourceProvider {
     override fun getString(resId: Int): String = strings[resId] ?: fallback
 
     override fun getString(resId: Int, vararg args: Any): String {
         val template = strings[resId] ?: fallback
+        return String.format(template, *args)
+    }
+
+    override fun getQuantityString(resId: Int, quantity: Int, vararg args: Any): String {
+        val template = plurals[resId] ?: strings[resId] ?: fallback
         return String.format(template, *args)
     }
 }

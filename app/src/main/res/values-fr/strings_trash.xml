@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_trash">Corbeille</string>
+    <string name="action_undo">Annuler</string>
+    <string name="action_more">Plus d’options</string>
+    <string name="action_move_to_trash">Déplacer vers la corbeille</string>
+    <string name="action_restore">Restaurer</string>
+    <string name="action_delete_forever">Supprimer définitivement</string>
+    <string name="action_empty_trash">Vider la corbeille</string>
+    <string name="confirm_trash_title">Déplacer vers la corbeille ?</string>
+    <string name="confirm_trash_single">Déplacer %1$s vers la corbeille ?</string>
+    <string name="confirm_trash_multi">Déplacer %1$d documents vers la corbeille ?</string>
+    <string name="error_restore_missing_file">Le fichier PDF est manquant et ne peut pas être restauré.</string>
+    <string name="error_restore_failed">La restauration a échoué</string>
+    <string name="trash_retention_hint">Les éléments sont supprimés définitivement après %1$d jours.</string>
+    <string name="trash_item_meta">Supprimé %1$s · %2$d p. · %3$s</string>
+    <string name="trash_confirm_purge_title">Supprimer définitivement ?</string>
+    <string name="trash_confirm_purge_message">Cela supprime définitivement %1$d élément(s), y compris les PDF et miniatures.</string>
+    <string name="trash_confirm_empty_title">Vider la corbeille ?</string>
+    <string name="trash_confirm_empty_message">Tous les éléments de la corbeille seront supprimés définitivement, y compris les PDF et miniatures.</string>
+    <string name="trash_empty_title">La corbeille est vide</string>
+    <string name="trash_empty_body">Les documents supprimés apparaîtront ici pendant 30 jours.</string>
+    <string name="privacy_keyword_6">Corbeille</string>
+    <string name="privacy_point_6">Lorsque vous supprimez un document, il reste d’abord localement dans la corbeille de l’app pendant 30 jours au maximum. Il est retiré plus tôt si vous le supprimez définitivement ou videz la corbeille.</string>
+    <plurals name="trash_moved">
+        <item quantity="one">%1$d document déplacé vers la corbeille</item>
+        <item quantity="other">%1$d documents déplacés vers la corbeille</item>
+    </plurals>
+    <plurals name="trash_restored">
+        <item quantity="one">%1$d document restauré</item>
+        <item quantity="other">%1$d documents restaurés</item>
+    </plurals>
+    <plurals name="trash_purged">
+        <item quantity="one">%1$d document supprimé définitivement</item>
+        <item quantity="other">%1$d documents supprimés définitivement</item>
+    </plurals>
+    <plurals name="trash_days_remaining">
+        <item quantity="one">Suppression définitive dans %1$d jour</item>
+        <item quantity="other">Suppression définitive dans %1$d jours</item>
+    </plurals>
+</resources>

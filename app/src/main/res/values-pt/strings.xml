@@ -103,7 +103,7 @@
     <string name="help_item_merge">Selecione pelo menos dois PDFs e toque em Mesclar para combiná-los em um novo documento.</string>
     <string name="help_item_split">Abra o menu de três pontos de um PDF com várias páginas e escolha Dividir páginas para criar vários PDFs nos pontos selecionados.</string>
     <string name="help_item_reorder">Abra o menu de três pontos e escolha Reordenar páginas para alterar a ordem por arrastar e soltar ou com os botões para cima e para baixo.</string>
-    <string name="help_item_delete">Use Excluir para remover PDFs selecionados do arquivo. O app também remove o arquivo salvo e a miniatura.</string>
+    <string name="help_item_delete">Use Excluir para mover PDFs selecionados para a lixeira. Eles podem ser restaurados por 30 dias ou excluídos permanentemente na Lixeira.</string>
     <string name="help_section_ocr">OCR e extração de texto</string>
     <string name="help_item_extract_text">A Extração de texto (OCR) lê todas as páginas e mostra o texto reconhecido em um painel onde você pode copiá-lo ou compartilhá-lo.</string>
     <string name="help_item_make_searchable">Tornar pesquisável adiciona uma camada de texto invisível ao PDF, guarda localmente o texto OCR extraído para pesquisa no arquivo.</string>
@@ -144,7 +144,7 @@
     <string name="privacy_point_2">Nenhum documento ou conteúdo é carregado automaticamente. Partilhar ou exportar só acontece quando o utilizador o desencadeia explicitamente. A redação segura cria uma nova cópia; o original permanece até ser eliminado.</string>
     <string name="privacy_point_3">As funções de digitalização e OCR utilizam os Google Play Services. Dados técnicos de diagnóstico podem ser transmitidos para análise de erros. O modo automático usa um reconhecedor de texto latino integrado que funciona offline. Os modelos de idioma para hindi, chinês, japonês e coreano podem ser obtidos via Play Services na primeira utilização manual; o conteúdo dos seus documentos não é enviado por esta app.</string>
     <string name="privacy_point_4">A app não recolhe dados pessoais, não usa analítica própria e não solicita a sua própria permissão de rede.</string>
-    <string name="privacy_footer">Atualizado: 29 de março de 2026</string>
+    <string name="privacy_footer">Atualizado: 23 de abril de 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Extrair texto</string>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_trash">Lixeira</string>
+    <string name="action_undo">Desfazer</string>
+    <string name="action_more">Mais opções</string>
+    <string name="action_move_to_trash">Mover para a lixeira</string>
+    <string name="action_restore">Restaurar</string>
+    <string name="action_delete_forever">Excluir permanentemente</string>
+    <string name="action_empty_trash">Esvaziar lixeira</string>
+    <string name="confirm_trash_title">Mover para a lixeira?</string>
+    <string name="confirm_trash_single">Mover %1$s para a lixeira?</string>
+    <string name="confirm_trash_multi">Mover %1$d documentos para a lixeira?</string>
+    <string name="error_restore_missing_file">O arquivo PDF está ausente e não pode ser restaurado.</string>
+    <string name="error_restore_failed">Falha ao restaurar</string>
+    <string name="trash_retention_hint">Os itens são excluídos permanentemente após %1$d dias.</string>
+    <string name="trash_item_meta">Excluído %1$s · %2$d pág. · %3$s</string>
+    <string name="trash_confirm_purge_title">Excluir permanentemente?</string>
+    <string name="trash_confirm_purge_message">Isso exclui permanentemente %1$d item(ns), incluindo PDFs e miniaturas.</string>
+    <string name="trash_confirm_empty_title">Esvaziar lixeira?</string>
+    <string name="trash_confirm_empty_message">Todos os itens da lixeira serão excluídos permanentemente, incluindo PDFs e miniaturas.</string>
+    <string name="trash_empty_title">A lixeira está vazia</string>
+    <string name="trash_empty_body">Documentos excluídos aparecerão aqui por 30 dias.</string>
+    <string name="privacy_keyword_6">Lixeira</string>
+    <string name="privacy_point_6">Quando você exclui um documento, ele permanece localmente na lixeira do app por até 30 dias. Ele é removido antes se você o excluir permanentemente ou esvaziar a lixeira.</string>
+    <plurals name="trash_moved">
+        <item quantity="one">%1$d documento movido para a lixeira</item>
+        <item quantity="other">%1$d documentos movidos para a lixeira</item>
+    </plurals>
+    <plurals name="trash_restored">
+        <item quantity="one">%1$d documento restaurado</item>
+        <item quantity="other">%1$d documentos restaurados</item>
+    </plurals>
+    <plurals name="trash_purged">
+        <item quantity="one">%1$d documento excluído permanentemente</item>
+        <item quantity="other">%1$d documentos excluídos permanentemente</item>
+    </plurals>
+    <plurals name="trash_days_remaining">
+        <item quantity="one">Exclusão permanente em %1$d dia</item>
+        <item quantity="other">Exclusão permanente em %1$d dias</item>
+    </plurals>
+</resources>

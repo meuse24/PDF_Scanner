@@ -4,13 +4,14 @@ import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.data.repository.SettingsRepository
-import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
+import info.meuse24.pdf_scanner.domain.usecase.RestoreScansUseCase
+import info.meuse24.pdf_scanner.domain.usecase.TrashScansUseCase
 import info.meuse24.pdf_scanner.ui.ocr.OCR_LANGUAGE_AUTO
 import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
@@ -57,7 +58,8 @@ class HomeViewModelTest {
     private lateinit var importFileUseCase: ImportFileUseCase
     private lateinit var exportScanUseCase: ExportScanUseCase
     private lateinit var exportAsJpgUseCase: ExportAsJpgUseCase
-    private lateinit var deleteScansUseCase: DeleteScansUseCase
+    private lateinit var trashScansUseCase: TrashScansUseCase
+    private lateinit var restoreScansUseCase: RestoreScansUseCase
     private lateinit var extractTextUseCase: ExtractTextUseCase
     private lateinit var makeSearchableWorkflow: MakeSearchableWorkflow
     private lateinit var mergePdfsWorkflow: MergePdfsWorkflow
@@ -74,7 +76,8 @@ class HomeViewModelTest {
         importFileUseCase = mock(ImportFileUseCase::class.java)
         exportScanUseCase = mock(ExportScanUseCase::class.java)
         exportAsJpgUseCase = mock(ExportAsJpgUseCase::class.java)
-        deleteScansUseCase = mock(DeleteScansUseCase::class.java)
+        trashScansUseCase = mock(TrashScansUseCase::class.java)
+        restoreScansUseCase = mock(RestoreScansUseCase::class.java)
         extractTextUseCase = mock(ExtractTextUseCase::class.java)
         makeSearchableWorkflow = mock(MakeSearchableWorkflow::class.java)
         mergePdfsWorkflow = mock(MergePdfsWorkflow::class.java)
@@ -263,7 +266,8 @@ class HomeViewModelTest {
             importFileUseCase = importFileUseCase,
             exportScanUseCase = exportScanUseCase,
             exportAsJpgUseCase = exportAsJpgUseCase,
-            deleteScansUseCase = deleteScansUseCase,
+            trashScansUseCase = trashScansUseCase,
+            restoreScansUseCase = restoreScansUseCase,
             extractTextUseCase = extractTextUseCase,
             makeSearchableWorkflow = makeSearchableWorkflow,
             mergePdfsWorkflow = mergePdfsWorkflow,

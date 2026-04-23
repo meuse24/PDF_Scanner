@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_trash">Papierkorb</string>
+    <string name="action_undo">Rückgängig</string>
+    <string name="action_more">Weitere Optionen</string>
+    <string name="action_move_to_trash">In den Papierkorb</string>
+    <string name="action_restore">Wiederherstellen</string>
+    <string name="action_delete_forever">Endgültig löschen</string>
+    <string name="action_empty_trash">Papierkorb leeren</string>
+    <string name="confirm_trash_title">In den Papierkorb verschieben?</string>
+    <string name="confirm_trash_single">%1$s in den Papierkorb verschieben?</string>
+    <string name="confirm_trash_multi">%1$d Dokumente in den Papierkorb verschieben?</string>
+    <string name="error_restore_missing_file">Die PDF-Datei fehlt und kann nicht wiederhergestellt werden.</string>
+    <string name="error_restore_failed">Wiederherstellen fehlgeschlagen</string>
+    <string name="trash_retention_hint">Einträge werden nach %1$d Tagen endgültig gelöscht.</string>
+    <string name="trash_item_meta">Gelöscht %1$s · %2$d S. · %3$s</string>
+    <string name="trash_confirm_purge_title">Endgültig löschen?</string>
+    <string name="trash_confirm_purge_message">Dadurch werden %1$d Eintrag/Einträge inklusive PDF-Dateien und Vorschaubildern endgültig gelöscht.</string>
+    <string name="trash_confirm_empty_title">Papierkorb leeren?</string>
+    <string name="trash_confirm_empty_message">Alle Einträge im Papierkorb werden inklusive PDF-Dateien und Vorschaubildern endgültig gelöscht.</string>
+    <string name="trash_empty_title">Papierkorb ist leer</string>
+    <string name="trash_empty_body">Gelöschte Dokumente bleiben hier 30 Tage sichtbar.</string>
+    <string name="privacy_keyword_6">Papierkorb</string>
+    <string name="privacy_point_6">Wenn Sie ein Dokument löschen, bleibt es zunächst bis zu 30 Tage lokal im Papierkorb der App. Es wird früher entfernt, wenn Sie es endgültig löschen oder den Papierkorb leeren.</string>
+    <plurals name="trash_moved">
+        <item quantity="one">%1$d Dokument in den Papierkorb verschoben</item>
+        <item quantity="other">%1$d Dokumente in den Papierkorb verschoben</item>
+    </plurals>
+    <plurals name="trash_restored">
+        <item quantity="one">%1$d Dokument wiederhergestellt</item>
+        <item quantity="other">%1$d Dokumente wiederhergestellt</item>
+    </plurals>
+    <plurals name="trash_purged">
+        <item quantity="one">%1$d Dokument endgültig gelöscht</item>
+        <item quantity="other">%1$d Dokumente endgültig gelöscht</item>
+    </plurals>
+    <plurals name="trash_days_remaining">
+        <item quantity="one">Endgültige Löschung in %1$d Tag</item>
+        <item quantity="other">Endgültige Löschung in %1$d Tagen</item>
+    </plurals>
+</resources>

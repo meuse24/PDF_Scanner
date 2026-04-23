@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.ui.navigation
 
 sealed class Screen(val route: String) {
     data object Ablage  : Screen("ablage")
+    data object Trash : Screen("trash")
     data object Settings : Screen("settings")
     data object Help    : Screen("help")
     data object Info    : Screen("info")

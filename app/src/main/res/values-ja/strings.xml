@@ -103,7 +103,7 @@
     <string name="help_item_merge">少なくとも2つのPDFを選択し、結合をタップすると新しいドキュメントにまとめられます。</string>
     <string name="help_item_split">複数ページPDFの三点メニューを開き、ページを分割を選ぶと、選択した分割位置で複数のPDFを作成できます。</string>
     <string name="help_item_reorder">三点メニューを開いてページを並び替えを選ぶと、ドラッグ＆ドロップまたは上下ボタンで順序を変更できます。</string>
-    <string name="help_item_delete">削除を使うと選択したPDFをアーカイブから取り除けます。アプリは保存済みファイルとサムネイルも削除します。</string>
+    <string name="help_item_delete">削除を使うと選択したPDFをゴミ箱に移動できます。30日間は復元でき、ゴミ箱から完全に削除することもできます。</string>
     <string name="help_section_ocr">OCRとテキスト抽出</string>
     <string name="help_item_extract_text">テキスト抽出（OCR）はすべてのページを読み取り、認識したテキストをコピーまたは共有できるパネルに表示します。</string>
     <string name="help_item_make_searchable">検索可能にするでは、PDF に不可視のテキストレイヤーを追加し、抽出した OCR テキストをアーカイブ検索用にローカル保存。</string>
@@ -144,7 +144,7 @@
     <string name="privacy_point_2">文書や内容が自動的にアップロードされることはありません。共有やエクスポートは、ユーザーが明示的に実行した場合にのみ行われます。安全な黒塗りでは新しいコピーが作成され、元ファイルは削除するまで残ります。</string>
     <string name="privacy_point_3">スキャンおよび OCR 機能は Google Play Services を使用します。エラー解析のために技術的な診断データが送信される場合があります。自動モードはオフラインで動作する組み込みのラテン文字認識モデルを使用します。ヒンディー語・中国語・日本語・韓国語の言語モデルは初回の手動使用時に Play Services 経由で取得されることがありますが、文書の内容がこのアプリから送信されることはありません。</string>
     <string name="privacy_point_4">アプリ自体は個人データを収集せず、独自の分析も行わず、独自のネットワーク権限も要求しません。</string>
-    <string name="privacy_footer">最終更新：2026年3月29日</string>
+    <string name="privacy_footer">最終更新：2026年4月23日</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">テキストを抽出</string>

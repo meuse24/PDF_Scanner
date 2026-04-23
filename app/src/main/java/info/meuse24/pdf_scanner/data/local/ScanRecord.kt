@@ -16,5 +16,6 @@ data class ScanRecord(
     @ColumnInfo(name = "is_searchable", defaultValue = "0") val isSearchable: Boolean = false,
     @ColumnInfo(name = "is_encrypted", defaultValue = "0") val isEncrypted: Boolean = false,
     @ColumnInfo(name = "extracted_text") val extractedText: String? = null,
-    val tags: String? = null
+    val tags: String? = null,
+    @ColumnInfo(name = "deleted_at") val deletedAt: Long? = null
 )

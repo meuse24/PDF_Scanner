@@ -5,9 +5,10 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [ScanRecord::class, ScanRecordFts::class], version = 5, exportSchema = false)
+@Database(entities = [ScanRecord::class, ScanRecordFts::class], version = 6, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun scanDao(): ScanDao
+    abstract fun trashDao(): TrashDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -66,6 +67,12 @@ abstract class AppDatabase : RoomDatabase() {
                     "INSERT INTO `scan_records_fts`(docid, `filename`, `extracted_text`) " +
                     "SELECT rowid, filename, extracted_text FROM scan_records"
                 )
+            }
+        }
+
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE scan_records ADD COLUMN deleted_at INTEGER")
             }
         }
     }

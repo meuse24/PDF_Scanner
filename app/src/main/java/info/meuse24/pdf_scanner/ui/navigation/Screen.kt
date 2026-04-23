@@ -25,6 +25,9 @@ sealed class Screen(val route: String) {
     data object ExtractPages : Screen("extract-pages/{scanId}") {
         fun createRoute(scanId: Long) = "extract-pages/$scanId"
     }
+    data object AppendPages : Screen("append-pages/{scanId}") {
+        fun createRoute(scanId: Long) = "append-pages/$scanId"
+    }
     data object DuplicatePages : Screen("duplicate-pages/{scanId}") {
         fun createRoute(scanId: Long) = "duplicate-pages/$scanId"
     }

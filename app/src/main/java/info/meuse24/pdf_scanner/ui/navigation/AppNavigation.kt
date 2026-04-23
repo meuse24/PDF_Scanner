@@ -82,6 +82,7 @@ import info.meuse24.pdf_scanner.ui.documentaction.RemoveTextLayerScreen
 import info.meuse24.pdf_scanner.ui.documentaction.RestrictUsageScreen
 import info.meuse24.pdf_scanner.ui.documentaction.UnlockPdfScreen
 import info.meuse24.pdf_scanner.ui.annotate.AnnotateScreen
+import info.meuse24.pdf_scanner.ui.append.AppendScreen
 import info.meuse24.pdf_scanner.ui.imagestopdf.ImagesToPdfScreen
 import info.meuse24.pdf_scanner.ui.redact.RedactScreen
 import info.meuse24.pdf_scanner.ui.signature.SignatureScreen
@@ -318,6 +319,7 @@ fun AppNavigation(
                             onNavigateToRotate         = { scanId -> navController.navigate(Screen.RotatePages.createRoute(scanId)) },
                             onNavigateToDeletePages    = { scanId -> navController.navigate(Screen.DeletePages.createRoute(scanId)) },
                             onNavigateToExtractPages   = { scanId -> navController.navigate(Screen.ExtractPages.createRoute(scanId)) },
+                            onNavigateToAppendPages    = { scanId -> navController.navigate(Screen.AppendPages.createRoute(scanId)) },
                             onNavigateToDuplicatePages = { scanId -> navController.navigate(Screen.DuplicatePages.createRoute(scanId)) },
                             onNavigateToPageNumbers    = { scanId -> navController.navigate(Screen.PageNumbers.createRoute(scanId)) },
                             onNavigateToTextWatermark  = { scanId -> navController.navigate(Screen.TextWatermark.createRoute(scanId)) },
@@ -363,6 +365,7 @@ fun AppNavigation(
                             onNavigateToRotate = { scanId -> navController.navigate(Screen.RotatePages.createRoute(scanId)) },
                             onNavigateToDeletePages = { scanId -> navController.navigate(Screen.DeletePages.createRoute(scanId)) },
                             onNavigateToExtractPages = { scanId -> navController.navigate(Screen.ExtractPages.createRoute(scanId)) },
+                            onNavigateToAppendPages = { scanId -> navController.navigate(Screen.AppendPages.createRoute(scanId)) },
                             onNavigateToDuplicatePages = { scanId -> navController.navigate(Screen.DuplicatePages.createRoute(scanId)) },
                             onNavigateToPageNumbers = { scanId -> navController.navigate(Screen.PageNumbers.createRoute(scanId)) },
                             onNavigateToTextWatermark = { scanId -> navController.navigate(Screen.TextWatermark.createRoute(scanId)) },
@@ -409,6 +412,19 @@ fun AppNavigation(
                         arguments = listOf(navArgument("scanId") { type = NavType.LongType })
                     ) {
                         ExtractPagesScreen(onNavigateBack = { navController.navigateUp() })
+                    }
+                    composable(
+                        route = Screen.AppendPages.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        AppendScreen(
+                            onAppendComplete = { scanId ->
+                                navController.popBackStack()
+                                navController.navigate(Screen.Viewer.createRoute(scanId)) {
+                                    launchSingleTop = true
+                                }
+                            }
+                        )
                     }
                     composable(
                         route = Screen.DuplicatePages.route,
@@ -573,6 +589,7 @@ private fun AppBarTitle(
             currentRoute?.startsWith("rotate-pages/") == true -> stringResource(R.string.rotate_screen_title)
             currentRoute?.startsWith("delete-pages/") == true -> stringResource(R.string.delete_pages_screen_title)
             currentRoute?.startsWith("extract-pages/") == true -> stringResource(R.string.extract_pages_screen_title)
+            currentRoute?.startsWith("append-pages/") == true -> stringResource(R.string.append_pages_screen_title)
             currentRoute?.startsWith("duplicate-pages/") == true -> stringResource(R.string.duplicate_pages_screen_title)
             currentRoute?.startsWith("page-numbers/") == true -> stringResource(R.string.page_numbers_screen_title)
             currentRoute?.startsWith("text-watermark/") == true -> stringResource(R.string.watermark_screen_title)

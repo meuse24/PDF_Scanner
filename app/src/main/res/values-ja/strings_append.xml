@@ -1,0 +1,16 @@
+<resources>
+    <string name="action_append_pages">ページを追加</string>
+    <string name="append_pages_screen_title">ページを追加</string>
+    <string name="append_pages_title">ドキュメントに追加</string>
+    <string name="append_pages_body">スキャナー、画像、または別の PDF からこの文書にページを追加します。</string>
+    <string name="append_source_scan_title">スキャンを追加</string>
+    <string name="append_source_scan_subtitle">追加のページをスキャンしてこの文書に加えます。</string>
+    <string name="append_source_images_title">画像を追加</string>
+    <string name="append_source_images_subtitle">画像を選択して追加用の PDF ページに変換します。</string>
+    <string name="append_source_pdf_title">PDF を追加</string>
+    <string name="append_source_pdf_subtitle">別の PDF を読み込み、末尾にページを追加します。</string>
+    <string name="append_images_hint">追加する前に、選択した画像のページレイアウトを選んでください。</string>
+    <string name="append_success">%1$d ページを追加しました</string>
+    <string name="append_error">ページの追加に失敗しました</string>
+    <string name="append_target_encrypted">ページを追加する前に PDF のパスワードを解除してください。</string>
+</resources>

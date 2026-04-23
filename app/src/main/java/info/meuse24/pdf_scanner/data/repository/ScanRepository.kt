@@ -19,6 +19,8 @@ class ScanRepository @Inject constructor(private val dao: ScanDao) {
     suspend fun updateFileSize(id: Long, fileSize: Long) = dao.updateFileSize(id, fileSize)
     suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) =
         dao.updatePageMetrics(id, pageCount, fileSize)
+    suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) =
+        dao.invalidateAfterAppend(id, fileSize, pageCount)
     suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) =
         dao.updateFilenameAndPath(id, filename, filepath, thumbnailPath)
 }

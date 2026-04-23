@@ -1,0 +1,16 @@
+<resources>
+    <string name="action_append_pages">Добавить страницы</string>
+    <string name="append_pages_screen_title">Добавить страницы</string>
+    <string name="append_pages_title">Добавить в документ</string>
+    <string name="append_pages_body">Добавьте в этот PDF страницы со сканера, из изображений или из другого PDF.</string>
+    <string name="append_source_scan_title">Добавить скан</string>
+    <string name="append_source_scan_subtitle">Отсканируйте дополнительные страницы и добавьте их в документ.</string>
+    <string name="append_source_images_title">Добавить изображения</string>
+    <string name="append_source_images_subtitle">Выберите изображения и преобразуйте их в добавляемые страницы PDF.</string>
+    <string name="append_source_pdf_title">Добавить PDF</string>
+    <string name="append_source_pdf_subtitle">Импортируйте другой PDF и добавьте его страницы в конец.</string>
+    <string name="append_images_hint">Перед добавлением выберите макет страницы для выбранных изображений.</string>
+    <string name="append_success">Добавлено страниц: %1$d</string>
+    <string name="append_error">Не удалось добавить страницы</string>
+    <string name="append_target_encrypted">Сначала удалите пароль PDF, затем добавляйте страницы.</string>
+</resources>

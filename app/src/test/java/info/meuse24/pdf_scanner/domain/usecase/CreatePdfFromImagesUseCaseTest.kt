@@ -6,6 +6,7 @@ import android.net.Uri
 import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.testutil.TestStorageProvider
 import info.meuse24.pdf_scanner.util.PdfEditor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -62,7 +63,12 @@ class CreatePdfFromImagesUseCaseTest {
         okUris: Set<Uri> = emptySet(),
         pdfEditor: PdfEditor = FakeImagesPdfEditor(tmpFolder)
     ): CreatePdfFromImagesUseCase {
-        return CreatePdfFromImagesUseCase(buildContext(okUris), pdfEditor, ScanRepository(FakeImagesScanDao()))
+        val context = buildContext(okUris)
+        return CreatePdfFromImagesUseCase(
+            imagePdfBuilder = ImagePdfBuilder(context, pdfEditor, TestStorageProvider(tmpFolder.root)),
+            pdfEditor = pdfEditor,
+            repository = ScanRepository(FakeImagesScanDao())
+        )
     }
 
     // ── Tests ─────────────────────────────────────────────────────────────────
@@ -144,7 +150,13 @@ class CreatePdfFromImagesUseCaseTest {
         val u = okUri("1")
         val dao = FakeImagesScanDao()
         val useCase = CreatePdfFromImagesUseCase(
-            buildContext(setOf(u)), FakeImagesPdfEditor(tmpFolder), ScanRepository(dao)
+            imagePdfBuilder = ImagePdfBuilder(
+                buildContext(setOf(u)),
+                FakeImagesPdfEditor(tmpFolder),
+                TestStorageProvider(tmpFolder.root)
+            ),
+            pdfEditor = FakeImagesPdfEditor(tmpFolder),
+            repository = ScanRepository(dao)
         )
         useCase.invoke(listOf(u), "test", ImagePageLayout.SINGLE, tmpFolder.root)
 
@@ -174,6 +186,8 @@ private class FakeImagesPdfEditor(
         outputFile.writeText("thumb")
         return true
     }
+
+    override fun getPageCount(pdfFile: File): Int = lastPageCount
 }
 
 // ── Fake DAO ──────────────────────────────────────────────────────────────────
@@ -192,5 +206,6 @@ internal class FakeImagesScanDao : ScanDao {
     override suspend fun markSearchable(id: Long, fileSize: Long) {}
     override suspend fun updateFileSize(id: Long, fileSize: Long) {}
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {}
+    override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) {}
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
 }

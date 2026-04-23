@@ -594,5 +594,7 @@ private class TrackingScanDao : ScanDao {
 
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) = Unit
 
+    override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) = Unit
+
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) = Unit
 }

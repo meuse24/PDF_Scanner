@@ -100,6 +100,7 @@ fun PdfViewerScreen(
     onNavigateToRotate: (Long) -> Unit,
     onNavigateToDeletePages: (Long) -> Unit,
     onNavigateToExtractPages: (Long) -> Unit,
+    onNavigateToAppendPages: (Long) -> Unit,
     onNavigateToDuplicatePages: (Long) -> Unit,
     onNavigateToPageNumbers: (Long) -> Unit,
     onNavigateToTextWatermark: (Long) -> Unit,
@@ -266,6 +267,7 @@ fun PdfViewerScreen(
                             ScanAction.Rotate -> onNavigateToRotate(record.id)
                             ScanAction.DeletePages -> onNavigateToDeletePages(record.id)
                             ScanAction.ExtractPages -> onNavigateToExtractPages(record.id)
+                            ScanAction.AppendPages -> onNavigateToAppendPages(record.id)
                             ScanAction.DuplicatePages -> onNavigateToDuplicatePages(record.id)
                             ScanAction.PageNumbers -> onNavigateToPageNumbers(record.id)
                             ScanAction.TextWatermark -> onNavigateToTextWatermark(record.id)

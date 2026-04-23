@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.NoEncryption
+import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -61,6 +62,7 @@ sealed interface ScanAction {
     data object Rotate : ScanAction
     data object DeletePages : ScanAction
     data object ExtractPages : ScanAction
+    data object AppendPages : ScanAction
     data object DuplicatePages : ScanAction
     data object PageNumbers : ScanAction
     data object TextWatermark : ScanAction
@@ -146,6 +148,9 @@ fun DocumentEditSheet(
         }
         SheetItem(Icons.Default.PictureAsPdf, R.string.action_extract_pages, notEncrypted && multiPage) {
             onAction(ScanAction.ExtractPages)
+        }
+        SheetItem(Icons.Default.PostAdd, R.string.action_append_pages, notEncrypted) {
+            onAction(ScanAction.AppendPages)
         }
         SheetItem(Icons.Default.ContentCopy, R.string.action_duplicate_pages, true) {
             onAction(ScanAction.DuplicatePages)

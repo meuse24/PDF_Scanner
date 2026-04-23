@@ -1,8 +1,6 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import android.content.Context
 import android.net.Uri
-import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.util.PdfEditor
@@ -25,7 +23,7 @@ data class CreatePdfFromImagesResult(
  * - Sind alle Bilder unlesbar, wird eine Exception geworfen.
  */
 open class CreatePdfFromImagesUseCase @Inject constructor(
-    @param:ApplicationContext private val context: Context,
+    private val imagePdfBuilder: ImagePdfBuilder,
     private val pdfEditor: PdfEditor,
     private val repository: ScanRepository
 ) {
@@ -35,38 +33,23 @@ open class CreatePdfFromImagesUseCase @Inject constructor(
         layout: ImagePageLayout,
         scansDir: File
     ): CreatePdfFromImagesResult {
-        require(imageUris.isNotEmpty()) { "Bildliste darf nicht leer sein" }
-
-        val imageBytes: List<ByteArray?> = imageUris.map { uri ->
-            runCatching {
-                context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            }.getOrNull()
-        }
-
-        val skippedCount = imageBytes.count { it == null }
-        require(skippedCount < imageUris.size) { "Kein Bild konnte gelesen werden" }
-
         val baseName = resolveUniqueFilename(scansDir, filename)
         val destFile = File(scansDir, "$baseName.pdf")
-        pdfEditor.createPdfFromImages(imageBytes, layout, destFile)
+        val buildResult = imagePdfBuilder.createPdf(imageUris, layout, destFile)
 
         val thumbFile = File(scansDir, "$baseName.jpg")
         pdfEditor.generateThumbnail(destFile, thumbFile)
 
-        val pageCount = calculatePageCount(imageUris.size, layout.imagesPerPage)
         repository.saveScan(
             ScanRecord(
                 filename = baseName,
                 filepath = destFile.absolutePath,
                 timestamp = System.currentTimeMillis(),
-                pageCount = pageCount,
+                pageCount = buildResult.pageCount,
                 fileSize = destFile.length(),
                 thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath
             )
         )
-        return CreatePdfFromImagesResult(baseName, skippedCount)
+        return CreatePdfFromImagesResult(baseName, buildResult.skippedCount)
     }
-
-    private fun calculatePageCount(imageCount: Int, imagesPerPage: Int): Int =
-        (imageCount + imagesPerPage - 1) / imagesPerPage
 }

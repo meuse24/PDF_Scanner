@@ -1,0 +1,16 @@
+<resources>
+    <string name="action_append_pages">追加页面</string>
+    <string name="append_pages_screen_title">追加页面</string>
+    <string name="append_pages_title">追加到文档</string>
+    <string name="append_pages_body">从扫描仪、图片或另一个 PDF 向此文档继续追加页面。</string>
+    <string name="append_source_scan_title">追加扫描</string>
+    <string name="append_source_scan_subtitle">扫描更多页面并追加到此文档。</string>
+    <string name="append_source_images_title">追加图片</string>
+    <string name="append_source_images_subtitle">选择图片并将其转换为追加的 PDF 页面。</string>
+    <string name="append_source_pdf_title">追加 PDF</string>
+    <string name="append_source_pdf_subtitle">导入另一个 PDF 并将其页面追加到末尾。</string>
+    <string name="append_images_hint">追加前请先为所选图片选择页面布局。</string>
+    <string name="append_success">已追加 %1$d 页</string>
+    <string name="append_error">追加页面失败</string>
+    <string name="append_target_encrypted">请先移除 PDF 密码后再追加页面。</string>
+</resources>

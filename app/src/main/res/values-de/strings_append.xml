@@ -1,0 +1,16 @@
+<resources>
+    <string name="action_append_pages">Seiten anhängen</string>
+    <string name="append_pages_screen_title">Seiten anhängen</string>
+    <string name="append_pages_title">An Dokument anhängen</string>
+    <string name="append_pages_body">Füge diesem PDF weitere Seiten aus dem Scanner, aus Bildern oder aus einem anderen PDF hinzu.</string>
+    <string name="append_source_scan_title">Scan anhängen</string>
+    <string name="append_source_scan_subtitle">Scanne zusätzliche Seiten und hänge sie an dieses Dokument an.</string>
+    <string name="append_source_images_title">Bilder anhängen</string>
+    <string name="append_source_images_subtitle">Wähle Bilder aus und konvertiere sie in angehängte PDF-Seiten.</string>
+    <string name="append_source_pdf_title">PDF anhängen</string>
+    <string name="append_source_pdf_subtitle">Importiere ein weiteres PDF und füge dessen Seiten am Ende hinzu.</string>
+    <string name="append_images_hint">Wähle das Seitenlayout für die ausgewählten Bilder, bevor du sie anhängst.</string>
+    <string name="append_success">%1$d Seiten angehängt</string>
+    <string name="append_error">Anhängen der Seiten fehlgeschlagen</string>
+    <string name="append_target_encrypted">Entferne zuerst das PDF-Passwort, bevor du Seiten anhängst.</string>
+</resources>

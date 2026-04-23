@@ -192,5 +192,6 @@ private class FakeAnnotateScanDao : info.meuse24.pdf_scanner.data.local.ScanDao 
     override suspend fun markSearchable(id: Long, fileSize: Long) {}
     override suspend fun updateFileSize(id: Long, fileSize: Long) {}
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {}
+    override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) {}
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
 }

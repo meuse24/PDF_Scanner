@@ -5,6 +5,7 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.CreatePdfFromImagesResult
 import info.meuse24.pdf_scanner.domain.usecase.CreatePdfFromImagesUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfBuilder
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
@@ -123,7 +124,7 @@ class ImagesToPdfViewModelTest {
 // ── Stub-UseCases ─────────────────────────────────────────────────────────────
 
 private class StubSuccessUseCase(private val skipped: Int = 0) : CreatePdfFromImagesUseCase(
-    context = mock(android.content.Context::class.java),
+    imagePdfBuilder = mock(ImagePdfBuilder::class.java),
     pdfEditor = mock(info.meuse24.pdf_scanner.util.PdfEditor::class.java),
     repository = ScanRepository(StubScanDao())
 ) {
@@ -140,7 +141,7 @@ private class StubSuccessUseCase(private val skipped: Int = 0) : CreatePdfFromIm
 }
 
 private class StubFailUseCase(private val message: String) : CreatePdfFromImagesUseCase(
-    context = mock(android.content.Context::class.java),
+    imagePdfBuilder = mock(ImagePdfBuilder::class.java),
     pdfEditor = mock(info.meuse24.pdf_scanner.util.PdfEditor::class.java),
     repository = ScanRepository(StubScanDao())
 ) {
@@ -162,5 +163,6 @@ private class StubScanDao : info.meuse24.pdf_scanner.data.local.ScanDao {
     override suspend fun markSearchable(id: Long, fileSize: Long) {}
     override suspend fun updateFileSize(id: Long, fileSize: Long) {}
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {}
+    override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) {}
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
 }

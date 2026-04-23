@@ -28,13 +28,8 @@ open class FileUtil @Inject constructor(
             } while (destFile.exists())
         }
 
-        val inputStream = context.contentResolver.openInputStream(sourceUri)
-            ?: throw IllegalStateException(resourceProvider.getString(R.string.error_source_unavailable))
-
         try {
-            inputStream.use { input ->
-                destFile.outputStream().use { output -> input.copyTo(output) }
-            }
+            copyUriToFile(sourceUri, destFile)
             if (destFile.length() == 0L) {
                 destFile.delete()
                 throw IllegalStateException(resourceProvider.getString(R.string.error_pdf_empty))
@@ -51,10 +46,7 @@ open class FileUtil @Inject constructor(
         return try {
             val scansDir = storageProvider.scansDir()
             val destFile = File(scansDir, "$filename.jpg")
-            val inputStream = context.contentResolver.openInputStream(sourceUri) ?: return null
-            inputStream.use { input ->
-                destFile.outputStream().use { output -> input.copyTo(output) }
-            }
+            copyUriToFile(sourceUri, destFile)
             if (destFile.length() == 0L) {
                 destFile.delete()
                 null
@@ -66,4 +58,26 @@ open class FileUtil @Inject constructor(
         }
     }
 
+    open fun copyToTemp(sourceUri: Uri, suffix: String): File {
+        val normalizedSuffix = if (suffix.startsWith(".")) suffix else ".$suffix"
+        val destFile = File.createTempFile("pdf_scanner_", normalizedSuffix, storageProvider.tempDir())
+        try {
+            copyUriToFile(sourceUri, destFile)
+            if (destFile.length() == 0L) {
+                throw IllegalStateException(resourceProvider.getString(R.string.error_pdf_empty))
+            }
+            return destFile
+        } catch (exception: Exception) {
+            destFile.delete()
+            throw exception
+        }
+    }
+
+    private fun copyUriToFile(sourceUri: Uri, destFile: File) {
+        val inputStream = context.contentResolver.openInputStream(sourceUri)
+            ?: throw IllegalStateException(resourceProvider.getString(R.string.error_source_unavailable))
+        inputStream.use { input ->
+            destFile.outputStream().use { output -> input.copyTo(output) }
+        }
+    }
 }

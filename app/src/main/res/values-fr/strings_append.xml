@@ -1,0 +1,16 @@
+<resources>
+    <string name="action_append_pages">Ajouter des pages</string>
+    <string name="append_pages_screen_title">Ajouter des pages</string>
+    <string name="append_pages_title">Ajouter au document</string>
+    <string name="append_pages_body">Ajoute des pages a ce PDF depuis le scanner, tes images ou un autre PDF.</string>
+    <string name="append_source_scan_title">Ajouter un scan</string>
+    <string name="append_source_scan_subtitle">Scanne des pages supplementaires et ajoute-les a ce document.</string>
+    <string name="append_source_images_title">Ajouter des images</string>
+    <string name="append_source_images_subtitle">Selectionne des images et convertis-les en pages PDF ajoutees.</string>
+    <string name="append_source_pdf_title">Ajouter un PDF</string>
+    <string name="append_source_pdf_subtitle">Importe un autre PDF et ajoute ses pages a la fin.</string>
+    <string name="append_images_hint">Choisis la mise en page des images selectionnees avant de les ajouter.</string>
+    <string name="append_success">%1$d pages ajoutees</string>
+    <string name="append_error">Ajout des pages impossible</string>
+    <string name="append_target_encrypted">Retire le mot de passe du PDF avant dajouter des pages.</string>
+</resources>

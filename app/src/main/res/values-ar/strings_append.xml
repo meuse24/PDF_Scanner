@@ -1,0 +1,16 @@
+<resources>
+    <string name="action_append_pages">إلحاق الصفحات</string>
+    <string name="append_pages_screen_title">إلحاق الصفحات</string>
+    <string name="append_pages_title">إلحاق بالمستند</string>
+    <string name="append_pages_body">أضف صفحات أخرى إلى هذا الـ PDF من الماسح أو من الصور أو من ملف PDF آخر.</string>
+    <string name="append_source_scan_title">إلحاق مسح ضوئي</string>
+    <string name="append_source_scan_subtitle">امسح صفحات إضافية وألحقها بهذا المستند.</string>
+    <string name="append_source_images_title">إلحاق صور</string>
+    <string name="append_source_images_subtitle">اختر صوراً وحولها إلى صفحات PDF ملحقة.</string>
+    <string name="append_source_pdf_title">إلحاق PDF</string>
+    <string name="append_source_pdf_subtitle">استورد ملف PDF آخر وأضف صفحاته في النهاية.</string>
+    <string name="append_images_hint">اختر تخطيط الصفحة للصور المحددة قبل إلحاقها.</string>
+    <string name="append_success">تم إلحاق %1$d صفحة</string>
+    <string name="append_error">فشل إلحاق الصفحات</string>
+    <string name="append_target_encrypted">أزل كلمة مرور PDF أولاً قبل إلحاق الصفحات.</string>
+</resources>

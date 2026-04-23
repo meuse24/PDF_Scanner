@@ -49,5 +49,6 @@ sealed interface ScanWorkflowError {
     data class AnnotateFailed(override val cause: Throwable) : ScanWorkflowError
     data class GrayscaleFailed(override val cause: Throwable) : ScanWorkflowError
     data class PdfMetadataFailed(override val cause: Throwable) : ScanWorkflowError
+    data object AppendTargetEncrypted : ScanWorkflowError
+    data class AppendFailed(override val cause: Throwable) : ScanWorkflowError
 }
-

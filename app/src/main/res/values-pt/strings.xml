@@ -7,6 +7,18 @@
     <string name="nav_help">Ajuda</string>
     <string name="nav_info">Info</string>
     <string name="nav_privacy">Privacidade</string>
+    <string name="nav_settings">Configurações</string>
+    <string name="settings_appearance_title">Aparência</string>
+    <string name="settings_theme_mode_label">Modo de tema</string>
+    <string name="settings_scan_ocr_title">Scan e OCR</string>
+    <string name="settings_default_make_searchable_label">Padrão: tornar pesquisável</string>
+    <string name="settings_default_ocr_language_label">Idioma OCR padrão</string>
+    <string name="settings_archive_title">Arquivo</string>
+    <string name="settings_default_sort_order_label">Ordem padrão</string>
+    <string name="settings_more_coming">Mais configurações serão adicionadas aqui.</string>
+    <string name="theme_mode_system">Sistema</string>
+    <string name="theme_mode_light">Claro</string>
+    <string name="theme_mode_dark">Escuro</string>
     <string name="cd_open_menu">Abrir menu</string>
     <string name="cd_navigate_back">Voltar</string>
     <string name="cd_new_scan">Iniciar novo scan</string>
@@ -71,7 +83,7 @@
     <string name="help_step2">O Google Document Scanner é aberto. Fotografe uma ou mais páginas — bordas e perspectiva são corrigidas automaticamente.</string>
     <string name="help_step3">Após o scan, um diálogo é exibido. Digite um nome de arquivo e toque em Salvar. O PDF é armazenado localmente no seu dispositivo.</string>
     <string name="help_section_archive">Gerenciar arquivo</string>
-    <string name="help_item_open">Toque em um item da lista para abrir o PDF em um visualizador externo.</string>
+    <string name="help_item_open">Toque em um item da lista para abrir o PDF no visualizador integrado. Abrir externamente continua disponível no visualizador.</string>
     <string name="help_item_select">Toque na caixa de seleção para escolher uma ou mais entradas. A barra de título mostra a quantidade e permite selecionar tudo.</string>
     <string name="help_item_add_document_scan">Toque em + e escolha Digitalizar documento para captar novas páginas com o scanner do sistema. Depois de guardar, o PDF aparece no arquivo como qualquer outro documento.</string>
     <string name="help_item_add_document_import">Toque em + e escolha Importar PDF para abrir o seletor de ficheiros do sistema. Escolha um PDF existente do seu dispositivo; depois de guardar, ele será copiado para o arquivo.</string>
@@ -121,7 +133,7 @@
     <string name="info_repository_label">Repositório GitHub</string>
     <string name="info_section_privacy">Privacidade</string>
     <string name="info_section_features">Funcionalidades</string>
-    <string name="info_features_body">A app digitaliza documentos para PDF, executa OCR no dispositivo, guarda localmente texto OCR pesquisável e oferece edição de páginas, proteção, assinaturas, destaques, redação segura e reconstrução OCR opcional para cópias redigidas.</string>
+    <string name="info_features_body">A app digitaliza, importa, cria e visualiza PDFs dentro da app, executa OCR no dispositivo, guarda localmente texto OCR pesquisável e oferece edição de páginas, proteção, assinaturas, destaques, redação segura e reconstrução OCR opcional para cópias redigidas.</string>
     <string name="info_privacy_body">Sem anúncios, sem conta e sem backend próprio. PDFs, miniaturas e texto OCR opcional permanecem no armazenamento da app no seu dispositivo. Partilhar e exportar só acontecem quando o utilizador o aciona. A redação segura cria localmente uma cópia saneada separada. A digitalização, o OCR e os downloads de modelos ou fontes dependem dos Google Play Services; esta app não envia o conteúdo dos seus documentos.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
@@ -474,6 +486,22 @@
     <!-- Images to PDF -->
 
     <string name="ocr_low_confidence_warning">A confiança é baixa (%1$d%%). O texto reconhecido pode conter erros.</string>
+    <!-- PDF viewer -->
+    <string name="action_open_external">Abrir externamente</string>
+    <string name="action_edit_pdf">Editar PDF</string>
+    <string name="pdf_viewer_screen_title">Visualizador PDF</string>
+    <string name="pdf_viewer_loading">Abrindo PDF…</string>
+    <string name="pdf_viewer_page_indicator">%1$d / %2$d</string>
+    <string name="pdf_viewer_page_content_description">Página PDF %1$d</string>
+    <string name="pdf_viewer_retry">Tentar novamente</string>
+    <string name="pdf_viewer_back_to_archive">Voltar ao arquivo</string>
+    <string name="pdf_viewer_close_zoom">Fechar zoom</string>
+    <string name="pdf_viewer_file_missing">Este arquivo PDF está ausente.</string>
+    <string name="pdf_viewer_file_encrypted">Este PDF está criptografado e ainda não pode ser renderizado no visualizador integrado.</string>
+    <string name="pdf_viewer_file_corrupted">Não foi possível abrir este PDF.</string>
+    <string name="pdf_viewer_invalid_page">Não foi possível abrir esta página.</string>
+    <string name="pdf_viewer_out_of_memory">Esta página é grande demais para ser renderizada neste dispositivo.</string>
+    <string name="pdf_viewer_renderer_failed">O visualizador PDF não conseguiu renderizar este documento.</string>
 </resources>
 
 

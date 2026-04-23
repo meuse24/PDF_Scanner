@@ -7,6 +7,18 @@
     <string name="nav_help">Hilfe</string>
     <string name="nav_info">Info</string>
     <string name="nav_privacy">Datenschutz</string>
+    <string name="nav_settings">Einstellungen</string>
+    <string name="settings_appearance_title">Darstellung</string>
+    <string name="settings_theme_mode_label">Designmodus</string>
+    <string name="settings_scan_ocr_title">Scan &amp; OCR</string>
+    <string name="settings_default_make_searchable_label">Standard: durchsuchbar machen</string>
+    <string name="settings_default_ocr_language_label">Standard-OCR-Sprache</string>
+    <string name="settings_archive_title">Ablage</string>
+    <string name="settings_default_sort_order_label">Standard-Sortierung</string>
+    <string name="settings_more_coming">Weitere Einstellungen folgen hier.</string>
+    <string name="theme_mode_system">System</string>
+    <string name="theme_mode_light">Hell</string>
+    <string name="theme_mode_dark">Dunkel</string>
     <string name="cd_open_menu">Menü öffnen</string>
     <string name="cd_navigate_back">Zurück</string>
     <string name="cd_new_scan">Neuen Scan starten</string>
@@ -14,6 +26,8 @@
     <string name="cd_delete">Löschen</string>
     <string name="cd_pdf_document">PDF-Dokument</string>
     <string name="action_open_document">PDF öffnen</string>
+    <string name="action_open_external">Extern öffnen</string>
+    <string name="action_edit_pdf">PDF bearbeiten</string>
     <string name="action_select_documents">Dokumente auswählen</string>
     <string name="home_empty_title">Keine Dokumente vorhanden</string>
     <string name="home_empty_hint">Tippe auf +, um zu beginnen</string>
@@ -71,7 +85,7 @@
     <string name="help_step2">Der Google Document Scanner öffnet sich. Fotografiere eine oder mehrere Seiten — Ränder und Perspektive werden automatisch korrigiert.</string>
     <string name="help_step3">Nach dem Scan öffnet sich ein Dialog. Gib einen Dateinamen ein und tippe Speichern. Das PDF wird lokal auf deinem Gerät gespeichert.</string>
     <string name="help_section_archive">Ablage verwalten</string>
-    <string name="help_item_open">Tippe auf einen Eintrag in der Liste, um das PDF in einem externen Viewer zu öffnen.</string>
+    <string name="help_item_open">Tippe auf einen Eintrag in der Liste, um das PDF im integrierten Viewer zu öffnen. Extern öffnen bleibt im Viewer als eigene Aktion verfügbar.</string>
     <string name="help_item_select">Checkbox eines Eintrags antippen, um ihn auszuwählen. Die Titelleiste zeigt die Anzahl und ermöglicht das Auswählen aller Einträge.</string>
     <string name="help_item_add_document_scan">Tippe auf + und wähle Dokument scannen, um neue Seiten mit dem Systemscanner zu erfassen. Nach dem Speichern erscheint das PDF wie jedes andere Dokument in der Ablage.</string>
     <string name="help_item_add_document_import">Tippe auf + und wähle PDF importieren, um den System-Dateipicker zu öffnen. Wähle eine vorhandene PDF auf deinem Gerät; nach dem Speichern wird sie in die Ablage kopiert.</string>
@@ -121,7 +135,7 @@
     <string name="info_repository_label">GitHub-Repository</string>
     <string name="info_section_privacy">Datenschutz</string>
     <string name="info_section_features">Funktionen</string>
-    <string name="info_features_body">Die App scannt, importiert und erstellt PDFs aus Bildern, führt OCR direkt auf dem Gerät aus, speichert durchsuchbaren OCR-Text lokal für die Suche in der Ablage und bietet Seitenbearbeitung, Beschriftung, Signaturen, Metadatenbearbeitung, Graustufen, Schutz sowie sichere Schwärzung mit optionaler OCR-Rekonstruktion für geschwärzte Kopien.</string>
+    <string name="info_features_body">Die App scannt, importiert, erstellt und betrachtet PDFs direkt in der App, führt OCR auf dem Gerät aus, speichert durchsuchbaren OCR-Text lokal für die Suche in der Ablage und bietet Seitenbearbeitung, Beschriftung, Signaturen, Metadatenbearbeitung, Graustufen, Schutz sowie sichere Schwärzung mit optionaler OCR-Rekonstruktion für geschwärzte Kopien.</string>
     <string name="info_privacy_body">Keine Werbung, kein Konto und kein eigenes Backend. PDFs, Vorschaubilder, erzeugte Kopien, geschwärzte Dateien und optionaler OCR-Text bleiben lokal im App-Speicher auf Ihrem Gerät, bis Sie sie exportieren oder teilen. Scan, OCR sowie herunterladbare Modelle und Schriftarten nutzen Google Play Services; Dokumentinhalte werden von der App selbst nicht hochgeladen.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Lokal</string>
@@ -412,6 +426,20 @@
     <string name="help_item_auto_tag">Wenn ein Dokument durchsuchbar gemacht wird, vergibt die App Tags wie Rechnung oder Vertrag lokal aus OCR-Text und Schlüsselwörtern. Tags erscheinen als farbige Etiketten unter dem Dateinamen.</string>
     <string name="privacy_keyword_5">On-Device-Intelligenz</string>
     <string name="privacy_point_5">Volltextsuche, die Erzeugung durchsuchbarer PDFs, Beschriftungen mit Textausrichtung, sicheres Schwärzen, Graustufen und Seiten-/Bild-Neuaufbau arbeiten lokal auf Ihrem Gerät. Neu erzeugte geschwärzte Kopien entfernen OCR-Text, Metadaten und interaktive PDF-Elemente aus dem gespeicherten Ergebnis.</string>
+    <!-- PDF viewer -->
+    <string name="pdf_viewer_screen_title">PDF-Viewer</string>
+    <string name="pdf_viewer_loading">PDF wird geöffnet…</string>
+    <string name="pdf_viewer_page_indicator">%1$d / %2$d</string>
+    <string name="pdf_viewer_page_content_description">PDF-Seite %1$d</string>
+    <string name="pdf_viewer_retry">Erneut versuchen</string>
+    <string name="pdf_viewer_back_to_archive">Zurück zur Ablage</string>
+    <string name="pdf_viewer_close_zoom">Zoom schließen</string>
+    <string name="pdf_viewer_file_missing">Diese PDF-Datei fehlt.</string>
+    <string name="pdf_viewer_file_encrypted">Diese PDF ist verschlüsselt und kann im integrierten Viewer noch nicht gerendert werden.</string>
+    <string name="pdf_viewer_file_corrupted">Diese PDF konnte nicht geöffnet werden.</string>
+    <string name="pdf_viewer_invalid_page">Diese Seite konnte nicht geöffnet werden.</string>
+    <string name="pdf_viewer_out_of_memory">Diese Seite ist zu groß, um sie auf diesem Gerät zu rendern.</string>
+    <string name="pdf_viewer_renderer_failed">Der PDF-Viewer konnte dieses Dokument nicht rendern.</string>
     <!-- PDF beschriften -->
     <!-- Navigation Drawer header -->
     <string name="drawer_version">Version %1$s</string>

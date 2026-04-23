@@ -7,6 +7,18 @@
     <string name="nav_help">帮助</string>
     <string name="nav_info">关于</string>
     <string name="nav_privacy">隐私政策</string>
+    <string name="nav_settings">设置</string>
+    <string name="settings_appearance_title">外观</string>
+    <string name="settings_theme_mode_label">主题模式</string>
+    <string name="settings_scan_ocr_title">扫描与OCR</string>
+    <string name="settings_default_make_searchable_label">默认：设为可搜索</string>
+    <string name="settings_default_ocr_language_label">默认OCR语言</string>
+    <string name="settings_archive_title">文件库</string>
+    <string name="settings_default_sort_order_label">默认排序</string>
+    <string name="settings_more_coming">此处将添加更多设置。</string>
+    <string name="theme_mode_system">跟随系统</string>
+    <string name="theme_mode_light">浅色</string>
+    <string name="theme_mode_dark">深色</string>
     <string name="cd_open_menu">打开菜单</string>
     <string name="cd_navigate_back">返回</string>
     <string name="cd_new_scan">新建扫描</string>
@@ -71,7 +83,7 @@
     <string name="help_step2">Google 文档扫描仪将打开。拍摄一页或多页文档，边缘和透视将自动校正。</string>
     <string name="help_step3">扫描完成后会弹出对话框。输入文件名并点击"保存"，PDF 将保存到您的设备本地。</string>
     <string name="help_section_archive">管理文件库</string>
-    <string name="help_item_open">点击列表中的条目，可在外部 PDF 查看器中打开文档。</string>
+    <string name="help_item_open">点击列表中的条目，可在应用内查看器中打开 PDF。仍可从查看器选择外部打开。</string>
     <string name="help_item_select">点击复选框即可选择一个或多个条目。标题栏会显示数量，并支持全选。</string>
     <string name="help_item_add_document_scan">点击 + 并选择“扫描文档”，即可使用系统扫描器采集新页面。保存后，PDF 会像其他文档一样出现在归档中。</string>
     <string name="help_item_add_document_import">点击 + 并选择“导入 PDF”，即可打开系统文件选择器。从设备中选择现有 PDF；保存后，它会被复制到归档中。</string>
@@ -121,7 +133,7 @@
     <string name="info_repository_label">GitHub 仓库</string>
     <string name="info_section_privacy">隐私</string>
     <string name="info_section_features">功能</string>
-    <string name="info_features_body">本应用可将文档扫描为 PDF，在设备本地执行 OCR，并将可搜索 OCR 文本保存在本地以供档案搜索，同时提供页面编辑、保护、签名、高亮、安全遮蔽以及对已遮蔽副本的可选 OCR 重建功能。</string>
+    <string name="info_features_body">本应用可扫描、导入、创建并在应用内查看 PDF，在设备本地执行 OCR，并将可搜索 OCR 文本保存在本地以供档案搜索，同时提供页面编辑、保护、签名、高亮、安全遮蔽以及对已遮蔽副本的可选 OCR 重建功能。</string>
     <string name="info_privacy_body">无广告、无需账号、没有自有后端。PDF、缩略图和可选 OCR 文本都会保留在您设备上的应用存储中。分享和导出仅在您主动触发时发生。安全遮蔽会在本地创建一份单独的净化副本。扫描、OCR 以及模型和字体下载依赖 Google Play 服务；本应用不会上传文档内容。</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">本地</string>
@@ -474,6 +486,22 @@
     <!-- Images to PDF -->
 
     <string name="ocr_low_confidence_warning">置信度较低（%1$d%%）。识别出的文本可能包含错误。</string>
+    <!-- PDF viewer -->
+    <string name="action_open_external">外部打开</string>
+    <string name="action_edit_pdf">编辑 PDF</string>
+    <string name="pdf_viewer_screen_title">PDF 查看器</string>
+    <string name="pdf_viewer_loading">正在打开 PDF…</string>
+    <string name="pdf_viewer_page_indicator">%1$d / %2$d</string>
+    <string name="pdf_viewer_page_content_description">PDF 第 %1$d 页</string>
+    <string name="pdf_viewer_retry">重试</string>
+    <string name="pdf_viewer_back_to_archive">返回归档</string>
+    <string name="pdf_viewer_close_zoom">关闭缩放</string>
+    <string name="pdf_viewer_file_missing">此 PDF 文件缺失。</string>
+    <string name="pdf_viewer_file_encrypted">此 PDF 已加密，暂时无法在内置查看器中渲染。</string>
+    <string name="pdf_viewer_file_corrupted">无法打开此 PDF。</string>
+    <string name="pdf_viewer_invalid_page">无法打开此页面。</string>
+    <string name="pdf_viewer_out_of_memory">此页面过大，无法在本设备上渲染。</string>
+    <string name="pdf_viewer_renderer_failed">PDF 查看器无法渲染此文档。</string>
 </resources>
 
 

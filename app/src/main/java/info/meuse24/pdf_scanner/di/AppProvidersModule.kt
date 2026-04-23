@@ -10,6 +10,7 @@ import info.meuse24.pdf_scanner.util.AndroidDownloadsStorage
 import info.meuse24.pdf_scanner.util.AndroidOcrInputImageLoader
 import info.meuse24.pdf_scanner.util.AndroidPdfPageInputImageLoader
 import info.meuse24.pdf_scanner.util.AndroidPdfPageJpgRenderer
+import info.meuse24.pdf_scanner.util.AndroidPdfPageBitmapRenderer
 import info.meuse24.pdf_scanner.util.DefaultDispatcherProvider
 import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.DownloadsStorage
@@ -17,6 +18,7 @@ import info.meuse24.pdf_scanner.util.OcrInputImageLoader
 import info.meuse24.pdf_scanner.util.OcrModelInstaller
 import info.meuse24.pdf_scanner.util.PdfPageInputImageLoader
 import info.meuse24.pdf_scanner.util.PdfPageJpgRenderer
+import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderer
 import info.meuse24.pdf_scanner.util.ResourceProvider
 import info.meuse24.pdf_scanner.util.StorageProvider
 import info.meuse24.pdf_scanner.util.MlKitTextRecognizerRunner
@@ -51,6 +53,12 @@ abstract class AppProvidersModule {
     abstract fun bindPdfPageJpgRenderer(
         impl: AndroidPdfPageJpgRenderer
     ): PdfPageJpgRenderer
+
+    @Binds
+    @Singleton
+    abstract fun bindPdfPageBitmapRenderer(
+        impl: AndroidPdfPageBitmapRenderer
+    ): PdfPageBitmapRenderer
 
     @Binds
     @Singleton

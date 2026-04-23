@@ -3,6 +3,7 @@ package info.meuse24.pdf_scanner.ui.home
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.data.repository.SettingsRepository
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
@@ -18,8 +19,10 @@ import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
 import info.meuse24.pdf_scanner.util.OcrModelInstallException
+import info.meuse24.pdf_scanner.util.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -49,6 +52,7 @@ class HomeViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
     private lateinit var repository: ScanRepository
+    private lateinit var settingsRepository: SettingsRepository
     private lateinit var importScanUseCase: ImportScanUseCase
     private lateinit var importFileUseCase: ImportFileUseCase
     private lateinit var exportScanUseCase: ExportScanUseCase
@@ -65,6 +69,7 @@ class HomeViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         repository = mock(ScanRepository::class.java)
+        settingsRepository = mock(SettingsRepository::class.java)
         importScanUseCase = mock(ImportScanUseCase::class.java)
         importFileUseCase = mock(ImportFileUseCase::class.java)
         exportScanUseCase = mock(ExportScanUseCase::class.java)
@@ -75,6 +80,7 @@ class HomeViewModelTest {
         mergePdfsWorkflow = mock(MergePdfsWorkflow::class.java)
 
         `when`(repository.getAllScans()).thenReturn(flowOf(emptyList()))
+        `when`(settingsRepository.settings).thenReturn(MutableStateFlow(AppSettings()))
 
         resourceProvider = FakeResourceProvider(
             strings = mapOf(
@@ -252,6 +258,7 @@ class HomeViewModelTest {
     ): HomeViewModel {
         return HomeViewModel(
             repository = repository,
+            settingsRepository = settingsRepository,
             importScanUseCase = importScanUseCase,
             importFileUseCase = importFileUseCase,
             exportScanUseCase = exportScanUseCase,

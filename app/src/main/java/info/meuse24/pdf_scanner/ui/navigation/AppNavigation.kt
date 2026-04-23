@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -92,14 +93,20 @@ import info.meuse24.pdf_scanner.ui.pageedit.RotatePagesScreen
 import info.meuse24.pdf_scanner.ui.privacy.PrivacyScreen
 import info.meuse24.pdf_scanner.ui.qrscan.QrScanScreen
 import info.meuse24.pdf_scanner.ui.reorder.ReorderScreen
+import info.meuse24.pdf_scanner.ui.settings.SettingsScreen
+import info.meuse24.pdf_scanner.ui.settings.SettingsViewModel
 import info.meuse24.pdf_scanner.ui.split.SplitScreen
-import androidx.hilt.navigation.compose.hiltViewModel
+import info.meuse24.pdf_scanner.ui.theme.ThemeMode
+import info.meuse24.pdf_scanner.ui.viewer.PdfViewerScreen
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    onThemeModeChange: (ThemeMode) -> Unit
+) {
     val navController   = rememberNavController()
     val drawerState     = rememberDrawerState(DrawerValue.Closed)
     val scope           = rememberCoroutineScope()
@@ -116,6 +123,7 @@ fun AppNavigation() {
 
     // Drawer-Geste nur auf Top-Level-Screens erlauben
     val drawerGesturesEnabled = currentRoute == Screen.Ablage.route
+        || currentRoute == Screen.Settings.route
         || currentRoute == Screen.Help.route
         || currentRoute == Screen.Info.route
         || currentRoute == Screen.Privacy.route
@@ -177,6 +185,18 @@ fun AppNavigation() {
                 Spacer(Modifier.height(8.dp))
 
                 // ── Sekundäre Navigation ─────────────────────────────────────
+                DrawerItem(
+                    icon     = Icons.Default.Settings,
+                    label    = stringResource(R.string.nav_settings),
+                    selected = currentRoute == Screen.Settings.route
+                ) {
+                    navController.navigate(Screen.Settings.route) {
+                        popUpTo(Screen.Ablage.route)
+                        launchSingleTop = true
+                    }
+                    closeDrawer()
+                }
+
                 DrawerItem(
                     icon     = Icons.AutoMirrored.Filled.Help,
                     label    = stringResource(R.string.nav_help),
@@ -298,12 +318,52 @@ fun AppNavigation() {
                             onNavigateToGrayscale       = { scanId -> navController.navigate(Screen.Grayscale.createRoute(scanId)) },
                             onNavigateToPdfMetadata     = { scanId -> navController.navigate(Screen.PdfMetadata.createRoute(scanId)) },
                             onNavigateToQrScan          = { scanId -> navController.navigate(Screen.QrScan.createRoute(scanId)) },
+                            onNavigateToViewer          = { scanId -> navController.navigate(Screen.Viewer.createRoute(scanId)) },
                             onNavigateToImagesToPdf     = { navController.navigate(Screen.ImagesToPdf.route) }
                         )
                     }
                     composable(Screen.Help.route)    { HelpScreen() }
+                    composable(Screen.Settings.route) {
+                        val settingsViewModel: SettingsViewModel = hiltViewModel()
+                        val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
+                        SettingsScreen(
+                            settings = settings,
+                            onThemeModeChange = onThemeModeChange,
+                            onDefaultMakeSearchableChange = settingsViewModel::setDefaultMakeSearchable,
+                            onDefaultOcrLanguageChange = settingsViewModel::setDefaultOcrLanguage,
+                            onDefaultSortOrderChange = settingsViewModel::setDefaultSortOrder
+                        )
+                    }
                     composable(Screen.Info.route)    { InfoScreen() }
                     composable(Screen.Privacy.route) { PrivacyScreen() }
+                    composable(
+                        route = Screen.Viewer.route,
+                        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+                    ) {
+                        PdfViewerScreen(
+                            onNavigateBack = { navController.navigateUp() },
+                            onNavigateToSplit = { scanId -> navController.navigate(Screen.Split.createRoute(scanId)) },
+                            onNavigateToReorder = { scanId -> navController.navigate(Screen.Reorder.createRoute(scanId)) },
+                            onNavigateToRotate = { scanId -> navController.navigate(Screen.RotatePages.createRoute(scanId)) },
+                            onNavigateToDeletePages = { scanId -> navController.navigate(Screen.DeletePages.createRoute(scanId)) },
+                            onNavigateToExtractPages = { scanId -> navController.navigate(Screen.ExtractPages.createRoute(scanId)) },
+                            onNavigateToDuplicatePages = { scanId -> navController.navigate(Screen.DuplicatePages.createRoute(scanId)) },
+                            onNavigateToPageNumbers = { scanId -> navController.navigate(Screen.PageNumbers.createRoute(scanId)) },
+                            onNavigateToTextWatermark = { scanId -> navController.navigate(Screen.TextWatermark.createRoute(scanId)) },
+                            onNavigateToCompressPdf = { scanId -> navController.navigate(Screen.CompressPdf.createRoute(scanId)) },
+                            onNavigateToProtectPdf = { scanId -> navController.navigate(Screen.ProtectPdf.createRoute(scanId)) },
+                            onNavigateToUnlockPdf = { scanId -> navController.navigate(Screen.UnlockPdf.createRoute(scanId)) },
+                            onNavigateToSignature = { scanId -> navController.navigate(Screen.Signature.createRoute(scanId)) },
+                            onNavigateToRemoveTextLayer = { scanId -> navController.navigate(Screen.RemoveTextLayer.createRoute(scanId)) },
+                            onNavigateToRemovePassword = { scanId -> navController.navigate(Screen.RemovePassword.createRoute(scanId)) },
+                            onNavigateToRestrictUsage = { scanId -> navController.navigate(Screen.RestrictUsage.createRoute(scanId)) },
+                            onNavigateToAnnotate = { scanId -> navController.navigate(Screen.Annotate.createRoute(scanId)) },
+                            onNavigateToRedact = { scanId -> navController.navigate(Screen.Redact.createRoute(scanId)) },
+                            onNavigateToGrayscale = { scanId -> navController.navigate(Screen.Grayscale.createRoute(scanId)) },
+                            onNavigateToPdfMetadata = { scanId -> navController.navigate(Screen.PdfMetadata.createRoute(scanId)) },
+                            onNavigateToQrScan = { scanId -> navController.navigate(Screen.QrScan.createRoute(scanId)) }
+                        )
+                    }
                     composable(
                         route     = Screen.Split.route,
                         arguments = listOf(navArgument("scanId") { type = NavType.LongType })
@@ -487,8 +547,10 @@ private fun AppBarTitle(
     Text(
         text = when {
             currentRoute == Screen.Help.route -> stringResource(R.string.nav_help)
+            currentRoute == Screen.Settings.route -> stringResource(R.string.nav_settings)
             currentRoute == Screen.Info.route -> stringResource(R.string.nav_info)
             currentRoute == Screen.Privacy.route -> stringResource(R.string.nav_privacy)
+            currentRoute?.startsWith("viewer/") == true -> stringResource(R.string.pdf_viewer_screen_title)
             currentRoute?.startsWith("split/") == true -> stringResource(R.string.split_screen_title)
             currentRoute?.startsWith("reorder/") == true -> stringResource(R.string.reorder_screen_title)
             currentRoute?.startsWith("rotate-pages/") == true -> stringResource(R.string.rotate_screen_title)

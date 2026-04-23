@@ -7,6 +7,18 @@
     <string name="nav_help">مساعدة</string>
     <string name="nav_info">معلومات</string>
     <string name="nav_privacy">الخصوصية</string>
+    <string name="nav_settings">الإعدادات</string>
+    <string name="settings_appearance_title">المظهر</string>
+    <string name="settings_theme_mode_label">وضع السمة</string>
+    <string name="settings_scan_ocr_title">المسح الضوئي وOCR</string>
+    <string name="settings_default_make_searchable_label">الافتراضي: جعل الملف قابلاً للبحث</string>
+    <string name="settings_default_ocr_language_label">لغة OCR الافتراضية</string>
+    <string name="settings_archive_title">الأرشيف</string>
+    <string name="settings_default_sort_order_label">الترتيب الافتراضي</string>
+    <string name="settings_more_coming">ستتم إضافة المزيد من الإعدادات هنا.</string>
+    <string name="theme_mode_system">النظام</string>
+    <string name="theme_mode_light">فاتح</string>
+    <string name="theme_mode_dark">داكن</string>
     <string name="cd_open_menu">فتح القائمة</string>
     <string name="cd_navigate_back">رجوع</string>
     <string name="cd_new_scan">مسح ضوئي جديد</string>
@@ -71,7 +83,7 @@
     <string name="help_step2">يفتح Google Document Scanner. التقط صورة لصفحة واحدة أو أكثر — يتم تصحيح الحواف والمنظور تلقائياً.</string>
     <string name="help_step3">بعد المسح تظهر نافذة حوار. أدخل اسم الملف واضغط حفظ. يُخزَّن PDF محلياً على جهازك.</string>
     <string name="help_section_archive">إدارة الأرشيف</string>
-    <string name="help_item_open">انقر على عنصر في القائمة لفتح PDF في عارض خارجي.</string>
+    <string name="help_item_open">انقر على عنصر في القائمة لفتح PDF في العارض المدمج. يبقى الفتح الخارجي متاحًا من العارض.</string>
     <string name="help_item_select">انقر على مربع الاختيار لتحديد عنصر واحد أو عدة عناصر. يعرض شريط العنوان العدد ويتيح تحديد الكل.</string>
     <string name="help_item_add_document_scan">اضغط على + واختر مسح مستند لالتقاط صفحات جديدة باستخدام ماسح النظام. بعد الحفظ يظهر ملف PDF في الأرشيف مثل أي مستند آخر.</string>
     <string name="help_item_add_document_import">اضغط على + واختر استيراد PDF لفتح منتقي الملفات في النظام. اختر ملف PDF موجوداً على جهازك؛ وبعد الحفظ سيتم نسخه إلى الأرشيف.</string>
@@ -121,7 +133,7 @@
     <string name="info_repository_label">مستودع GitHub</string>
     <string name="info_section_privacy">الخصوصية</string>
     <string name="info_section_features">الوظائف</string>
-    <string name="info_features_body">يقوم التطبيق بمسح المستندات إلى PDF، ويجري OCR على الجهاز، ويخزن نص OCR القابل للبحث محلياً للبحث في الأرشيف، ويوفر تحرير الصفحات والحماية والتواقيع والتمييز والطمس الآمن وإعادة بناء OCR اختيارياً للنسخ المطموسة.</string>
+    <string name="info_features_body">يقوم التطبيق بمسح ملفات PDF واستيرادها وإنشائها وعرضها داخل التطبيق، ويجري OCR على الجهاز، ويخزن نص OCR القابل للبحث محلياً للبحث في الأرشيف، ويوفر تحرير الصفحات والحماية والتواقيع والتمييز والطمس الآمن وإعادة بناء OCR اختيارياً للنسخ المطموسة.</string>
     <string name="info_privacy_body">من دون إعلانات أو حساب أو خادم خلفي خاص. تبقى ملفات PDF والصور المصغرة ونص OCR الاختياري داخل مساحة تخزين التطبيق على جهازك. لا تتم المشاركة أو التصدير إلا عندما تطلب ذلك صراحة. ينشئ الطمس الآمن محلياً نسخةً منفصلةً منقّاة. يعتمد المسح وOCR وتنزيل النماذج والخطوط على خدمات Google Play؛ وهذا التطبيق لا يرفع محتوى مستنداتك.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">محلي</string>
@@ -474,6 +486,22 @@
     <!-- Images to PDF -->
 
     <string name="ocr_low_confidence_warning">الثقة منخفضة (%1$d%%). قد يحتوي النص المُتعرّف عليه على أخطاء.</string>
+    <!-- PDF viewer -->
+    <string name="action_open_external">فتح خارجيًا</string>
+    <string name="action_edit_pdf">تحرير PDF</string>
+    <string name="pdf_viewer_screen_title">عارض PDF</string>
+    <string name="pdf_viewer_loading">جارٍ فتح PDF…</string>
+    <string name="pdf_viewer_page_indicator">%1$d / %2$d</string>
+    <string name="pdf_viewer_page_content_description">صفحة PDF %1$d</string>
+    <string name="pdf_viewer_retry">إعادة المحاولة</string>
+    <string name="pdf_viewer_back_to_archive">العودة إلى الأرشيف</string>
+    <string name="pdf_viewer_close_zoom">إغلاق التكبير</string>
+    <string name="pdf_viewer_file_missing">ملف PDF هذا غير موجود.</string>
+    <string name="pdf_viewer_file_encrypted">ملف PDF هذا مشفر ولا يمكن عرضه داخل التطبيق بعد.</string>
+    <string name="pdf_viewer_file_corrupted">تعذر فتح ملف PDF هذا.</string>
+    <string name="pdf_viewer_invalid_page">تعذر فتح هذه الصفحة.</string>
+    <string name="pdf_viewer_out_of_memory">هذه الصفحة كبيرة جدًا لعرضها على هذا الجهاز.</string>
+    <string name="pdf_viewer_renderer_failed">تعذر على عارض PDF عرض هذا المستند.</string>
 </resources>
 
 

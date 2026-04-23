@@ -7,6 +7,18 @@
     <string name="nav_help">Справка</string>
     <string name="nav_info">О приложении</string>
     <string name="nav_privacy">Конфиденциальность</string>
+    <string name="nav_settings">Настройки</string>
+    <string name="settings_appearance_title">Внешний вид</string>
+    <string name="settings_theme_mode_label">Режим темы</string>
+    <string name="settings_scan_ocr_title">Сканирование и OCR</string>
+    <string name="settings_default_make_searchable_label">По умолчанию: делать PDF с поиском</string>
+    <string name="settings_default_ocr_language_label">Язык OCR по умолчанию</string>
+    <string name="settings_archive_title">Архив</string>
+    <string name="settings_default_sort_order_label">Сортировка по умолчанию</string>
+    <string name="settings_more_coming">Здесь появятся дополнительные настройки.</string>
+    <string name="theme_mode_system">Система</string>
+    <string name="theme_mode_light">Светлая</string>
+    <string name="theme_mode_dark">Тёмная</string>
     <string name="cd_open_menu">Открыть меню</string>
     <string name="cd_navigate_back">Назад</string>
     <string name="cd_new_scan">Новое сканирование</string>
@@ -71,7 +83,7 @@
     <string name="help_step2">Откроется Google Document Scanner. Сфотографируйте одну или несколько страниц — края и перспектива исправляются автоматически.</string>
     <string name="help_step3">После сканирования появится диалог. Введите имя файла и нажмите «Сохранить». PDF сохранится локально на устройстве.</string>
     <string name="help_section_archive">Управление архивом</string>
-    <string name="help_item_open">Нажмите на элемент списка, чтобы открыть PDF во внешней программе просмотра.</string>
+    <string name="help_item_open">Нажмите на элемент списка, чтобы открыть PDF во встроенном просмотрщике. Внешнее открытие доступно из просмотрщика.</string>
     <string name="help_item_select">Нажмите флажок, чтобы выбрать одну или несколько записей. В заголовке отображается количество и доступно выделение всех записей.</string>
     <string name="help_item_add_document_scan">Нажмите + и выберите «Сканировать документ», чтобы снять новые страницы системным сканером. После сохранения PDF появится в архиве как обычный документ.</string>
     <string name="help_item_add_document_import">Нажмите + и выберите «Импортировать PDF», чтобы открыть системный файловый выбор. Выберите существующий PDF на устройстве; после сохранения он будет скопирован в архив.</string>
@@ -121,7 +133,7 @@
     <string name="info_repository_label">Репозиторий GitHub</string>
     <string name="info_section_privacy">Конфиденциальность</string>
     <string name="info_section_features">Возможности</string>
-    <string name="info_features_body">Приложение сканирует документы в PDF, выполняет OCR на устройстве, локально хранит OCR-текст для поиска по архиву, а также предлагает редактирование страниц, защиту, подписи, выделение, безопасное редактирование и необязательное OCR-восстановление для отредактированных копий.</string>
+    <string name="info_features_body">Приложение сканирует, импортирует, создает и показывает PDF внутри приложения, выполняет OCR на устройстве, локально хранит OCR-текст для поиска по архиву, а также предлагает редактирование страниц, защиту, подписи, выделение, безопасное редактирование и необязательное OCR-восстановление для отредактированных копий.</string>
     <string name="info_privacy_body">Без рекламы, без аккаунта и без собственного бэкенда. PDF, миниатюры и необязательный OCR-текст остаются в хранилище приложения на вашем устройстве. Передача и экспорт происходят только по вашему действию. Безопасное редактирование локально создаёт отдельную очищенную копию. Сканирование, OCR и загрузка моделей или шрифтов зависят от Google Play Services; это приложение не загружает содержимое документов.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Локально</string>
@@ -474,6 +486,22 @@
     <!-- Images to PDF -->
 
     <string name="ocr_low_confidence_warning">Низкая уверенность (%1$d%%). Распознанный текст может содержать ошибки.</string>
+    <!-- PDF viewer -->
+    <string name="action_open_external">Открыть во внешнем приложении</string>
+    <string name="action_edit_pdf">Редактировать PDF</string>
+    <string name="pdf_viewer_screen_title">PDF-просмотрщик</string>
+    <string name="pdf_viewer_loading">Открытие PDF…</string>
+    <string name="pdf_viewer_page_indicator">%1$d / %2$d</string>
+    <string name="pdf_viewer_page_content_description">Страница PDF %1$d</string>
+    <string name="pdf_viewer_retry">Повторить</string>
+    <string name="pdf_viewer_back_to_archive">Назад в архив</string>
+    <string name="pdf_viewer_close_zoom">Закрыть масштаб</string>
+    <string name="pdf_viewer_file_missing">Этот PDF-файл отсутствует.</string>
+    <string name="pdf_viewer_file_encrypted">Этот PDF зашифрован и пока не может быть отрисован во встроенном просмотрщике.</string>
+    <string name="pdf_viewer_file_corrupted">Не удалось открыть этот PDF.</string>
+    <string name="pdf_viewer_invalid_page">Не удалось открыть эту страницу.</string>
+    <string name="pdf_viewer_out_of_memory">Эта страница слишком велика для отрисовки на этом устройстве.</string>
+    <string name="pdf_viewer_renderer_failed">PDF-просмотрщик не смог отрисовать этот документ.</string>
 </resources>
 
 

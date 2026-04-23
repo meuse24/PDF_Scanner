@@ -70,7 +70,7 @@ import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModel
 import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
-import info.meuse24.pdf_scanner.ui.ocr.defaultOcrLanguage
+import info.meuse24.pdf_scanner.ui.settings.SettingsViewModel
 import info.meuse24.pdf_scanner.ui.shared.clampPanOffset
 import info.meuse24.pdf_scanner.ui.shared.formatZoomScale
 import info.meuse24.pdf_scanner.ui.shared.normalizeViewportPoint
@@ -82,6 +82,8 @@ fun RedactScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
+    val settingsViewModel: SettingsViewModel = hiltViewModel()
+    val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
     val record by viewModel.record.collectAsStateWithLifecycle()
     val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
     val ocrStatusText by viewModel.ocrStatusText.collectAsStateWithLifecycle()
@@ -107,8 +109,8 @@ fun RedactScreen(
     var showInstructionsDialog by rememberSaveable { mutableStateOf(true) }
     var showSaveOptionsDialog by rememberSaveable { mutableStateOf(false) }
     var isZoomMode by rememberSaveable { mutableStateOf(false) }
-    var makeSearchable by rememberSaveable { mutableStateOf(false) }
-    var selectedLanguage by rememberSaveable { mutableStateOf(defaultOcrLanguage()) }
+    var makeSearchable by rememberSaveable { mutableStateOf(settings.defaultMakeSearchable) }
+    var selectedLanguage by rememberSaveable { mutableStateOf(settings.defaultOcrLanguage) }
     var languageMenuExpanded by remember { mutableStateOf(false) }
     val currentCanvasSize by rememberUpdatedState(canvasSize)
 

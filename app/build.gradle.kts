@@ -12,6 +12,13 @@ val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties().apply {
     if (keystorePropertiesFile.exists()) keystorePropertiesFile.inputStream().use { load(it) }
 }
+val releaseStoreFile = keystoreProperties["storeFile"]
+    ?.toString()
+    ?.takeIf { it.isNotBlank() }
+    ?.let { file(it) }
+val hasReleaseSigning = releaseStoreFile?.exists() == true &&
+    listOf("storePassword", "keyAlias", "keyPassword")
+        .all { key -> !keystoreProperties[key]?.toString().isNullOrBlank() }
 
 android {
     namespace = "info.meuse24.pdf_scanner"
@@ -25,18 +32,20 @@ android {
         applicationId = "info.meuse24.pdf_scanner"
         minSdk = 29
         targetSdk = 36
-        versionCode = 6
-        versionName = "2.0"
+        versionCode = 7
+        versionName = "2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = checkNotNull(releaseStoreFile)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
         }
     }
 
@@ -47,7 +56,9 @@ android {
             ndk {
                 debugSymbolLevel = "FULL"
             }
-            signingConfig = signingConfigs.getByName("release")
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

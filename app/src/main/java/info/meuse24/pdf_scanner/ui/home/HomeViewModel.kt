@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.data.repository.SettingsRepository
 import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
@@ -28,6 +29,8 @@ import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.OcrResultStats
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.OcrThresholds
+import info.meuse24.pdf_scanner.util.AppSettings
+import info.meuse24.pdf_scanner.util.AppSortOrder
 import info.meuse24.pdf_scanner.util.ResourceProvider
 import info.meuse24.pdf_scanner.util.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +38,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -48,6 +52,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository:          ScanRepository,
+    private val settingsRepository:  SettingsRepository,
     private val importScanUseCase:   ImportScanUseCase,
     private val importFileUseCase:   ImportFileUseCase,
     private val exportScanUseCase:   ExportScanUseCase,
@@ -61,6 +66,8 @@ class HomeViewModel @Inject constructor(
     private val storageProvider: StorageProvider,
     private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
+
+    val settings: StateFlow<AppSettings> = settingsRepository.settings
 
     val scans: StateFlow<List<ScanRecord>> = repository.getAllScans()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -116,7 +123,14 @@ class HomeViewModel @Inject constructor(
 
     private var backfillTriggered = false
 
-    init { triggerSilentBackfill() }
+    init {
+        triggerSilentBackfill()
+        viewModelScope.launch {
+            settings.collect { appSettings ->
+                _sortOrder.value = appSettings.defaultSortOrder.toUiSortOrder()
+            }
+        }
+    }
 
     private val scansDir get() = storageProvider.scansDir()
 
@@ -335,7 +349,10 @@ class HomeViewModel @Inject constructor(
     }
 
     fun updateSearchQuery(query: String) { _searchQuery.value = query }
-    fun setSortOrder(sortOrder: SortOrder) { _sortOrder.value = sortOrder }
+    fun setSortOrder(sortOrder: SortOrder) {
+        _sortOrder.value = sortOrder
+        settingsRepository.updateDefaultSortOrder(sortOrder.toAppSortOrder())
+    }
 
     fun clearOcrText() { _ocrText.value = null }
     fun reportError(message: String) { _error.value = message }
@@ -424,6 +441,18 @@ class HomeViewModel @Inject constructor(
     }
 }
 
+private fun AppSortOrder.toUiSortOrder(): SortOrder = when (this) {
+    AppSortOrder.BY_DATE -> SortOrder.ByDate
+    AppSortOrder.BY_NAME -> SortOrder.ByName
+    AppSortOrder.BY_SIZE -> SortOrder.BySize
+}
+
+private fun SortOrder.toAppSortOrder(): AppSortOrder = when (this) {
+    SortOrder.ByDate -> AppSortOrder.BY_DATE
+    SortOrder.ByName -> AppSortOrder.BY_NAME
+    SortOrder.BySize -> AppSortOrder.BY_SIZE
+}
+
 internal fun sortScans(scans: List<ScanRecord>, sortOrder: SortOrder): List<ScanRecord> {
     val byName = compareBy<ScanRecord>(
         { it.filename.lowercase(Locale.ROOT) },
@@ -445,5 +474,4 @@ internal fun sortScans(scans: List<ScanRecord>, sortOrder: SortOrder): List<Scan
         )
     }
 }
-
 

@@ -7,6 +7,18 @@
     <string name="nav_help">ヘルプ</string>
     <string name="nav_info">情報</string>
     <string name="nav_privacy">プライバシー</string>
+    <string name="nav_settings">設定</string>
+    <string name="settings_appearance_title">外観</string>
+    <string name="settings_theme_mode_label">テーマモード</string>
+    <string name="settings_scan_ocr_title">スキャンとOCR</string>
+    <string name="settings_default_make_searchable_label">既定: 検索可能にする</string>
+    <string name="settings_default_ocr_language_label">既定のOCR言語</string>
+    <string name="settings_archive_title">アーカイブ</string>
+    <string name="settings_default_sort_order_label">既定の並び順</string>
+    <string name="settings_more_coming">今後さらに設定が追加されます。</string>
+    <string name="theme_mode_system">システム</string>
+    <string name="theme_mode_light">ライト</string>
+    <string name="theme_mode_dark">ダーク</string>
     <string name="cd_open_menu">メニューを開く</string>
     <string name="cd_navigate_back">戻る</string>
     <string name="cd_new_scan">新しいスキャン</string>
@@ -71,7 +83,7 @@
     <string name="help_step2">Google ドキュメントスキャナーが開きます。1ページまたは複数ページを撮影してください。端や角度は自動的に補正されます。</string>
     <string name="help_step3">スキャン後にダイアログが表示されます。ファイル名を入力して「保存」をタップしてください。PDF はデバイスにローカル保存されます。</string>
     <string name="help_section_archive">アーカイブの管理</string>
-    <string name="help_item_open">リストの項目をタップすると、外部ビューアで PDF を開けます。</string>
+    <string name="help_item_open">リストの項目をタップすると、アプリ内ビューアで PDF を開けます。外部アプリで開く操作はビューアから利用できます。</string>
     <string name="help_item_select">チェックボックスをタップして1件以上の項目を選択します。タイトルバーに件数が表示され、すべて選択もできます。</string>
     <string name="help_item_add_document_scan">＋をタップして「ドキュメントをスキャン」を選ぶと、システムスキャナで新しいページを取り込めます。保存すると、PDF は他の文書と同じようにアーカイブへ追加されます。</string>
     <string name="help_item_add_document_import">＋をタップして「PDF をインポート」を選ぶと、システムのファイルピッカーが開きます。端末内の既存 PDF を選ぶと、保存後にアーカイブへコピーされます。</string>
@@ -121,7 +133,7 @@
     <string name="info_repository_label">GitHub リポジトリ</string>
     <string name="info_section_privacy">プライバシー</string>
     <string name="info_section_features">機能</string>
-    <string name="info_features_body">このアプリは文書を PDF 化し、端末上で OCR を実行し、検索用の OCR テキストをローカル保存します。さらに、ページ編集、保護、署名、ハイライト、安全な黒塗り、黒塗りコピー向けの任意の OCR 再構築も利用できます。</string>
+    <string name="info_features_body">このアプリは PDF のスキャン、インポート、作成、アプリ内表示に対応し、端末上で OCR を実行して検索用 OCR テキストをローカル保存します。さらに、ページ編集、保護、署名、ハイライト、安全な黒塗り、黒塗りコピー向けの任意の OCR 再構築も利用できます。</string>
     <string name="info_privacy_body">広告なし、アカウント不要、独自バックエンドなし。PDF、サムネイル、任意の OCR テキストは端末内のアプリ保存領域に残ります。共有やエクスポートはユーザーが実行したときだけ行われます。安全な黒塗りはローカルで別のサニタイズ済みコピーを作成します。スキャン、OCR、モデルやフォントの取得には Google Play Services を利用しますが、このアプリが文書内容をアップロードすることはありません。</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">ローカル</string>
@@ -474,6 +486,22 @@
     <!-- Images to PDF -->
 
     <string name="ocr_low_confidence_warning">信頼度が低いです（%1$d%%）。認識されたテキストに誤りが含まれる可能性があります。</string>
+    <!-- PDF viewer -->
+    <string name="action_open_external">外部アプリで開く</string>
+    <string name="action_edit_pdf">PDFを編集</string>
+    <string name="pdf_viewer_screen_title">PDFビューア</string>
+    <string name="pdf_viewer_loading">PDFを開いています…</string>
+    <string name="pdf_viewer_page_indicator">%1$d / %2$d</string>
+    <string name="pdf_viewer_page_content_description">PDFページ %1$d</string>
+    <string name="pdf_viewer_retry">再試行</string>
+    <string name="pdf_viewer_back_to_archive">アーカイブに戻る</string>
+    <string name="pdf_viewer_close_zoom">ズームを閉じる</string>
+    <string name="pdf_viewer_file_missing">このPDFファイルが見つかりません。</string>
+    <string name="pdf_viewer_file_encrypted">このPDFは暗号化されているため、まだ内蔵ビューアで表示できません。</string>
+    <string name="pdf_viewer_file_corrupted">このPDFを開けませんでした。</string>
+    <string name="pdf_viewer_invalid_page">このページを開けませんでした。</string>
+    <string name="pdf_viewer_out_of_memory">このページは大きすぎるため、この端末で表示できません。</string>
+    <string name="pdf_viewer_renderer_failed">PDFビューアでこの文書を表示できませんでした。</string>
 </resources>
 
 

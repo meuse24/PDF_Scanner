@@ -25,6 +25,9 @@ Build-Umgebung:
 - Android Studio Meerkat oder neuer
 - JDK 17+ zum Ausführen von Gradle / AGP
 - Android SDK Platform 36 mit minor API level 1 (`compileSdk 36.1`)
+- Release-Signierung ist optional konfiguriert: `keystore.properties` darf lokal
+  vorhanden sein, `assembleRelease` signiert aber nur, wenn die referenzierte
+  JKS-Datei existiert. CI-/Debug-Builds laufen ohne privaten Keystore.
 
 Code-Toolchain:
 - Java source/target compatibility = 11
@@ -84,7 +87,7 @@ domain/
 
 ui/
 ├── navigation/
-│   ├── Screen.kt                  # Route-Definitionen (Ablage, Help, Info, Privacy + alle Edit-Screens)
+│   ├── Screen.kt                  # Route-Definitionen (Ablage, Viewer, Help, Info, Privacy + alle Edit-Screens)
 │   └── AppNavigation.kt           # ModalNavigationDrawer + Scaffold + NavHost + Gradient-Hintergrund
 │                                  # Drawer: App-Header (Icon + Name + Version) + Ablage + Hilfe/Info/Datenschutz
 │                                  # „Scanner starten" entfernt — FAB ist der primäre Scan-Einstieg
@@ -95,6 +98,10 @@ ui/
 ├── qrscan/
 │   ├── QrScanScreen.kt            # Ergebnisliste für QR-Codes: URL/WiFi/Text, Copy/Share, Fortschritt, Fehlerdialog
 │   └── QrScanViewModel.kt         # Lädt ScanRecord per scanId und koordiniert den QR-Scan-UseCase
+├── viewer/
+│   ├── PdfViewerScreen.kt         # In-App-PDF-Viewer: LazyColumn-Seiten, Page-Indicator, Zoom-Overlay, Action-Bar
+│   ├── PdfViewerViewModel.kt      # Lädt ScanRecord per scanId, hält PdfRenderer-Handle, rendert sichtbare Seiten ±1, exportiert PDF
+│   └── PdfViewerModels.kt         # PdfViewerUiState + PdfViewerPageState, Default-Ratio und Render-Konstanten
 ├── home/
 │   ├── HomeScreen.kt              # Koordinator: Launcher, ViewModel-Wiring, Bulk-Aktionen und Navigation
 │   ├── HomeScreenModels.kt        # PendingImport + Dateinamens-/Sortier-Helfer
@@ -178,8 +185,8 @@ ui/
 ├── highlight/                     # Kein aktiver UI-Screen mehr; nur noch Backend-Highlight-Workflows bleiben erhalten
 ├── help/HelpScreen.kt             # IHV (secondaryContainer-Card) + Kapitel-Cards; FAB „Zurück zum IHV"
 │                                  # Hilfe-Texte decken Dokument hinzufügen (Scan + PDF-Import), Archiv-Basisaktionen,
-│                                  # Suche/OCR/Highlight-Snap/Privacy-Verhalten ab
-├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig; zusätzliche Karten für Funktionen + Privacy
+│                                  # In-App-Viewer, Suche/OCR/Highlight-Snap/Privacy-Verhalten ab
+├── info/InfoScreen.kt             # Version dynamisch aus BuildConfig; zusätzliche Karten für Funktionen + Privacy inkl. Viewer
 └── privacy/PrivacyScreen.kt       # Privacy-Übersicht; Texte betonen lokale Speicherung, OCR-Text und Play-Services-Abhängigkeit
 
 data/
@@ -207,6 +214,9 @@ domain/workflow/AnnotatePdfWorkflow.kt      # Prüft: Datei existiert + (strokes
 docs/privacy-policy.html            # Veröffentlichtes Privacy-Dokument (EN/DE) muss mit In-App-Privacy konsistent bleiben
 di/DatabaseModule.kt               # Hilt: AppDatabase + ScanDao, MIGRATION_1_2 + MIGRATION_2_3 + MIGRATION_3_4 + MIGRATION_4_5
 util/FileUtil.kt                   # savePdfFromUri(), saveThumbnailFromUri()
+util/PdfDocumentIntents.kt         # FileProvider-URI + ACTION_VIEW/ACTION_SEND Helpers für Viewer/Home
+util/PdfPageBitmapRenderer.kt      # PdfRenderer-Handle für In-App-Viewer; ein Renderer pro Dokument, Mutex für openPage, OOM-Fallback
+util/PdfPageBitmapCache.kt         # ViewModel-gebundener Bitmap-Cache nach Byte-Budget
 util/OcrManager.kt                 # getRecognizer(languageCode): TextRecognizer — HI GMS-unbundled; ZH/JA nur OCR-Text
 util/SearchablePdfBuilder.kt       # open class; makeSearchable(pdfFile, lang, onProgress): String — Phase1 PdfRenderer+OCR, Phase2 PdfBox
                                    # Rückgabe: extrahierter Volltext (für lokale DB-Speicherung)
@@ -249,6 +259,7 @@ util/PdfEditorImageOps.kt          # A4-Zellenlayout + fitInside für Images-to-
 - **Erfolg in HomeScreen** → `_success: StateFlow<String?>` → Toast + `clearSuccess()`
 - **Erfolg in Edit-Screens** → `_success: StateFlow<Boolean>` → `LaunchedEffect` → `onNavigateBack()`
 - **OCR** nutzt PdfRenderer über alle Seiten; Fallback auf `thumbnailPath` wenn PDF fehlt
+- **In-App-Viewer** nutzt `PdfPageBitmapRenderer`; `PdfRenderer.openPage()` ist per Mutex serialisiert, sichtbare Seiten ±1 werden gerendert
 - PDFs in `context.filesDir/scans/`; FileProvider-Authority: `${applicationId}.fileprovider`
 - Externe PDF-Importe laufen über `ActivityResultContracts.OpenDocument()` mit MIME `application/pdf`
 - Importierte PDFs werden sofort in `filesDir/scans/` kopiert und anschließend wie normale `ScanRecord`s behandelt
@@ -257,6 +268,7 @@ util/PdfEditorImageOps.kt          # A4-Zellenlayout + fitInside für Images-to-
 - Backup: `android:allowBackup="false"`; zusätzlich schließen `backup_rules.xml` + `data_extraction_rules.xml` `filesDir/scans/` und die DB-Dateien (`pdf_scanner_db`, `-wal`, `-shm`, `-journal`) aus
 - **Aktions-Screens** (Overlay + DocumentAction) nutzen `ActionScreenContent` aus `ui/components/`
 - **ScanItem-Aktionen** via `ScanAction` sealed interface — kein direktes Navigieren aus dem Item heraus
+- **PDF öffnen** aus der Ablage navigiert auf `Screen.Viewer`; externer Viewer ist nur noch explizite Aktion im Viewer
 
 ## Mehrfachauswahl
 
@@ -296,10 +308,12 @@ test/
 │   ├── home/HomeImportFilenameSuggestionTest.kt     # DISPLAY_NAME → Dateinamensvorschlag ohne .pdf
 │   ├── ui/imagestopdf/ImagesToPdfViewModelTest.kt   # editLoading-Guard, Erfolg, Fehler, clearError
 │   ├── ui/qrscan/QrScanViewModelTest.kt             # Scan-Guard, Erfolg/Fehler, verschlüsselte PDFs
+│   ├── ui/viewer/PdfViewerViewModelTest.kt          # ScanRecord laden, sichtbare Seiten ±1 rendern, Fehler-Mapping
 │   ├── annotate/AnnotateInteractionHelpersTest.kt   # Hit-Testing, Auswahl, Move, Mutationen für Stroke/Rect/Oval/Text
 │   └── ui/shared/PdfViewportMathTest.kt             # clampPanOffset + inverse Zoom/Pan-Mathematik + Snap-Hilfsfunktionen
 └── util/
     ├── QrCodeScannerTest.kt                 # Resource-close-Helfer für QR-Scanner-Lifecycle
+    ├── PdfPageBitmapCacheTest.kt            # LRU/Byte-Budget und Retain-Window für Viewer-Bitmaps
     ├── PdfEditorTest.kt                    # buildRanges + resolveUniqueFilename + mapDisplayToPdfCoord + mergeTextBoxesToLines
     ├── PdfEditorRealIntegrationTest.kt     # echte PDF-Dateien im JVM-Lauf: protect/unlock, restrict/removePassword, reorder, duplicate/delete, rotate, merge/split
     ├── PdfTestFixtures.kt                  # wiederverwendbare Test-PDF-Erzeugung + Seitensignaturen für Real-PDF-Tests

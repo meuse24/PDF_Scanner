@@ -1,11 +1,12 @@
 # M24 PDF Scanner
 
-Privacy-focused Android app for scanning, creating, editing, and protecting PDFs locally on the device.
+Privacy-focused Android app for scanning, viewing, creating, editing, and protecting PDFs locally on the device.
 
 ## What it does
 
 - Scan documents to PDF with Google's ML Kit Document Scanner
 - Import existing PDFs into the app archive
+- View PDFs directly in the app with PdfRenderer, page scrolling, zoom, print, share, export, and external-open fallback
 - Create PDFs from gallery images with A4 layouts:
   - 1 image per page
   - 2 images per page
@@ -68,10 +69,12 @@ Main editor flows:
 - `annotate/` full-screen PDF annotation editor
 - `redact/` secure redaction editor
 - `imagestopdf/` gallery images to PDF flow
+- `viewer/` in-app PDF reader backed by Android PdfRenderer
 - `shared/` viewport math and text-snap helpers reused by editors
 
 Recent structure work:
 
+- Added an in-app PdfRenderer viewer with lazy page rendering, local bitmap cache, zoom overlay, and viewer action bar
 - `PdfEditor` split into focused ops files for annotations, overlays, redaction, images, and shared core helpers
 - `HomeScreen` split into archive content, dialogs, sheets, and small screen models
 - String resources split by feature with `strings_annotate.xml` and `strings_images_to_pdf.xml` in every locale
@@ -80,6 +83,7 @@ Recent structure work:
 ## Testing
 
 - JVM tests cover use cases, workflows, view models, and `PdfEditor` helpers
+- Viewer JVM tests cover `PdfViewerViewModel` render-window behavior and the bitmap cache
 - Instrumentation tests cover Android-specific paths such as `PdfRenderer`, URI import, MediaStore export, annotation rendering, redaction, and image-to-PDF generation
 
 ## Tech stack

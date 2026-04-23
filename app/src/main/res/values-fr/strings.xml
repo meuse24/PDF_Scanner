@@ -7,6 +7,18 @@
     <string name="nav_help">Aide</string>
     <string name="nav_info">Info</string>
     <string name="nav_privacy">Confidentialité</string>
+    <string name="nav_settings">Paramètres</string>
+    <string name="settings_appearance_title">Apparence</string>
+    <string name="settings_theme_mode_label">Mode de thème</string>
+    <string name="settings_scan_ocr_title">Scan et OCR</string>
+    <string name="settings_default_make_searchable_label">Par défaut : rendre consultable</string>
+    <string name="settings_default_ocr_language_label">Langue OCR par défaut</string>
+    <string name="settings_archive_title">Archives</string>
+    <string name="settings_default_sort_order_label">Tri par défaut</string>
+    <string name="settings_more_coming">D\'autres paramètres seront ajoutés ici.</string>
+    <string name="theme_mode_system">Système</string>
+    <string name="theme_mode_light">Clair</string>
+    <string name="theme_mode_dark">Sombre</string>
     <string name="cd_open_menu">Ouvrir le menu</string>
     <string name="cd_navigate_back">Retour</string>
     <string name="cd_new_scan">Nouveau scan</string>
@@ -71,7 +83,7 @@
     <string name="help_step2">Le Google Document Scanner s\'ouvre. Photographie une ou plusieurs pages : les bords et la perspective sont corrigés automatiquement.</string>
     <string name="help_step3">Après le scan, une boîte de dialogue s\'affiche. Saisis un nom de fichier et appuie sur Enregistrer. Le PDF est stocké localement sur ton appareil.</string>
     <string name="help_section_archive">Gérer les archives</string>
-    <string name="help_item_open">Appuie sur un élément de la liste pour ouvrir le PDF dans un visionneur externe.</string>
+    <string name="help_item_open">Appuie sur un élément de la liste pour ouvrir le PDF dans le lecteur intégré. L’ouverture externe reste disponible depuis le lecteur.</string>
     <string name="help_item_select">Appuie sur la case d\'un élément pour sélectionner une ou plusieurs entrées. La barre de titre affiche le nombre et permet de tout sélectionner.</string>
     <string name="help_item_add_document_scan">Appuie sur + puis choisis Scanner un document pour capturer de nouvelles pages avec le scanner du système. Après l’enregistrement, le PDF apparaît dans l’archive comme les autres documents.</string>
     <string name="help_item_add_document_import">Appuie sur + puis choisis Importer un PDF pour ouvrir le sélecteur de fichiers du système. Choisis un PDF existant sur ton appareil ; après l’enregistrement, il sera copié dans l’archive.</string>
@@ -121,7 +133,7 @@
     <string name="info_repository_label">Dépôt GitHub</string>
     <string name="info_section_privacy">Confidentialité</string>
     <string name="info_section_features">Fonctions</string>
-    <string name="info_features_body">L’app numérise des documents en PDF, exécute l’OCR sur l’appareil, stocke localement le texte OCR consultable pour la recherche dans l’archive, et propose l’édition de pages, la protection, les signatures, le surlignage, le caviardage sécurisé et une reconstruction OCR optionnelle pour les copies caviardées.</string>
+    <string name="info_features_body">L’app numérise, importe, crée et affiche les PDF dans l’app, exécute l’OCR sur l’appareil, stocke localement le texte OCR consultable pour la recherche dans l’archive, et propose l’édition de pages, la protection, les signatures, le surlignage, le caviardage sécurisé et une reconstruction OCR optionnelle pour les copies caviardées.</string>
     <string name="info_privacy_body">Pas de publicité, pas de compte et pas de backend propre. Les PDF, miniatures et le texte OCR optionnel restent dans le stockage de l’app sur votre appareil. Le partage et l’export n’ont lieu que lorsque vous les déclenchez. Le caviardage sécurisé crée localement une copie assainie distincte. La numérisation, l’OCR et les téléchargements de modèles ou de polices dépendent de Google Play Services ; cette app ne téléverse pas le contenu de vos documents.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
@@ -474,6 +486,22 @@
     <!-- Images to PDF -->
 
     <string name="ocr_low_confidence_warning">Le niveau de confiance est faible (%1$d%%). Le texte reconnu peut contenir des erreurs.</string>
+    <!-- PDF viewer -->
+    <string name="action_open_external">Ouvrir en externe</string>
+    <string name="action_edit_pdf">Modifier le PDF</string>
+    <string name="pdf_viewer_screen_title">Lecteur PDF</string>
+    <string name="pdf_viewer_loading">Ouverture du PDF…</string>
+    <string name="pdf_viewer_page_indicator">%1$d / %2$d</string>
+    <string name="pdf_viewer_page_content_description">Page PDF %1$d</string>
+    <string name="pdf_viewer_retry">Réessayer</string>
+    <string name="pdf_viewer_back_to_archive">Retour aux archives</string>
+    <string name="pdf_viewer_close_zoom">Fermer le zoom</string>
+    <string name="pdf_viewer_file_missing">Ce fichier PDF est introuvable.</string>
+    <string name="pdf_viewer_file_encrypted">Ce PDF est chiffré et ne peut pas encore être rendu dans le lecteur intégré.</string>
+    <string name="pdf_viewer_file_corrupted">Impossible d’ouvrir ce PDF.</string>
+    <string name="pdf_viewer_invalid_page">Impossible d’ouvrir cette page.</string>
+    <string name="pdf_viewer_out_of_memory">Cette page est trop grande pour être rendue sur cet appareil.</string>
+    <string name="pdf_viewer_renderer_failed">Le lecteur PDF n’a pas pu rendre ce document.</string>
 </resources>
 
 

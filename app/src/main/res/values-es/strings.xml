@@ -7,6 +7,18 @@
     <string name="nav_help">Ayuda</string>
     <string name="nav_info">Info</string>
     <string name="nav_privacy">Privacidad</string>
+    <string name="nav_settings">Configuración</string>
+    <string name="settings_appearance_title">Apariencia</string>
+    <string name="settings_theme_mode_label">Modo de tema</string>
+    <string name="settings_scan_ocr_title">Escaneo y OCR</string>
+    <string name="settings_default_make_searchable_label">Predeterminado: hacer buscable</string>
+    <string name="settings_default_ocr_language_label">Idioma OCR predeterminado</string>
+    <string name="settings_archive_title">Archivo</string>
+    <string name="settings_default_sort_order_label">Orden predeterminado</string>
+    <string name="settings_more_coming">Se añadirán más ajustes aquí.</string>
+    <string name="theme_mode_system">Sistema</string>
+    <string name="theme_mode_light">Claro</string>
+    <string name="theme_mode_dark">Oscuro</string>
     <string name="cd_open_menu">Abrir menú</string>
     <string name="cd_navigate_back">Atrás</string>
     <string name="cd_new_scan">Iniciar nuevo escaneo</string>
@@ -71,7 +83,7 @@
     <string name="help_step2">Se abre el Google Document Scanner. Fotografía una o varias páginas: los bordes y la perspectiva se corrigen automáticamente.</string>
     <string name="help_step3">Tras el escaneo aparece un diálogo. Introduce un nombre de archivo y toca Guardar. El PDF se almacena localmente en tu dispositivo.</string>
     <string name="help_section_archive">Gestionar archivo</string>
-    <string name="help_item_open">Toca un elemento de la lista para abrir el PDF en un visor externo.</string>
+    <string name="help_item_open">Toca un elemento de la lista para abrir el PDF en el visor integrado. Abrir externamente sigue disponible desde el visor.</string>
     <string name="help_item_select">Toca la casilla para seleccionar una o varias entradas. La barra de título muestra la cantidad y permite seleccionar todo.</string>
     <string name="help_item_add_document_scan">Toca + y elige Escanear documento para capturar páginas nuevas con el escáner del sistema. Después de guardar, el PDF aparece en el archivo como cualquier otro documento.</string>
     <string name="help_item_add_document_import">Toca + y elige Importar PDF para abrir el selector de archivos del sistema. Elige un PDF existente de tu dispositivo; al guardarlo, se copiará al archivo.</string>
@@ -121,7 +133,7 @@
     <string name="info_repository_label">Repositorio GitHub</string>
     <string name="info_section_privacy">Privacidad</string>
     <string name="info_section_features">Funciones</string>
-    <string name="info_features_body">La app escanea documentos a PDF, realiza OCR en el dispositivo, guarda localmente texto OCR buscable y ofrece edición de páginas, protección, firmas, resaltado, redacción segura y reconstrucción OCR opcional para copias redactadas.</string>
+    <string name="info_features_body">La app escanea, importa, crea y muestra PDFs dentro de la app, realiza OCR en el dispositivo, guarda localmente texto OCR buscable y ofrece edición de páginas, protección, firmas, resaltado, redacción segura y reconstrucción OCR opcional para copias redactadas.</string>
     <string name="info_privacy_body">Sin anuncios, sin cuenta y sin backend propio. Los PDF, miniaturas y el texto OCR opcional permanecen en el almacenamiento de la app en tu dispositivo. Compartir y exportar solo ocurren cuando tú lo activas. La redacción segura crea localmente una copia saneada independiente. El escaneo, el OCR y las descargas de modelos y fuentes dependen de Google Play Services; esta app no sube el contenido de tus documentos.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
@@ -474,6 +486,22 @@
     <!-- Images to PDF -->
 
     <string name="ocr_low_confidence_warning">La confianza es baja (%1$d%%). El texto reconocido puede contener errores.</string>
+    <!-- PDF viewer -->
+    <string name="action_open_external">Abrir externamente</string>
+    <string name="action_edit_pdf">Editar PDF</string>
+    <string name="pdf_viewer_screen_title">Visor PDF</string>
+    <string name="pdf_viewer_loading">Abriendo PDF…</string>
+    <string name="pdf_viewer_page_indicator">%1$d / %2$d</string>
+    <string name="pdf_viewer_page_content_description">Página PDF %1$d</string>
+    <string name="pdf_viewer_retry">Reintentar</string>
+    <string name="pdf_viewer_back_to_archive">Volver al archivo</string>
+    <string name="pdf_viewer_close_zoom">Cerrar zoom</string>
+    <string name="pdf_viewer_file_missing">Falta este archivo PDF.</string>
+    <string name="pdf_viewer_file_encrypted">Este PDF está cifrado y aún no se puede renderizar en el visor integrado.</string>
+    <string name="pdf_viewer_file_corrupted">No se pudo abrir este PDF.</string>
+    <string name="pdf_viewer_invalid_page">No se pudo abrir esta página.</string>
+    <string name="pdf_viewer_out_of_memory">Esta página es demasiado grande para renderizarla en este dispositivo.</string>
+    <string name="pdf_viewer_renderer_failed">El visor PDF no pudo renderizar este documento.</string>
 </resources>
 
 

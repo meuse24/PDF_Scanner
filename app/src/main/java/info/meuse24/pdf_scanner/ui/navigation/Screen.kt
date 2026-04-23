@@ -2,9 +2,13 @@ package info.meuse24.pdf_scanner.ui.navigation
 
 sealed class Screen(val route: String) {
     data object Ablage  : Screen("ablage")
+    data object Settings : Screen("settings")
     data object Help    : Screen("help")
     data object Info    : Screen("info")
     data object Privacy : Screen("privacy")
+    data object Viewer : Screen("viewer/{scanId}") {
+        fun createRoute(scanId: Long) = "viewer/$scanId"
+    }
     data object Split   : Screen("split/{scanId}") {
         fun createRoute(scanId: Long) = "split/$scanId"
     }

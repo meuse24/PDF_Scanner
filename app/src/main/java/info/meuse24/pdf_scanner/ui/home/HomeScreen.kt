@@ -2,7 +2,6 @@ package info.meuse24.pdf_scanner.ui.home
 
 import android.app.Activity
 import android.content.ClipData
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -77,10 +76,10 @@ import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import android.print.PrintManager
-import androidx.core.content.FileProvider
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.util.PdfPrintAdapter
+import info.meuse24.pdf_scanner.util.buildPdfShareIntent
 import com.google.mlkit.common.MlKitException
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
@@ -101,7 +100,6 @@ import info.meuse24.pdf_scanner.ui.home.components.HomeRenameDialog
 import info.meuse24.pdf_scanner.ui.home.components.HomeSaveImportDialog
 import info.meuse24.pdf_scanner.ui.home.components.MergeDialog
 import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
-import info.meuse24.pdf_scanner.ui.ocr.defaultOcrLanguage
 import info.meuse24.pdf_scanner.ui.home.components.ScanAction
 import info.meuse24.pdf_scanner.ui.home.components.ScanItem
 import info.meuse24.pdf_scanner.ui.home.components.ScannerLoadingAnimation
@@ -138,10 +136,12 @@ fun HomeScreen(
     onNavigateToGrayscale:          (Long) -> Unit = {},
     onNavigateToPdfMetadata:        (Long) -> Unit = {},
     onNavigateToQrScan:             (Long) -> Unit = {},
+    onNavigateToViewer:             (Long) -> Unit = {},
     onNavigateToImagesToPdf:        () -> Unit     = {},
     viewModel:                      HomeViewModel  = hiltViewModel()
 ) {
     val scans          by viewModel.scans.collectAsStateWithLifecycle()
+    val settings       by viewModel.settings.collectAsStateWithLifecycle()
     val filteredScans  by viewModel.filteredScans.collectAsStateWithLifecycle()
     val searchQuery    by viewModel.searchQuery.collectAsStateWithLifecycle()
     val sortOrder      by viewModel.sortOrder.collectAsStateWithLifecycle()
@@ -159,7 +159,6 @@ fun HomeScreen(
     val haptic    = LocalHapticFeedback.current
     val errorDeviceUnsupported = stringResource(R.string.error_device_unsupported)
     val errorScannerUnavailable = stringResource(R.string.error_scanner_unavailable)
-    val errorNoPdfViewer = stringResource(R.string.error_no_pdf_viewer)
     val sharePdfTitle = stringResource(R.string.share_pdf_title)
     val actionShareTextLabel = stringResource(R.string.action_share_text)
     val ocrCopiedMessage = stringResource(R.string.ocr_copied)
@@ -171,8 +170,8 @@ fun HomeScreen(
     var showAddSheet       by remember { mutableStateOf(false) }
     var showSaveDialog     by remember { mutableStateOf(false) }
     var filenameInput      by rememberSaveable { mutableStateOf("") }
-    var makeSearchable     by rememberSaveable { mutableStateOf(false) }
-    var selectedLang       by rememberSaveable { mutableStateOf(defaultOcrLanguage()) }
+    var makeSearchable     by rememberSaveable { mutableStateOf(settings.defaultMakeSearchable) }
+    var selectedLang       by rememberSaveable { mutableStateOf(settings.defaultOcrLanguage) }
     var langMenuExpanded   by remember { mutableStateOf(false) }
 
     // ── Auswahlmodus ──────────────────────────────────────────────────────────
@@ -192,7 +191,7 @@ fun HomeScreen(
     // ── Bulk-OCR-Sprachdialog ─────────────────────────────────────────────────
     var showBulkLangDialog    by remember { mutableStateOf(false) }
     var bulkLangForSearchable by remember { mutableStateOf(false) }
-    var selectedBulkLang      by rememberSaveable { mutableStateOf(defaultOcrLanguage()) }
+    var selectedBulkLang      by rememberSaveable { mutableStateOf(settings.defaultOcrLanguage) }
     var bulkLangMenuExpanded  by remember { mutableStateOf(false) }
 
     LaunchedEffect(isSelectionMode) { onSelectionModeChange(isSelectionMode) }
@@ -210,8 +209,8 @@ fun HomeScreen(
                 R.string.scan_filename_default,
                 SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             )
-            makeSearchable = false
-            selectedLang = defaultOcrLanguage()
+            makeSearchable = settings.defaultMakeSearchable
+            selectedLang = settings.defaultOcrLanguage
             showSaveDialog = true
         }
     }
@@ -242,8 +241,8 @@ fun HomeScreen(
                     SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
                 )
             }
-            makeSearchable = false
-            selectedLang = defaultOcrLanguage()
+            makeSearchable = settings.defaultMakeSearchable
+            selectedLang = settings.defaultOcrLanguage
             showSaveDialog = true
         }
     }
@@ -326,26 +325,7 @@ fun HomeScreen(
                 onSelectionToggle = { record ->
                     selectedIds = if (record.id in selectedIds) selectedIds - record.id else selectedIds + record.id
                 },
-                onOpenRecord = { record ->
-                    val file = File(record.filepath)
-                    if (file.exists()) {
-                        val uri = FileProvider.getUriForFile(
-                            context,
-                            "${context.packageName}.fileprovider",
-                            file
-                        )
-                        try {
-                            context.startActivity(
-                                Intent(Intent.ACTION_VIEW).apply {
-                                    setDataAndType(uri, "application/pdf")
-                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                }
-                            )
-                        } catch (_: ActivityNotFoundException) {
-                            viewModel.reportError(errorNoPdfViewer)
-                        }
-                    }
-                },
+                onOpenRecord = { record -> onNavigateToViewer(record.id) },
                 onAction = { record, action ->
                     when (action) {
                         ScanAction.Split -> onNavigateToSplit(record.id)
@@ -396,26 +376,8 @@ fun HomeScreen(
             val selectedRecords = scans.filter { it.id in selectedIds }
             BulkActionBar(
                 onShare = {
-                    val uris = ArrayList(selectedRecords.mapNotNull { record ->
-                        val file = File(record.filepath)
-                        if (file.exists()) FileProvider.getUriForFile(
-                            context, "${context.packageName}.fileprovider", file)
-                        else null
-                    })
-                    if (uris.isNotEmpty()) {
-                        val intent = if (uris.size == 1) {
-                            Intent(Intent.ACTION_SEND).apply {
-                                type = "application/pdf"
-                                putExtra(Intent.EXTRA_STREAM, uris[0])
-                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            }
-                        } else {
-                            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                                type = "application/pdf"
-                                putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
-                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            }
-                        }
+                    val intent = buildPdfShareIntent(context, selectedRecords)
+                    if (intent != null) {
                         context.startActivity(Intent.createChooser(intent, sharePdfTitle))
                     }
                 },
@@ -423,13 +385,19 @@ fun HomeScreen(
                     selectedRecords.forEach { viewModel.exportScan(it) }
                     selectedIds = emptySet()
                 },
-                onExtractTexts        = { bulkLangForSearchable = false; showBulkLangDialog = true },
+                onExtractTexts        = {
+                    selectedBulkLang = settings.defaultOcrLanguage
+                    bulkLangForSearchable = false
+                    showBulkLangDialog = true
+                },
                 extractEnabled        = selectedRecords.isNotEmpty(),
                 onMakeSearchable      = {
                     if (selectedRecords.none { !it.isSearchable || it.extractedText == null }) {
                         viewModel.reportError(resources.getString(R.string.searchable_nothing_to_do))
                     } else {
-                        bulkLangForSearchable = true; showBulkLangDialog = true
+                        selectedBulkLang = settings.defaultOcrLanguage
+                        bulkLangForSearchable = true
+                        showBulkLangDialog = true
                     }
                 },
                 makeSearchableEnabled = true,
@@ -624,8 +592,8 @@ fun HomeScreen(
                             )
                             showSaveDialog = false
                             pendingImport = null
-                            makeSearchable = false
-                            selectedLang = defaultOcrLanguage()
+                            makeSearchable = settings.defaultMakeSearchable
+                            selectedLang = settings.defaultOcrLanguage
                         }
                     }
                     is PendingImport.File -> {
@@ -634,8 +602,8 @@ fun HomeScreen(
                             viewModel.importFile(import.uri, filenameInput.trim())
                             showSaveDialog = false
                             pendingImport = null
-                            makeSearchable = false
-                            selectedLang = defaultOcrLanguage()
+                            makeSearchable = settings.defaultMakeSearchable
+                            selectedLang = settings.defaultOcrLanguage
                         }
                     }
                     null -> Unit
@@ -644,8 +612,8 @@ fun HomeScreen(
             onDismiss = {
                 showSaveDialog = false
                 pendingImport = null
-                makeSearchable = false
-                selectedLang = defaultOcrLanguage()
+                makeSearchable = settings.defaultMakeSearchable
+                selectedLang = settings.defaultOcrLanguage
             }
         )
     }

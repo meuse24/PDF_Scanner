@@ -394,10 +394,9 @@ class PdfViewerViewModel @Inject constructor(
             handle.close()
             return false
         }
-        if (isCleared.get()) {
-            if (documentHandleRef.compareAndSet(handle, null)) {
-                handle.close()
-            }
+        if (isCleared.get() || documentKey != expectedKey) {
+            documentHandleRef.compareAndSet(handle, null)
+            handle.close()
             return false
         }
         return true

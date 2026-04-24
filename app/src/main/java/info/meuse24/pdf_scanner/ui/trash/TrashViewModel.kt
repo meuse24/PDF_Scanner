@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.TrashRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.repository.TrashDocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.PurgeTrashUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RestoreMissingFileException
 import info.meuse24.pdf_scanner.domain.usecase.RestoreScansUseCase
@@ -22,14 +22,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TrashViewModel @Inject constructor(
-    trashRepository: TrashRepository,
+    trashRepository: TrashDocumentRepository,
     private val restoreScansUseCase: RestoreScansUseCase,
     private val purgeTrashUseCase: PurgeTrashUseCase,
     private val resourceProvider: ResourceProvider,
     private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 
-    val trashedScans: StateFlow<List<ScanRecord>> = trashRepository.getTrashedScans()
+    val trashedScans: StateFlow<List<Document>> = trashRepository.getTrashedScans()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _error = MutableStateFlow<String?>(null)
@@ -47,7 +47,7 @@ class TrashViewModel @Inject constructor(
         }
     }
 
-    fun restore(records: List<ScanRecord>) {
+    fun restore(records: List<Document>) {
         val ids = records.map { it.id }
         if (ids.isEmpty() || _loading.value) return
         _loading.value = true
@@ -69,7 +69,7 @@ class TrashViewModel @Inject constructor(
         }
     }
 
-    fun purge(records: List<ScanRecord>) {
+    fun purge(records: List<Document>) {
         if (records.isEmpty() || _loading.value) return
         _loading.value = true
         viewModelScope.launch(dispatcherProvider.io) {
@@ -103,3 +103,4 @@ class TrashViewModel @Inject constructor(
         _success.value = null
     }
 }
+

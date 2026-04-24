@@ -1,12 +1,11 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
 import android.net.Uri
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.util.FileUtil
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
-import info.meuse24.pdf_scanner.util.toOcrPageTextJson
 import java.util.Locale
 import javax.inject.Inject
 
@@ -17,7 +16,7 @@ import javax.inject.Inject
 class ImportScanUseCase @Inject constructor(
     private val fileUtil:             FileUtil,
     private val searchablePdfBuilder: SearchablePdfBuilder,
-    private val repository:           ScanRepository
+    private val repository:           DocumentRepository
 ) {
     suspend operator fun invoke(
         pdfUri:         Uri,
@@ -28,7 +27,7 @@ class ImportScanUseCase @Inject constructor(
         languageCode:   String  = Locale.getDefault().language,
         onProgress:     (Int, Int) -> Unit = { _, _ -> },
         onStatus:       (OcrPipelineStatus) -> Unit = {}
-    ): ScanRecord {
+    ): Document {
         val savedFile     = fileUtil.savePdfFromUri(pdfUri, filename)
         val baseName      = savedFile.nameWithoutExtension
         val thumbnailPath = thumbnailUri?.let {
@@ -39,17 +38,17 @@ class ImportScanUseCase @Inject constructor(
         var extractedText: String? = null
         var ocrConfidence: Float? = null
         var ocrLanguage: String? = null
-        var ocrPageTextJson: String? = null
+        var pageTexts = emptyList<String>()
         if (makeSearchable) {
             val searchableResult = searchablePdfBuilder.makeSearchable(savedFile, languageCode, onProgress, onStatus)
             isSearchable  = true
             extractedText = searchableResult.extractedText.ifBlank { null }
             ocrConfidence = searchableResult.stats?.confidence
             ocrLanguage = searchableResult.stats?.recognizedLanguage
-            ocrPageTextJson = searchableResult.pageTexts.toOcrPageTextJson()
+            pageTexts = searchableResult.pageTexts
         }
 
-        val record = ScanRecord(
+        val record = Document(
             filename      = baseName,
             filepath      = savedFile.absolutePath,
             timestamp     = System.currentTimeMillis(),
@@ -61,9 +60,10 @@ class ImportScanUseCase @Inject constructor(
             tags          = null,
             ocrConfidence = ocrConfidence,
             ocrLanguage = ocrLanguage,
-            ocrPageTextJson = ocrPageTextJson
+            pageTexts = pageTexts
         )
-        repository.saveScan(record)
-        return record
+        val id = repository.saveScan(record)
+        return record.copy(id = id)
     }
 }
+

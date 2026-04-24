@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_security_title">Security</string>
+    <string name="settings_app_lock_label">Protect app with biometrics</string>
+    <string name="settings_app_lock_timeout_label">Lock after background time</string>
+    <string name="settings_app_lock_timeout_immediately">Immediately</string>
+    <string name="settings_app_lock_timeout_15s">After 15 seconds</string>
+    <string name="settings_app_lock_timeout_30s">After 30 seconds</string>
+    <string name="settings_app_lock_timeout_1m">After 1 minute</string>
+    <string name="settings_app_lock_timeout_5m">After 5 minutes</string>
+    <string name="settings_app_lock_timeout_custom">After %1$d seconds</string>
+    <string name="app_lock_prompt_title">Unlock M24 PDF-Scanner</string>
+    <string name="app_lock_prompt_subtitle">Use biometrics or your device credentials</string>
+    <string name="app_lock_screen_title">App locked</string>
+    <string name="app_lock_screen_body">Unlock the app to continue with scans, imports, and shared files.</string>
+    <string name="app_lock_unlock">Unlock</string>
+    <string name="app_lock_auth_failed">Authentication was cancelled or failed</string>
+    <string name="app_lock_unavailable">Biometric or device credential authentication is not available on this device</string>
+    <string name="app_lock_not_enrolled">Set up biometrics or a device screen lock before enabling app protection</string>
+    <string name="help_item_app_lock">Enable biometric protection in Settings → Security. The app locks automatically after the configured background timeout (default: 30 s). Use fingerprint, face recognition, or your device PIN to unlock. Incoming shortcuts and shared files are queued until the app is unlocked. The lock is a UI gate only — it does not encrypt documents or the database.</string>
+    <string name="info_feature_app_lock">An optional biometric app lock (Settings → Security) locks the UI after a configurable background timeout. Authentication uses Android\'s BiometricManager; the app itself does not store or process biometric data.</string>
+    <string name="privacy_keyword_7">App Lock</string>
+    <string name="privacy_point_7">The optional biometric lock is a UI gate and does not encrypt documents or the database. Biometric verification is handled by Android\'s BiometricManager; the app never accesses fingerprint or face data directly. The setting is stored locally in SharedPreferences.</string>
+</resources>

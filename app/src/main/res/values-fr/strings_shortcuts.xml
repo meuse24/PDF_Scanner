@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_scan_short">Scanner</string>
+    <string name="shortcut_scan_long">Démarrer le scan</string>
+    <string name="shortcut_import_short">Images</string>
+    <string name="shortcut_import_long">Importer des images</string>
+    <string name="shortcut_trash_short">Corbeille</string>
+    <string name="shortcut_trash_long">Ouvrir la corbeille</string>
+    <string name="help_title_app_shortcuts">Raccourcis et réglages rapides</string>
+    <string name="help_item_app_shortcuts">Appuyez longuement sur l\'icône de l\'app pour démarrer un scan, importer des images ou accéder directement à la corbeille. Ajoutez le raccourci dans le panneau de notifications pour scanner en un tap. Placez le widget sur votre écran d\'accueil pour un accès instantané.</string>
+    <string name="info_feature_shortcuts">Des raccourcis d\'application, un raccourci dans les réglages rapides et un widget permettent d\'accéder directement au scan, à l\'import d\'images et à la corbeille sans ouvrir l\'archive principale.</string>
+</resources>

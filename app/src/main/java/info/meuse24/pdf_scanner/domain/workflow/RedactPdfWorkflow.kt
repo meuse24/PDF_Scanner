@@ -1,11 +1,11 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfSecurityOps
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactPdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
-import info.meuse24.pdf_scanner.util.PdfEditor
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -16,10 +16,10 @@ class RedactPdfWorkflow @Inject constructor(
     private val redactPdfUseCase: RedactPdfUseCase,
     private val makeSearchableWorkflow: MakeSearchableWorkflow,
     private val deleteScansUseCase: DeleteScansUseCase,
-    private val pdfEditor: PdfEditor
+    private val pdfEditor: PdfSecurityOps
 ) {
     suspend operator fun invoke(
-        record: ScanRecord,
+        record: Document,
         rects: List<RedactionRect>,
         scansDir: File,
         makeSearchable: Boolean = false,
@@ -34,7 +34,7 @@ class RedactPdfWorkflow @Inject constructor(
     )
 
     suspend fun invokeWithStatus(
-        record: ScanRecord,
+        record: Document,
         rects: List<RedactionRect>,
         scansDir: File,
         makeSearchable: Boolean = false,
@@ -50,7 +50,7 @@ class RedactPdfWorkflow @Inject constructor(
     )
 
     private suspend fun execute(
-        record: ScanRecord,
+        record: Document,
         rects: List<RedactionRect>,
         scansDir: File,
         makeSearchable: Boolean,
@@ -80,7 +80,7 @@ class RedactPdfWorkflow @Inject constructor(
                     is WorkflowResult.Success -> Unit
                     is WorkflowResult.Failure -> {
                         // SearchableUnsupportedForScript ist eine bekannte Einschränkung (CJK-Skript):
-                        // Die Schwärzung selbst war erfolgreich — kein Rollback, Fehler durchleiten.
+                        // Die Schwärzung selbst war erfolgreich - kein Rollback, Fehler durchleiten.
                         if (searchableResult.error != ScanWorkflowError.SearchableUnsupportedForScript) {
                             runCatching { deleteScansUseCase(listOf(outputRecord)) }
                         }
@@ -111,3 +111,4 @@ internal fun mapSearchableFollowUpError(error: ScanWorkflowError): ScanWorkflowE
         )
     }
 }
+

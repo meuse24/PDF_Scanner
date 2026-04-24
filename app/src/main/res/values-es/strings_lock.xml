@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_security_title">Seguridad</string>
+    <string name="settings_app_lock_label">Proteger la app con biometría</string>
+    <string name="settings_app_lock_timeout_label">Bloquear tras tiempo en segundo plano</string>
+    <string name="settings_app_lock_timeout_immediately">Inmediatamente</string>
+    <string name="settings_app_lock_timeout_15s">Tras 15 segundos</string>
+    <string name="settings_app_lock_timeout_30s">Tras 30 segundos</string>
+    <string name="settings_app_lock_timeout_1m">Tras 1 minuto</string>
+    <string name="settings_app_lock_timeout_5m">Tras 5 minutos</string>
+    <string name="settings_app_lock_timeout_custom">Tras %1$d segundos</string>
+    <string name="app_lock_prompt_title">Desbloquear M24 PDF-Scanner</string>
+    <string name="app_lock_prompt_subtitle">Usar biometría o credenciales del dispositivo</string>
+    <string name="app_lock_screen_title">App bloqueada</string>
+    <string name="app_lock_screen_body">Desbloquea la app para continuar con escaneos, importaciones y archivos compartidos.</string>
+    <string name="app_lock_unlock">Desbloquear</string>
+    <string name="app_lock_auth_failed">La autenticación fue cancelada o falló</string>
+    <string name="app_lock_unavailable">La autenticación biométrica o por credenciales del dispositivo no está disponible en este dispositivo</string>
+    <string name="app_lock_not_enrolled">Configura la biometría o una pantalla de bloqueo del dispositivo antes de activar la protección de la app</string>
+    <string name="help_item_app_lock">Activa la protección biométrica en Ajustes → Seguridad. La app se bloquea automáticamente tras el tiempo en segundo plano configurado (predeterminado: 30 s). Usa huella dactilar, reconocimiento facial o el PIN del dispositivo para desbloquear. Los atajos y archivos compartidos entrantes se almacenan en cola hasta el desbloqueo. El bloqueo es solo una puerta de interfaz y no cifra documentos ni la base de datos.</string>
+    <string name="info_feature_app_lock">Un bloqueo biométrico opcional (Ajustes → Seguridad) bloquea la interfaz tras un tiempo de inactividad configurable. La autenticación usa el BiometricManager de Android; la app no almacena ni procesa datos biométricos.</string>
+    <string name="privacy_keyword_7">Bloqueo de app</string>
+    <string name="privacy_point_7">El bloqueo biométrico opcional es una puerta de interfaz y no cifra documentos ni la base de datos. La verificación biométrica la gestiona el BiometricManager de Android; la app nunca accede directamente a datos de huella o rostro. La configuración se almacena localmente en SharedPreferences.</string>
+</resources>

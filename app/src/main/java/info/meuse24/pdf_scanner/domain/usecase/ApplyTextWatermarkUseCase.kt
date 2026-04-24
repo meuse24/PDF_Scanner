@@ -1,30 +1,19 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
-import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
+import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
 import java.io.File
 import javax.inject.Inject
 
 class ApplyTextWatermarkUseCase @Inject constructor(
-    private val pdfEditor: PdfEditor,
-    private val repository: ScanRepository
+    private val pdfMetadataOps: PdfMetadataOps,
+    private val persister: ScanArtifactPersister
 ) {
-    suspend operator fun invoke(record: ScanRecord, text: String, scansDir: File): String {
-        val resultFile = pdfEditor.applyTextWatermark(File(record.filepath), scansDir, text)
-        val thumbFile = File(scansDir, "${resultFile.nameWithoutExtension}.jpg")
-        pdfEditor.generateThumbnail(resultFile, thumbFile)
-        repository.saveScan(
-            ScanRecord(
-                filename = resultFile.nameWithoutExtension,
-                filepath = resultFile.absolutePath,
-                timestamp = System.currentTimeMillis(),
-                pageCount = record.pageCount,
-                fileSize = resultFile.length(),
-                thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath,
-                isSearchable = record.isSearchable
-            )
-        )
+    suspend operator fun invoke(record: Document, text: String, scansDir: File): String {
+        val resultFile = pdfMetadataOps.applyTextWatermark(File(record.filepath), scansDir, text)
+        persister.persistDerivedFrom(record, resultFile, scansDir)
         return resultFile.nameWithoutExtension
     }
 }
+

@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.QrCodeResult
 import info.meuse24.pdf_scanner.domain.usecase.ScanQrCodesUseCase
 import info.meuse24.pdf_scanner.util.DispatcherProvider
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QrScanViewModel @Inject constructor(
-    private val repository: ScanRepository,
+    private val repository: DocumentRepository,
     private val scanQrCodesUseCase: ScanQrCodesUseCase,
     private val resourceProvider: ResourceProvider,
     private val dispatcherProvider: DispatcherProvider,
@@ -28,8 +28,8 @@ class QrScanViewModel @Inject constructor(
 
     private val scanId: Long = checkNotNull(savedStateHandle["scanId"])
 
-    private val _record = MutableStateFlow<ScanRecord?>(null)
-    val record: StateFlow<ScanRecord?> = _record.asStateFlow()
+    private val _record = MutableStateFlow<Document?>(null)
+    val record: StateFlow<Document?> = _record.asStateFlow()
 
     private val _scanning = MutableStateFlow(false)
     val scanning: StateFlow<Boolean> = _scanning.asStateFlow()
@@ -74,7 +74,7 @@ class QrScanViewModel @Inject constructor(
         _error.value = null
     }
 
-    private fun startScan(record: ScanRecord) {
+    private fun startScan(record: Document) {
         if (_scanning.value) return
         _error.value = null
         _results.value = emptyList()
@@ -94,3 +94,4 @@ class QrScanViewModel @Inject constructor(
         }
     }
 }
+

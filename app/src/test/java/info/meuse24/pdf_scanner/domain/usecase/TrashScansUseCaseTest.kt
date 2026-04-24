@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.local.TrashDao
 import info.meuse24.pdf_scanner.data.repository.TrashRepository
 import kotlinx.coroutines.flow.Flow
@@ -54,7 +55,7 @@ class TrashScansUseCaseTest {
     }
 }
 
-private fun scanRecord(id: Long) = ScanRecord(
+private fun scanRecord(id: Long) = Document(
     id = id,
     filename = "scan$id",
     filepath = "scan$id.pdf",
@@ -76,3 +77,5 @@ private class FakeTrashDao : TrashDao {
     override suspend fun restore(ids: List<Long>) = Unit
     override suspend fun findExpiredTrash(threshold: Long): List<ScanRecord> = emptyList()
 }
+
+

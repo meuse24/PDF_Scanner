@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_all_documents">すべてのドキュメント</string>
+    <string name="folder_favorites">お気に入り</string>
+    <string name="folder_manage">フォルダを管理</string>
+    <string name="folder_management_title">フォルダ</string>
+    <string name="folder_create">フォルダを作成</string>
+    <string name="folder_create_failed">フォルダを作成できませんでした</string>
+    <string name="folder_rename">名前を変更</string>
+    <string name="folder_rename_failed">フォルダの名前を変更できませんでした</string>
+    <string name="folder_delete">削除</string>
+    <string name="folder_delete_failed">フォルダを削除できませんでした</string>
+    <string name="folder_delete_confirm">フォルダ\"%1$s\"を削除しますか？ドキュメントはアーカイブに残ります。</string>
+    <string name="folder_name_label">フォルダ名</string>
+    <string name="folder_move_success">ドキュメントを移動しました</string>
+    <string name="folder_move_failed">ドキュメントを移動できませんでした</string>
+    <string name="favorite_toggle_failed">お気に入りの状態を更新できませんでした</string>
+    <string name="folder_picker_title">フォルダに移動</string>
+    <string name="folder_picker_root">フォルダなし</string>
+    <string name="folder_picker_root_subtitle">ドキュメントをトップレベルに保持する</string>
+    <string name="folder_picker_move_here">ここにドキュメントを移動</string>
+    <string name="label_bulk_move_folder">フォルダ</string>
+    <string name="help_item_folders">サイドメニューを開くと、すべてのドキュメント・お気に入り・名前付きフォルダを切り替えられます。カードの星アイコンをタップしてお気に入りの追加や解除ができます。ドキュメントを選択してフォルダボタンをタップすると移動できます。メニューのフォルダを長押しすると名前変更や削除ができます。</string>
+    <string name="info_feature_folders">ドキュメントをフォルダに整理したり、お気に入りに追加したりできます。サイドメニューにはすべてのフォルダとお気に入りフィルターが表示されます。フォルダはフラット構造（入れ子なし）で、フォルダを削除するとドキュメントはトップレベルに戻ります。</string>
+</resources>

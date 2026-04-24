@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_business_card">Сканировать визитку</string>
+    <string name="business_card_title">Визитная карточка</string>
+    <string name="business_card_subtitle">Проверьте и исправьте распознанные контактные данные перед экспортом vCard.</string>
+    <string name="business_card_name">Полное имя</string>
+    <string name="business_card_organization">Организация</string>
+    <string name="business_card_job_title">Должность</string>
+    <string name="business_card_emails">Адреса электронной почты</string>
+    <string name="business_card_phones">Номера телефонов</string>
+    <string name="business_card_urls">Веб-сайты</string>
+    <string name="business_card_address">Адрес</string>
+    <string name="business_card_add_to_contacts">Добавить в контакты</string>
+    <string name="business_card_share_vcard">Поделиться vCard</string>
+    <string name="business_card_scan_failed">Сканирование визитки не удалось</string>
+    <string name="business_card_export_failed">Экспорт vCard не удался</string>
+    <string name="business_card_no_contact_app">Совместимое приложение для контактов не найдено</string>
+    <string name="error_document_not_found">Документ не найден</string>
+    <string name="help_item_business_card">Откройте меню с тремя точками на любом отсканированном PDF и выберите «Сканировать визитку». Приложение выполнит OCR и извлечёт имя, организацию, должность, электронную почту, телефоны, сайты и адрес. Проверьте и отредактируйте поля, затем нажмите «Добавить в контакты» для прямого сохранения или «Поделиться vCard» для отправки файла.</string>
+    <string name="info_feature_businesscard">Сканер визиток выполняет OCR на странице PDF, извлекает структурированные контактные данные и экспортирует файл vCard 3.0, который можно добавить в приложение «Контакты» или отправить.</string>
+</resources>

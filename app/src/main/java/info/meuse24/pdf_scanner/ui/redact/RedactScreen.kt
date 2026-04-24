@@ -84,12 +84,14 @@ fun RedactScreen(
 ) {
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
-    val record by viewModel.record.collectAsStateWithLifecycle()
-    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
-    val ocrStatusText by viewModel.ocrStatusText.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
-    val success by viewModel.success.collectAsStateWithLifecycle()
-    val pageBitmap by viewModel.documentPageBitmap.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val pagePreviewUiState by viewModel.pagePreviewUiState.collectAsStateWithLifecycle()
+    val record = uiState.record
+    val editLoading = uiState.editLoading
+    val ocrStatusText = uiState.ocrStatusText
+    val error = uiState.error
+    val success = uiState.success
+    val pageBitmap = pagePreviewUiState.pageBitmap
     val resources = LocalResources.current
     val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
     val ocrAutoLabel = stringResource(R.string.ocr_language_auto)

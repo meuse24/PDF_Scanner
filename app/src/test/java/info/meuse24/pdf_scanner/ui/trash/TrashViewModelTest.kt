@@ -3,9 +3,14 @@ package info.meuse24.pdf_scanner.ui.trash
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.local.TrashDao
+import info.meuse24.pdf_scanner.data.mapper.toDomain
+import info.meuse24.pdf_scanner.data.mapper.toEntity
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.data.repository.TrashRepository
+import info.meuse24.pdf_scanner.domain.model.Folder
+import info.meuse24.pdf_scanner.domain.repository.FolderRepository
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.PurgeTrashUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RestoreScansUseCase
@@ -77,7 +82,7 @@ class TrashViewModelTest {
         viewModel.restore(listOf(record))
         advanceUntilIdle()
 
-        assertEquals(emptyList<ScanRecord>(), viewModel.trashedScans.value)
+        assertEquals(emptyList<Document>(), viewModel.trashedScans.value)
         assertEquals("1 restored", viewModel.success.value)
         assertNull(viewModel.error.value)
         assertFalse(viewModel.loading.value)
@@ -94,7 +99,7 @@ class TrashViewModelTest {
         viewModel.purge(listOf(record))
         advanceUntilIdle()
 
-        assertEquals(emptyList<ScanRecord>(), viewModel.trashedScans.value)
+        assertEquals(emptyList<Document>(), viewModel.trashedScans.value)
         assertEquals(listOf(3L), scanDao.deletedIds)
         assertFalse(file.exists())
         assertEquals("1 permanently deleted", viewModel.success.value)
@@ -105,7 +110,7 @@ class TrashViewModelTest {
 
     @Test
     fun `clearError resets error state`() = runTest(dispatcher) {
-        val missing = ScanRecord(
+        val missing = Document(
             id = 4L,
             filename = "missing",
             filepath = File(tmpFolder.root, "missing.pdf").absolutePath,
@@ -127,7 +132,7 @@ class TrashViewModelTest {
         collector.cancel()
     }
 
-    private fun buildViewModel(records: List<ScanRecord>) {
+    private fun buildViewModel(records: List<Document>) {
         store = TrashStore(records)
         trashDao = TestTrashDao(store)
         scanDao = TestScanDao(store)
@@ -144,7 +149,11 @@ class TrashViewModelTest {
         )
         viewModel = TrashViewModel(
             trashRepository = TrashRepository(trashDao),
-            restoreScansUseCase = RestoreScansUseCase(TrashRepository(trashDao)),
+            restoreScansUseCase = RestoreScansUseCase(
+                TrashRepository(trashDao),
+                ScanRepository(scanDao),
+                TrashTestFolderRepository()
+            ),
             purgeTrashUseCase = PurgeTrashUseCase(
                 repository = TrashRepository(trashDao),
                 deleteScansUseCase = DeleteScansUseCase(ScanRepository(scanDao))
@@ -154,10 +163,10 @@ class TrashViewModelTest {
         )
     }
 
-    private fun trashedRecord(id: Long, filename: String): ScanRecord {
+    private fun trashedRecord(id: Long, filename: String): Document {
         val file = tmpFolder.newFile("$filename.pdf")
         file.writeText("pdf")
-        return ScanRecord(
+        return Document(
             id = id,
             filename = filename,
             filepath = file.absolutePath,
@@ -169,7 +178,7 @@ class TrashViewModelTest {
     }
 }
 
-private class TrashStore(initialRecords: List<ScanRecord>) {
+private class TrashStore(initialRecords: List<Document>) {
     val records = MutableStateFlow(initialRecords)
 }
 
@@ -181,10 +190,11 @@ private class TestTrashDao(
             records
                 .filter { it.deletedAt != null }
                 .sortedByDescending { it.deletedAt }
+                .map { it.toEntity() }
         }
 
     override suspend fun getScansByIds(ids: List<Long>): List<ScanRecord> =
-        store.records.value.filter { it.id in ids }
+        store.records.value.filter { it.id in ids }.map { it.toEntity() }
 
     override suspend fun softDelete(ids: List<Long>, timestamp: Long) {
         store.records.value = store.records.value.map { record ->
@@ -199,7 +209,7 @@ private class TestTrashDao(
     }
 
     override suspend fun findExpiredTrash(threshold: Long): List<ScanRecord> =
-        store.records.value.filter { (it.deletedAt ?: Long.MAX_VALUE) < threshold }
+        store.records.value.filter { (it.deletedAt ?: Long.MAX_VALUE) < threshold }.map { it.toEntity() }
 }
 
 private class TestScanDao(
@@ -207,9 +217,9 @@ private class TestScanDao(
 ) : ScanDao {
     val deletedIds = mutableListOf<Long>()
 
-    override fun getAllScans(): Flow<List<ScanRecord>> = store.records
+    override fun getAllScans(): Flow<List<ScanRecord>> = store.records.map { records -> records.map { it.toEntity() } }
 
-    override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = store.records
+    override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = store.records.map { records -> records.map { it.toEntity() } }
 
     override suspend fun insert(record: ScanRecord): Long = record.id
 
@@ -252,4 +262,21 @@ private class TestScanDao(
         filepath: String,
         thumbnailPath: String?
     ) = Unit
+
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = store.records.map { emptyList() }
+
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = store.records.map { emptyList() }
+
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) = Unit
+
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) = Unit
 }
+
+private class TrashTestFolderRepository : FolderRepository {
+    override fun observeFolders(): Flow<List<Folder>> = kotlinx.coroutines.flow.flowOf(emptyList())
+    override suspend fun createFolder(folder: Folder): Long = 0L
+    override suspend fun renameFolder(id: Long, name: String) = Unit
+    override suspend fun deleteFolder(id: Long) = Unit
+    override suspend fun folderExists(id: Long): Boolean = false
+}
+

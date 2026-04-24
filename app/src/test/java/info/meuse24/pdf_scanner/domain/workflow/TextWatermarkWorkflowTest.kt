@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.ApplyTextWatermarkUseCase
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
@@ -18,13 +18,13 @@ class TextWatermarkWorkflowTest {
 
     @get:Rule val tmpFolder = TemporaryFolder()
 
-    private fun record(id: Long, exists: Boolean = true): ScanRecord {
+    private fun record(id: Long, exists: Boolean = true): Document {
         val file = if (exists) {
             tmpFolder.newFile("scan_$id.pdf").apply { writeText("pdf") }
         } else {
             File(tmpFolder.root, "missing_$id.pdf")
         }
-        return ScanRecord(
+        return Document(
             id = id,
             filename = "scan_$id",
             filepath = file.absolutePath,
@@ -38,8 +38,8 @@ class TextWatermarkWorkflowTest {
     private fun workflow(pdfEditor: PdfEditor): Pair<TextWatermarkWorkflow, FakeScanDao> {
         val dao = FakeScanDao()
         val repository = ScanRepository(dao)
-        val useCase = ApplyTextWatermarkUseCase(pdfEditor, repository)
-        return TextWatermarkWorkflow(useCase) to dao
+        val useCase = ApplyTextWatermarkUseCase(pdfEditor, info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository))
+        return TextWatermarkWorkflow(useCase, DocumentWorkflowGuard(pdfEditor)) to dao
     }
 
     @Test
@@ -104,3 +104,5 @@ private class FakeTextWatermarkPdfEditor(
         return true
     }
 }
+
+

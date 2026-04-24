@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_all_documents">Все документы</string>
+    <string name="folder_favorites">Избранное</string>
+    <string name="folder_manage">Управление папками</string>
+    <string name="folder_management_title">Папки</string>
+    <string name="folder_create">Создать папку</string>
+    <string name="folder_create_failed">Не удалось создать папку</string>
+    <string name="folder_rename">Переименовать</string>
+    <string name="folder_rename_failed">Не удалось переименовать папку</string>
+    <string name="folder_delete">Удалить</string>
+    <string name="folder_delete_failed">Не удалось удалить папку</string>
+    <string name="folder_delete_confirm">Удалить папку \"%1$s\"? Документы останутся в архиве.</string>
+    <string name="folder_name_label">Название папки</string>
+    <string name="folder_move_success">Документы перемещены</string>
+    <string name="folder_move_failed">Не удалось переместить документы</string>
+    <string name="favorite_toggle_failed">Не удалось обновить статус избранного</string>
+    <string name="folder_picker_title">Переместить в папку</string>
+    <string name="folder_picker_root">Без папки</string>
+    <string name="folder_picker_root_subtitle">Оставить документы на верхнем уровне</string>
+    <string name="folder_picker_move_here">Переместить документы сюда</string>
+    <string name="label_bulk_move_folder">Папка</string>
+    <string name="help_item_folders">Откройте боковое меню, чтобы переключаться между всеми документами, избранным и именованными папками. Нажмите на звезду на карточке, чтобы добавить или убрать из избранного. Выберите документы и нажмите кнопку «Папка», чтобы переместить их. Нажмите и удерживайте папку в меню, чтобы переименовать или удалить её.</string>
+    <string name="info_feature_folders">Документы можно организовать по папкам и добавлять в избранное. В боковом меню отображаются все папки и фильтр избранного. Папки плоские (без вложенности); при удалении папки её документы перемещаются на верхний уровень.</string>
+</resources>

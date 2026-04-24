@@ -115,7 +115,9 @@ fun HelpScreen() {
                 actions = listOf(
                     HelpAction(Icons.Default.CameraAlt, R.string.add_document_scan_title, R.string.help_item_add_document_scan),
                     HelpAction(Icons.Default.UploadFile, R.string.add_document_import_title, R.string.help_item_add_document_import),
-                    HelpAction(Icons.Default.Image, R.string.images_to_pdf_title, R.string.images_to_pdf_description)
+                    HelpAction(Icons.Default.Image, R.string.images_to_pdf_title, R.string.images_to_pdf_description),
+                    HelpAction(Icons.Default.Share, R.string.share_pdf_title, R.string.help_item_external_share),
+                    HelpAction(Icons.Default.CameraAlt, R.string.help_title_app_shortcuts, R.string.help_item_app_shortcuts)
                 )
             ),
             HelpSection(
@@ -124,7 +126,8 @@ fun HelpScreen() {
                 actions = listOf(
                     HelpAction(Icons.Default.PictureAsPdf, R.string.action_open_document, R.string.help_item_open),
                     HelpAction(Icons.Default.CheckBox, R.string.action_select_documents, R.string.help_item_select),
-                    HelpAction(Icons.Default.Search, R.string.help_section_search, R.string.help_item_search)
+                    HelpAction(Icons.Default.Search, R.string.help_section_search, R.string.help_item_search),
+                    HelpAction(Icons.Default.FolderOpen, R.string.folder_manage, R.string.help_item_folders)
                 )
             ),
             HelpSection(
@@ -176,6 +179,7 @@ fun HelpScreen() {
                 titleRes = R.string.sheet_section_analyse,
                 actions = listOf(
                     HelpAction(Icons.Default.QrCodeScanner, R.string.action_scan_qr_codes,    R.string.help_item_scan_qr_codes),
+                    HelpAction(Icons.Default.PictureAsPdf,  R.string.action_scan_business_card, R.string.help_item_business_card),
                     HelpAction(Icons.Default.FindInPage,    R.string.action_remove_text_layer, R.string.help_item_remove_text_layer),
                     HelpAction(Icons.Default.Language,      R.string.dialog_ocr_language,      R.string.help_item_ocr_language)
                 )
@@ -194,6 +198,7 @@ fun HelpScreen() {
                 icon = Icons.Default.Lock,
                 titleRes = R.string.sheet_section_security,
                 actions = listOf(
+                    HelpAction(Icons.Default.Lock,               R.string.settings_app_lock_label, R.string.help_item_app_lock),
                     HelpAction(Icons.Default.Lock,               R.string.action_protect_pdf,     R.string.help_item_protect_pdf),
                     HelpAction(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage,  R.string.help_item_restrict_usage),
                     HelpAction(Icons.Default.LockOpen,           R.string.action_unlock_pdf,      R.string.help_item_unlock_pdf),

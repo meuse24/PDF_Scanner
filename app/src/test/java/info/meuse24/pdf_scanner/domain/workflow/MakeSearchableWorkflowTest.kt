@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.FakeSearchablePdfBuilder
@@ -33,13 +33,13 @@ class MakeSearchableWorkflowTest {
         isSearchable: Boolean,
         exists: Boolean = true,
         extractedText: String? = null
-    ): ScanRecord {
+    ): Document {
         val filePath = if (exists) {
             tmpFolder.newFile("scan_$id.pdf").absolutePath
         } else {
             tmpFolder.root.resolve("missing_$id.pdf").absolutePath
         }
-        return ScanRecord(
+        return Document(
             id            = id,
             filename      = "scan_$id",
             filepath      = filePath,
@@ -108,3 +108,4 @@ class MakeSearchableWorkflowTest {
         assertEquals(1, invocations)
     }
 }
+

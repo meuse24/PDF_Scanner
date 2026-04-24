@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_security_title">安全</string>
+    <string name="settings_app_lock_label">使用生物识别保护应用</string>
+    <string name="settings_app_lock_timeout_label">后台超时后锁定</string>
+    <string name="settings_app_lock_timeout_immediately">立即</string>
+    <string name="settings_app_lock_timeout_15s">15秒后</string>
+    <string name="settings_app_lock_timeout_30s">30秒后</string>
+    <string name="settings_app_lock_timeout_1m">1分钟后</string>
+    <string name="settings_app_lock_timeout_5m">5分钟后</string>
+    <string name="settings_app_lock_timeout_custom">%1$d秒后</string>
+    <string name="app_lock_prompt_title">解锁 M24 PDF-Scanner</string>
+    <string name="app_lock_prompt_subtitle">使用生物识别或设备凭据</string>
+    <string name="app_lock_screen_title">应用已锁定</string>
+    <string name="app_lock_screen_body">解锁应用以继续扫描、导入和处理共享文件。</string>
+    <string name="app_lock_unlock">解锁</string>
+    <string name="app_lock_auth_failed">身份验证已取消或失败</string>
+    <string name="app_lock_unavailable">此设备不支持生物识别或设备凭据验证</string>
+    <string name="app_lock_not_enrolled">在启用应用保护之前，请先设置生物识别或设备屏幕锁定</string>
+    <string name="help_item_app_lock">在设置 → 安全中启用生物识别保护。应用将在配置的后台超时时间后自动锁定（默认：30 秒）。使用指纹、人脸识别或设备 PIN 解锁。传入的快捷方式和共享文件将排队等待解锁后处理。锁定仅为界面门控，不加密文档或数据库。</string>
+    <string name="info_feature_app_lock">可选的生物识别应用锁（设置 → 安全）在可配置的后台超时后锁定界面。身份验证使用 Android BiometricManager；应用本身不存储或处理生物特征数据。</string>
+    <string name="privacy_keyword_7">应用锁定</string>
+    <string name="privacy_point_7">可选的生物识别锁定仅为界面门控，不加密文档或数据库。生物特征验证由 Android 的 BiometricManager 处理；应用从不直接访问指纹或人脸数据。该设置本地存储在 SharedPreferences 中。</string>
+</resources>

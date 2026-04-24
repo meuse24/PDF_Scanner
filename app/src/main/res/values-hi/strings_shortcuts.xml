@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_scan_short">स्कैन</string>
+    <string name="shortcut_scan_long">स्कैन शुरू करें</string>
+    <string name="shortcut_import_short">चित्र</string>
+    <string name="shortcut_import_long">चित्र आयात करें</string>
+    <string name="shortcut_trash_short">ट्रैश</string>
+    <string name="shortcut_trash_long">ट्रैश खोलें</string>
+    <string name="help_title_app_shortcuts">शॉर्टकट और त्वरित सेटिंग्स</string>
+    <string name="help_item_app_shortcuts">स्कैन शुरू करने, चित्र आयात करने या सीधे ट्रैश पर जाने के लिए ऐप आइकन को देर तक दबाएं। एक टैप एक्सेस के लिए सूचना पैनल में त्वरित सेटिंग्स टाइल जोड़ें। तुरंत स्कैन के लिए होम स्क्रीन पर विजेट रखें।</string>
+    <string name="info_feature_shortcuts">ऐप शॉर्टकट, त्वरित सेटिंग्स टाइल और होम स्क्रीन विजेट मुख्य संग्रह खोले बिना स्कैनिंग, चित्र आयात और ट्रैश तक सीधी पहुंच प्रदान करते हैं।</string>
+</resources>

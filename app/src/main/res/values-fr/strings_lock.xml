@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_security_title">Sécurité</string>
+    <string name="settings_app_lock_label">Protéger l\'appli avec la biométrie</string>
+    <string name="settings_app_lock_timeout_label">Verrouiller après une durée en arrière-plan</string>
+    <string name="settings_app_lock_timeout_immediately">Immédiatement</string>
+    <string name="settings_app_lock_timeout_15s">Après 15 secondes</string>
+    <string name="settings_app_lock_timeout_30s">Après 30 secondes</string>
+    <string name="settings_app_lock_timeout_1m">Après 1 minute</string>
+    <string name="settings_app_lock_timeout_5m">Après 5 minutes</string>
+    <string name="settings_app_lock_timeout_custom">Après %1$d secondes</string>
+    <string name="app_lock_prompt_title">Déverrouiller M24 PDF-Scanner</string>
+    <string name="app_lock_prompt_subtitle">Utiliser la biométrie ou les identifiants de l\'appareil</string>
+    <string name="app_lock_screen_title">Application verrouillée</string>
+    <string name="app_lock_screen_body">Déverrouillez l\'appli pour continuer avec des scans, des importations et des fichiers partagés.</string>
+    <string name="app_lock_unlock">Déverrouiller</string>
+    <string name="app_lock_auth_failed">L\'authentification a été annulée ou a échoué</string>
+    <string name="app_lock_unavailable">L\'authentification biométrique ou par identifiants de l\'appareil n\'est pas disponible sur cet appareil</string>
+    <string name="app_lock_not_enrolled">Configurez la biométrie ou un écran de verrouillage avant d\'activer la protection de l\'appli</string>
+    <string name="help_item_app_lock">Activez la protection biométrique dans Paramètres → Sécurité. L\'appli se verrouille automatiquement après la durée d\'arrière-plan configurée (par défaut : 30 s). Déverrouillez avec l\'empreinte, la reconnaissance faciale ou le code PIN. Les raccourcis et fichiers partagés entrants sont mis en file d\'attente jusqu\'au déverrouillage. Le verrou est uniquement une porte d\'interface et ne chiffre ni les documents ni la base de données.</string>
+    <string name="info_feature_app_lock">Un verrouillage biométrique optionnel (Paramètres → Sécurité) verrouille l\'interface après un délai d\'inactivité configurable. L\'authentification utilise le BiometricManager d\'Android ; l\'appli ne stocke ni ne traite de données biométriques.</string>
+    <string name="privacy_keyword_7">Verrouillage appli</string>
+    <string name="privacy_point_7">Le verrouillage biométrique optionnel est une porte d\'interface et ne chiffre ni les documents ni la base de données. La vérification biométrique est gérée par le BiometricManager d\'Android ; l\'appli n\'accède jamais directement aux données d\'empreinte ou de visage. Le paramètre est stocké localement dans les SharedPreferences.</string>
+</resources>

@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.DuplicatePagesUseCase
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
@@ -22,13 +22,13 @@ class DuplicatePagesWorkflowTest {
         id: Long,
         pageCount: Int = 3,
         exists: Boolean = true
-    ): ScanRecord {
+    ): Document {
         val file = if (exists) {
             tmpFolder.newFile("scan_$id.pdf").apply { writeText("pdf") }
         } else {
             File(tmpFolder.root, "missing_$id.pdf")
         }
-        return ScanRecord(
+        return Document(
             id = id,
             filename = "scan_$id",
             filepath = file.absolutePath,
@@ -41,8 +41,8 @@ class DuplicatePagesWorkflowTest {
     private fun workflow(pdfEditor: PdfEditor): Pair<DuplicatePagesWorkflow, FakeScanDao> {
         val dao = FakeScanDao()
         val repository = ScanRepository(dao)
-        val useCase = DuplicatePagesUseCase(pdfEditor, repository)
-        return DuplicatePagesWorkflow(useCase) to dao
+        val useCase = DuplicatePagesUseCase(pdfEditor, info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository))
+        return DuplicatePagesWorkflow(useCase, DocumentWorkflowGuard(pdfEditor)) to dao
     }
 
     @Test
@@ -127,3 +127,5 @@ private class FakeDuplicatePdfEditor(
         return true
     }
 }
+
+

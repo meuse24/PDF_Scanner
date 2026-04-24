@@ -14,13 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 
 @Composable
 internal fun MergeDialog(
     filename:         String,
     onFilenameChange: (String) -> Unit,
-    records:          List<ScanRecord>,
+    records:          List<Document>,
     onConfirm:        () -> Unit,
     onDismiss:        () -> Unit
 ) {
@@ -62,3 +62,4 @@ internal fun MergeDialog(
         }
     )
 }
+

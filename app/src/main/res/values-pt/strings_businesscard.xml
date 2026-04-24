@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_business_card">Digitalizar cartão de visita</string>
+    <string name="business_card_title">Cartão de visita</string>
+    <string name="business_card_subtitle">Revise e corrija os dados de contato detectados antes de exportar um vCard.</string>
+    <string name="business_card_name">Nome completo</string>
+    <string name="business_card_organization">Organização</string>
+    <string name="business_card_job_title">Cargo</string>
+    <string name="business_card_emails">Endereços de e-mail</string>
+    <string name="business_card_phones">Números de telefone</string>
+    <string name="business_card_urls">Sites</string>
+    <string name="business_card_address">Endereço</string>
+    <string name="business_card_add_to_contacts">Adicionar aos contatos</string>
+    <string name="business_card_share_vcard">Compartilhar vCard</string>
+    <string name="business_card_scan_failed">Falha ao digitalizar o cartão de visita</string>
+    <string name="business_card_export_failed">Falha ao exportar o vCard</string>
+    <string name="business_card_no_contact_app">Nenhum aplicativo de contatos compatível encontrado</string>
+    <string name="error_document_not_found">Documento não encontrado</string>
+    <string name="help_item_business_card">Abra o menu de três pontos em qualquer PDF digitalizado e escolha Digitalizar cartão de visita. O app executa OCR e extrai nome, organização, cargo, e-mails, telefones, sites e endereço. Revise e edite os campos detectados, depois toque em Adicionar aos contatos para salvar diretamente ou Compartilhar vCard para enviar o arquivo.</string>
+    <string name="info_feature_businesscard">O scanner de cartões de visita executa OCR em uma página PDF, extrai dados de contato estruturados e exporta um arquivo vCard 3.0 que pode ser adicionado ao app de contatos ou compartilhado.</string>
+</resources>

@@ -31,6 +31,15 @@ import com.tom_roush.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.text.TextPosition
 import com.tom_roush.pdfbox.util.Matrix
+import info.meuse24.pdf_scanner.domain.model.PdfMetadata
+import info.meuse24.pdf_scanner.domain.pdf.PdfAnnotationOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfPasswordRequiredException
+import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfSecurityOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfStructureOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfTextOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfWrongPasswordException
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
@@ -60,20 +69,6 @@ import kotlin.math.min
 import kotlin.math.sin
 
 /**
- * PDF-Metadaten aus PDDocumentInformation.
- * Alle Felder sind nullable — die meisten PDFs enthalten nur einen Teil davon.
- */
-data class PdfMetadata(
-    val title: String?,
-    val author: String?,
-    val creator: String?,
-    val subject: String?,
-    val keywords: String?,
-    val creationDate: Calendar?,
-    val modificationDate: Calendar?
-)
-
-/**
  * Utility für PDF-Bearbeitungsoperationen: Merge, Split, Reorder.
  *
  * Alle Methoden sind blocking (kein suspend). Der Aufrufer ist verantwortlich
@@ -87,10 +82,16 @@ data class PdfMetadata(
  * Operationen (> 50 MB PDFs) in einer späteren Version geplant.
  */
 @Singleton
-open class PdfEditor @Inject constructor() {
+open class PdfEditor @Inject constructor() :
+    PdfStructureOps,
+    PdfRenderingOps,
+    PdfSecurityOps,
+    PdfTextOps,
+    PdfAnnotationOps,
+    PdfMetadataOps {
 
-    class WrongPasswordException(cause: Throwable? = null) : IOException("Falsches Passwort", cause)
-    class PasswordRequiredException(cause: Throwable? = null) : IOException("PDF ist mit Benutzerpasswort geschützt", cause)
+    class WrongPasswordException(cause: Throwable? = null) : PdfWrongPasswordException(cause)
+    class PasswordRequiredException(cause: Throwable? = null) : PdfPasswordRequiredException(cause)
 
     /**
      * Führt mehrere PDFs zu [output] zusammen.
@@ -98,7 +99,7 @@ open class PdfEditor @Inject constructor() {
      * Bei IO-Fehler (z.B. Datei durch FileProvider gesperrt): IOException
      * mit Klartextmeldung, temp-Datei wird aufgeräumt.
      */
-    open fun mergePdfs(inputs: List<File>, output: File) {
+    override open fun mergePdfs(inputs: List<File>, output: File) {
         require(inputs.size >= 2) { "Mindestens zwei Dateien zum Zusammenführen erforderlich" }
         val temp = File(output.parent, "${output.nameWithoutExtension}_tmp.pdf")
         try {
@@ -131,7 +132,7 @@ open class PdfEditor @Inject constructor() {
      * Gibt die Liste der erzeugten Dateien zurück.
      * Quelle wird einmal geladen und für alle Teile genutzt.
      */
-    open fun splitPdf(input: File, outputDir: File, splitAtPages: List<Int>): List<File> {
+    override open fun splitPdf(input: File, outputDir: File, splitAtPages: List<Int>): List<File> {
         require(splitAtPages.isNotEmpty()) { "Mindestens ein Trennpunkt erforderlich" }
         val results = mutableListOf<File>()
         PDDocument.load(input).use { source ->
@@ -160,14 +161,14 @@ open class PdfEditor @Inject constructor() {
      * reorderPages() gültig und muss NICHT zurückgesetzt werden.
      * Gibt die Zieldatei zurück.
      */
-    open fun reorderPages(input: File, newOrder: List<Int>, saveAsCopy: Boolean): File {
+    override open fun reorderPages(input: File, newOrder: List<Int>, saveAsCopy: Boolean): File {
         require(newOrder.isNotEmpty()) { "Seitenreihenfolge darf nicht leer sein" }
         return editPdf(input, saveAsCopy, "_Sortiert", "Reorder") { source, reordered ->
             newOrder.forEach { pageIdx -> reordered.importPage(source.getPage(pageIdx)) }
         }
     }
 
-    open fun rotatePages(
+    override open fun rotatePages(
         input: File,
         pageIndexes: List<Int>,
         rotationDegrees: Int,
@@ -186,7 +187,7 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
-    open fun deletePages(
+    override open fun deletePages(
         input: File,
         pageIndexes: List<Int>,
         saveAsCopy: Boolean
@@ -205,7 +206,7 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
-    open fun extractPages(input: File, outputDir: File, pageIndexes: List<Int>): File {
+    override open fun extractPages(input: File, outputDir: File, pageIndexes: List<Int>): File {
         require(pageIndexes.isNotEmpty()) { "Mindestens eine Seite zum Extrahieren erforderlich" }
         return writeDerivedPdf(input, outputDir, "_Extrahiert", "Extract") { source, extracted ->
             normalizePageIndexes(source.numberOfPages, pageIndexes).forEach { pageIdx ->
@@ -214,7 +215,7 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
-    open fun duplicatePages(input: File, outputDir: File, pageIndexes: List<Int>): File {
+    override open fun duplicatePages(input: File, outputDir: File, pageIndexes: List<Int>): File {
         require(pageIndexes.isNotEmpty()) { "Mindestens eine Seite zum Duplizieren erforderlich" }
         return writeDerivedPdf(input, outputDir, "_Dupliziert", "Duplicate") { source, duplicated ->
             val selected = normalizePageIndexes(source.numberOfPages, pageIndexes).toSet()
@@ -227,7 +228,7 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
-    open fun addPageNumbers(input: File, outputDir: File): File {
+    override open fun addPageNumbers(input: File, outputDir: File): File {
         return writeDerivedPdf(input, outputDir, "_Nummeriert", "PageNumbers") { source, numbered ->
             val font = loadOverlayFont(numbered)
             repeat(source.numberOfPages) { pageIdx ->
@@ -237,7 +238,7 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
-    open fun applyTextWatermark(input: File, outputDir: File, text: String): File {
+    override open fun applyTextWatermark(input: File, outputDir: File, text: String): File {
         require(text.isNotBlank()) { "Wasserzeichen darf nicht leer sein" }
         return writeDerivedPdf(input, outputDir, "_Wasserzeichen", "Watermark") { source, watermarked ->
             val font = loadOverlayFont(watermarked)
@@ -252,7 +253,7 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
-    open fun compressPdf(input: File, outputDir: File, preset: PdfCompressionPreset): File {
+    override open fun compressPdf(input: File, outputDir: File, preset: PdfCompressionPreset): File {
         val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_Komprimiert")
         val output = File(outputDir, "$baseName.pdf")
         return writePdf("Compress", output) { target ->
@@ -301,7 +302,7 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
-    open fun protectPdf(input: File, outputDir: File, password: String): File {
+    override open fun protectPdf(input: File, outputDir: File, password: String): File {
         require(password.isNotBlank()) { "Passwort darf nicht leer sein" }
         return writeDerivedPdf(input, outputDir, "_Geschuetzt", "Protect") { source, protectedDoc ->
             repeat(source.numberOfPages) { pageIdx ->
@@ -322,7 +323,7 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
-    open fun unlockPdf(input: File, outputDir: File, password: String): File {
+    override open fun unlockPdf(input: File, outputDir: File, password: String): File {
         require(password.isNotBlank()) { "Passwort darf nicht leer sein" }
         val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_Entsperrt")
         val output = File(outputDir, "$baseName.pdf")
@@ -343,7 +344,7 @@ open class PdfEditor @Inject constructor() {
      * Das Ergebnis ist eine neue PDF-Kopie ohne OCR-Textschicht.
      * Muss auf Dispatchers.IO aufgerufen werden.
      */
-    open fun removeTextLayer(input: File, outputDir: File): File {
+    override open fun removeTextLayer(input: File, outputDir: File): File {
         val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_OhneTextlayer")
         val output = File(outputDir, "$baseName.pdf")
         return writePdf("RemoveTextLayer", output) { target ->
@@ -382,7 +383,7 @@ open class PdfEditor @Inject constructor() {
      * und via LosslessFactory als neues PDF gespeichert. Der Textlayer wird dabei
      * nicht übertragen — das Ergebnis ist ein reines Bild-PDF mit Suffix „_SW".
      */
-    open fun convertToGrayscale(input: File, outputDir: File): File {
+    override open fun convertToGrayscale(input: File, outputDir: File): File {
         val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_SW")
         val output = File(outputDir, "$baseName.pdf")
         return writePdf("ConvertToGrayscale", output) { target ->
@@ -431,7 +432,7 @@ open class PdfEditor @Inject constructor() {
      * Das Layout bestimmt, wie viele Bilder pro Seite angeordnet werden.
      * Bilder werden proportional (fit-inside) zentriert in ihre Zelle skaliert.
      */
-    open fun createPdfFromImages(
+    override open fun createPdfFromImages(
         imageBytes: List<ByteArray?>,
         layout: ImagePageLayout,
         outputFile: File
@@ -481,7 +482,7 @@ open class PdfEditor @Inject constructor() {
      * Ergebnis: Unter dem geschwärzten Bereich bleibt kein extrahierbarer
      * Seiteninhalt zurück; betroffene Seiten verlieren bewusst ihren Textlayer.
      */
-    open fun applySecureRedaction(
+    override open fun applySecureRedaction(
         input: File,
         outputDir: File,
         rects: List<RedactionRect>
@@ -561,7 +562,7 @@ open class PdfEditor @Inject constructor() {
      * Liest PDF-Metadaten aus PDDocumentInformation.
      * Gibt bei verschlüsselten oder fehlerhaften PDFs ein leeres [PdfMetadata] zurück.
      */
-    open fun readMetadata(input: File): PdfMetadata {
+    override open fun readMetadata(input: File): PdfMetadata {
         return try {
             PDDocument.load(input, "").use { doc ->
                 val info = doc.documentInformation
@@ -585,7 +586,7 @@ open class PdfEditor @Inject constructor() {
      * Das Original wird über eine temporäre Datei atomar ersetzt.
      * Das Änderungsdatum wird auf jetzt gesetzt, das Erstellungsdatum beibehalten.
      */
-    open fun updateMetadata(input: File, metadata: PdfMetadata): File {
+    override open fun updateMetadata(input: File, metadata: PdfMetadata): File {
         return writePdf("UpdateMetadata", input) { target ->
             PDDocument.load(input, "").use { document ->
                 val info = document.documentInformation
@@ -606,7 +607,7 @@ open class PdfEditor @Inject constructor() {
      * Funktioniert bei PDFs mit leerem Benutzerpasswort (z.B. nur Eigentümerpasswort / Nutzungseinschränkungen).
      * Wirft [PasswordRequiredException] wenn ein echtes Benutzerpasswort gesetzt ist.
      */
-    open fun removePassword(input: File, outputDir: File): File {
+    override open fun removePassword(input: File, outputDir: File): File {
         val baseName = resolveUniqueFilename(outputDir, "${input.nameWithoutExtension}_OhneSchutz")
         val output = File(outputDir, "$baseName.pdf")
         return writePdf("RemovePassword", output) { target ->
@@ -627,7 +628,7 @@ open class PdfEditor @Inject constructor() {
      * Das Ergebnis ist eine neue PDF-Kopie mit Suffix „_Eingeschraenkt".
      * Wirft [PasswordRequiredException] wenn die Eingabe-PDF ein echtes Benutzerpasswort hat.
      */
-    open fun restrictUsage(
+    override open fun restrictUsage(
         input: File,
         outputDir: File,
         ownerPassword: String,
@@ -666,7 +667,7 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
-    open fun isPdfEncrypted(input: File): Boolean {
+    override open fun isPdfEncrypted(input: File): Boolean {
         return try {
             PDDocument.load(input).use { document -> document.isEncrypted }
         } catch (_: InvalidPasswordException) {
@@ -674,7 +675,7 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
-    open fun extractTextLines(file: File, pageIndex: Int): List<TextLine> {
+    override open fun extractTextLines(file: File, pageIndex: Int): List<TextLine> {
         if (pageIndex < 0) return emptyList()
 
         PDDocument.load(file).use { document ->
@@ -707,7 +708,7 @@ open class PdfEditor @Inject constructor() {
         }
     }
 
-    open fun applySignatureStamp(
+    override open fun applySignatureStamp(
         input: File,
         outputDir: File,
         signatureBitmap: Bitmap,
@@ -735,11 +736,11 @@ open class PdfEditor @Inject constructor() {
      * und speichert das Ergebnis mit Suffix "_Markiert" in [outputDir].
      * [strokes] enthält normalisierte Koordinaten (0..1) pro Seite.
      */
-    open fun applyHighlight(
+    override open fun applyHighlight(
         input: File,
         outputDir: File,
         strokes: List<HighlightStroke>,
-        rects: List<HighlightRect> = emptyList()
+        rects: List<HighlightRect>
     ): File {
         require(strokes.isNotEmpty() || rects.isNotEmpty()) {
             "Mindestens eine Markierung erforderlich"
@@ -845,13 +846,13 @@ open class PdfEditor @Inject constructor() {
      * Schreibt Markierungen (Strokes + Rects) und Textkommentare auf die Seiten von [input]
      * und speichert das Ergebnis mit Suffix "_Annotiert" in [outputDir].
      */
-    open fun applyAnnotations(
+    override open fun applyAnnotations(
         input: File,
         outputDir: File,
         strokes: List<AnnotationStroke>,
-        rects: List<AnnotationRect> = emptyList(),
-        ovals: List<AnnotationOval> = emptyList(),
-        comments: List<AnnotationText> = emptyList()
+        rects: List<AnnotationRect>,
+        ovals: List<AnnotationOval>,
+        comments: List<AnnotationText>
     ): File {
         require(strokes.isNotEmpty() || rects.isNotEmpty() || ovals.isNotEmpty() || comments.isNotEmpty()) {
             "Mindestens eine Annotation erforderlich"
@@ -899,7 +900,7 @@ open class PdfEditor @Inject constructor() {
      * Gibt die Seitenanzahl von [pdfFile] zurück, 0 bei Fehler.
      * Muss auf Dispatchers.IO aufgerufen werden.
      */
-    open fun getPageCount(pdfFile: File): Int {
+    override open fun getPageCount(pdfFile: File): Int {
         return try {
             ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
                 PdfRenderer(pfd).use { it.pageCount }
@@ -911,7 +912,7 @@ open class PdfEditor @Inject constructor() {
      * Rendert Seite 0 von [pdfFile] als JPEG-Thumbnail in [outputFile].
      * Gibt true zurück bei Erfolg. Muss auf Dispatchers.IO aufgerufen werden.
      */
-    open fun generateThumbnail(pdfFile: File, outputFile: File): Boolean {
+    override open fun generateThumbnail(pdfFile: File, outputFile: File): Boolean {
         return try {
             val bitmap = renderPageThumbnail(pdfFile, 0, 200) ?: return false
             outputFile.outputStream().use { out ->
@@ -929,7 +930,7 @@ open class PdfEditor @Inject constructor() {
      * Das originale Seitenverhältnis wird beibehalten.
      * Gibt null bei Fehler zurück. Muss auf Dispatchers.IO aufgerufen werden.
      */
-    open fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int): Bitmap? {
+    override open fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int): Bitmap? {
         return try {
             ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
                 PdfRenderer(pfd).use { renderer ->

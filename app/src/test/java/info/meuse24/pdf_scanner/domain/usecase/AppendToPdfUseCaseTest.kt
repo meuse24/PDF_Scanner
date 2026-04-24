@@ -2,7 +2,7 @@ package info.meuse24.pdf_scanner.domain.usecase
 
 import android.content.Context
 import android.net.Uri
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
@@ -33,7 +33,7 @@ class AppendToPdfUseCaseTest {
         file: File,
         pageCount: Int,
         isSearchable: Boolean = true
-    ) = ScanRecord(
+    ) = Document(
         id = id,
         filename = file.nameWithoutExtension,
         filepath = file.absolutePath,
@@ -231,3 +231,4 @@ private class SelectiveEncryptedPdfEditor(
 ) : JvmAppendPdfEditor() {
     override fun isPdfEncrypted(input: File): Boolean = input.name in encryptedFiles
 }
+

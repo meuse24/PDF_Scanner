@@ -27,10 +27,11 @@ fun PageNumbersScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsStateWithLifecycle()
-    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
-    val success by viewModel.success.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val record = uiState.record
+    val editLoading = uiState.editLoading
+    val error = uiState.error
+    val success = uiState.success
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()
@@ -77,10 +78,11 @@ fun TextWatermarkScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsStateWithLifecycle()
-    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
-    val success by viewModel.success.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val record = uiState.record
+    val editLoading = uiState.editLoading
+    val error = uiState.error
+    val success = uiState.success
     var watermarkText by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(success) {

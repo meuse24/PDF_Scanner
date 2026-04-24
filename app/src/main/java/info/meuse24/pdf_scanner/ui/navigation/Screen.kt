@@ -3,6 +3,7 @@ package info.meuse24.pdf_scanner.ui.navigation
 sealed class Screen(val route: String) {
     data object Ablage  : Screen("ablage")
     data object Trash : Screen("trash")
+    data object FolderManagement : Screen("folder-management")
     data object Settings : Screen("settings")
     data object Help    : Screen("help")
     data object Info    : Screen("info")
@@ -75,6 +76,9 @@ sealed class Screen(val route: String) {
     }
     data object QrScan : Screen("qr-scan/{scanId}") {
         fun createRoute(scanId: Long) = "qr-scan/$scanId"
+    }
+    data object BusinessCard : Screen("business-card/{scanId}") {
+        fun createRoute(scanId: Long) = "business-card/$scanId"
     }
     data object ImagesToPdf : Screen("images-to-pdf")
 }

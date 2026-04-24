@@ -1,10 +1,10 @@
 package info.meuse24.pdf_scanner.ui.viewer
 
 import android.graphics.Bitmap
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 
 data class PdfViewerUiState(
-    val record: ScanRecord? = null,
+    val record: Document? = null,
     val loading: Boolean = true,
     val errorMessage: String? = null,
     val transientMessage: String? = null,
@@ -36,3 +36,4 @@ internal const val PDF_VIEWER_DEFAULT_ASPECT_RATIO = 0.707f
 internal const val PDF_VIEWER_PREFETCH_DISTANCE = 1
 internal const val PDF_VIEWER_FIT_MAX_BITMAP_SIDE_PX = 2_048
 internal const val PDF_VIEWER_ZOOM_MAX_BITMAP_SIDE_PX = 3_072
+

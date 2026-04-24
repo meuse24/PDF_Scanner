@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import java.io.File
@@ -17,7 +17,7 @@ class MakeSearchableWorkflow @Inject constructor(
     private val makeSearchableUseCase: MakeSearchableUseCase
 ) {
     suspend operator fun invoke(
-        records: List<ScanRecord>,
+        records: List<Document>,
         languageCode: String,
         force: Boolean = false,
         onProgress: (Int, Int) -> Unit = { _, _ -> },
@@ -62,3 +62,4 @@ class MakeSearchableWorkflow @Inject constructor(
         }
     }
 }
+

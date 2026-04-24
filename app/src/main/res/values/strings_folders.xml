@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_all_documents">All documents</string>
+    <string name="folder_favorites">Favorites</string>
+    <string name="folder_manage">Manage folders</string>
+    <string name="folder_management_title">Folders</string>
+    <string name="folder_create">Create folder</string>
+    <string name="folder_create_failed">Folder could not be created</string>
+    <string name="folder_rename">Rename</string>
+    <string name="folder_rename_failed">Folder could not be renamed</string>
+    <string name="folder_delete">Delete</string>
+    <string name="folder_delete_failed">Folder could not be deleted</string>
+    <string name="folder_delete_confirm">Delete the folder \"%1$s\"? Documents will remain in the archive.</string>
+    <string name="folder_name_label">Folder name</string>
+    <string name="folder_move_success">Documents moved</string>
+    <string name="folder_move_failed">Documents could not be moved</string>
+    <string name="favorite_toggle_failed">Favorite status could not be updated</string>
+    <string name="folder_picker_title">Move to folder</string>
+    <string name="folder_picker_root">No folder</string>
+    <string name="folder_picker_root_subtitle">Keep the documents at the top level</string>
+    <string name="folder_picker_move_here">Move documents here</string>
+    <string name="label_bulk_move_folder">Folder</string>
+    <string name="help_item_folders">Open the side menu to switch between all documents, your favorites, and named folders. Tap the star icon on a document card to mark or unmark it as a favorite. Select one or more documents and tap the Folder button to move them. Long-press a folder in the menu to rename or delete it — documents move to the top level when a folder is deleted.</string>
+    <string name="info_feature_folders">Documents can be organised into folders and marked as favorites. The side menu lists all folders and a Favorites filter. Folders are flat (no nesting); deleting a folder moves its documents back to the top level.</string>
+</resources>

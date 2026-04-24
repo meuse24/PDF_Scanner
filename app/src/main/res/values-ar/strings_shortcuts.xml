@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_scan_short">مسح</string>
+    <string name="shortcut_scan_long">بدء المسح الضوئي</string>
+    <string name="shortcut_import_short">صور</string>
+    <string name="shortcut_import_long">استيراد الصور</string>
+    <string name="shortcut_trash_short">المهملات</string>
+    <string name="shortcut_trash_long">فتح المهملات</string>
+    <string name="help_title_app_shortcuts">الاختصارات والإعدادات السريعة</string>
+    <string name="help_item_app_shortcuts">اضغط مطوّلًا على أيقونة التطبيق لبدء المسح أو استيراد الصور أو الانتقال مباشرةً إلى المهملات. أضف بلاطة الإعدادات السريعة في لوح الإشعارات للوصول بنقرة واحدة. ضع الأداة على الشاشة الرئيسية للمسح الفوري.</string>
+    <string name="info_feature_shortcuts">تتيح اختصارات التطبيق وبلاطة الإعدادات السريعة والأداة الوصول المباشر إلى المسح واستيراد الصور والمهملات دون فتح الأرشيف الرئيسي.</string>
+</resources>

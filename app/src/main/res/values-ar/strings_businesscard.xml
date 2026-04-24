@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_business_card">مسح بطاقة العمل</string>
+    <string name="business_card_title">بطاقة العمل</string>
+    <string name="business_card_subtitle">راجع بيانات الاتصال المكتشفة وصحّحها قبل تصدير vCard.</string>
+    <string name="business_card_name">الاسم الكامل</string>
+    <string name="business_card_organization">المؤسسة</string>
+    <string name="business_card_job_title">المسمى الوظيفي</string>
+    <string name="business_card_emails">عناوين البريد الإلكتروني</string>
+    <string name="business_card_phones">أرقام الهاتف</string>
+    <string name="business_card_urls">مواقع الويب</string>
+    <string name="business_card_address">العنوان</string>
+    <string name="business_card_add_to_contacts">إضافة إلى جهات الاتصال</string>
+    <string name="business_card_share_vcard">مشاركة vCard</string>
+    <string name="business_card_scan_failed">فشل مسح بطاقة العمل</string>
+    <string name="business_card_export_failed">فشل تصدير vCard</string>
+    <string name="business_card_no_contact_app">لم يتم العثور على تطبيق اتصالات متوافق</string>
+    <string name="error_document_not_found">المستند غير موجود</string>
+    <string name="help_item_business_card">افتح قائمة النقاط الثلاث في أي PDF ممسوح واختر مسح بطاقة العمل. يُشغّل التطبيق OCR ويستخرج الاسم والمؤسسة والمسمى الوظيفي والبريد الإلكتروني وأرقام الهاتف والمواقع والعنوان. راجع الحقول المكتشفة وعدّلها، ثم انقر إضافة إلى جهات الاتصال للحفظ المباشر أو مشاركة vCard لإرسال الملف.</string>
+    <string name="info_feature_businesscard">يُشغّل ماسح بطاقات العمل OCR على صفحة PDF ويستخرج بيانات اتصال منظّمة ويصدر ملف vCard 3.0 يمكن إضافته إلى تطبيق جهات الاتصال أو مشاركته.</string>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_scan_short">扫描</string>
+    <string name="shortcut_scan_long">开始扫描</string>
+    <string name="shortcut_import_short">图片</string>
+    <string name="shortcut_import_long">导入图片</string>
+    <string name="shortcut_trash_short">回收站</string>
+    <string name="shortcut_trash_long">打开回收站</string>
+    <string name="help_title_app_shortcuts">快捷方式与快速设置</string>
+    <string name="help_item_app_shortcuts">长按应用图标可直接开始扫描、导入图片或打开回收站。在通知栏添加快速设置磁贴，一键即可扫描。将小组件放置在主屏幕上，随时快速扫描。</string>
+    <string name="info_feature_shortcuts">应用快捷方式、快速设置磁贴和主屏幕小组件可直接访问扫描、图片导入和回收站，无需打开主归档界面。</string>
+</resources>

@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.util.DownloadsStorage
 import java.io.File
 import javax.inject.Inject
@@ -13,7 +13,7 @@ import javax.inject.Inject
 class ExportScanUseCase @Inject constructor(
     private val downloadsStorage: DownloadsStorage
 ) {
-    suspend operator fun invoke(record: ScanRecord): String {
+    suspend operator fun invoke(record: Document): String {
         val sourceFile = File(record.filepath)
         if (!sourceFile.exists()) error("Quelldatei nicht gefunden: ${record.filepath}")
 
@@ -26,3 +26,4 @@ class ExportScanUseCase @Inject constructor(
         return downloadEntry.displayName
     }
 }
+

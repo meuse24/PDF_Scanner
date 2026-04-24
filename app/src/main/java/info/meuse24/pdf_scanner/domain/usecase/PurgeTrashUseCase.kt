@@ -1,14 +1,14 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.TrashRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.repository.TrashDocumentRepository
 import javax.inject.Inject
 
 class PurgeTrashUseCase @Inject constructor(
-    private val repository: TrashRepository,
+    private val repository: TrashDocumentRepository,
     private val deleteScansUseCase: DeleteScansUseCase
 ) {
-    suspend fun purgeSelected(records: List<ScanRecord>): Boolean =
+    suspend fun purgeSelected(records: List<Document>): Boolean =
         deleteScansUseCase(records)
 
     suspend fun purgeExpired(retentionMillis: Long): Int {
@@ -19,3 +19,4 @@ class PurgeTrashUseCase @Inject constructor(
         return expired.size
     }
 }
+

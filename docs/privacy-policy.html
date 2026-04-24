@@ -230,7 +230,7 @@
                 </div>
                 <div class="card">
                     <strong>Last updated</strong>
-                    April 23, 2026
+                    April 24, 2026
                 </div>
             </div>
         </div>
@@ -255,7 +255,7 @@
                 </div>
                 <div class="card">
                     <strong>Stand</strong>
-                    23. April 2026
+                    24. April 2026
                 </div>
             </div>
         </div>
@@ -290,6 +290,12 @@
                 The optional secure redaction feature also runs locally. It creates a separate redacted
                 copy, rebuilds affected pages as image-only output, and removes OCR text, metadata,
                 forms, links, attachments, and actions from the saved redacted result where applicable.
+            </p>
+            <p>
+                Folders, favorites, app shortcuts, the Quick Settings tile, the home-screen widget,
+                Android Share import, Android Print, and business-card vCard export are local app or
+                Android system integrations. The optional app lock is a UI gate using Android biometric
+                or device-credential authentication; it does not encrypt stored PDFs or the database.
             </p>
             <p>
                 The app uses the <strong>DM Sans</strong> font via the <strong>Google Fonts API</strong>,
@@ -332,6 +338,13 @@
                 Anhaenge und Aktionen.
             </p>
             <p>
+                Ordner, Favoriten, App-Shortcuts, Schnelleinstellungskachel, Homescreen-Widget,
+                Android-Share-Import, Android-Drucken und Visitenkarten-vCard-Export sind lokale
+                App- bzw. Android-Systemintegrationen. Die optionale App-Sperre ist ein UI-Gate ueber
+                Android-Biometrie oder Geraete-PIN; sie verschluesselt gespeicherte PDFs oder die
+                Datenbank nicht.
+            </p>
+            <p>
                 Die App verwendet die Schriftart <strong>DM Sans</strong> ueber die
                 <strong>Google Fonts API</strong>, die ueber Google Play Services bereitgestellt wird.
                 Die App selbst stellt keine direkten Internetanfragen fuer Schriftarten.
@@ -357,7 +370,10 @@
                 <li>file size</li>
                 <li>optional extracted OCR text for searchable PDFs</li>
                 <li>optional automatically derived local tags</li>
+                <li>optional folder assignment and favorite status</li>
                 <li>optional redacted PDF copies created by the user</li>
+                <li>optional business-card contact fields and generated vCard files</li>
+                <li>optional app-lock setting and timeout</li>
             </ul>
             <p>
                 This information is stored locally in app storage and in a local database on the device
@@ -387,7 +403,10 @@
                 <li>Dateigroesse</li>
                 <li>optional erkannter OCR-Text bei durchsuchbaren PDFs</li>
                 <li>optional automatisch abgeleitete lokale Tags</li>
+                <li>optionale Ordnerzuordnung und Favoritenstatus</li>
                 <li>optional vom Nutzer erzeugte geschwaerzte PDF-Kopien</li>
+                <li>optionale Visitenkarten-Kontaktfelder und erzeugte vCard-Dateien</li>
+                <li>optionale App-Sperren-Einstellung und Timeout</li>
             </ul>
             <p>
                 Diese Informationen werden lokal im App-Speicher und in einer lokalen Datenbank auf dem
@@ -423,6 +442,10 @@
                 deletes the original document later.
             </p>
             <p>
+                Generated vCard files are written to the app cache for sharing or adding to contacts.
+                App-lock preferences are stored locally in SharedPreferences.
+            </p>
+            <p>
                 In the current implementation, scanned PDFs and the local database are also explicitly
                 excluded from Android cloud backups and device-to-device transfer.
             </p>
@@ -440,6 +463,10 @@
             <p>
                 Neu erzeugte geschwaerzte Kopien werden neben den Originalen gespeichert, solange der
                 Nutzer die Originaldatei nicht spaeter selbst loescht.
+            </p>
+            <p>
+                Erzeugte vCard-Dateien werden zum Teilen oder Hinzufuegen zu Kontakten im App-Cache
+                geschrieben. App-Sperren-Einstellungen werden lokal in SharedPreferences gespeichert.
             </p>
             <p>
                 Nach der aktuellen Implementierung sind die gescannten PDFs und die lokale Datenbank
@@ -597,6 +624,8 @@
             <ul>
                 <li>When <strong>sharing</strong>, the file is passed to the app selected by the user.</li>
                 <li>When <strong>exporting</strong>, a copy of the file is written to the device's Downloads area.</li>
+                <li>When <strong>printing</strong>, the file is passed to the Android system print dialog.</li>
+                <li>When another app <strong>shares into</strong> this app, the file is copied into the archive only after user confirmation.</li>
             </ul>
             <p>
                 For secure redaction this means the user should share or export the redacted copy,
@@ -616,6 +645,8 @@
             <ul>
                 <li>Beim <strong>Teilen</strong> wird die Datei an die vom Nutzer ausgewaehlte Ziel-App uebergeben.</li>
                 <li>Beim <strong>Export</strong> wird eine Kopie der Datei in den Download-Bereich des Geraets geschrieben.</li>
+                <li>Beim <strong>Drucken</strong> wird die Datei an den Android-Systemdialog fuer Drucken uebergeben.</li>
+                <li>Wenn eine andere App eine Datei <strong>an diese App teilt</strong>, wird sie erst nach Bestaetigung in die Ablage kopiert.</li>
             </ul>
             <p>
                 Bei sicherer Schwaerzung bedeutet das: Der Nutzer sollte die geschwaerzte Kopie teilen
@@ -726,8 +757,8 @@
     </section>
 
     <footer>
-        <span data-lang-content="en">M24 PDF-Scanner Privacy Policy, last updated April 23, 2026.</span>
-        <span data-lang-content="de">M24 PDF-Scanner Datenschutzerklaerung, Stand 23. April 2026.</span>
+        <span data-lang-content="en">M24 PDF-Scanner Privacy Policy, last updated April 24, 2026.</span>
+        <span data-lang-content="de">M24 PDF-Scanner Datenschutzerklaerung, Stand 24. April 2026.</span>
     </footer>
 </main>
 

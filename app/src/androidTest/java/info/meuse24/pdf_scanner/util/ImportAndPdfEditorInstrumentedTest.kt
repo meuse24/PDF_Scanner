@@ -16,7 +16,7 @@ import com.tom_roush.pdfbox.pdmodel.common.PDRectangle
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanDao
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
@@ -999,22 +999,22 @@ private inline fun <T> android.graphics.Bitmap.useBitmap(block: (android.graphic
     }
 
 private class InstrumentedFakeScanDao : ScanDao {
-    val inserted = mutableListOf<ScanRecord>()
+    val inserted = mutableListOf<Document>()
 
-    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getAllScans(): Flow<List<Document>> = flowOf(emptyList())
 
-    override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun searchScansFlow(query: String): Flow<List<Document>> = flowOf(emptyList())
 
-    override suspend fun insert(record: ScanRecord): Long {
+    override suspend fun insert(record: Document): Long {
         inserted.add(record)
         return inserted.size.toLong()
     }
 
-    override suspend fun insertAll(records: List<ScanRecord>) {
+    override suspend fun insertAll(records: List<Document>) {
         inserted.addAll(records)
     }
 
-    override suspend fun delete(record: ScanRecord) = Unit
+    override suspend fun delete(record: Document) = Unit
 
     override suspend fun markSearchable(id: Long, fileSize: Long) = Unit
 
@@ -1044,3 +1044,4 @@ private class InstrumentedFakeScanDao : ScanDao {
 
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) = Unit
 }
+

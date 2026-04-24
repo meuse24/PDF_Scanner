@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import java.io.File
 
 /**
@@ -9,7 +9,7 @@ import java.io.File
  * andernfalls wird das vorhandene Thumbnail wiederverwendet bzw. neu angelegt.
  */
 internal fun thumbnailFile(
-    record: ScanRecord,
+    record: Document,
     resultFile: File,
     saveAsCopy: Boolean,
     scansDir: File
@@ -20,3 +20,4 @@ internal fun thumbnailFile(
     val existing = record.thumbnailPath?.let(::File)
     return existing ?: File(scansDir, "${record.filename}.jpg")
 }
+

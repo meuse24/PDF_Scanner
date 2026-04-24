@@ -5,10 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.content.FileProvider
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import java.io.File
 
-fun pdfContentUri(context: Context, record: ScanRecord): Uri? {
+fun pdfContentUri(context: Context, record: Document): Uri? {
     val file = File(record.filepath)
     if (!file.exists()) return null
     return FileProvider.getUriForFile(
@@ -18,7 +18,7 @@ fun pdfContentUri(context: Context, record: ScanRecord): Uri? {
     )
 }
 
-fun buildPdfViewIntent(context: Context, record: ScanRecord): Intent? {
+fun buildPdfViewIntent(context: Context, record: Document): Intent? {
     val uri = pdfContentUri(context, record) ?: return null
     return Intent(Intent.ACTION_VIEW).apply {
         setDataAndType(uri, "application/pdf")
@@ -26,7 +26,7 @@ fun buildPdfViewIntent(context: Context, record: ScanRecord): Intent? {
     }
 }
 
-fun buildPdfShareIntent(context: Context, records: List<ScanRecord>): Intent? {
+fun buildPdfShareIntent(context: Context, records: List<Document>): Intent? {
     val uris = ArrayList(records.mapNotNull { pdfContentUri(context, it) })
     if (uris.isEmpty()) return null
     return if (uris.size == 1) {
@@ -44,7 +44,7 @@ fun buildPdfShareIntent(context: Context, records: List<ScanRecord>): Intent? {
     }
 }
 
-fun openPdfExternally(context: Context, record: ScanRecord): Boolean {
+fun openPdfExternally(context: Context, record: Document): Boolean {
     val intent = buildPdfViewIntent(context, record) ?: return false
     return try {
         context.startActivity(intent)
@@ -53,3 +53,4 @@ fun openPdfExternally(context: Context, record: ScanRecord): Boolean {
         false
     }
 }
+

@@ -1,11 +1,11 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.PdfMetadata
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.UpdatePdfMetadataUseCase
 import info.meuse24.pdf_scanner.util.PdfEditor
-import info.meuse24.pdf_scanner.util.PdfMetadata
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -20,13 +20,13 @@ class UpdatePdfMetadataWorkflowTest {
 
     @get:Rule val tmpFolder = TemporaryFolder()
 
-    private fun record(id: Long, exists: Boolean = true, isEncrypted: Boolean = false): ScanRecord {
+    private fun record(id: Long, exists: Boolean = true, isEncrypted: Boolean = false): Document {
         val file = if (exists) {
             tmpFolder.newFile("scan_$id.pdf").apply { writeText("pdf") }
         } else {
             File(tmpFolder.root, "missing_$id.pdf")
         }
-        return ScanRecord(
+        return Document(
             id = id,
             filename = "scan_$id",
             filepath = file.absolutePath,
@@ -51,7 +51,7 @@ class UpdatePdfMetadataWorkflowTest {
         val dao = FakeScanDao()
         val repository = ScanRepository(dao)
         val useCase = UpdatePdfMetadataUseCase(pdfEditor, repository)
-        return UpdatePdfMetadataWorkflow(useCase) to dao
+        return UpdatePdfMetadataWorkflow(useCase, DocumentWorkflowGuard(pdfEditor)) to dao
     }
 
     @Test
@@ -69,7 +69,7 @@ class UpdatePdfMetadataWorkflowTest {
 
     @Test
     fun `verschluesselte Datei liefert ProtectedPdfUnsupported`() = runTest {
-        val (workflow, _) = workflow(FakeMetadataPdfEditor())
+        val (workflow, _) = workflow(FakeMetadataPdfEditor(encrypted = true))
 
         val result = workflow(record(2L, isEncrypted = true), metadata())
 
@@ -104,10 +104,13 @@ class UpdatePdfMetadataWorkflowTest {
 }
 
 private class FakeMetadataPdfEditor(
+    private val encrypted: Boolean = false,
     private val onUpdate: (File, PdfMetadata) -> File = { input, _ ->
         input.writeText("updated-meta")
         input
     }
 ) : PdfEditor() {
+    override fun isPdfEncrypted(input: File): Boolean = encrypted
+
     override fun updateMetadata(input: File, metadata: PdfMetadata): File = onUpdate(input, metadata)
 }

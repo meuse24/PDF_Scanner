@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_scan_short">Scan</string>
+    <string name="shortcut_scan_long">Start scan</string>
+    <string name="shortcut_import_short">Images</string>
+    <string name="shortcut_import_long">Import images</string>
+    <string name="shortcut_trash_short">Trash</string>
+    <string name="shortcut_trash_long">Open trash</string>
+    <string name="help_title_app_shortcuts">Shortcuts &amp; Quick Settings</string>
+    <string name="help_item_app_shortcuts">Long-press the app icon to start a scan, import images, or jump to the trash directly. Add the Quick Settings tile in your notification shade for one-tap scan access. Place the home-screen widget on your home screen for instant scanning.</string>
+    <string name="info_feature_shortcuts">App shortcuts, a Quick Settings tile, and a home-screen widget allow direct access to scanning, image import, and trash without opening the main archive.</string>
+</resources>

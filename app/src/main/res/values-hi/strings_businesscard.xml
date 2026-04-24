@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_business_card">बिज़नेस कार्ड स्कैन करें</string>
+    <string name="business_card_title">बिज़नेस कार्ड</string>
+    <string name="business_card_subtitle">vCard निर्यात करने से पहले, पहचाने गए संपर्क डेटा की जांच करें और सुधारें।</string>
+    <string name="business_card_name">पूरा नाम</string>
+    <string name="business_card_organization">संगठन</string>
+    <string name="business_card_job_title">पदनाम</string>
+    <string name="business_card_emails">ईमेल पते</string>
+    <string name="business_card_phones">फ़ोन नंबर</string>
+    <string name="business_card_urls">वेबसाइट</string>
+    <string name="business_card_address">पता</string>
+    <string name="business_card_add_to_contacts">संपर्कों में जोड़ें</string>
+    <string name="business_card_share_vcard">vCard साझा करें</string>
+    <string name="business_card_scan_failed">बिज़नेस कार्ड स्कैन विफल</string>
+    <string name="business_card_export_failed">vCard निर्यात विफल</string>
+    <string name="business_card_no_contact_app">कोई संगत संपर्क ऐप नहीं मिला</string>
+    <string name="error_document_not_found">दस्तावेज़ नहीं मिला</string>
+    <string name="help_item_business_card">किसी भी स्कैन किए गए PDF पर तीन-बिंदु मेनू खोलें और बिज़नेस कार्ड स्कैन करें चुनें। ऐप OCR चलाता है और नाम, संगठन, पदनाम, ईमेल, फ़ोन, वेबसाइट और पता निकालता है। पहचाने गए फ़ील्ड की समीक्षा करें और संपादित करें, फिर सीधे सहेजने के लिए संपर्कों में जोड़ें या फ़ाइल भेजने के लिए vCard साझा करें पर टैप करें।</string>
+    <string name="info_feature_businesscard">बिज़नेस कार्ड स्कैनर PDF पेज पर OCR चलाता है, संरचित संपर्क डेटा निकालता है और vCard 3.0 फ़ाइल निर्यात करता है जिसे संपर्क ऐप में जोड़ा या साझा किया जा सकता है।</string>
+</resources>

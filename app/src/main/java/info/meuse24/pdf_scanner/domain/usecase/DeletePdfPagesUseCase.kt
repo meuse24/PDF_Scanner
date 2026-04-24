@@ -1,42 +1,36 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
-import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfStructureOps
+import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
+import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
 import java.io.File
 import javax.inject.Inject
 
 class DeletePdfPagesUseCase @Inject constructor(
-    private val pdfEditor: PdfEditor,
-    private val repository: ScanRepository
+    private val pdfEditor: PdfStructureOps,
+    private val persister: ScanArtifactPersister,
+    private val repository: DocumentRepository,
+    private val pdfRenderingOps: PdfRenderingOps = pdfEditor as PdfRenderingOps
 ) {
     suspend operator fun invoke(
-        record: ScanRecord,
+        record: Document,
         pageIndexes: List<Int>,
         saveAsCopy: Boolean,
         scansDir: File
     ): Int {
         val resultFile = pdfEditor.deletePages(File(record.filepath), pageIndexes, saveAsCopy)
-        val pageCount = pdfEditor.getPageCount(resultFile)
-        val thumbFile = thumbnailFile(record, resultFile, saveAsCopy, scansDir)
-        pdfEditor.generateThumbnail(resultFile, thumbFile)
+        val pageCount = pdfRenderingOps.getPageCount(resultFile)
 
         if (saveAsCopy) {
-            repository.saveScan(
-                ScanRecord(
-                    filename = resultFile.nameWithoutExtension,
-                    filepath = resultFile.absolutePath,
-                    timestamp = System.currentTimeMillis(),
-                    pageCount = pageCount,
-                    fileSize = resultFile.length(),
-                    thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath,
-                    isSearchable = record.isSearchable
-                )
-            )
+            persister.persistDerivedFrom(record, resultFile, scansDir, pageCount)
         } else {
+            val thumbFile = thumbnailFile(record, resultFile, saveAsCopy, scansDir)
+            pdfRenderingOps.generateThumbnail(resultFile, thumbFile)
             repository.updatePageMetrics(record.id, pageCount, resultFile.length())
         }
         return pageCount
     }
-
 }
+

@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.PdfDocumentBitmapHandle
@@ -37,7 +37,7 @@ private val PDF_VIEWER_ZOOM_SCALE_STEPS = floatArrayOf(1f, 1.5f, 2f, 3f, 4f, 5f)
 
 @HiltViewModel
 class PdfViewerViewModel @Inject constructor(
-    private val repository: ScanRepository,
+    private val repository: DocumentRepository,
     private val pageBitmapRenderer: PdfPageBitmapRenderer,
     private val exportScanUseCase: ExportScanUseCase,
     private val resourceProvider: ResourceProvider,
@@ -160,7 +160,7 @@ class PdfViewerViewModel @Inject constructor(
         bitmapCache.clear()
     }
 
-    private fun onRecordChanged(record: ScanRecord) {
+    private fun onRecordChanged(record: Document) {
         _uiState.update { it.copy(record = record) }
         val nextKey = "${record.filepath}:${record.fileSize}"
         if (nextKey == documentKey && documentHandleRef.get() != null) return
@@ -437,3 +437,4 @@ private data class RenderJob(
     val targetWidthPx: Int,
     val job: Job
 )
+

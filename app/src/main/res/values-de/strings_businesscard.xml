@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_business_card">Visitenkarte scannen</string>
+    <string name="business_card_title">Visitenkarte</string>
+    <string name="business_card_subtitle">Prüfe und korrigiere die erkannten Kontaktdaten, bevor du eine vCard exportierst.</string>
+    <string name="business_card_name">Vollständiger Name</string>
+    <string name="business_card_organization">Organisation</string>
+    <string name="business_card_job_title">Position</string>
+    <string name="business_card_emails">E-Mail-Adressen</string>
+    <string name="business_card_phones">Telefonnummern</string>
+    <string name="business_card_urls">Websites</string>
+    <string name="business_card_address">Adresse</string>
+    <string name="business_card_add_to_contacts">Zu Kontakten hinzufügen</string>
+    <string name="business_card_share_vcard">vCard teilen</string>
+    <string name="business_card_scan_failed">Visitenkarten-Scan fehlgeschlagen</string>
+    <string name="business_card_export_failed">vCard-Export fehlgeschlagen</string>
+    <string name="business_card_no_contact_app">Keine kompatible Kontakte-App gefunden</string>
+    <string name="error_document_not_found">Dokument nicht gefunden</string>
+    <string name="help_item_business_card">Öffne das Dreipunkt-Menü bei einem gescannten PDF und wähle „Visitenkarte scannen". Die App führt OCR durch und extrahiert Name, Organisation, Position, E-Mail-Adressen, Telefonnummern, Websites und Adresse. Prüfe und korrigiere die erkannten Felder, tippe dann auf „Zu Kontakten hinzufügen", um direkt zu speichern, oder auf „vCard teilen", um die Datei weiterzugeben.</string>
+    <string name="info_feature_businesscard">Der Visitenkarten-Scanner führt OCR auf einer PDF-Seite aus, extrahiert strukturierte Kontaktdaten und exportiert eine vCard-3.0-Datei, die in die Kontakte-App übernommen oder geteilt werden kann.</string>
+</resources>

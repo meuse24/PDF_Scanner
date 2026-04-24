@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_security_title">Безопасность</string>
+    <string name="settings_app_lock_label">Защитить приложение биометрией</string>
+    <string name="settings_app_lock_timeout_label">Блокировка после фонового времени</string>
+    <string name="settings_app_lock_timeout_immediately">Немедленно</string>
+    <string name="settings_app_lock_timeout_15s">Через 15 секунд</string>
+    <string name="settings_app_lock_timeout_30s">Через 30 секунд</string>
+    <string name="settings_app_lock_timeout_1m">Через 1 минуту</string>
+    <string name="settings_app_lock_timeout_5m">Через 5 минут</string>
+    <string name="settings_app_lock_timeout_custom">Через %1$d секунд</string>
+    <string name="app_lock_prompt_title">Разблокировать M24 PDF-Scanner</string>
+    <string name="app_lock_prompt_subtitle">Использовать биометрию или данные устройства</string>
+    <string name="app_lock_screen_title">Приложение заблокировано</string>
+    <string name="app_lock_screen_body">Разблокируйте приложение, чтобы продолжить работу со сканами, импортом и общими файлами.</string>
+    <string name="app_lock_unlock">Разблокировать</string>
+    <string name="app_lock_auth_failed">Аутентификация была отменена или не удалась</string>
+    <string name="app_lock_unavailable">Биометрическая аутентификация или аутентификация по учётным данным устройства недоступна на этом устройстве</string>
+    <string name="app_lock_not_enrolled">Настройте биометрию или блокировку экрана устройства перед включением защиты приложения</string>
+    <string name="help_item_app_lock">Включите биометрическую защиту в Настройки → Безопасность. Приложение автоматически блокируется через настроенное фоновое время (по умолчанию: 30 с). Разблокируйте с помощью отпечатка пальца, распознавания лица или PIN-кода устройства. Входящие ярлыки и общие файлы ставятся в очередь до разблокировки. Блокировка — только UI-шлюз и не шифрует документы или базу данных.</string>
+    <string name="info_feature_app_lock">Опциональная биометрическая блокировка приложения (Настройки → Безопасность) блокирует интерфейс после настраиваемого таймаута. Аутентификация использует Android BiometricManager; приложение не хранит и не обрабатывает биометрические данные.</string>
+    <string name="privacy_keyword_7">Блокировка приложения</string>
+    <string name="privacy_point_7">Опциональная биометрическая блокировка является только UI-шлюзом и не шифрует документы или базу данных. Биометрическую верификацию выполняет BiometricManager Android; приложение никогда не обращается напрямую к данным отпечатков пальцев или лица. Настройка хранится локально в SharedPreferences.</string>
+</resources>

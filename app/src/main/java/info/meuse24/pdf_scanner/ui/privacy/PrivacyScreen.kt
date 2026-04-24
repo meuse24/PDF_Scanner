@@ -46,6 +46,7 @@ fun PrivacyScreen() {
         Triple(Icons.Default.Lock,         stringResource(R.string.privacy_keyword_4), stringResource(R.string.privacy_point_4)),
         Triple(Icons.Default.Psychology,   stringResource(R.string.privacy_keyword_5), stringResource(R.string.privacy_point_5)),
         Triple(Icons.Default.Delete,       stringResource(R.string.privacy_keyword_6), stringResource(R.string.privacy_point_6)),
+        Triple(Icons.Default.Lock,         stringResource(R.string.privacy_keyword_7), stringResource(R.string.privacy_point_7)),
     )
 
     LazyColumn(

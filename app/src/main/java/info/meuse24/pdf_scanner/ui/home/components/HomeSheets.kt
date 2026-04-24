@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.UploadFile
@@ -41,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.domain.model.Folder
 import info.meuse24.pdf_scanner.ui.home.PendingImport
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -283,6 +285,45 @@ private fun HomeAddDocumentOption(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun FolderPickerSheet(
+    folders: List<Folder>,
+    onMoveToFolder: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState
+    ) {
+        Column(modifier = Modifier.padding(bottom = 24.dp)) {
+            Text(
+                text = stringResource(R.string.folder_picker_title),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+            )
+            HomeAddDocumentOption(
+                title = stringResource(R.string.folder_picker_root),
+                subtitle = stringResource(R.string.folder_picker_root_subtitle),
+                icon = { Icon(Icons.Default.FolderOpen, contentDescription = null) },
+                onClick = { onMoveToFolder(null) },
+                modifier = Modifier.fillMaxWidth()
+            )
+            folders.forEach { folder ->
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
+                HomeAddDocumentOption(
+                    title = folder.name,
+                    subtitle = stringResource(R.string.folder_picker_move_here),
+                    icon = { Icon(Icons.Default.FolderOpen, contentDescription = null) },
+                    onClick = { onMoveToFolder(folder.id) },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }

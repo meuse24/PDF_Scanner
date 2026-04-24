@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.AppendResult
 import info.meuse24.pdf_scanner.domain.usecase.AppendSource
 import info.meuse24.pdf_scanner.domain.usecase.AppendSourceEncryptedException
@@ -76,7 +76,7 @@ private class StubAppendToPdfUseCase(
     repository = mock(info.meuse24.pdf_scanner.data.repository.ScanRepository::class.java),
     imagePdfBuilder = mock(info.meuse24.pdf_scanner.domain.usecase.ImagePdfBuilder::class.java)
 ) {
-    override suspend fun invoke(target: ScanRecord, source: AppendSource): AppendResult = result
+    override suspend fun invoke(target: Document, source: AppendSource): AppendResult = result
 }
 
 private class SourceEncryptedAppendToPdfUseCase : AppendToPdfUseCase(
@@ -85,7 +85,7 @@ private class SourceEncryptedAppendToPdfUseCase : AppendToPdfUseCase(
     repository = mock(info.meuse24.pdf_scanner.data.repository.ScanRepository::class.java),
     imagePdfBuilder = mock(info.meuse24.pdf_scanner.domain.usecase.ImagePdfBuilder::class.java)
 ) {
-    override suspend fun invoke(target: ScanRecord, source: AppendSource): AppendResult {
+    override suspend fun invoke(target: Document, source: AppendSource): AppendResult {
         throw AppendSourceEncryptedException()
     }
 }
@@ -94,7 +94,7 @@ private fun record(
     file: File,
     exists: Boolean = true,
     isEncrypted: Boolean = false
-) = ScanRecord(
+) = Document(
     id = 1L,
     filename = file.nameWithoutExtension,
     filepath = file.absolutePath,
@@ -103,3 +103,4 @@ private fun record(
     fileSize = if (exists) file.length() else 0L,
     isEncrypted = isEncrypted
 )
+

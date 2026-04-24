@@ -1,40 +1,43 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfPasswordRequiredException
+import info.meuse24.pdf_scanner.domain.pdf.PdfSecurityOps
 import info.meuse24.pdf_scanner.domain.usecase.RemovePasswordUseCase
-import info.meuse24.pdf_scanner.util.PdfEditor
 import java.io.File
-import java.io.IOException
 import javax.inject.Inject
 
 data class RemovePasswordWorkflowResult(val outputFilename: String)
 
 class RemovePasswordWorkflow @Inject constructor(
     private val removePasswordUseCase: RemovePasswordUseCase,
-    private val pdfEditor: PdfEditor
+    private val pdfEditor: PdfSecurityOps,
+    private val workflowGuard: DocumentWorkflowGuard
 ) {
     suspend operator fun invoke(
-        record: ScanRecord,
+        record: Document,
         scansDir: File
-    ): WorkflowResult<RemovePasswordWorkflowResult> {
-        if (!File(record.filepath).exists()) {
-            return WorkflowResult.Failure(ScanWorkflowError.MissingFiles(listOf(record.filename)))
-        }
-        if (!pdfEditor.isPdfEncrypted(File(record.filepath))) {
-            return WorkflowResult.Failure(ScanWorkflowError.NotProtected)
-        }
-        return try {
-            WorkflowResult.Success(
-                RemovePasswordWorkflowResult(
-                    outputFilename = removePasswordUseCase(record, scansDir)
-                )
+    ): WorkflowResult<RemovePasswordWorkflowResult> =
+        workflowGuard.run(
+            record = record,
+            failureMapper = ScanWorkflowError::RemovePasswordFailed,
+            validate = { input ->
+                if (!pdfEditor.isPdfEncrypted(input)) {
+                    ScanWorkflowError.NotProtected
+                } else {
+                    null
+                }
+            },
+            exceptionMapper = { throwable ->
+                when (throwable) {
+                    is PdfPasswordRequiredException -> ScanWorkflowError.PasswordRequiredToRemove
+                    else -> null
+                }
+            }
+        ) {
+            RemovePasswordWorkflowResult(
+                outputFilename = removePasswordUseCase(record, scansDir)
             )
-        } catch (e: PdfEditor.PasswordRequiredException) {
-            WorkflowResult.Failure(ScanWorkflowError.PasswordRequiredToRemove)
-        } catch (e: IOException) {
-            WorkflowResult.Failure(ScanWorkflowError.StorageWriteFailed(e))
-        } catch (t: Throwable) {
-            WorkflowResult.Failure(ScanWorkflowError.RemovePasswordFailed(t))
         }
-    }
 }
+

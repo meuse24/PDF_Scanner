@@ -2,7 +2,7 @@ package info.meuse24.pdf_scanner.ui.append
 
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.AppendResult
 import info.meuse24.pdf_scanner.domain.usecase.AppendSource
@@ -51,13 +51,13 @@ class AppendViewModelTest {
     private lateinit var workflow: AppendToPdfWorkflow
     private lateinit var appendUseCase: ConfigurableAppendToPdfUseCase
     private lateinit var resourceProvider: FakeResourceProvider
-    private lateinit var record: ScanRecord
+    private lateinit var record: Document
 
     @Before
     fun setUp() {
         Dispatchers.setMain(dispatcher)
         val targetFile = tmpFolder.newFile("target.pdf").apply { writeText("pdf") }
-        record = ScanRecord(
+        record = Document(
             id = 5L,
             filename = "target",
             filepath = targetFile.absolutePath,
@@ -184,13 +184,14 @@ private class ConfigurableAppendToPdfUseCase : AppendToPdfUseCase(
     repository = mock(ScanRepository::class.java),
     imagePdfBuilder = mock(ImagePdfBuilder::class.java)
 ) {
-    var handler: suspend (ScanRecord, AppendSource) -> AppendResult = { _, _ ->
+    var handler: suspend (Document, AppendSource) -> AppendResult = { _, _ ->
         AppendResult(pageCount = 4, fileSize = 80L, appendedPageCount = 1)
     }
-    val invocations = mutableListOf<Pair<ScanRecord, AppendSource>>()
+    val invocations = mutableListOf<Pair<Document, AppendSource>>()
 
-    override suspend fun invoke(target: ScanRecord, source: AppendSource): AppendResult {
+    override suspend fun invoke(target: Document, source: AppendSource): AppendResult {
         invocations += target to source
         return handler(target, source)
     }
 }
+

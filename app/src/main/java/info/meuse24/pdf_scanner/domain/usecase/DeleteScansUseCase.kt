@@ -1,7 +1,7 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import java.io.File
 import javax.inject.Inject
 
@@ -10,9 +10,9 @@ import javax.inject.Inject
  * @return true wenn alle Records vollständig gelöscht wurden; false bei mindestens einem Fehler
  */
 class DeleteScansUseCase @Inject constructor(
-    private val repository: ScanRepository
+    private val repository: DocumentRepository
 ) {
-    suspend operator fun invoke(records: List<ScanRecord>): Boolean {
+    suspend operator fun invoke(records: List<Document>): Boolean {
         var allDeleted = true
         for (record in records) {
             val file    = File(record.filepath)
@@ -30,3 +30,4 @@ class DeleteScansUseCase @Inject constructor(
         return allDeleted
     }
 }
+

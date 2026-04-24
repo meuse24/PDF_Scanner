@@ -20,7 +20,7 @@ import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
 import com.tom_roush.pdfbox.pdmodel.graphics.image.LosslessFactory
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import info.meuse24.pdf_scanner.data.local.ScanDao
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
@@ -99,7 +99,7 @@ class SearchableAndRoundTripInstrumentedTest {
         )
         val dao = TrackingScanDao()
         val useCase = MakeSearchableUseCase(searchablePdfBuilder, ScanRepository(dao))
-        val record = ScanRecord(
+        val record = Document(
             id = 42L,
             filename = "androidtest_searchable_usecase_source",
             filepath = source.absolutePath,
@@ -167,7 +167,7 @@ class SearchableAndRoundTripInstrumentedTest {
         val displayNameBase = "androidtest_roundtrip_plain_export"
 
         val exportedDisplayName = ExportScanUseCase(AndroidDownloadsStorage(context))(
-            ScanRecord(
+            Document(
                 id = 1L,
                 filename = displayNameBase,
                 filepath = source.absolutePath,
@@ -195,7 +195,7 @@ class SearchableAndRoundTripInstrumentedTest {
         )
         val protected = pdfEditor.protectPdf(plain, scansDir, "secret123")
         val exportedDisplayName = ExportScanUseCase(AndroidDownloadsStorage(context))(
-            ScanRecord(
+            Document(
                 id = 2L,
                 filename = "androidtest_roundtrip_protected_export",
                 filepath = protected.absolutePath,
@@ -230,7 +230,7 @@ class SearchableAndRoundTripInstrumentedTest {
             canEdit = false
         )
         val exportedDisplayName = ExportScanUseCase(AndroidDownloadsStorage(context))(
-            ScanRecord(
+            Document(
                 id = 3L,
                 filename = "androidtest_roundtrip_restricted_export",
                 filepath = restricted.absolutePath,
@@ -306,7 +306,7 @@ class SearchableAndRoundTripInstrumentedTest {
             downloadsStorage = AndroidDownloadsStorage(context),
             pdfPageJpgRenderer = AndroidPdfPageJpgRenderer()
         )(
-            ScanRecord(
+            Document(
                 id = 4L,
                 filename = baseName,
                 filepath = source.absolutePath,
@@ -351,7 +351,7 @@ class SearchableAndRoundTripInstrumentedTest {
             downloadsStorage = AndroidDownloadsStorage(context),
             pdfPageJpgRenderer = AndroidPdfPageJpgRenderer()
         )(
-            ScanRecord(
+            Document(
                 id = 5L,
                 filename = baseName,
                 filepath = source.absolutePath,
@@ -581,22 +581,22 @@ private class TrackingScanDao : ScanDao {
     )
 
     val searchableUpdates = mutableListOf<SearchableUpdate>()
-    val inserted = mutableListOf<ScanRecord>()
+    val inserted = mutableListOf<Document>()
 
-    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getAllScans(): Flow<List<Document>> = flowOf(emptyList())
 
-    override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun searchScansFlow(query: String): Flow<List<Document>> = flowOf(emptyList())
 
-    override suspend fun insert(record: ScanRecord): Long {
+    override suspend fun insert(record: Document): Long {
         inserted.add(record)
         return inserted.size.toLong()
     }
 
-    override suspend fun insertAll(records: List<ScanRecord>) {
+    override suspend fun insertAll(records: List<Document>) {
         inserted.addAll(records)
     }
 
-    override suspend fun delete(record: ScanRecord) = Unit
+    override suspend fun delete(record: Document) = Unit
 
     override suspend fun markSearchable(id: Long, fileSize: Long) = Unit
 
@@ -628,3 +628,4 @@ private class TrackingScanDao : ScanDao {
 
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) = Unit
 }
+

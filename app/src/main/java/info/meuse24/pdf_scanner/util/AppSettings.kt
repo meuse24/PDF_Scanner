@@ -11,7 +11,9 @@ data class AppSettings(
     val keepScreenOnDuringScan: Boolean = false,
     val defaultMakeSearchable: Boolean = false,
     val defaultOcrLanguage: String = OCR_LANGUAGE_AUTO,
-    val defaultSortOrder: AppSortOrder = AppSortOrder.BY_DATE
+    val defaultSortOrder: AppSortOrder = AppSortOrder.BY_DATE,
+    val appLockEnabled: Boolean = false,
+    val appLockTimeoutSeconds: Int = 30
 ) {
     companion object {
         const val OCR_LANGUAGE_AUTO = "auto"

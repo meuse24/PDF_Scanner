@@ -1,10 +1,9 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfSecurityOps
 import info.meuse24.pdf_scanner.domain.usecase.ProtectPdfUseCase
-import info.meuse24.pdf_scanner.util.PdfEditor
 import java.io.File
-import java.io.IOException
 import javax.inject.Inject
 
 data class ProtectPdfWorkflowResult(
@@ -13,34 +12,28 @@ data class ProtectPdfWorkflowResult(
 
 class ProtectPdfWorkflow @Inject constructor(
     private val protectPdfUseCase: ProtectPdfUseCase,
-    private val pdfEditor: PdfEditor
+    private val pdfEditor: PdfSecurityOps,
+    private val workflowGuard: DocumentWorkflowGuard
 ) {
     suspend operator fun invoke(
-        record: ScanRecord,
+        record: Document,
         password: String,
         scansDir: File
-    ): WorkflowResult<ProtectPdfWorkflowResult> {
-        val input = File(record.filepath)
-        if (!input.exists()) {
-            return WorkflowResult.Failure(ScanWorkflowError.MissingFiles(listOf(record.filename)))
-        }
-        if (password.isBlank()) {
-            return WorkflowResult.Failure(ScanWorkflowError.PasswordRequired)
-        }
-        if (pdfEditor.isPdfEncrypted(input)) {
-            return WorkflowResult.Failure(ScanWorkflowError.AlreadyProtected)
-        }
-
-        return try {
-            WorkflowResult.Success(
-                ProtectPdfWorkflowResult(
-                    outputFilename = protectPdfUseCase(record, password.trim(), scansDir)
-                )
+    ): WorkflowResult<ProtectPdfWorkflowResult> =
+        workflowGuard.run(
+            record = record,
+            failureMapper = ScanWorkflowError::ProtectFailed,
+            validate = { input ->
+                when {
+                    password.isBlank() -> ScanWorkflowError.PasswordRequired
+                    pdfEditor.isPdfEncrypted(input) -> ScanWorkflowError.AlreadyProtected
+                    else -> null
+                }
+            }
+        ) {
+            ProtectPdfWorkflowResult(
+                outputFilename = protectPdfUseCase(record, password.trim(), scansDir)
             )
-        } catch (e: IOException) {
-            WorkflowResult.Failure(ScanWorkflowError.StorageWriteFailed(e))
-        } catch (t: Throwable) {
-            WorkflowResult.Failure(ScanWorkflowError.ProtectFailed(t))
         }
-    }
 }
+

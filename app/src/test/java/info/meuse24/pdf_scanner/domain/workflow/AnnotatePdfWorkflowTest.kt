@@ -1,6 +1,8 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toDomain
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.AnnotatePdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
@@ -24,13 +26,13 @@ class AnnotatePdfWorkflowTest {
 
     @get:Rule val tmpFolder = TemporaryFolder()
 
-    private fun record(id: Long, exists: Boolean = true, tags: String? = null): ScanRecord {
+    private fun record(id: Long, exists: Boolean = true, tags: String? = null): Document {
         val file = if (exists) {
             tmpFolder.newFile("scan_$id.pdf").apply { writeText("pdf") }
         } else {
             File(tmpFolder.root, "missing_$id.pdf")
         }
-        return ScanRecord(
+        return Document(
             id = id,
             filename = "scan_$id",
             filepath = file.absolutePath,
@@ -76,8 +78,11 @@ class AnnotatePdfWorkflowTest {
     private fun workflow(pdfEditor: PdfEditor): Pair<AnnotatePdfWorkflow, FakeAnnotateScanDao> {
         val dao = FakeAnnotateScanDao()
         val repository = ScanRepository(dao)
-        val useCase = AnnotatePdfUseCase(pdfEditor, repository)
-        return AnnotatePdfWorkflow(useCase, pdfEditor) to dao
+        val useCase = AnnotatePdfUseCase(
+            pdfEditor,
+            info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository)
+        )
+        return AnnotatePdfWorkflow(useCase, DocumentWorkflowGuard(pdfEditor)) to dao
     }
 
     @Test
@@ -178,14 +183,14 @@ private class FakeAnnotatePdfEditor(
 }
 
 private class FakeAnnotateScanDao : info.meuse24.pdf_scanner.data.local.ScanDao {
-    val inserted = mutableListOf<ScanRecord>()
+    val inserted = mutableListOf<Document>()
 
     override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun insert(record: ScanRecord): Long {
-        inserted += record
+        inserted += record.toDomain()
         return inserted.size.toLong()
     }
-    override suspend fun insertAll(records: List<ScanRecord>) { inserted += records }
+    override suspend fun insertAll(records: List<ScanRecord>) { inserted += records.map { it.toDomain() } }
     override suspend fun delete(record: ScanRecord) {}
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun markSearchableWithContent(
@@ -209,4 +214,9 @@ private class FakeAnnotateScanDao : info.meuse24.pdf_scanner.data.local.ScanDao 
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {}
     override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) {}
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) {}
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) {}
 }
+

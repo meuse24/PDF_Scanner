@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_business_card">Scan business card</string>
+    <string name="business_card_title">Business card</string>
+    <string name="business_card_subtitle">Review and correct the detected contact data before exporting a vCard.</string>
+    <string name="business_card_name">Full name</string>
+    <string name="business_card_organization">Organization</string>
+    <string name="business_card_job_title">Job title</string>
+    <string name="business_card_emails">Email addresses</string>
+    <string name="business_card_phones">Phone numbers</string>
+    <string name="business_card_urls">Websites</string>
+    <string name="business_card_address">Address</string>
+    <string name="business_card_add_to_contacts">Add to contacts</string>
+    <string name="business_card_share_vcard">Share vCard</string>
+    <string name="business_card_scan_failed">Business card scan failed</string>
+    <string name="business_card_export_failed">vCard export failed</string>
+    <string name="business_card_no_contact_app">No compatible contacts app found</string>
+    <string name="error_document_not_found">Document not found</string>
+    <string name="help_item_business_card">Open the three-dot menu on any scanned PDF and choose Scan business card. The app runs OCR and extracts name, organisation, job title, email addresses, phone numbers, websites, and address. Review and edit the detected fields, then tap Add to contacts to save directly to your contacts app, or Share vCard to send the file.</string>
+    <string name="info_feature_businesscard">The business card scanner runs OCR on a PDF page, extracts structured contact data, and exports a vCard 3.0 file that can be added to your contacts app or shared.</string>
+</resources>

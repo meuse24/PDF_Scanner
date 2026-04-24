@@ -79,11 +79,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.ui.components.DocumentEditSheet
 import info.meuse24.pdf_scanner.ui.components.ScanAction
 import info.meuse24.pdf_scanner.ui.shared.clampPanOffset
-import info.meuse24.pdf_scanner.util.PdfPrintAdapter
+import info.meuse24.pdf_scanner.util.PdfPrintHelper
 import info.meuse24.pdf_scanner.util.buildPdfShareIntent
 import info.meuse24.pdf_scanner.util.openPdfExternally
 import kotlinx.coroutines.Dispatchers
@@ -116,6 +116,7 @@ fun PdfViewerScreen(
     onNavigateToGrayscale: (Long) -> Unit,
     onNavigateToPdfMetadata: (Long) -> Unit,
     onNavigateToQrScan: (Long) -> Unit,
+    onNavigateToBusinessCard: (Long) -> Unit,
     viewModel: PdfViewerViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -209,14 +210,11 @@ fun PdfViewerScreen(
                         },
                         onExport = viewModel::exportCurrentPdf,
                         onPrint = {
-                            context.getSystemService(PrintManager::class.java)?.print(
-                                record.filename,
-                                PdfPrintAdapter(
-                                    file = java.io.File(record.filepath),
-                                    jobName = record.filename,
-                                    pageCount = record.pageCount
-                                ),
-                                null
+                            PdfPrintHelper.print(
+                                context = context,
+                                pdf = java.io.File(record.filepath),
+                                jobName = record.filename,
+                                pageCount = record.pageCount
                             )
                         },
                         onOpenExternal = {
@@ -283,6 +281,7 @@ fun PdfViewerScreen(
                             ScanAction.Grayscale -> onNavigateToGrayscale(record.id)
                             ScanAction.PdfMetadata -> onNavigateToPdfMetadata(record.id)
                             ScanAction.ScanQrCodes -> onNavigateToQrScan(record.id)
+                            ScanAction.ScanBusinessCard -> onNavigateToBusinessCard(record.id)
                             ScanAction.ExportAsJpg,
                             ScanAction.Print,
                             ScanAction.Rename -> Unit
@@ -312,10 +311,10 @@ private fun ViewerLoadingState() {
 @Composable
 private fun ViewerErrorState(
     message: String,
-    record: ScanRecord?,
+    record: Document?,
     onRetry: () -> Unit,
     onNavigateBack: () -> Unit,
-    onOpenExternal: (ScanRecord) -> Unit
+    onOpenExternal: (Document) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -447,7 +446,7 @@ private fun PageIndicator(
 
 @Composable
 private fun ViewerActionBar(
-    record: ScanRecord,
+    record: Document,
     onEdit: () -> Unit,
     onShare: () -> Unit,
     onExport: () -> Unit,
@@ -588,3 +587,4 @@ private fun PdfZoomOverlay(
         }
     }
 }
+

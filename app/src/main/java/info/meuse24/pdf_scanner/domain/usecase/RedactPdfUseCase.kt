@@ -1,39 +1,35 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
-import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfAnnotationOps
+import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
 import java.io.File
 import javax.inject.Inject
 
 class RedactPdfUseCase @Inject constructor(
-    private val pdfEditor: PdfEditor,
-    private val repository: ScanRepository
+    private val pdfAnnotationOps: PdfAnnotationOps,
+    private val persister: ScanArtifactPersister
 ) {
     suspend operator fun invoke(
-        record: ScanRecord,
+        record: Document,
         rects: List<RedactionRect>,
         scansDir: File
-    ): ScanRecord {
-        val resultFile = pdfEditor.applySecureRedaction(
+    ): Document {
+        val resultFile = pdfAnnotationOps.applySecureRedaction(
             input = File(record.filepath),
             outputDir = scansDir,
             rects = rects
         )
-        val thumbFile = File(scansDir, "${resultFile.nameWithoutExtension}.jpg")
-        pdfEditor.generateThumbnail(resultFile, thumbFile)
-        val savedRecord = ScanRecord(
-            filename = resultFile.nameWithoutExtension,
-            filepath = resultFile.absolutePath,
-            timestamp = System.currentTimeMillis(),
-            pageCount = record.pageCount,
-            fileSize = resultFile.length(),
-            thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath,
-            isSearchable = false,
-            extractedText = null,
-            tags = null
-        )
-        val savedId = repository.saveScan(savedRecord)
-        return savedRecord.copy(id = savedId)
+        return persister.persistDerivedFrom(record, resultFile, scansDir) {
+            it.copy(
+                isSearchable = false,
+                extractedText = null,
+                tags = null,
+                ocrConfidence = null,
+                ocrLanguage = null,
+                pageTexts = emptyList()
+            )
+        }
     }
 }
+

@@ -2,7 +2,7 @@ package info.meuse24.pdf_scanner.domain.usecase
 
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognizer
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.OcrPipeline
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
@@ -35,7 +35,7 @@ open class ExtractTextUseCase @Inject constructor(
     private val textRecognizerRunner: TextRecognizerRunner
 ) {
     open suspend operator fun invoke(
-        records: List<ScanRecord>,
+        records: List<Document>,
         languageCode: String,
         onStatus: (OcrPipelineStatus) -> Unit = {}
     ): List<OcrDocumentResult> {
@@ -65,7 +65,7 @@ open class ExtractTextUseCase @Inject constructor(
     }
 
     private suspend fun extractFromRecordsWithStats(
-        records: List<ScanRecord>,
+        records: List<Document>,
         recognizer: TextRecognizer
     ): Pair<List<OcrDocumentResult>, OcrResultStats?> {
         val results = mutableListOf<OcrDocumentResult>()
@@ -83,7 +83,7 @@ open class ExtractTextUseCase @Inject constructor(
     }
 
     private suspend fun extractFromRecordWithStats(
-        record: ScanRecord,
+        record: Document,
         recognizer: TextRecognizer
     ): OcrDocumentResult {
         val pdfFile = File(record.filepath)
@@ -119,3 +119,4 @@ open class ExtractTextUseCase @Inject constructor(
         )
     }
 }
+

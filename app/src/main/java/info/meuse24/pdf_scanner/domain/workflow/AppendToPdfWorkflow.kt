@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.AppendResult
 import info.meuse24.pdf_scanner.domain.usecase.AppendSourceEncryptedException
 import info.meuse24.pdf_scanner.domain.usecase.AppendSource
@@ -21,7 +21,7 @@ class AppendToPdfWorkflow @Inject constructor(
     private val appendToPdfUseCase: AppendToPdfUseCase
 ) {
     suspend operator fun invoke(
-        target: ScanRecord,
+        target: Document,
         source: AppendSource
     ): WorkflowResult<AppendToPdfWorkflowResult> {
         if (!File(target.filepath).exists()) {
@@ -53,3 +53,4 @@ class AppendToPdfWorkflow @Inject constructor(
         }
     }
 }
+

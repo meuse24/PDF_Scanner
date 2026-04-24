@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_scan_short">Scan</string>
+    <string name="shortcut_scan_long">Scan starten</string>
+    <string name="shortcut_import_short">Bilder</string>
+    <string name="shortcut_import_long">Bilder importieren</string>
+    <string name="shortcut_trash_short">Papierkorb</string>
+    <string name="shortcut_trash_long">Papierkorb öffnen</string>
+    <string name="help_title_app_shortcuts">Shortcuts &amp; Schnelleinstellungen</string>
+    <string name="help_item_app_shortcuts">Halte das App-Icon gedrückt, um direkt einen Scan zu starten, Bilder zu importieren oder den Papierkorb zu öffnen. Füge die Schnelleinstellungskachel im Benachrichtigungsbereich hinzu, um mit einem Tipp zu scannen. Platziere das Homescreen-Widget für sofortigen Scan-Zugriff.</string>
+    <string name="info_feature_shortcuts">App-Shortcuts, eine Schnelleinstellungskachel und ein Homescreen-Widget ermöglichen direkten Zugriff auf Scannen, Bildimport und Papierkorb ohne das Hauptarchiv zu öffnen.</string>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_scan_short">Digitalizar</string>
+    <string name="shortcut_scan_long">Iniciar digitalização</string>
+    <string name="shortcut_import_short">Imagens</string>
+    <string name="shortcut_import_long">Importar imagens</string>
+    <string name="shortcut_trash_short">Lixeira</string>
+    <string name="shortcut_trash_long">Abrir lixeira</string>
+    <string name="help_title_app_shortcuts">Atalhos e configurações rápidas</string>
+    <string name="help_item_app_shortcuts">Mantenha o ícone do app pressionado para iniciar uma digitalização, importar imagens ou ir diretamente para a lixeira. Adicione o bloco de configurações rápidas no painel de notificações para acesso com um toque. Coloque o widget na tela inicial para digitalizar instantaneamente.</string>
+    <string name="info_feature_shortcuts">Atalhos do app, um bloco de configurações rápidas e um widget permitem acesso direto à digitalização, importação de imagens e lixeira sem abrir o arquivo principal.</string>
+</resources>

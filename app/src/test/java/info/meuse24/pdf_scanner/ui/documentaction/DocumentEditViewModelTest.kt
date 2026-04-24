@@ -3,7 +3,10 @@ package info.meuse24.pdf_scanner.ui.documentaction
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toDomain
+import info.meuse24.pdf_scanner.data.mapper.toEntity
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.AddPageNumbersUseCase
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
@@ -14,6 +17,7 @@ import info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflowResult
 import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ConvertToGrayscaleWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.DocumentWorkflowGuard
 import info.meuse24.pdf_scanner.domain.workflow.HighlightPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.PageNumbersWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ProtectPdfWorkflow
@@ -36,11 +40,13 @@ import info.meuse24.pdf_scanner.testutil.TestStorageProvider
 import info.meuse24.pdf_scanner.util.PdfEditor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -78,7 +84,7 @@ class DocumentEditViewModelTest {
     private fun pdfFile(name: String = "scan_1.pdf"): File =
         tmpFolder.newFile(name).apply { writeText("pdf") }
 
-    private fun record(file: File): ScanRecord = ScanRecord(
+    private fun record(file: File): Document = Document(
         id = 1L,
         filename = file.nameWithoutExtension,
         filepath = file.absolutePath,
@@ -93,15 +99,18 @@ class DocumentEditViewModelTest {
 
     private fun buildVm(
         pdfEditor: PdfEditor,
-        scanRecord: ScanRecord,
+        scanRecord: Document,
         errorMapper: WorkflowErrorMapper = stubMapper(),
         redactPdfWorkflow: RedactPdfWorkflow = mock(RedactPdfWorkflow::class.java),
         annotatePdfWorkflow: AnnotatePdfWorkflow = mock(AnnotatePdfWorkflow::class.java)
     ): DocumentEditViewModel {
         val dao = TestScanDao(listOf(scanRecord))
         val repository = ScanRepository(dao)
-        val addPageNumbersUseCase = AddPageNumbersUseCase(pdfEditor, repository)
-        val pageNumbersWorkflow = PageNumbersWorkflow(addPageNumbersUseCase)
+        val addPageNumbersUseCase = AddPageNumbersUseCase(
+            pdfEditor,
+            info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository)
+        )
+        val pageNumbersWorkflow = PageNumbersWorkflow(addPageNumbersUseCase, DocumentWorkflowGuard(pdfEditor))
 
         val textWatermarkWorkflow = mock(TextWatermarkWorkflow::class.java)
         val compressPdfWorkflow = mock(CompressPdfWorkflow::class.java)
@@ -152,9 +161,9 @@ class DocumentEditViewModelTest {
         vm.addPageNumbers()
         advanceUntilIdle()
 
-        assertTrue(vm.success.value)
-        assertFalse(vm.editLoading.value)
-        assertNull(vm.error.value)
+        assertTrue(vm.uiState.value.success)
+        assertFalse(vm.uiState.value.editLoading)
+        assertNull(vm.uiState.value.error)
     }
 
     @Test
@@ -167,9 +176,9 @@ class DocumentEditViewModelTest {
         vm.addPageNumbers()
         advanceUntilIdle()
 
-        assertNotNull(vm.error.value)
-        assertFalse(vm.success.value)
-        assertFalse(vm.editLoading.value)
+        assertNotNull(vm.uiState.value.error)
+        assertFalse(vm.uiState.value.success)
+        assertFalse(vm.uiState.value.editLoading)
     }
 
     @Test
@@ -179,9 +188,13 @@ class DocumentEditViewModelTest {
         val vm = buildVm(NoOpPageNumbersPdfEditor(), rec)
         advanceUntilIdle()
 
+        val loadingStates = mutableListOf<Boolean>()
+        val job = backgroundScope.launch { vm.uiState.collect { loadingStates += it.editLoading } }
         vm.addPageNumbers()
+        advanceUntilIdle()
+        job.cancel()
 
-        assertTrue(vm.editLoading.value)
+        assertTrue(loadingStates.contains(true))
     }
 
     @Test
@@ -193,11 +206,12 @@ class DocumentEditViewModelTest {
 
         vm.addPageNumbers()
         advanceUntilIdle()
-        assertNotNull(vm.error.value)
+        assertNotNull(vm.uiState.value.error)
 
         vm.clearError()
+        runCurrent()
 
-        assertNull(vm.error.value)
+        assertNull(vm.uiState.value.error)
     }
 
     @Test
@@ -216,9 +230,9 @@ class DocumentEditViewModelTest {
         vm.applyRedactions(rects, makeSearchable = true, languageCode = "de")
         advanceUntilIdle()
 
-        assertTrue(vm.success.value)
-        assertFalse(vm.editLoading.value)
-        assertNull(vm.error.value)
+        assertTrue(vm.uiState.value.success)
+        assertFalse(vm.uiState.value.editLoading)
+        assertNull(vm.uiState.value.error)
     }
 
     @Test
@@ -237,9 +251,9 @@ class DocumentEditViewModelTest {
         vm.applyRedactions(rects)
         advanceUntilIdle()
 
-        assertNotNull(vm.error.value)
-        assertFalse(vm.success.value)
-        assertFalse(vm.editLoading.value)
+        assertNotNull(vm.uiState.value.error)
+        assertFalse(vm.uiState.value.success)
+        assertFalse(vm.uiState.value.editLoading)
     }
 
     @Test
@@ -292,9 +306,9 @@ class DocumentEditViewModelTest {
         vm.applyAnnotations(strokes, rects, ovals, comments)
         advanceUntilIdle()
 
-        assertTrue(vm.success.value)
-        assertFalse(vm.editLoading.value)
-        assertNull(vm.error.value)
+        assertTrue(vm.uiState.value.success)
+        assertFalse(vm.uiState.value.editLoading)
+        assertNull(vm.uiState.value.error)
     }
 }
 
@@ -307,15 +321,15 @@ private fun redactionRect() = RedactionRect(
 )
 
 private class TestScanDao(
-    private val initialRecords: List<ScanRecord> = emptyList()
+    private val initialRecords: List<Document> = emptyList()
 ) : ScanDao {
-    val inserted = mutableListOf<ScanRecord>()
-    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(initialRecords)
+    val inserted = mutableListOf<Document>()
+    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(initialRecords.map { it.toEntity() })
     override suspend fun insert(record: ScanRecord): Long {
-        inserted.add(record)
+        inserted.add(record.toDomain())
         return inserted.size.toLong()
     }
-    override suspend fun insertAll(records: List<ScanRecord>) { inserted.addAll(records) }
+    override suspend fun insertAll(records: List<ScanRecord>) { inserted.addAll(records.map { it.toDomain() }) }
     override suspend fun delete(record: ScanRecord) {}
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun markSearchableWithContent(
@@ -339,6 +353,10 @@ private class TestScanDao(
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {}
     override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) {}
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) {}
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) {}
 }
 
 private class NoOpPageNumbersPdfEditor : PdfEditor() {
@@ -365,3 +383,4 @@ private class FailPageNumbersPdfEditor : PdfEditor() {
 
     override fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int) = null
 }
+

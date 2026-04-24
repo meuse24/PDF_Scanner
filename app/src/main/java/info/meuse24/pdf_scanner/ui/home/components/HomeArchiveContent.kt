@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.ui.home.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,15 +34,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.Folder
 import info.meuse24.pdf_scanner.ui.components.ScanAction
 import info.meuse24.pdf_scanner.ui.home.SortOrder
 import info.meuse24.pdf_scanner.ui.home.sortOrderLabel
 
 @Composable
 internal fun HomeArchiveContent(
-    scans: List<ScanRecord>,
-    filteredScans: List<ScanRecord>,
+    scans: List<Document>,
+    filteredScans: List<Document>,
+    folders: List<Folder>,
+    currentFolder: Folder?,
+    favoritesFilter: Boolean,
     searchQuery: String,
     sortOrder: SortOrder,
     selectedIds: Set<Long>,
@@ -51,11 +56,14 @@ internal fun HomeArchiveContent(
     onSortOrderSelected: (SortOrder) -> Unit,
     onClearSelection: () -> Unit,
     onSelectAll: () -> Unit,
-    onSelectionToggle: (ScanRecord) -> Unit,
-    onOpenRecord: (ScanRecord) -> Unit,
-    onAction: (ScanRecord, ScanAction) -> Unit,
+    onSelectionToggle: (Document) -> Unit,
+    onOpenRecord: (Document) -> Unit,
+    onToggleFavorite: (Document) -> Unit,
+    onAction: (Document, ScanAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val folderNamesById = remember(folders) { folders.associateBy({ it.id }, { it.name }) }
+
     if (isSelectionMode) {
         SelectionTitleBar(
             count = selectedIds.size,
@@ -64,12 +72,22 @@ internal fun HomeArchiveContent(
             onSelectAll = onSelectAll
         )
     } else {
-        HomeSearchBar(
-            searchQuery = searchQuery,
-            sortOrder = sortOrder,
-            onSearchQueryChange = onSearchQueryChange,
-            onSortOrderSelected = onSortOrderSelected
-        )
+        Column {
+            if (favoritesFilter || currentFolder != null) {
+                Text(
+                    text = currentFolder?.name ?: stringResource(R.string.folder_favorites),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
+            HomeSearchBar(
+                searchQuery = searchQuery,
+                sortOrder = sortOrder,
+                onSearchQueryChange = onSearchQueryChange,
+                onSortOrderSelected = onSortOrderSelected
+            )
+        }
     }
 
     when {
@@ -106,6 +124,8 @@ internal fun HomeArchiveContent(
                             if (isSelectionMode) onSelectionToggle(record) else onOpenRecord(record)
                         },
                         onCheckboxToggle = { onSelectionToggle(record) },
+                        onToggleFavorite = { onToggleFavorite(record) },
+                        folderLabel = record.folderId?.let(folderNamesById::get),
                         onAction = { action -> onAction(record, action) }
                     )
                     if (index < filteredScans.lastIndex) {
@@ -184,3 +204,4 @@ private fun HomeSearchBar(
         }
     }
 }
+

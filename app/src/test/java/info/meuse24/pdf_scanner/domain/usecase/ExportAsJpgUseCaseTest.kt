@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.util.DownloadEntry
 import info.meuse24.pdf_scanner.util.DownloadsStorage
 import info.meuse24.pdf_scanner.util.PdfPageJpgRenderer
@@ -81,7 +81,7 @@ class ExportAsJpgUseCaseTest {
         assertEquals(0, downloadsStorage.writeCalls)
     }
 
-    private fun scanRecord(file: File, filename: String) = ScanRecord(
+    private fun scanRecord(file: File, filename: String) = Document(
         id = 1L,
         filename = filename,
         filepath = file.absolutePath,
@@ -147,3 +147,4 @@ private class FakeDownloadEntry(
         deleted = true
     }
 }
+

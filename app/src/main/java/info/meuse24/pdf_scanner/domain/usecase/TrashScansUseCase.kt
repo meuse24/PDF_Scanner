@@ -1,13 +1,13 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.TrashRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.repository.TrashDocumentRepository
 import javax.inject.Inject
 
 class TrashScansUseCase @Inject constructor(
-    private val repository: TrashRepository
+    private val repository: TrashDocumentRepository
 ) {
-    suspend operator fun invoke(records: List<ScanRecord>): List<Long> {
+    suspend operator fun invoke(records: List<Document>): List<Long> {
         if (records.isEmpty()) return emptyList()
         require(records.all { it.id > 0L }) { "TrashScansUseCase requires persisted records" }
 
@@ -16,3 +16,4 @@ class TrashScansUseCase @Inject constructor(
         return ids
     }
 }
+

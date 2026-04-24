@@ -5,16 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
 import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import info.meuse24.pdf_scanner.util.OcrQuality
 import info.meuse24.pdf_scanner.util.ResourceProvider
-import info.meuse24.pdf_scanner.util.fromOcrPageTextJson
-import info.meuse24.pdf_scanner.util.toOcrPageTextJson
 import info.meuse24.pdf_scanner.util.toQuality
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OcrReviewViewModel @Inject constructor(
-    private val repository: ScanRepository,
+    private val repository: DocumentRepository,
     private val extractTextUseCase: ExtractTextUseCase,
     private val resourceProvider: ResourceProvider,
     private val dispatcherProvider: DispatcherProvider,
@@ -36,7 +34,7 @@ class OcrReviewViewModel @Inject constructor(
 ) : ViewModel() {
 
     data class UiState(
-        val record: ScanRecord? = null,
+        val record: Document? = null,
         val text: String? = null,
         val pageTexts: List<String> = emptyList(),
         val confidence: Float? = null,
@@ -92,7 +90,7 @@ class OcrReviewViewModel @Inject constructor(
         runExtract(current, languageCode)
     }
 
-    private fun runExtract(record: ScanRecord, languageCode: String) {
+    private fun runExtract(record: Document, languageCode: String) {
         if (loading.value) return
         loading.value = true
         error.value = null
@@ -104,7 +102,7 @@ class OcrReviewViewModel @Inject constructor(
                     text = result.fullText.ifBlank { null },
                     confidence = result.stats?.confidence,
                     language = result.stats?.recognizedLanguage,
-                    pageTextJson = result.pageTexts.toOcrPageTextJson()
+                    pageTexts = result.pageTexts
                 )
             } catch (_: OcrNoTextException) {
                 error.value = resourceProvider.getString(R.string.ocr_review_no_text)
@@ -129,11 +127,11 @@ class OcrReviewViewModel @Inject constructor(
     }
 }
 
-private fun ScanRecord?.pageTexts(): List<String> {
+private fun Document?.pageTexts(): List<String> {
     if (this == null) return emptyList()
-    val cachedPages = ocrPageTextJson.fromOcrPageTextJson()
-    if (cachedPages.isNotEmpty()) return cachedPages
+    if (pageTexts.isNotEmpty()) return pageTexts
     val fullText = extractedText?.trim().orEmpty()
     if (fullText.isBlank()) return emptyList()
     return listOf(fullText)
 }
+

@@ -3,7 +3,7 @@ package info.meuse24.pdf_scanner.ui.viewer
 import android.graphics.Bitmap
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
@@ -231,7 +231,7 @@ class PdfViewerViewModelTest {
     }
 
     private fun buildViewModel(
-        records: List<ScanRecord>,
+        records: List<Document>,
         renderer: PdfPageBitmapRenderer,
         scanId: Long = 1L,
         savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("scanId" to scanId))
@@ -242,7 +242,7 @@ class PdfViewerViewModelTest {
     )
 
     private fun buildViewModel(
-        recordsFlow: Flow<List<ScanRecord>>,
+        recordsFlow: Flow<List<Document>>,
         renderer: PdfPageBitmapRenderer,
         scanId: Long = 1L,
         savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("scanId" to scanId))
@@ -264,7 +264,7 @@ class PdfViewerViewModelTest {
         filepath: String = File(tmpFolder.root, "scan.pdf").absolutePath,
         pageCount: Int = 1,
         isEncrypted: Boolean = false
-    ): ScanRecord = ScanRecord(
+    ): Document = Document(
         id = 1L,
         filename = "scan",
         filepath = filepath,
@@ -349,3 +349,4 @@ private fun PdfViewerViewModel.invokeOnClearedForTest() {
     method.isAccessible = true
     method.invoke(this)
 }
+

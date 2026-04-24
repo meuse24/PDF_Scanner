@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_all_documents">所有文档</string>
+    <string name="folder_favorites">收藏</string>
+    <string name="folder_manage">管理文件夹</string>
+    <string name="folder_management_title">文件夹</string>
+    <string name="folder_create">创建文件夹</string>
+    <string name="folder_create_failed">无法创建文件夹</string>
+    <string name="folder_rename">重命名</string>
+    <string name="folder_rename_failed">无法重命名文件夹</string>
+    <string name="folder_delete">删除</string>
+    <string name="folder_delete_failed">无法删除文件夹</string>
+    <string name="folder_delete_confirm">删除文件夹"%1$s"？文档将保留在归档中。</string>
+    <string name="folder_name_label">文件夹名称</string>
+    <string name="folder_move_success">文档已移动</string>
+    <string name="folder_move_failed">无法移动文档</string>
+    <string name="favorite_toggle_failed">无法更新收藏状态</string>
+    <string name="folder_picker_title">移动到文件夹</string>
+    <string name="folder_picker_root">无文件夹</string>
+    <string name="folder_picker_root_subtitle">将文档保留在顶级</string>
+    <string name="folder_picker_move_here">将文档移动到此处</string>
+    <string name="label_bulk_move_folder">文件夹</string>
+    <string name="help_item_folders">打开侧边菜单可在所有文档、收藏和命名文件夹之间切换。点击文档卡片上的星标图标可标记或取消收藏。选择文档后点击文件夹按钮可移动它们。长按菜单中的文件夹可重命名或删除——删除文件夹后其文档将回到顶级。</string>
+    <string name="info_feature_folders">文档可以整理到文件夹中并标记为收藏。侧边菜单列出所有文件夹和收藏筛选器。文件夹为扁平结构（不支持嵌套），删除文件夹会将其文档移回顶级。</string>
+</resources>

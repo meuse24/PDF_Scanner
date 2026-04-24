@@ -63,7 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.util.TrashConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -85,7 +85,7 @@ fun TrashScreen(
     val context = LocalContext.current
 
     var selectedIds by remember { mutableStateOf(emptySet<Long>()) }
-    var pendingPurge by remember { mutableStateOf<List<ScanRecord>>(emptyList()) }
+    var pendingPurge by remember { mutableStateOf<List<Document>>(emptyList()) }
     var showEmptyConfirm by remember { mutableStateOf(false) }
 
     val selectedRecords = scans.filter { it.id in selectedIds }
@@ -275,7 +275,7 @@ private fun TrashActionRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TrashItem(
-    record: ScanRecord,
+    record: Document,
     selected: Boolean,
     onSelectionToggle: () -> Unit,
     onRestore: () -> Unit,
@@ -447,3 +447,4 @@ private fun rememberTrashThumbnail(thumbnailPath: String?): ImageBitmap? {
     }
     return thumbnail
 }
+

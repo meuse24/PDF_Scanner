@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_scan_short">スキャン</string>
+    <string name="shortcut_scan_long">スキャン開始</string>
+    <string name="shortcut_import_short">画像</string>
+    <string name="shortcut_import_long">画像をインポート</string>
+    <string name="shortcut_trash_short">ゴミ箱</string>
+    <string name="shortcut_trash_long">ゴミ箱を開く</string>
+    <string name="help_title_app_shortcuts">ショートカットとクイック設定</string>
+    <string name="help_item_app_shortcuts">アプリアイコンを長押しすると、スキャン開始・画像インポート・ゴミ箱への直接移動ができます。通知パネルにクイック設定タイルを追加すると、ワンタップでスキャンできます。ホーム画面にウィジェットを配置して、即座にスキャンを開始できます。</string>
+    <string name="info_feature_shortcuts">アプリショートカット、クイック設定タイル、ホーム画面ウィジェットにより、メインアーカイブを開かずにスキャン・画像インポート・ゴミ箱に直接アクセスできます。</string>
+</resources>

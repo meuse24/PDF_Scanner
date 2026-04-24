@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_scan_short">Escanear</string>
+    <string name="shortcut_scan_long">Iniciar escaneo</string>
+    <string name="shortcut_import_short">Imágenes</string>
+    <string name="shortcut_import_long">Importar imágenes</string>
+    <string name="shortcut_trash_short">Papelera</string>
+    <string name="shortcut_trash_long">Abrir papelera</string>
+    <string name="help_title_app_shortcuts">Atajos y configuración rápida</string>
+    <string name="help_item_app_shortcuts">Mantén presionado el icono de la app para iniciar un escaneo, importar imágenes o ir directamente a la papelera. Añade el mosaico de configuración rápida en el panel de notificaciones para acceder con un toque. Coloca el widget en la pantalla de inicio para escanear al instante.</string>
+    <string name="info_feature_shortcuts">Los atajos de la app, un mosaico de configuración rápida y un widget permiten acceder directamente al escaneo, la importación de imágenes y la papelera sin abrir el archivo principal.</string>
+</resources>

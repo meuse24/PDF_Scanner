@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_security_title">セキュリティ</string>
+    <string name="settings_app_lock_label">生体認証でアプリを保護</string>
+    <string name="settings_app_lock_timeout_label">バックグラウンド時間後にロック</string>
+    <string name="settings_app_lock_timeout_immediately">直ちに</string>
+    <string name="settings_app_lock_timeout_15s">15秒後</string>
+    <string name="settings_app_lock_timeout_30s">30秒後</string>
+    <string name="settings_app_lock_timeout_1m">1分後</string>
+    <string name="settings_app_lock_timeout_5m">5分後</string>
+    <string name="settings_app_lock_timeout_custom">%1$d秒後</string>
+    <string name="app_lock_prompt_title">M24 PDF-Scannerをロック解除</string>
+    <string name="app_lock_prompt_subtitle">生体認証またはデバイス資格情報を使用</string>
+    <string name="app_lock_screen_title">アプリがロックされています</string>
+    <string name="app_lock_screen_body">スキャン、インポート、共有ファイルを続行するにはアプリのロックを解除してください。</string>
+    <string name="app_lock_unlock">ロック解除</string>
+    <string name="app_lock_auth_failed">認証がキャンセルされたか失敗しました</string>
+    <string name="app_lock_unavailable">このデバイスでは生体認証またはデバイス資格情報認証は利用できません</string>
+    <string name="app_lock_not_enrolled">アプリ保護を有効にする前に、生体認証またはデバイスのスクリーンロックを設定してください</string>
+    <string name="help_item_app_lock">設定 → セキュリティで生体認証保護を有効にします。設定したバックグラウンド時間後にアプリが自動でロックされます（デフォルト：30秒）。指紋・顔認証・デバイスPINでロック解除できます。受信したショートカットや共有ファイルはロック解除後に処理されます。ロックはUIゲートのみで、ドキュメントやデータベースは暗号化されません。</string>
+    <string name="info_feature_app_lock">任意の生体認証アプリロック（設定 → セキュリティ）が設定可能なバックグラウンドタイムアウト後にUIをロックします。認証はAndroid BiometricManagerを使用し、アプリ自体は生体データを保存・処理しません。</string>
+    <string name="privacy_keyword_7">アプリロック</string>
+    <string name="privacy_point_7">任意の生体認証ロックはUIゲートのみで、ドキュメントやデータベースを暗号化しません。生体認証の検証はAndroidのBiometricManagerが処理し、アプリは指紋や顔データに直接アクセスしません。設定はSharedPreferencesにローカル保存されます。</string>
+</resources>

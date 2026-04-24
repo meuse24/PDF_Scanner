@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_scan"
+        android:shortcutId="scan_new"
+        android:shortcutLongLabel="@string/shortcut_scan_long"
+        android:shortcutShortLabel="@string/shortcut_scan_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="info.meuse24.pdf_scanner.MainActivity"
+            android:targetPackage="info.meuse24.pdf_scanner">
+            <extra
+                android:name="info.meuse24.pdf_scanner.ACTION"
+                android:value="scan_new" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_import"
+        android:shortcutId="import_images"
+        android:shortcutLongLabel="@string/shortcut_import_long"
+        android:shortcutShortLabel="@string/shortcut_import_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="info.meuse24.pdf_scanner.MainActivity"
+            android:targetPackage="info.meuse24.pdf_scanner">
+            <extra
+                android:name="info.meuse24.pdf_scanner.ACTION"
+                android:value="import_images" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_trash"
+        android:shortcutId="open_trash"
+        android:shortcutLongLabel="@string/shortcut_trash_long"
+        android:shortcutShortLabel="@string/shortcut_trash_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="info.meuse24.pdf_scanner.MainActivity"
+            android:targetPackage="info.meuse24.pdf_scanner">
+            <extra
+                android:name="info.meuse24.pdf_scanner.ACTION"
+                android:value="open_trash" />
+        </intent>
+    </shortcut>
+</shortcuts>

@@ -2,18 +2,24 @@ package info.meuse24.pdf_scanner.ui.home
 
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toEntity
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.Folder
 import info.meuse24.pdf_scanner.data.local.TrashDao
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.data.repository.TrashRepository
 import info.meuse24.pdf_scanner.data.repository.SettingsRepository
+import info.meuse24.pdf_scanner.domain.repository.FolderRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
+import info.meuse24.pdf_scanner.domain.usecase.MoveDocumentsUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
 import info.meuse24.pdf_scanner.domain.usecase.RestoreScansUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ToggleFavoriteUseCase
 import info.meuse24.pdf_scanner.domain.usecase.TrashScansUseCase
 import info.meuse24.pdf_scanner.ui.ocr.OCR_LANGUAGE_AUTO
 import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
@@ -58,12 +64,15 @@ class HomeViewModelTest {
 
     private lateinit var repository: ScanRepository
     private lateinit var settingsRepository: SettingsRepository
+    private lateinit var folderRepository: FolderRepository
     private lateinit var importScanUseCase: ImportScanUseCase
     private lateinit var importFileUseCase: ImportFileUseCase
     private lateinit var exportScanUseCase: ExportScanUseCase
     private lateinit var exportAsJpgUseCase: ExportAsJpgUseCase
     private lateinit var trashScansUseCase: TrashScansUseCase
     private lateinit var restoreScansUseCase: RestoreScansUseCase
+    private lateinit var moveDocumentsUseCase: MoveDocumentsUseCase
+    private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
     private lateinit var extractTextUseCase: ExtractTextUseCase
     private lateinit var makeSearchableWorkflow: MakeSearchableWorkflow
     private lateinit var mergePdfsWorkflow: MergePdfsWorkflow
@@ -76,18 +85,23 @@ class HomeViewModelTest {
 
         repository = mock(ScanRepository::class.java)
         settingsRepository = mock(SettingsRepository::class.java)
+        folderRepository = mock(FolderRepository::class.java)
         importScanUseCase = mock(ImportScanUseCase::class.java)
         importFileUseCase = mock(ImportFileUseCase::class.java)
         exportScanUseCase = mock(ExportScanUseCase::class.java)
         exportAsJpgUseCase = mock(ExportAsJpgUseCase::class.java)
         trashScansUseCase = mock(TrashScansUseCase::class.java)
         restoreScansUseCase = mock(RestoreScansUseCase::class.java)
+        moveDocumentsUseCase = mock(MoveDocumentsUseCase::class.java)
+        toggleFavoriteUseCase = mock(ToggleFavoriteUseCase::class.java)
         extractTextUseCase = mock(ExtractTextUseCase::class.java)
         makeSearchableWorkflow = mock(MakeSearchableWorkflow::class.java)
         mergePdfsWorkflow = mock(MergePdfsWorkflow::class.java)
 
         `when`(repository.getAllScans()).thenReturn(flowOf(emptyList()))
+        `when`(repository.getFavoriteScans()).thenReturn(flowOf(emptyList()))
         `when`(settingsRepository.settings).thenReturn(MutableStateFlow(AppSettings()))
+        `when`(folderRepository.observeFolders()).thenReturn(flowOf(emptyList()))
 
         resourceProvider = FakeResourceProvider(
             strings = mapOf(
@@ -120,7 +134,7 @@ class HomeViewModelTest {
     @Test
     fun `extractTexts reports missing image before invoking use case`() = runTest(testDispatcher) {
         val viewModel = buildViewModel()
-        val missing = ScanRecord(
+        val missing = Document(
             id = 1L,
             filename = "missing",
             filepath = File(tmpFolder.root, "missing.pdf").absolutePath,
@@ -132,30 +146,30 @@ class HomeViewModelTest {
         viewModel.extractTexts(listOf(missing), "de")
         advanceUntilIdle()
 
-        assertEquals("No image available", viewModel.error.value)
-        assertFalse(viewModel.ocrLoading.value)
-        assertNull(viewModel.ocrText.value)
+        assertEquals("No image available", viewModel.messageUiState.value.error)
+        assertFalse(viewModel.operationUiState.value.ocrLoading)
+        assertNull(viewModel.operationUiState.value.ocrText)
     }
 
     @Test
     fun `extractTexts shows auto hint when OcrNoTextException in automatic mode`() = runTest(testDispatcher) {
         val pdf = File(tmpFolder.root, "doc.pdf").apply { writeText("pdf") }
-        val record = ScanRecord(id = 1L, filename = "doc", filepath = pdf.absolutePath,
+        val record = Document(id = 1L, filename = "doc", filepath = pdf.absolutePath,
             timestamp = 0L, pageCount = 1, fileSize = 0L)
 
         val viewModel = buildViewModel(extractTextUseCase = fakeExtract { _, _ -> throw OcrNoTextException() })
         viewModel.extractTexts(listOf(record), OCR_LANGUAGE_AUTO)
         advanceUntilIdle()
 
-        assertEquals("No text: try Hindi manually", viewModel.error.value)
-        assertNull(viewModel.ocrText.value)
-        assertFalse(viewModel.ocrLoading.value)
+        assertEquals("No text: try Hindi manually", viewModel.messageUiState.value.error)
+        assertNull(viewModel.operationUiState.value.ocrText)
+        assertFalse(viewModel.operationUiState.value.ocrLoading)
     }
 
     @Test
     fun `extractTexts navigates to review for single result and keeps toast quiet on low confidence`() = runTest(testDispatcher) {
         val pdf = File(tmpFolder.root, "low_quality.pdf").apply { writeText("pdf") }
-        val record = ScanRecord(id = 1L, filename = "low_quality", filepath = pdf.absolutePath,
+        val record = Document(id = 1L, filename = "low_quality", filepath = pdf.absolutePath,
             timestamp = 0L, pageCount = 1, fileSize = 0L)
 
         val stats = info.meuse24.pdf_scanner.util.OcrResultStats(0.25f, "en", 0f)
@@ -174,45 +188,45 @@ class HomeViewModelTest {
         viewModel.extractTexts(listOf(record), "en")
         advanceUntilIdle()
 
-        assertNull(viewModel.ocrText.value)
-        assertEquals(1L, viewModel.ocrReviewRequestId.value)
-        assertNull(viewModel.error.value)
+        assertNull(viewModel.operationUiState.value.ocrText)
+        assertEquals(1L, viewModel.operationUiState.value.ocrReviewRequestId)
+        assertNull(viewModel.messageUiState.value.error)
     }
 
     @Test
     fun `extractTexts shows no-text-found when OcrNoTextException in manual mode`() = runTest(testDispatcher) {
         val pdf = File(tmpFolder.root, "doc2.pdf").apply { writeText("pdf") }
-        val record = ScanRecord(id = 2L, filename = "doc2", filepath = pdf.absolutePath,
+        val record = Document(id = 2L, filename = "doc2", filepath = pdf.absolutePath,
             timestamp = 0L, pageCount = 1, fileSize = 0L)
 
         val viewModel = buildViewModel(extractTextUseCase = fakeExtract { _, _ -> throw OcrNoTextException() })
         viewModel.extractTexts(listOf(record), "hi")
         advanceUntilIdle()
 
-        assertEquals("No text found", viewModel.error.value)
-        assertNull(viewModel.ocrText.value)
-        assertFalse(viewModel.ocrLoading.value)
+        assertEquals("No text found", viewModel.messageUiState.value.error)
+        assertNull(viewModel.operationUiState.value.ocrText)
+        assertFalse(viewModel.operationUiState.value.ocrLoading)
     }
 
     @Test
     fun `extractTexts shows generic error on unexpected exception`() = runTest(testDispatcher) {
         val pdf = File(tmpFolder.root, "doc3.pdf").apply { writeText("pdf") }
-        val record = ScanRecord(id = 3L, filename = "doc3", filepath = pdf.absolutePath,
+        val record = Document(id = 3L, filename = "doc3", filepath = pdf.absolutePath,
             timestamp = 0L, pageCount = 1, fileSize = 0L)
 
         val viewModel = buildViewModel(extractTextUseCase = fakeExtract { _, _ -> throw RuntimeException("render crash") })
         viewModel.extractTexts(listOf(record), OCR_LANGUAGE_AUTO)
         advanceUntilIdle()
 
-        assertEquals("OCR failed", viewModel.error.value)
-        assertNull(viewModel.ocrText.value)
-        assertFalse(viewModel.ocrLoading.value)
+        assertEquals("OCR failed", viewModel.messageUiState.value.error)
+        assertNull(viewModel.operationUiState.value.ocrText)
+        assertFalse(viewModel.operationUiState.value.ocrLoading)
     }
 
     @Test
     fun `extractTexts shows uncertain warning when auto mode has weak language signal`() = runTest(testDispatcher) {
         val pdf = File(tmpFolder.root, "doc4.pdf").apply { writeText("pdf") }
-        val record = ScanRecord(id = 4L, filename = "doc4", filepath = pdf.absolutePath,
+        val record = Document(id = 4L, filename = "doc4", filepath = pdf.absolutePath,
             timestamp = 0L, pageCount = 1, fileSize = 0L)
 
         val stats = info.meuse24.pdf_scanner.util.OcrResultStats(0.55f, null, 0f)
@@ -231,15 +245,15 @@ class HomeViewModelTest {
         viewModel.extractTexts(listOf(record), OCR_LANGUAGE_AUTO)
         advanceUntilIdle()
 
-        assertNull(viewModel.ocrText.value)
-        assertEquals(4L, viewModel.ocrReviewRequestId.value)
-        assertEquals("Automatic detection uncertain", viewModel.error.value)
+        assertNull(viewModel.operationUiState.value.ocrText)
+        assertEquals(4L, viewModel.operationUiState.value.ocrReviewRequestId)
+        assertEquals("Automatic detection uncertain", viewModel.messageUiState.value.error)
     }
 
     @Test
     fun `extractTexts reports model download failure explicitly`() = runTest(testDispatcher) {
         val pdf = File(tmpFolder.root, "doc5.pdf").apply { writeText("pdf") }
-        val record = ScanRecord(id = 5L, filename = "doc5", filepath = pdf.absolutePath,
+        val record = Document(id = 5L, filename = "doc5", filepath = pdf.absolutePath,
             timestamp = 0L, pageCount = 1, fileSize = 0L)
 
         val viewModel = buildViewModel(
@@ -250,8 +264,8 @@ class HomeViewModelTest {
         viewModel.extractTexts(listOf(record), OCR_LANGUAGE_AUTO)
         advanceUntilIdle()
 
-        assertEquals("Model download failed", viewModel.error.value)
-        assertNull(viewModel.ocrText.value)
+        assertEquals("Model download failed", viewModel.messageUiState.value.error)
+        assertNull(viewModel.operationUiState.value.ocrText)
     }
 
     @Test
@@ -260,7 +274,7 @@ class HomeViewModelTest {
         val scansDir = storageProvider.scansDir()
         val originalFile = File(scansDir, "original.pdf").apply { writeText("pdf") }
         val originalThumb = File(scansDir, "original.jpg").apply { writeText("thumb") }
-        val record = ScanRecord(
+        val record = Document(
             id = 7L,
             filename = "original",
             filepath = originalFile.absolutePath,
@@ -279,8 +293,8 @@ class HomeViewModelTest {
         assertTrue(renamedThumb.exists())
         assertFalse(originalFile.exists())
         assertFalse(originalThumb.exists())
-        assertEquals("Renamed to renamed", viewModel.success.value)
-        assertNull(viewModel.error.value)
+        assertEquals("Renamed to renamed", viewModel.messageUiState.value.success)
+        assertNull(viewModel.messageUiState.value.error)
         verify(repository).updateFilenameAndPath(
             7L,
             "renamed",
@@ -292,7 +306,7 @@ class HomeViewModelTest {
     @Test
     fun `restoreLastTrashed clears ids after successful restore`() = runTest(testDispatcher) {
         val file = File(tmpFolder.root, "restore-ok.pdf").apply { writeText("pdf") }
-        val record = ScanRecord(
+        val record = Document(
             id = 11L,
             filename = "restore-ok",
             filepath = file.absolutePath,
@@ -303,7 +317,11 @@ class HomeViewModelTest {
         val trashRepository = TrashRepository(HomeFakeTrashDao(listOf(record)))
         val viewModel = buildViewModel(
             trashScansUseCase = TrashScansUseCase(trashRepository),
-            restoreScansUseCase = RestoreScansUseCase(trashRepository)
+            restoreScansUseCase = RestoreScansUseCase(
+                trashRepository,
+                repository,
+                HomeTestFolderRepository()
+            )
         )
 
         viewModel.deleteScans(listOf(record))
@@ -311,15 +329,15 @@ class HomeViewModelTest {
         viewModel.restoreLastTrashed()
         advanceUntilIdle()
 
-        assertEquals(emptyList<Long>(), viewModel.lastTrashed.value)
-        assertEquals("1 restored", viewModel.success.value)
-        assertNull(viewModel.error.value)
+        assertEquals(emptyList<Long>(), viewModel.messageUiState.value.lastTrashed)
+        assertEquals("1 restored", viewModel.messageUiState.value.success)
+        assertNull(viewModel.messageUiState.value.error)
     }
 
     @Test
     fun `restoreLastTrashed keeps ids when restore fails`() = runTest(testDispatcher) {
         val missingFile = File(tmpFolder.root, "restore-missing.pdf")
-        val record = ScanRecord(
+        val record = Document(
             id = 12L,
             filename = "restore-missing",
             filepath = missingFile.absolutePath,
@@ -330,7 +348,11 @@ class HomeViewModelTest {
         val trashRepository = TrashRepository(HomeFakeTrashDao(listOf(record)))
         val viewModel = buildViewModel(
             trashScansUseCase = TrashScansUseCase(trashRepository),
-            restoreScansUseCase = RestoreScansUseCase(trashRepository)
+            restoreScansUseCase = RestoreScansUseCase(
+                trashRepository,
+                repository,
+                HomeTestFolderRepository()
+            )
         )
 
         viewModel.deleteScans(listOf(record))
@@ -338,9 +360,9 @@ class HomeViewModelTest {
         viewModel.restoreLastTrashed()
         advanceUntilIdle()
 
-        assertEquals(listOf(12L), viewModel.lastTrashed.value)
-        assertEquals("Restore missing file", viewModel.error.value)
-        assertNull(viewModel.success.value)
+        assertEquals(listOf(12L), viewModel.messageUiState.value.lastTrashed)
+        assertEquals("Restore missing file", viewModel.messageUiState.value.error)
+        assertNull(viewModel.messageUiState.value.success)
     }
 
     private fun buildViewModel(
@@ -350,6 +372,7 @@ class HomeViewModelTest {
     ): HomeViewModel {
         return HomeViewModel(
             repository = repository,
+            folderRepository = folderRepository,
             settingsRepository = settingsRepository,
             importScanUseCase = importScanUseCase,
             importFileUseCase = importFileUseCase,
@@ -357,18 +380,21 @@ class HomeViewModelTest {
             exportAsJpgUseCase = exportAsJpgUseCase,
             trashScansUseCase = trashScansUseCase,
             restoreScansUseCase = restoreScansUseCase,
+            moveDocumentsUseCase = moveDocumentsUseCase,
+            toggleFavoriteUseCase = toggleFavoriteUseCase,
             extractTextUseCase = extractTextUseCase,
             makeSearchableWorkflow = makeSearchableWorkflow,
             mergePdfsWorkflow = mergePdfsWorkflow,
             workflowErrorMapper = WorkflowErrorMapper(resourceProvider),
             resourceProvider = resourceProvider,
             storageProvider = storageProvider,
-            dispatcherProvider = TestDispatcherProvider(testDispatcher)
+            dispatcherProvider = TestDispatcherProvider(testDispatcher),
+            archiveFilterStore = ArchiveFilterStore()
         )
     }
 
     /** Erstellt eine anonyme ExtractTextUseCase-Subklasse, die den Block als invoke-Body nutzt. */
-    private fun fakeExtract(block: suspend (List<ScanRecord>, String) -> List<OcrDocumentResult>): ExtractTextUseCase =
+    private fun fakeExtract(block: suspend (List<Document>, String) -> List<OcrDocumentResult>): ExtractTextUseCase =
         object : ExtractTextUseCase(
             ocrPipeline = mock(info.meuse24.pdf_scanner.util.OcrPipeline::class.java),
             inputImageLoader = mock(info.meuse24.pdf_scanner.util.OcrInputImageLoader::class.java),
@@ -377,7 +403,7 @@ class HomeViewModelTest {
             textRecognizerRunner = mock(info.meuse24.pdf_scanner.util.TextRecognizerRunner::class.java)
         ) {
             override suspend fun invoke(
-                records: List<ScanRecord>,
+                records: List<Document>,
                 languageCode: String,
                 onStatus: (info.meuse24.pdf_scanner.util.OcrPipelineStatus) -> Unit
             ): List<OcrDocumentResult> =
@@ -386,16 +412,16 @@ class HomeViewModelTest {
 }
 
 private class HomeFakeTrashDao(
-    initialRecords: List<ScanRecord>
+    initialRecords: List<Document>
 ) : TrashDao {
     private val records = initialRecords.associateBy { it.id }.toMutableMap()
 
     override fun getTrashedScans(): Flow<List<ScanRecord>> = flowOf(
-        records.values.filter { it.deletedAt != null }
+        records.values.filter { it.deletedAt != null }.map { it.toEntity() }
     )
 
     override suspend fun getScansByIds(ids: List<Long>): List<ScanRecord> =
-        ids.mapNotNull(records::get)
+        ids.mapNotNull(records::get).map { it.toEntity() }
 
     override suspend fun softDelete(ids: List<Long>, timestamp: Long) {
         ids.forEach { id ->
@@ -413,3 +439,13 @@ private class HomeFakeTrashDao(
 
     override suspend fun findExpiredTrash(threshold: Long): List<ScanRecord> = emptyList()
 }
+
+private class HomeTestFolderRepository : FolderRepository {
+    override fun observeFolders(): Flow<List<Folder>> = flowOf(emptyList())
+    override suspend fun createFolder(folder: Folder): Long = 0L
+    override suspend fun renameFolder(id: Long, name: String) = Unit
+    override suspend fun deleteFolder(id: Long) = Unit
+    override suspend fun folderExists(id: Long): Boolean = false
+}
+
+

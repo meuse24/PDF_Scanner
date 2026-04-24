@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_security_title">Sicherheit</string>
+    <string name="settings_app_lock_label">App mit Biometrie schützen</string>
+    <string name="settings_app_lock_timeout_label">Sperren nach Hintergrundzeit</string>
+    <string name="settings_app_lock_timeout_immediately">Sofort</string>
+    <string name="settings_app_lock_timeout_15s">Nach 15 Sekunden</string>
+    <string name="settings_app_lock_timeout_30s">Nach 30 Sekunden</string>
+    <string name="settings_app_lock_timeout_1m">Nach 1 Minute</string>
+    <string name="settings_app_lock_timeout_5m">Nach 5 Minuten</string>
+    <string name="settings_app_lock_timeout_custom">Nach %1$d Sekunden</string>
+    <string name="app_lock_prompt_title">M24 PDF-Scanner entsperren</string>
+    <string name="app_lock_prompt_subtitle">Biometrie oder Geräteanmeldedaten verwenden</string>
+    <string name="app_lock_screen_title">App gesperrt</string>
+    <string name="app_lock_screen_body">Entsperre die App, um mit Scans, Importen und geteilten Dateien fortzufahren.</string>
+    <string name="app_lock_unlock">Entsperren</string>
+    <string name="app_lock_auth_failed">Authentifizierung wurde abgebrochen oder ist fehlgeschlagen</string>
+    <string name="app_lock_unavailable">Biometrie oder Geräteanmeldedaten sind auf diesem Gerät nicht verfügbar</string>
+    <string name="app_lock_not_enrolled">Richte Biometrie oder eine Gerätesperre ein, bevor du den App-Schutz aktivierst</string>
+    <string name="help_item_app_lock">Aktiviere den Biometrie-Schutz unter Einstellungen → Sicherheit. Die App sperrt sich automatisch nach der eingestellten Hintergrundzeit (Standard: 30 s). Entsperre mit Fingerabdruck, Gesichtserkennung oder Geräte-PIN. Eingehende Shortcuts und geteilte Dateien werden gepuffert und erst nach erfolgreichem Entsperren verarbeitet. Der Lock ist ein UI-Gate — er verschlüsselt weder Dokumente noch die Datenbank.</string>
+    <string name="info_feature_app_lock">Eine optionale biometrische App-Sperre (Einstellungen → Sicherheit) sperrt die Benutzeroberfläche nach einem einstellbaren Hintergrund-Timeout. Die Authentifizierung erfolgt über den Android-BiometricManager; die App selbst speichert oder verarbeitet keine biometrischen Daten.</string>
+    <string name="privacy_keyword_7">App-Sperre</string>
+    <string name="privacy_point_7">Die optionale biometrische Sperre ist ein UI-Gate und verschlüsselt weder Dokumente noch die Datenbank. Die biometrische Verifikation übernimmt Android\'s BiometricManager; die App greift niemals direkt auf Fingerabdruck- oder Gesichtsdaten zu. Die Einstellung wird lokal in den SharedPreferences gespeichert.</string>
+</resources>

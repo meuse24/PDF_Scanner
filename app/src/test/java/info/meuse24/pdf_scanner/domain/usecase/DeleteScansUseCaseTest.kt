@@ -2,7 +2,10 @@ package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toDomain
+import info.meuse24.pdf_scanner.data.mapper.toEntity
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -27,7 +30,7 @@ class DeleteScansUseCaseTest {
         return DeleteScansUseCase(repository) to dao
     }
 
-    private fun record(id: Long, filepath: String, thumbnailPath: String? = null) = ScanRecord(
+    private fun record(id: Long, filepath: String, thumbnailPath: String? = null) = Document(
         id            = id,
         filename      = "test_$id",
         filepath      = filepath,
@@ -122,8 +125,8 @@ class FakeScanDao : ScanDao {
         val pageTextJson: String?
     )
 
-    val inserted  = mutableListOf<ScanRecord>()
-    val deleted   = mutableListOf<ScanRecord>()
+    val inserted  = mutableListOf<Document>()
+    val deleted   = mutableListOf<Document>()
     val searchableUpdates = mutableListOf<Pair<Long, Long>>() // id to fileSize
     val searchableWithContentUpdates = mutableListOf<SearchableWithContentUpdate>()
     val extractedTextAndOcrUpdates = mutableListOf<SearchableWithContentUpdate>()
@@ -134,11 +137,11 @@ class FakeScanDao : ScanDao {
     override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun insert(record: ScanRecord): Long {
-        inserted.add(record)
+        inserted.add(record.toDomain())
         return inserted.size.toLong()
     }
-    override suspend fun insertAll(records: List<ScanRecord>)    { inserted.addAll(records) }
-    override suspend fun delete(record: ScanRecord)              { deleted.add(record) }
+    override suspend fun insertAll(records: List<ScanRecord>)    { inserted.addAll(records.map { it.toDomain() }) }
+    override suspend fun delete(record: ScanRecord)              { deleted.add(record.toDomain()) }
     override suspend fun markSearchable(id: Long, fileSize: Long) { searchableUpdates.add(id to fileSize) }
     override suspend fun markSearchableWithContent(
         id: Long,
@@ -172,4 +175,9 @@ class FakeScanDao : ScanDao {
         appendInvalidations.add(Triple(id, fileSize, pageCount))
     }
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) {}
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) {}
 }
+

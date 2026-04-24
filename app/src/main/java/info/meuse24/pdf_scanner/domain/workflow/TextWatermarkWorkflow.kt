@@ -1,9 +1,8 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.ApplyTextWatermarkUseCase
 import java.io.File
-import java.io.IOException
 import javax.inject.Inject
 
 data class TextWatermarkWorkflowResult(
@@ -11,30 +10,28 @@ data class TextWatermarkWorkflowResult(
 )
 
 class TextWatermarkWorkflow @Inject constructor(
-    private val applyTextWatermarkUseCase: ApplyTextWatermarkUseCase
+    private val applyTextWatermarkUseCase: ApplyTextWatermarkUseCase,
+    private val workflowGuard: DocumentWorkflowGuard
 ) {
     suspend operator fun invoke(
-        record: ScanRecord,
+        record: Document,
         text: String,
         scansDir: File
-    ): WorkflowResult<TextWatermarkWorkflowResult> {
-        if (!File(record.filepath).exists()) {
-            return WorkflowResult.Failure(ScanWorkflowError.MissingFiles(listOf(record.filename)))
-        }
-        if (text.isBlank()) {
-            return WorkflowResult.Failure(ScanWorkflowError.InvalidWatermarkText)
-        }
-
-        return try {
-            WorkflowResult.Success(
-                TextWatermarkWorkflowResult(
-                    outputFilename = applyTextWatermarkUseCase(record, text.trim(), scansDir)
-                )
+    ): WorkflowResult<TextWatermarkWorkflowResult> =
+        workflowGuard.run(
+            record = record,
+            failureMapper = ScanWorkflowError::TextWatermarkFailed,
+            validate = {
+                if (text.isBlank()) {
+                    ScanWorkflowError.InvalidWatermarkText
+                } else {
+                    null
+                }
+            }
+        ) {
+            TextWatermarkWorkflowResult(
+                outputFilename = applyTextWatermarkUseCase(record, text.trim(), scansDir)
             )
-        } catch (e: IOException) {
-            WorkflowResult.Failure(ScanWorkflowError.StorageWriteFailed(e))
-        } catch (t: Throwable) {
-            WorkflowResult.Failure(ScanWorkflowError.TextWatermarkFailed(t))
         }
-    }
 }
+

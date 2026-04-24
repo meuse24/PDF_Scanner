@@ -1,0 +1,29 @@
+package info.meuse24.pdf_scanner.ui.home
+
+data class HomeNavigationCallbacks(
+    val onSplit: (Long) -> Unit = {},
+    val onReorder: (Long) -> Unit = {},
+    val onRotate: (Long) -> Unit = {},
+    val onDeletePages: (Long) -> Unit = {},
+    val onExtractPages: (Long) -> Unit = {},
+    val onAppendPages: (Long) -> Unit = {},
+    val onDuplicatePages: (Long) -> Unit = {},
+    val onPageNumbers: (Long) -> Unit = {},
+    val onTextWatermark: (Long) -> Unit = {},
+    val onCompressPdf: (Long) -> Unit = {},
+    val onProtectPdf: (Long) -> Unit = {},
+    val onUnlockPdf: (Long) -> Unit = {},
+    val onSignature: (Long) -> Unit = {},
+    val onRemoveTextLayer: (Long) -> Unit = {},
+    val onRemovePassword: (Long) -> Unit = {},
+    val onRestrictUsage: (Long) -> Unit = {},
+    val onAnnotate: (Long) -> Unit = {},
+    val onRedact: (Long) -> Unit = {},
+    val onGrayscale: (Long) -> Unit = {},
+    val onPdfMetadata: (Long) -> Unit = {},
+    val onQrScan: (Long) -> Unit = {},
+    val onBusinessCard: (Long) -> Unit = {},
+    val onOcrReview: (Long) -> Unit = {},
+    val onViewer: (Long) -> Unit = {},
+    val onImagesToPdf: () -> Unit = {}
+)

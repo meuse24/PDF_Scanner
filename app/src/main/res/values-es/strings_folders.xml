@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_all_documents">Todos los documentos</string>
+    <string name="folder_favorites">Favoritos</string>
+    <string name="folder_manage">Gestionar carpetas</string>
+    <string name="folder_management_title">Carpetas</string>
+    <string name="folder_create">Crear carpeta</string>
+    <string name="folder_create_failed">No se pudo crear la carpeta</string>
+    <string name="folder_rename">Renombrar</string>
+    <string name="folder_rename_failed">No se pudo renombrar la carpeta</string>
+    <string name="folder_delete">Eliminar</string>
+    <string name="folder_delete_failed">No se pudo eliminar la carpeta</string>
+    <string name="folder_delete_confirm">¿Eliminar la carpeta \"%1$s\"? Los documentos permanecerán en el archivo.</string>
+    <string name="folder_name_label">Nombre de la carpeta</string>
+    <string name="folder_move_success">Documentos movidos</string>
+    <string name="folder_move_failed">No se pudieron mover los documentos</string>
+    <string name="favorite_toggle_failed">No se pudo actualizar el estado de favorito</string>
+    <string name="folder_picker_title">Mover a carpeta</string>
+    <string name="folder_picker_root">Sin carpeta</string>
+    <string name="folder_picker_root_subtitle">Mantener los documentos en el nivel superior</string>
+    <string name="folder_picker_move_here">Mover documentos aquí</string>
+    <string name="label_bulk_move_folder">Carpeta</string>
+    <string name="help_item_folders">Abre el menú lateral para cambiar entre todos los documentos, tus favoritos y carpetas con nombre. Toca el icono de estrella en una tarjeta para marcarla o desmarcarla como favorita. Selecciona documentos y toca el botón Carpeta para moverlos. Mantén presionada una carpeta en el menú para renombrarla o eliminarla.</string>
+    <string name="info_feature_folders">Los documentos se pueden organizar en carpetas y marcar como favoritos. El menú lateral muestra todas las carpetas y un filtro de favoritos. Las carpetas son planas (sin anidamiento) y al eliminar una, sus documentos vuelven al nivel superior.</string>
+</resources>

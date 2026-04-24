@@ -1,8 +1,9 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
-import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfStructureOps
+import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
 import java.io.File
 import javax.inject.Inject
 
@@ -12,29 +13,18 @@ import javax.inject.Inject
  * @return Anzahl der erzeugten Teile
  */
 class SplitPdfUseCase @Inject constructor(
-    private val pdfEditor:  PdfEditor,
-    private val repository: ScanRepository
+    private val pdfEditor: PdfStructureOps,
+    private val persister: ScanArtifactPersister,
+    private val pdfRenderingOps: PdfRenderingOps = pdfEditor as PdfRenderingOps
 ) {
     suspend operator fun invoke(
-        record:       ScanRecord,
+        record: Document,
         splitAtPages: List<Int>,
-        scansDir:     File
+        scansDir: File
     ): Int {
         val parts = pdfEditor.splitPdf(File(record.filepath), scansDir, splitAtPages)
-        val newRecords = parts.map { partFile ->
-            val baseName  = partFile.nameWithoutExtension
-            val thumbFile = File(scansDir, "$baseName.jpg")
-            pdfEditor.generateThumbnail(partFile, thumbFile)
-            ScanRecord(
-                filename      = baseName,
-                filepath      = partFile.absolutePath,
-                timestamp     = System.currentTimeMillis(),
-                pageCount     = pdfEditor.getPageCount(partFile),
-                fileSize      = partFile.length(),
-                thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath
-            )
-        }
-        repository.saveScans(newRecords)
+        persister.persistDerivedAll(parts, scansDir, pdfRenderingOps::getPageCount)
         return parts.size
     }
 }
+

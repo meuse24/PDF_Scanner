@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.HighlightPdfUseCase
@@ -20,13 +20,13 @@ class HighlightPdfWorkflowTest {
 
     @get:Rule val tmpFolder = TemporaryFolder()
 
-    private fun record(id: Long, exists: Boolean = true, tags: String? = null): ScanRecord {
+    private fun record(id: Long, exists: Boolean = true, tags: String? = null): Document {
         val file = if (exists) {
             tmpFolder.newFile("scan_$id.pdf").apply { writeText("pdf") }
         } else {
             File(tmpFolder.root, "missing_$id.pdf")
         }
-        return ScanRecord(
+        return Document(
             id = id,
             filename = "scan_$id",
             filepath = file.absolutePath,
@@ -54,8 +54,8 @@ class HighlightPdfWorkflowTest {
     private fun workflow(pdfEditor: PdfEditor): Pair<HighlightPdfWorkflow, FakeScanDao> {
         val dao = FakeScanDao()
         val repository = ScanRepository(dao)
-        val useCase = HighlightPdfUseCase(pdfEditor, repository)
-        return HighlightPdfWorkflow(useCase, pdfEditor) to dao
+        val useCase = HighlightPdfUseCase(pdfEditor, info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository))
+        return HighlightPdfWorkflow(useCase, DocumentWorkflowGuard(pdfEditor)) to dao
     }
 
     @Test
@@ -178,3 +178,5 @@ private class FakeHighlightPdfEditor(
         return true
     }
 }
+
+

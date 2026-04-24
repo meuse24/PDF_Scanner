@@ -23,11 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 
 @Composable
 internal fun HomeDeleteDialog(
-    record: ScanRecord,
+    record: Document,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -190,3 +190,4 @@ internal fun HomeErrorDialog(
         }
     )
 }
+

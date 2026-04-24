@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_security_title">الأمان</string>
+    <string name="settings_app_lock_label">حماية التطبيق بالقياسات الحيوية</string>
+    <string name="settings_app_lock_timeout_label">القفل بعد وقت في الخلفية</string>
+    <string name="settings_app_lock_timeout_immediately">فوراً</string>
+    <string name="settings_app_lock_timeout_15s">بعد 15 ثانية</string>
+    <string name="settings_app_lock_timeout_30s">بعد 30 ثانية</string>
+    <string name="settings_app_lock_timeout_1m">بعد دقيقة واحدة</string>
+    <string name="settings_app_lock_timeout_5m">بعد 5 دقائق</string>
+    <string name="settings_app_lock_timeout_custom">بعد %1$d ثانية</string>
+    <string name="app_lock_prompt_title">فتح قفل M24 PDF-Scanner</string>
+    <string name="app_lock_prompt_subtitle">استخدام القياسات الحيوية أو بيانات اعتماد الجهاز</string>
+    <string name="app_lock_screen_title">التطبيق مقفل</string>
+    <string name="app_lock_screen_body">افتح قفل التطبيق للمتابعة مع عمليات المسح والاستيراد والملفات المشتركة.</string>
+    <string name="app_lock_unlock">فتح القفل</string>
+    <string name="app_lock_auth_failed">تم إلغاء المصادقة أو فشلت</string>
+    <string name="app_lock_unavailable">المصادقة البيومترية أو ببيانات اعتماد الجهاز غير متوفرة على هذا الجهاز</string>
+    <string name="app_lock_not_enrolled">قم بإعداد القياسات الحيوية أو قفل شاشة الجهاز قبل تفعيل حماية التطبيق</string>
+    <string name="help_item_app_lock">فعّل الحماية البيومترية من الإعدادات → الأمان. يُقفل التطبيق تلقائيًا بعد وقت الخلفية المحدد (الافتراضي: 30 ث). استخدم البصمة أو التعرف على الوجه أو PIN الجهاز للفتح. تُحفظ الاختصارات والملفات المشتركة الواردة في قائمة انتظار حتى الفتح. القفل هو بوابة واجهة فقط ولا يشفّر المستندات أو قاعدة البيانات.</string>
+    <string name="info_feature_app_lock">قفل بيومتري اختياري (الإعدادات → الأمان) يُغلق الواجهة بعد مهلة خلفية قابلة للتهيئة. تستخدم المصادقة BiometricManager من Android؛ لا يخزّن التطبيق بيانات بيومترية ولا يعالجها.</string>
+    <string name="privacy_keyword_7">قفل التطبيق</string>
+    <string name="privacy_point_7">القفل البيومتري الاختياري هو بوابة واجهة ولا يشفّر المستندات أو قاعدة البيانات. تتولى التحقق البيومتري من Android BiometricManager؛ لا يصل التطبيق أبداً مباشرةً إلى بيانات البصمة أو الوجه. يُخزَّن الإعداد محليًا في SharedPreferences.</string>
+</resources>

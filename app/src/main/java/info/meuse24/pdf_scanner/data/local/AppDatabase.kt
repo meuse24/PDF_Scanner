@@ -5,10 +5,11 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [ScanRecord::class, ScanRecordFts::class], version = 7, exportSchema = false)
+@Database(entities = [ScanRecord::class, ScanRecordFts::class, FolderEntity::class], version = 8, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun scanDao(): ScanDao
     abstract fun trashDao(): TrashDao
+    abstract fun folderDao(): FolderDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -81,6 +82,24 @@ abstract class AppDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE scan_records ADD COLUMN ocr_confidence REAL")
                 db.execSQL("ALTER TABLE scan_records ADD COLUMN ocr_language TEXT")
                 db.execSQL("ALTER TABLE scan_records ADD COLUMN ocr_page_text_json TEXT")
+            }
+        }
+
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS folders (
+                        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        color_argb INTEGER,
+                        created_at INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL("ALTER TABLE scan_records ADD COLUMN folder_id INTEGER")
+                db.execSQL("ALTER TABLE scan_records ADD COLUMN is_favorite INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_scan_records_folder_id ON scan_records(folder_id)")
             }
         }
     }

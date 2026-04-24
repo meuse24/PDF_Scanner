@@ -1,8 +1,8 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
 import android.content.Context
-import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
@@ -37,13 +37,13 @@ class RedactPdfWorkflowTest {
         isSearchable: Boolean = true,
         extractedText: String? = "secret text",
         tags: String? = "invoice,bank"
-    ): ScanRecord {
+    ): Document {
         val file = if (exists) {
             tmpFolder.newFile("scan_$id.pdf").apply { writeText("pdf") }
         } else {
             File(tmpFolder.root, "missing_$id.pdf")
         }
-        return ScanRecord(
+        return Document(
             id = id,
             filename = "scan_$id",
             filepath = file.absolutePath,
@@ -70,7 +70,10 @@ class RedactPdfWorkflowTest {
     ): Pair<RedactPdfWorkflow, FakeScanDao> {
         val dao = FakeScanDao()
         val repository = ScanRepository(dao)
-        val redactUseCase = RedactPdfUseCase(pdfEditor, repository)
+        val redactUseCase = RedactPdfUseCase(
+            pdfEditor,
+            info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository)
+        )
         val makeSearchableUseCase = MakeSearchableUseCase(searchablePdfBuilder, repository)
         val makeSearchableWorkflow = MakeSearchableWorkflow(makeSearchableUseCase)
         val deleteScansUseCase = DeleteScansUseCase(repository)

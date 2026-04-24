@@ -5,13 +5,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
+import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.workflow.ReorderPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.PdfEditor
 import info.meuse24.pdf_scanner.util.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,8 +28,8 @@ data class ReorderPage(
 
 @HiltViewModel
 class ReorderViewModel @Inject constructor(
-    private val repository: ScanRepository,
-    private val pdfEditor: PdfEditor,
+    private val repository: DocumentRepository,
+    private val pdfEditor: PdfRenderingOps,
     private val reorderPagesWorkflow: ReorderPagesWorkflow,
     private val errorMapper: WorkflowErrorMapper,
     private val storageProvider: StorageProvider,
@@ -39,8 +39,8 @@ class ReorderViewModel @Inject constructor(
 
     private val scanId: Long = checkNotNull(savedStateHandle["scanId"])
 
-    private val _record = MutableStateFlow<ScanRecord?>(null)
-    val record: StateFlow<ScanRecord?> = _record.asStateFlow()
+    private val _record = MutableStateFlow<Document?>(null)
+    val record: StateFlow<Document?> = _record.asStateFlow()
 
     private val _pages = MutableStateFlow<List<ReorderPage>>(emptyList())
     val pages: StateFlow<List<ReorderPage>> = _pages.asStateFlow()
@@ -78,13 +78,13 @@ class ReorderViewModel @Inject constructor(
         }
     }
 
-    private fun initPages(record: ScanRecord) {
+    private fun initPages(record: Document) {
         val count = record.pageCount.coerceAtLeast(1)
         _pages.value = List(count) { ReorderPage(it) }
         loadThumbnails(record, count)
     }
 
-    private fun loadThumbnails(record: ScanRecord, count: Int) {
+    private fun loadThumbnails(record: Document, count: Int) {
         viewModelScope.launch(dispatcherProvider.io) {
             val pdfFile = File(record.filepath)
             if (!pdfFile.exists()) {
@@ -149,3 +149,4 @@ class ReorderViewModel @Inject constructor(
         _pages.value.forEach { it.bitmap?.recycle() }
     }
 }
+

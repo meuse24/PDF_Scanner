@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_business_card">Escanear tarjeta de visita</string>
+    <string name="business_card_title">Tarjeta de visita</string>
+    <string name="business_card_subtitle">Revisa y corrige los datos de contacto detectados antes de exportar una vCard.</string>
+    <string name="business_card_name">Nombre completo</string>
+    <string name="business_card_organization">Organización</string>
+    <string name="business_card_job_title">Cargo</string>
+    <string name="business_card_emails">Correos electrónicos</string>
+    <string name="business_card_phones">Números de teléfono</string>
+    <string name="business_card_urls">Sitios web</string>
+    <string name="business_card_address">Dirección</string>
+    <string name="business_card_add_to_contacts">Añadir a contactos</string>
+    <string name="business_card_share_vcard">Compartir vCard</string>
+    <string name="business_card_scan_failed">Error al escanear la tarjeta de visita</string>
+    <string name="business_card_export_failed">Error al exportar la vCard</string>
+    <string name="business_card_no_contact_app">No se encontró ninguna app de contactos compatible</string>
+    <string name="error_document_not_found">Documento no encontrado</string>
+    <string name="help_item_business_card">Abre el menú de tres puntos en cualquier PDF escaneado y elige Escanear tarjeta de visita. La app ejecuta OCR y extrae nombre, organización, cargo, correos, teléfonos, sitios web y dirección. Revisa y edita los campos detectados, luego toca Añadir a contactos para guardar directamente o Compartir vCard para enviar el archivo.</string>
+    <string name="info_feature_businesscard">El escáner de tarjetas de visita ejecuta OCR en una página PDF, extrae datos de contacto estructurados y exporta un archivo vCard 3.0 que puede añadirse a la app de contactos o compartirse.</string>
+</resources>

@@ -1,7 +1,7 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.util.DownloadEntry
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.util.DownloadsStorage
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
@@ -26,7 +26,7 @@ class ExportScanUseCaseTest {
         val useCase = ExportScanUseCase(downloadsStorage)
 
         val displayName = useCase(
-            ScanRecord(
+            Document(
                 id = 1L,
                 filename = "Contract",
                 filepath = pdfFile.absolutePath,
@@ -50,7 +50,7 @@ class ExportScanUseCaseTest {
 
         val error = runCatching {
             useCase(
-                ScanRecord(
+                Document(
                     id = 1L,
                     filename = "Missing",
                     filepath = missingFile.absolutePath,
@@ -88,3 +88,4 @@ private class FakeDownloadsStorage : DownloadsStorage {
         }
     }
 }
+

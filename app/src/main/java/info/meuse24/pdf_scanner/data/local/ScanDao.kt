@@ -12,6 +12,12 @@ interface ScanDao {
     @Query("SELECT * FROM scan_records WHERE deleted_at IS NULL ORDER BY timestamp DESC")
     fun getAllScans(): Flow<List<ScanRecord>>
 
+    @Query("SELECT * FROM scan_records WHERE deleted_at IS NULL AND folder_id IS :folderId ORDER BY timestamp DESC")
+    fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>>
+
+    @Query("SELECT * FROM scan_records WHERE deleted_at IS NULL AND is_favorite = 1 ORDER BY timestamp DESC")
+    fun getFavoriteScans(): Flow<List<ScanRecord>>
+
     @Query(
         """
         SELECT * FROM scan_records
@@ -99,4 +105,10 @@ interface ScanDao {
 
     @Query("UPDATE scan_records SET filename = :filename, filepath = :filepath, thumbnail_path = :thumbnailPath WHERE id = :id")
     suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?)
+
+    @Query("UPDATE scan_records SET folder_id = :folderId WHERE id IN (:ids)")
+    suspend fun moveScans(ids: List<Long>, folderId: Long?)
+
+    @Query("UPDATE scan_records SET is_favorite = :favorite WHERE id IN (:ids)")
+    suspend fun setFavorite(ids: List<Long>, favorite: Boolean)
 }

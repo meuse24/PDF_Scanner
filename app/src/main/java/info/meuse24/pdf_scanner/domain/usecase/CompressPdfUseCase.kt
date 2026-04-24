@@ -1,34 +1,25 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
-import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
+import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
 import java.io.File
 import javax.inject.Inject
 
 class CompressPdfUseCase @Inject constructor(
-    private val pdfEditor: PdfEditor,
-    private val repository: ScanRepository
+    private val pdfRenderingOps: PdfRenderingOps,
+    private val persister: ScanArtifactPersister
 ) {
     suspend operator fun invoke(
-        record: ScanRecord,
+        record: Document,
         preset: PdfCompressionPreset,
         scansDir: File
     ): String {
-        val resultFile = pdfEditor.compressPdf(File(record.filepath), scansDir, preset)
-        val thumbFile = File(scansDir, "${resultFile.nameWithoutExtension}.jpg")
-        pdfEditor.generateThumbnail(resultFile, thumbFile)
-        repository.saveScan(
-            ScanRecord(
-                filename = resultFile.nameWithoutExtension,
-                filepath = resultFile.absolutePath,
-                timestamp = System.currentTimeMillis(),
-                pageCount = record.pageCount,
-                fileSize = resultFile.length(),
-                thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath,
-                isSearchable = false
-            )
-        )
+        val resultFile = pdfRenderingOps.compressPdf(File(record.filepath), scansDir, preset)
+        persister.persistDerivedFrom(record, resultFile, scansDir) {
+            it.copy(isSearchable = false)
+        }
         return resultFile.nameWithoutExtension
     }
 }
+

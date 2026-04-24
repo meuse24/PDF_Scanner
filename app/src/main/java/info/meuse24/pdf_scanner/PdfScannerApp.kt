@@ -2,8 +2,10 @@ package info.meuse24.pdf_scanner
 
 import android.app.Application
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
+import androidx.lifecycle.ProcessLifecycleOwner
 import dagger.hilt.android.HiltAndroidApp
 import info.meuse24.pdf_scanner.domain.usecase.PurgeTrashUseCase
+import info.meuse24.pdf_scanner.util.AppLockManager
 import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.TrashConstants
 import kotlinx.coroutines.CoroutineScope
@@ -16,12 +18,14 @@ import javax.inject.Inject
 class PdfScannerApp : Application() {
     @Inject lateinit var purgeTrashUseCase: PurgeTrashUseCase
     @Inject lateinit var dispatcherProvider: DispatcherProvider
+    @Inject lateinit var appLockManager: AppLockManager
 
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     override fun onCreate() {
         super.onCreate()
         PDFBoxResourceLoader.init(this)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(appLockManager)
         appScope.launch(dispatcherProvider.io) {
             purgeTrashUseCase.purgeExpired(TrashConstants.RETENTION_MILLIS)
         }

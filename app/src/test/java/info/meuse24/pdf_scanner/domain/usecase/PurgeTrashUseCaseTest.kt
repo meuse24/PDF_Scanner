@@ -1,6 +1,9 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toDomain
+import info.meuse24.pdf_scanner.data.mapper.toEntity
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.local.TrashDao
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.data.repository.TrashRepository
@@ -54,7 +57,7 @@ class PurgeTrashUseCaseTest {
     }
 }
 
-private fun scanRecord(id: Long, file: File, deletedAt: Long) = ScanRecord(
+private fun scanRecord(id: Long, file: File, deletedAt: Long) = Document(
     id = id,
     filename = file.nameWithoutExtension,
     filepath = file.absolutePath,
@@ -65,15 +68,15 @@ private fun scanRecord(id: Long, file: File, deletedAt: Long) = ScanRecord(
 )
 
 private class PurgeFakeTrashDao(
-    private val records: List<ScanRecord>
+    private val records: List<Document>
 ) : TrashDao {
-    override fun getTrashedScans(): Flow<List<ScanRecord>> = flowOf(records)
+    override fun getTrashedScans(): Flow<List<ScanRecord>> = flowOf(records.map { it.toEntity() })
     override suspend fun getScansByIds(ids: List<Long>): List<ScanRecord> =
-        records.filter { it.id in ids }
+        records.filter { it.id in ids }.map { it.toEntity() }
     override suspend fun softDelete(ids: List<Long>, timestamp: Long) = Unit
     override suspend fun restore(ids: List<Long>) = Unit
     override suspend fun findExpiredTrash(threshold: Long): List<ScanRecord> =
-        records.filter { (it.deletedAt ?: Long.MAX_VALUE) < threshold }
+        records.filter { (it.deletedAt ?: Long.MAX_VALUE) < threshold }.map { it.toEntity() }
 }
 
 private class PurgeFakeScanDao : info.meuse24.pdf_scanner.data.local.ScanDao {
@@ -107,4 +110,10 @@ private class PurgeFakeScanDao : info.meuse24.pdf_scanner.data.local.ScanDao {
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) = Unit
     override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) = Unit
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) = Unit
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) = Unit
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) = Unit
 }
+
+

@@ -1,34 +1,25 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
-import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfStructureOps
+import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
 import java.io.File
 import javax.inject.Inject
 
 class ExtractPagesUseCase @Inject constructor(
-    private val pdfEditor: PdfEditor,
-    private val repository: ScanRepository
+    private val pdfEditor: PdfStructureOps,
+    private val persister: ScanArtifactPersister,
+    private val pdfRenderingOps: PdfRenderingOps = pdfEditor as PdfRenderingOps
 ) {
     suspend operator fun invoke(
-        record: ScanRecord,
+        record: Document,
         pageIndexes: List<Int>,
         scansDir: File
     ): String {
         val resultFile = pdfEditor.extractPages(File(record.filepath), scansDir, pageIndexes)
-        val thumbFile = File(scansDir, "${resultFile.nameWithoutExtension}.jpg")
-        pdfEditor.generateThumbnail(resultFile, thumbFile)
-        repository.saveScan(
-            ScanRecord(
-                filename = resultFile.nameWithoutExtension,
-                filepath = resultFile.absolutePath,
-                timestamp = System.currentTimeMillis(),
-                pageCount = pdfEditor.getPageCount(resultFile),
-                fileSize = resultFile.length(),
-                thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath,
-                isSearchable = record.isSearchable
-            )
-        )
+        persister.persistDerivedFrom(record, resultFile, scansDir, pdfRenderingOps.getPageCount(resultFile))
         return resultFile.nameWithoutExtension
     }
 }
+

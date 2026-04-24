@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.util.OcrModelInstaller
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.QrCodeScanner
@@ -87,7 +87,7 @@ class ScanQrCodesUseCaseTest {
         assertEquals(listOf(1 to 3, 2 to 3), progressEvents)
     }
 
-    private fun record(file: File, isEncrypted: Boolean) = ScanRecord(
+    private fun record(file: File, isEncrypted: Boolean) = Document(
         id = 1L,
         filename = file.nameWithoutExtension,
         filepath = file.absolutePath,
@@ -116,3 +116,4 @@ private class FakeQrCodeScanner(
         return results
     }
 }
+

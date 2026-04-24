@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.TextSnippet
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.FindInPage
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.automirrored.filled.MergeType
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ internal fun BulkActionBar(
     onExtractTexts:        () -> Unit,
     onMakeSearchable:      () -> Unit,
     onMerge:               () -> Unit,
+    onMoveToFolder:        () -> Unit,
     onDelete:              () -> Unit,
     extractEnabled:        Boolean  = true,
     makeSearchableEnabled: Boolean  = true,
@@ -72,6 +74,11 @@ internal fun BulkActionBar(
                 labelRes = R.string.label_bulk_merge,
                 enabled  = mergeEnabled,
                 onClick  = onMerge
+            )
+            BulkAction(
+                icon = Icons.Default.FolderOpen,
+                labelRes = R.string.label_bulk_move_folder,
+                onClick = onMoveToFolder
             )
             BulkAction(
                 icon     = Icons.AutoMirrored.Filled.TextSnippet,

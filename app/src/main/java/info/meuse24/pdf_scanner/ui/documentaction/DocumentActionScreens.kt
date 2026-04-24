@@ -47,10 +47,11 @@ fun CompressPdfScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsStateWithLifecycle()
-    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
-    val success by viewModel.success.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val record = uiState.record
+    val editLoading = uiState.editLoading
+    val error = uiState.error
+    val success = uiState.success
     var preset by rememberSaveable { mutableStateOf(PdfCompressionPreset.MEDIUM.name) }
 
     LaunchedEffect(success) {
@@ -104,10 +105,11 @@ fun ProtectPdfScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsStateWithLifecycle()
-    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
-    val success by viewModel.success.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val record = uiState.record
+    val editLoading = uiState.editLoading
+    val error = uiState.error
+    val success = uiState.success
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     val passwordsMatch = password.isNotBlank() && password == confirmPassword
@@ -184,10 +186,11 @@ fun UnlockPdfScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsStateWithLifecycle()
-    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
-    val success by viewModel.success.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val record = uiState.record
+    val editLoading = uiState.editLoading
+    val error = uiState.error
+    val success = uiState.success
     var password by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(success) {
@@ -245,10 +248,11 @@ fun RemovePasswordScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsStateWithLifecycle()
-    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
-    val success by viewModel.success.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val record = uiState.record
+    val editLoading = uiState.editLoading
+    val error = uiState.error
+    val success = uiState.success
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()
@@ -296,10 +300,11 @@ fun RemoveTextLayerScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsStateWithLifecycle()
-    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
-    val success by viewModel.success.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val record = uiState.record
+    val editLoading = uiState.editLoading
+    val error = uiState.error
+    val success = uiState.success
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()
@@ -347,10 +352,11 @@ fun RestrictUsageScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsStateWithLifecycle()
-    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
-    val success by viewModel.success.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val record = uiState.record
+    val editLoading = uiState.editLoading
+    val error = uiState.error
+    val success = uiState.success
     var ownerPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     var canPrint by rememberSaveable { mutableStateOf(false) }
@@ -462,10 +468,11 @@ fun ConvertToGrayscaleScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsStateWithLifecycle()
-    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
-    val success by viewModel.success.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val record = uiState.record
+    val editLoading = uiState.editLoading
+    val error = uiState.error
+    val success = uiState.success
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()
@@ -513,11 +520,12 @@ fun PdfMetadataScreen(
     onNavigateBack: () -> Unit,
     viewModel: DocumentEditViewModel = hiltViewModel()
 ) {
-    val record by viewModel.record.collectAsStateWithLifecycle()
-    val metadata by viewModel.metadata.collectAsStateWithLifecycle()
-    val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
-    val success by viewModel.success.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val record = uiState.record
+    val metadata = uiState.metadata
+    val editLoading = uiState.editLoading
+    val error = uiState.error
+    val success = uiState.success
     var title by rememberSaveable(record?.id) { mutableStateOf("") }
     var author by rememberSaveable(record?.id) { mutableStateOf("") }
     var creator by rememberSaveable(record?.id) { mutableStateOf("") }

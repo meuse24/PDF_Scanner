@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_business_card">Scanner une carte de visite</string>
+    <string name="business_card_title">Carte de visite</string>
+    <string name="business_card_subtitle">Vérifiez et corrigez les données de contact détectées avant d\'exporter une vCard.</string>
+    <string name="business_card_name">Nom complet</string>
+    <string name="business_card_organization">Organisation</string>
+    <string name="business_card_job_title">Poste</string>
+    <string name="business_card_emails">Adresses e-mail</string>
+    <string name="business_card_phones">Numéros de téléphone</string>
+    <string name="business_card_urls">Sites web</string>
+    <string name="business_card_address">Adresse</string>
+    <string name="business_card_add_to_contacts">Ajouter aux contacts</string>
+    <string name="business_card_share_vcard">Partager la vCard</string>
+    <string name="business_card_scan_failed">Échec du scan de la carte de visite</string>
+    <string name="business_card_export_failed">Échec de l\'export de la vCard</string>
+    <string name="business_card_no_contact_app">Aucune application de contacts compatible trouvée</string>
+    <string name="error_document_not_found">Document introuvable</string>
+    <string name="help_item_business_card">Ouvrez le menu à trois points sur un PDF scanné et choisissez Scanner une carte de visite. L\'appli exécute l\'OCR et extrait le nom, l\'organisation, le poste, les e-mails, les téléphones, les sites web et l\'adresse. Vérifiez et modifiez les champs détectés, puis appuyez sur Ajouter aux contacts pour enregistrer directement ou Partager la vCard pour envoyer le fichier.</string>
+    <string name="info_feature_businesscard">Le scanner de cartes de visite exécute l\'OCR sur une page PDF, extrait des données de contact structurées et exporte un fichier vCard 3.0 pouvant être ajouté à l\'application Contacts ou partagé.</string>
+</resources>

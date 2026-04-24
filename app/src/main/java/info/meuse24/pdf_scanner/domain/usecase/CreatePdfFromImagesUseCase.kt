@@ -1,9 +1,7 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
 import android.net.Uri
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
-import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
 import info.meuse24.pdf_scanner.util.resolveUniqueFilename
 import java.io.File
 import javax.inject.Inject
@@ -24,8 +22,7 @@ data class CreatePdfFromImagesResult(
  */
 open class CreatePdfFromImagesUseCase @Inject constructor(
     private val imagePdfBuilder: ImagePdfBuilder,
-    private val pdfEditor: PdfEditor,
-    private val repository: ScanRepository
+    private val persister: ScanArtifactPersister
 ) {
     open suspend operator fun invoke(
         imageUris: List<Uri>,
@@ -37,19 +34,8 @@ open class CreatePdfFromImagesUseCase @Inject constructor(
         val destFile = File(scansDir, "$baseName.pdf")
         val buildResult = imagePdfBuilder.createPdf(imageUris, layout, destFile)
 
-        val thumbFile = File(scansDir, "$baseName.jpg")
-        pdfEditor.generateThumbnail(destFile, thumbFile)
-
-        repository.saveScan(
-            ScanRecord(
-                filename = baseName,
-                filepath = destFile.absolutePath,
-                timestamp = System.currentTimeMillis(),
-                pageCount = buildResult.pageCount,
-                fileSize = destFile.length(),
-                thumbnailPath = thumbFile.takeIf { it.exists() }?.absolutePath
-            )
-        )
+        persister.persistDerived(destFile, scansDir, buildResult.pageCount)
         return CreatePdfFromImagesResult(baseName, buildResult.skippedCount)
     }
 }
+

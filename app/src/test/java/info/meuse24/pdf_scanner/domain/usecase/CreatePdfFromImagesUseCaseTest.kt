@@ -3,9 +3,13 @@ package info.meuse24.pdf_scanner.domain.usecase
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
-import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toDomain
+import info.meuse24.pdf_scanner.data.mapper.toEntity
+import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
 import info.meuse24.pdf_scanner.util.PdfEditor
 import kotlinx.coroutines.flow.Flow
@@ -66,8 +70,7 @@ class CreatePdfFromImagesUseCaseTest {
         val context = buildContext(okUris)
         return CreatePdfFromImagesUseCase(
             imagePdfBuilder = ImagePdfBuilder(context, pdfEditor, TestStorageProvider(tmpFolder.root)),
-            pdfEditor = pdfEditor,
-            repository = ScanRepository(FakeImagesScanDao())
+            persister = ScanArtifactPersister(pdfEditor, ScanRepository(FakeImagesScanDao()))
         )
     }
 
@@ -155,8 +158,7 @@ class CreatePdfFromImagesUseCaseTest {
                 FakeImagesPdfEditor(tmpFolder),
                 TestStorageProvider(tmpFolder.root)
             ),
-            pdfEditor = FakeImagesPdfEditor(tmpFolder),
-            repository = ScanRepository(dao)
+            persister = ScanArtifactPersister(FakeImagesPdfEditor(tmpFolder), ScanRepository(dao))
         )
         useCase.invoke(listOf(u), "test", ImagePageLayout.SINGLE, tmpFolder.root)
 
@@ -193,10 +195,10 @@ private class FakeImagesPdfEditor(
 // ── Fake DAO ──────────────────────────────────────────────────────────────────
 
 internal class FakeImagesScanDao : ScanDao {
-    var lastInserted: ScanRecord? = null
+    var lastInserted: Document? = null
     override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun insert(record: ScanRecord): Long {
-        lastInserted = record
+        lastInserted = record.toDomain()
         return 1L
     }
     override suspend fun insertAll(records: List<ScanRecord>) {}
@@ -223,4 +225,9 @@ internal class FakeImagesScanDao : ScanDao {
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {}
     override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) {}
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) {}
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) {}
 }
+

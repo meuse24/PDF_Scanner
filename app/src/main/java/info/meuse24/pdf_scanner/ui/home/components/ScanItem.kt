@@ -25,6 +25,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,7 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.ui.components.DocumentEditSheet
 import info.meuse24.pdf_scanner.ui.components.ScanAction
 import info.meuse24.pdf_scanner.ui.ocr.OcrQualityBadge
@@ -72,12 +74,14 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ScanItem(
-    record:           ScanRecord,
+    record:           Document,
     isSelected:       Boolean,
     inSelectionMode:  Boolean  = false,
     modifier:         Modifier = Modifier,
     onClick:          () -> Unit,
     onCheckboxToggle: () -> Unit,
+    onToggleFavorite: () -> Unit = {},
+    folderLabel: String? = null,
     onAction:         (ScanAction) -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -203,6 +207,15 @@ internal fun ScanItem(
                             )
                         }
                     }
+                    if (folderLabel != null) {
+                        Spacer(Modifier.height(3.dp))
+                        Badge(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ) {
+                            Text(folderLabel, style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
                     val tagList = record.tags
                         ?.split(",")
                         ?.filter { it.isNotBlank() }
@@ -219,6 +232,24 @@ internal fun ScanItem(
                                 }
                             }
                         }
+                    }
+                }
+
+                if (!inSelectionMode) {
+                    IconButton(
+                        onClick = onToggleFavorite,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (record.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
+                            contentDescription = null,
+                            tint = if (record.isFavorite) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 }
 
@@ -271,3 +302,4 @@ private fun tagLabel(tagKey: String): String = when (tagKey) {
     "delivery"    -> stringResource(R.string.tag_delivery)
     else          -> tagKey
 }
+

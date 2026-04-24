@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_scan_short">Сканер</string>
+    <string name="shortcut_scan_long">Начать сканирование</string>
+    <string name="shortcut_import_short">Фото</string>
+    <string name="shortcut_import_long">Импорт изображений</string>
+    <string name="shortcut_trash_short">Корзина</string>
+    <string name="shortcut_trash_long">Открыть корзину</string>
+    <string name="help_title_app_shortcuts">Ярлыки и быстрые настройки</string>
+    <string name="help_item_app_shortcuts">Нажмите и удерживайте значок приложения, чтобы начать сканирование, импортировать изображения или сразу перейти в корзину. Добавьте плитку в панель быстрых настроек для доступа в одно касание. Разместите виджет на главном экране для мгновенного сканирования.</string>
+    <string name="info_feature_shortcuts">Ярлыки приложения, плитка быстрых настроек и виджет обеспечивают прямой доступ к сканированию, импорту изображений и корзине без открытия основного архива.</string>
+</resources>

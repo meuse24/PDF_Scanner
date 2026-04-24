@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.ui.home
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -50,7 +50,7 @@ class HomeSortOrderTest {
         filename: String,
         timestamp: Long,
         fileSize: Long
-    ) = ScanRecord(
+    ) = Document(
         id = id,
         filename = filename,
         filepath = "/tmp/$filename.pdf",
@@ -59,3 +59,4 @@ class HomeSortOrderTest {
         fileSize = fileSize
     )
 }
+

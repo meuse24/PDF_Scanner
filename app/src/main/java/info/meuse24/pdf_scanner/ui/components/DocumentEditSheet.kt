@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentCut
+import androidx.compose.material.icons.filled.ContactPage
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
@@ -53,7 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import java.util.Locale
 
 sealed interface ScanAction {
@@ -80,12 +81,13 @@ sealed interface ScanAction {
     data object Grayscale : ScanAction
     data object PdfMetadata : ScanAction
     data object ScanQrCodes : ScanAction
+    data object ScanBusinessCard : ScanAction
     data object Print : ScanAction
 }
 
 @Composable
 fun DocumentEditSheet(
-    record: ScanRecord,
+    record: Document,
     onAction: (ScanAction) -> Unit,
     showRenameAction: Boolean = true,
     showPrintAction: Boolean = true,
@@ -180,6 +182,9 @@ fun DocumentEditSheet(
         SheetItem(Icons.Default.QrCodeScanner, R.string.action_scan_qr_codes, notEncrypted) {
             onAction(ScanAction.ScanQrCodes)
         }
+        SheetItem(Icons.Default.ContactPage, R.string.action_scan_business_card, notEncrypted && record.pageCount >= 1) {
+            onAction(ScanAction.ScanBusinessCard)
+        }
         if (record.isSearchable && notEncrypted) {
             SheetItem(Icons.Default.FindInPage, R.string.action_remove_text_layer, true) {
                 onAction(ScanAction.RemoveTextLayer)
@@ -265,3 +270,4 @@ private fun SheetItem(
         )
     }
 }
+

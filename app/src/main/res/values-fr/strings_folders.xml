@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_all_documents">Tous les documents</string>
+    <string name="folder_favorites">Favoris</string>
+    <string name="folder_manage">Gérer les dossiers</string>
+    <string name="folder_management_title">Dossiers</string>
+    <string name="folder_create">Créer un dossier</string>
+    <string name="folder_create_failed">Impossible de créer le dossier</string>
+    <string name="folder_rename">Renommer</string>
+    <string name="folder_rename_failed">Impossible de renommer le dossier</string>
+    <string name="folder_delete">Supprimer</string>
+    <string name="folder_delete_failed">Impossible de supprimer le dossier</string>
+    <string name="folder_delete_confirm">Supprimer le dossier \"%1$s\" ? Les documents resteront dans l\'archive.</string>
+    <string name="folder_name_label">Nom du dossier</string>
+    <string name="folder_move_success">Documents déplacés</string>
+    <string name="folder_move_failed">Impossible de déplacer les documents</string>
+    <string name="favorite_toggle_failed">Impossible de mettre à jour l\'état de favori</string>
+    <string name="folder_picker_title">Déplacer vers un dossier</string>
+    <string name="folder_picker_root">Sans dossier</string>
+    <string name="folder_picker_root_subtitle">Conserver les documents au niveau supérieur</string>
+    <string name="folder_picker_move_here">Déplacer les documents ici</string>
+    <string name="label_bulk_move_folder">Dossier</string>
+    <string name="help_item_folders">Ouvrez le menu latéral pour basculer entre tous les documents, vos favoris et les dossiers nommés. Appuyez sur l\'étoile d\'une carte pour la marquer ou la démarquer comme favori. Sélectionnez des documents et appuyez sur le bouton Dossier pour les déplacer. Appuyez longuement sur un dossier dans le menu pour le renommer ou le supprimer.</string>
+    <string name="info_feature_folders">Les documents peuvent être organisés dans des dossiers et marqués comme favoris. Le menu latéral liste tous les dossiers et un filtre Favoris. Les dossiers sont plats (sans imbrication) ; la suppression d\'un dossier déplace ses documents au niveau supérieur.</string>
+</resources>

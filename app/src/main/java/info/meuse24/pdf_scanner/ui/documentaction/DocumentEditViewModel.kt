@@ -6,8 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.PdfMetadata
+import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfTextOps
+import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationStroke
@@ -16,7 +20,6 @@ import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
-import info.meuse24.pdf_scanner.domain.usecase.TextLine
 import info.meuse24.pdf_scanner.domain.workflow.AnnotatePdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.CompressPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ConvertToGrayscaleWorkflow
@@ -34,21 +37,21 @@ import info.meuse24.pdf_scanner.domain.workflow.UpdatePdfMetadataWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.PdfEditor
-import info.meuse24.pdf_scanner.util.PdfMetadata
 import info.meuse24.pdf_scanner.util.ResourceProvider
 import info.meuse24.pdf_scanner.util.StorageProvider
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class DocumentEditViewModel @Inject constructor(
-    private val repository: ScanRepository,
+    private val repository: DocumentRepository,
     private val pageNumbersWorkflow: PageNumbersWorkflow,
     private val textWatermarkWorkflow: TextWatermarkWorkflow,
     private val compressPdfWorkflow: CompressPdfWorkflow,
@@ -63,170 +66,103 @@ class DocumentEditViewModel @Inject constructor(
     private val annotatePdfWorkflow: AnnotatePdfWorkflow,
     private val convertToGrayscaleWorkflow: ConvertToGrayscaleWorkflow,
     private val updatePdfMetadataWorkflow: UpdatePdfMetadataWorkflow,
-    private val pdfEditor: PdfEditor,
+    private val pdfEditor: PdfMetadataOps,
     private val errorMapper: WorkflowErrorMapper,
     private val resourceProvider: ResourceProvider,
     private val storageProvider: StorageProvider,
     private val dispatcherProvider: DispatcherProvider,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val pdfRenderingOps: PdfRenderingOps = pdfEditor as PdfRenderingOps,
+    private val pdfTextOps: PdfTextOps = pdfEditor as PdfTextOps
 ) : ViewModel() {
 
     private val scanId: Long = checkNotNull(savedStateHandle["scanId"])
 
-    private val _record = MutableStateFlow<ScanRecord?>(null)
-    val record: StateFlow<ScanRecord?> = _record.asStateFlow()
+    private val recordFlow = repository.getAllScans()
+        .map { scans -> scans.find { it.id == scanId } }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val _editLoading = MutableStateFlow(false)
-    val editLoading: StateFlow<Boolean> = _editLoading.asStateFlow()
-
     private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error.asStateFlow()
-
     private val _success = MutableStateFlow(false)
-    val success: StateFlow<Boolean> = _success.asStateFlow()
-
     private val _ocrStatusText = MutableStateFlow<String?>(null)
-    val ocrStatusText: StateFlow<String?> = _ocrStatusText.asStateFlow()
+    private val _metadata = MutableStateFlow<PdfMetadata?>(null)
+
+    private val pagePreviewController = DocumentPagePreviewController(
+        scope = viewModelScope,
+        dispatcherProvider = dispatcherProvider,
+        pdfRenderingOps = pdfRenderingOps,
+        pdfTextOps = pdfTextOps
+    )
+
+    val uiState: StateFlow<DocumentEditUiState> = combine(
+        combine(
+            recordFlow,
+            _editLoading,
+            _error,
+            _success,
+            _ocrStatusText
+        ) { record, editLoading, error, success, ocrStatusText ->
+            DocumentEditUiState(
+                record = record,
+                editLoading = editLoading,
+                error = error,
+                success = success,
+                ocrStatusText = ocrStatusText
+            )
+        },
+        _metadata
+    ) { state, metadata ->
+        state.copy(metadata = metadata)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, DocumentEditUiState())
+
+    val pagePreviewUiState: StateFlow<DocumentPagePreviewUiState> = pagePreviewController.uiState
 
     private val scansDir get() = storageProvider.scansDir()
 
-    private val _documentPageBitmap = MutableStateFlow<Bitmap?>(null)
-    val documentPageBitmap: StateFlow<Bitmap?> = _documentPageBitmap.asStateFlow()
-
-    private val _metadata = MutableStateFlow<PdfMetadata?>(null)
-    val metadata: StateFlow<PdfMetadata?> = _metadata.asStateFlow()
-
-    private val _textLines = MutableStateFlow<List<TextLine>>(emptyList())
-    val textLines: StateFlow<List<TextLine>> = _textLines.asStateFlow()
-
-    private var pagePreviewJob: Job? = null
-    private val textLineCache = mutableMapOf<Int, List<TextLine>>()
-    private var cachedPagePreviewFilepath: String? = null
-
-    fun loadDocumentPage(pageIndex: Int) {
-        val record = _record.value ?: return
-        if (cachedPagePreviewFilepath != record.filepath) {
-            cachedPagePreviewFilepath = record.filepath
-            textLineCache.clear()
-        }
-        pagePreviewJob?.cancel()
-        _documentPageBitmap.value = null
-        _textLines.value = emptyList()
-        pagePreviewJob = viewModelScope.launch(dispatcherProvider.io) {
-            val inputFile = File(record.filepath)
-            _documentPageBitmap.value = pdfEditor.renderPageThumbnail(inputFile, pageIndex, 1024)
-            if (!record.isSearchable) return@launch
-            textLineCache[pageIndex]?.let { cachedLines ->
-                _textLines.value = cachedLines
-                return@launch
-            }
-            val lines = pdfEditor.extractTextLines(inputFile, pageIndex)
-            textLineCache[pageIndex] = lines
-            _textLines.value = lines
-        }
-    }
+    private var trackedPreviewFilepath: String? = null
 
     init {
         viewModelScope.launch {
-            repository.getAllScans().collect { scans ->
-                _record.value = scans.find { it.id == scanId }
+            recordFlow.collect { record ->
+                val nextFilepath = record?.filepath
+                if (trackedPreviewFilepath != nextFilepath) {
+                    trackedPreviewFilepath = nextFilepath
+                    _metadata.value = null
+                    pagePreviewController.reset()
+                }
             }
         }
+    }
+
+    fun loadDocumentPage(pageIndex: Int) {
+        val record = recordFlow.value ?: return
+        pagePreviewController.load(record, pageIndex)
     }
 
     fun addPageNumbers() {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = pageNumbersWorkflow(record, scansDir)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
+        launchWorkflow { record -> pageNumbersWorkflow(record, scansDir) }
     }
 
     fun applyTextWatermark(text: String) {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = textWatermarkWorkflow(record, text, scansDir)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
+        launchWorkflow { record -> textWatermarkWorkflow(record, text, scansDir) }
     }
 
     fun compressPdf(preset: PdfCompressionPreset) {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = compressPdfWorkflow(record, preset, scansDir)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
+        launchWorkflow { record -> compressPdfWorkflow(record, preset, scansDir) }
     }
 
     fun protectPdf(password: String) {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = protectPdfWorkflow(record, password, scansDir)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
+        launchWorkflow { record -> protectPdfWorkflow(record, password, scansDir) }
     }
 
     fun unlockPdf(password: String) {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = unlockPdfWorkflow(record, password, scansDir)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
+        launchWorkflow { record -> unlockPdfWorkflow(record, password, scansDir) }
     }
 
     fun applySignatureStamp(signatureBitmap: Bitmap?, pageIndex: Int, scaleFraction: Float) {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = signatureStampWorkflow(record, signatureBitmap, pageIndex, scaleFraction, scansDir)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
+        launchWorkflow { record ->
+            signatureStampWorkflow(record, signatureBitmap, pageIndex, scaleFraction, scansDir)
         }
     }
 
@@ -235,78 +171,35 @@ class DocumentEditViewModel @Inject constructor(
         makeSearchable: Boolean = false,
         languageCode: String = "en"
     ) {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
+        launchWorkflow(
+            beforeLaunch = {
                 if (makeSearchable) {
                     _ocrStatusText.value = resourceProvider.getString(R.string.ocr_model_preparing)
                 }
-                when (
-                    val result = redactPdfWorkflow(
-                        record = record,
-                        rects = rects,
-                        scansDir = scansDir,
-                        makeSearchable = makeSearchable,
-                        languageCode = languageCode
-                    )
-                ) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-                _ocrStatusText.value = null
-            }
+            },
+            afterLaunch = { _ocrStatusText.value = null }
+        ) { record ->
+            redactPdfWorkflow(
+                record = record,
+                rects = rects,
+                scansDir = scansDir,
+                makeSearchable = makeSearchable,
+                languageCode = languageCode
+            )
         }
     }
 
     fun removeTextLayer() {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = removeTextLayerWorkflow(record, scansDir)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
+        launchWorkflow { record -> removeTextLayerWorkflow(record, scansDir) }
     }
 
     fun removePassword() {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = removePasswordWorkflow(record, scansDir)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
+        launchWorkflow { record -> removePasswordWorkflow(record, scansDir) }
     }
 
     fun restrictUsage(ownerPassword: String, canPrint: Boolean, canCopy: Boolean, canEdit: Boolean) {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = restrictUsageWorkflow(record, scansDir, ownerPassword, canPrint, canCopy, canEdit)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
+        launchWorkflow { record ->
+            restrictUsageWorkflow(record, scansDir, ownerPassword, canPrint, canCopy, canEdit)
         }
     }
 
@@ -314,19 +207,7 @@ class DocumentEditViewModel @Inject constructor(
         strokes: List<HighlightStroke>,
         rects: List<HighlightRect> = emptyList()
     ) {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = highlightPdfWorkflow(record, strokes, rects, scansDir)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
+        launchWorkflow { record -> highlightPdfWorkflow(record, strokes, rects, scansDir) }
     }
 
     fun applyAnnotations(
@@ -335,35 +216,11 @@ class DocumentEditViewModel @Inject constructor(
         ovals: List<AnnotationOval> = emptyList(),
         comments: List<AnnotationText> = emptyList()
     ) {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = annotatePdfWorkflow(record, strokes, rects, ovals, comments, scansDir)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
+        launchWorkflow { record -> annotatePdfWorkflow(record, strokes, rects, ovals, comments, scansDir) }
     }
 
     fun convertToGrayscale() {
-        val record = _record.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = convertToGrayscaleWorkflow(record, scansDir)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
+        launchWorkflow { record -> convertToGrayscaleWorkflow(record, scansDir) }
     }
 
     fun saveMetadata(
@@ -373,10 +230,7 @@ class DocumentEditViewModel @Inject constructor(
         subject: String,
         keywords: String
     ) {
-        val record = _record.value ?: return
         val currentMetadata = _metadata.value ?: return
-        if (_editLoading.value) return
-        _editLoading.value = true
         val updatedMetadata = currentMetadata.copy(
             title = normalizeMetadataField(title),
             author = normalizeMetadataField(author),
@@ -384,27 +238,44 @@ class DocumentEditViewModel @Inject constructor(
             subject = normalizeMetadataField(subject),
             keywords = normalizeMetadataField(keywords)
         )
-        viewModelScope.launch(dispatcherProvider.io) {
-            try {
-                when (val result = updatePdfMetadataWorkflow(record, updatedMetadata)) {
-                    is WorkflowResult.Success -> _success.value = true
-                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
-                }
-            } finally {
-                _editLoading.value = false
-            }
-        }
+        launchWorkflow { record -> updatePdfMetadataWorkflow(record, updatedMetadata) }
     }
 
     fun loadMetadata() {
-        val record = _record.value ?: return
+        val record = recordFlow.value ?: return
         _metadata.value = null
         viewModelScope.launch(dispatcherProvider.io) {
             _metadata.value = pdfEditor.readMetadata(File(record.filepath))
         }
     }
 
-    fun clearError() { _error.value = null }
+    fun clearError() {
+        _error.value = null
+    }
+
+    private fun launchWorkflow(
+        beforeLaunch: () -> Unit = {},
+        afterLaunch: () -> Unit = {},
+        block: suspend (Document) -> WorkflowResult<*>
+    ) {
+        val record = recordFlow.value ?: return
+        if (_editLoading.value) return
+
+        _success.value = false
+        beforeLaunch()
+        _editLoading.value = true
+        viewModelScope.launch(dispatcherProvider.io) {
+            try {
+                when (val result = block(record)) {
+                    is WorkflowResult.Success -> _success.value = true
+                    is WorkflowResult.Failure -> _error.value = errorMapper.map(result.error)
+                }
+            } finally {
+                _editLoading.value = false
+                afterLaunch()
+            }
+        }
+    }
 
     private fun normalizeMetadataField(value: String): String? = value.trim().takeIf { it.isNotEmpty() }
 }

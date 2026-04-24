@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_security_title">सुरक्षा</string>
+    <string name="settings_app_lock_label">बायोमेट्रिक्स से ऐप सुरक्षित करें</string>
+    <string name="settings_app_lock_timeout_label">बैकग्राउंड समय के बाद लॉक करें</string>
+    <string name="settings_app_lock_timeout_immediately">तुरंत</string>
+    <string name="settings_app_lock_timeout_15s">15 सेकंड बाद</string>
+    <string name="settings_app_lock_timeout_30s">30 सेकंड बाद</string>
+    <string name="settings_app_lock_timeout_1m">1 मिनट बाद</string>
+    <string name="settings_app_lock_timeout_5m">5 मिनट बाद</string>
+    <string name="settings_app_lock_timeout_custom">%1$d सेकंड बाद</string>
+    <string name="app_lock_prompt_title">M24 PDF-Scanner अनलॉक करें</string>
+    <string name="app_lock_prompt_subtitle">बायोमेट्रिक्स या डिवाइस क्रेडेंशियल का उपयोग करें</string>
+    <string name="app_lock_screen_title">ऐप लॉक है</string>
+    <string name="app_lock_screen_body">स्कैन, आयात और साझा फ़ाइलों के साथ जारी रखने के लिए ऐप अनलॉक करें।</string>
+    <string name="app_lock_unlock">अनलॉक करें</string>
+    <string name="app_lock_auth_failed">प्रमाणीकरण रद्द किया गया या विफल हो गया</string>
+    <string name="app_lock_unavailable">इस डिवाइस पर बायोमेट्रिक या डिवाइस क्रेडेंशियल प्रमाणीकरण उपलब्ध नहीं है</string>
+    <string name="app_lock_not_enrolled">ऐप सुरक्षा सक्षम करने से पहले बायोमेट्रिक्स या डिवाइस स्क्रीन लॉक सेट करें</string>
+    <string name="help_item_app_lock">सेटिंग्स → सुरक्षा में बायोमेट्रिक सुरक्षा सक्षम करें। ऐप कॉन्फ़िगर किए गए बैकग्राउंड समय के बाद स्वचालित रूप से लॉक हो जाता है (डिफ़ॉल्ट: 30 सेकंड)। अनलॉक करने के लिए फ़िंगरप्रिंट, फेस रिकॉग्निशन या डिवाइस PIN का उपयोग करें। आने वाले शॉर्टकट और साझा फ़ाइलें अनलॉक होने तक कतार में रहती हैं। लॉक केवल एक UI गेट है और दस्तावेज़ों या डेटाबेस को एन्क्रिप्ट नहीं करता।</string>
+    <string name="info_feature_app_lock">वैकल्पिक बायोमेट्रिक ऐप लॉक (सेटिंग्स → सुरक्षा) कॉन्फ़िगर करने योग्य बैकग्राउंड टाइमआउट के बाद UI लॉक करता है। प्रमाणीकरण Android BiometricManager का उपयोग करता है; ऐप बायोमेट्रिक डेटा संग्रहीत या संसाधित नहीं करता।</string>
+    <string name="privacy_keyword_7">ऐप लॉक</string>
+    <string name="privacy_point_7">वैकल्पिक बायोमेट्रिक लॉक केवल एक UI गेट है और दस्तावेज़ों या डेटाबेस को एन्क्रिप्ट नहीं करता। बायोमेट्रिक सत्यापन Android के BiometricManager द्वारा संभाला जाता है; ऐप कभी भी फ़िंगरप्रिंट या चेहरे के डेटा तक सीधे नहीं पहुंचता। सेटिंग SharedPreferences में स्थानीय रूप से संग्रहीत होती है।</string>
+</resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_all_documents">सभी दस्तावेज़</string>
+    <string name="folder_favorites">पसंदीदा</string>
+    <string name="folder_manage">फ़ोल्डर प्रबंधित करें</string>
+    <string name="folder_management_title">फ़ोल्डर</string>
+    <string name="folder_create">फ़ोल्डर बनाएं</string>
+    <string name="folder_create_failed">फ़ोल्डर नहीं बनाया जा सका</string>
+    <string name="folder_rename">नाम बदलें</string>
+    <string name="folder_rename_failed">फ़ोल्डर का नाम नहीं बदला जा सका</string>
+    <string name="folder_delete">हटाएं</string>
+    <string name="folder_delete_failed">फ़ोल्डर नहीं हटाया जा सका</string>
+    <string name="folder_delete_confirm">फ़ोल्डर \"%1$s\" हटाएं? दस्तावेज़ संग्रह में बने रहेंगे।</string>
+    <string name="folder_name_label">फ़ोल्डर का नाम</string>
+    <string name="folder_move_success">दस्तावेज़ स्थानांतरित किए गए</string>
+    <string name="folder_move_failed">दस्तावेज़ स्थानांतरित नहीं किए जा सके</string>
+    <string name="favorite_toggle_failed">पसंदीदा स्थिति अपडेट नहीं हो सकी</string>
+    <string name="folder_picker_title">फ़ोल्डर में ले जाएं</string>
+    <string name="folder_picker_root">कोई फ़ोल्डर नहीं</string>
+    <string name="folder_picker_root_subtitle">दस्तावेज़ों को शीर्ष स्तर पर रखें</string>
+    <string name="folder_picker_move_here">दस्तावेज़ यहां ले जाएं</string>
+    <string name="label_bulk_move_folder">फ़ोल्डर</string>
+    <string name="help_item_folders">सभी दस्तावेज़, पसंदीदा और नामित फ़ोल्डरों के बीच स्विच करने के लिए साइड मेनू खोलें। किसी कार्ड के स्टार आइकन पर टैप करके उसे पसंदीदा में जोड़ें या हटाएं। दस्तावेज़ चुनें और उन्हें स्थानांतरित करने के लिए फ़ोल्डर बटन पर टैप करें। मेनू में किसी फ़ोल्डर को देर तक दबाकर उसका नाम बदलें या हटाएं।</string>
+    <string name="info_feature_folders">दस्तावेज़ों को फ़ोल्डरों में व्यवस्थित किया जा सकता है और पसंदीदा के रूप में चिह्नित किया जा सकता है। साइड मेनू सभी फ़ोल्डर और पसंदीदा फ़िल्टर दिखाता है। फ़ोल्डर समतल हैं (कोई नेस्टिंग नहीं) और फ़ोल्डर हटाने पर उसके दस्तावेज़ शीर्ष स्तर पर वापस आ जाते हैं।</string>
+</resources>

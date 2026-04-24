@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -35,6 +36,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,8 +64,13 @@ fun SettingsScreen(
     onThemeModeChange: (ThemeMode) -> Unit,
     onDefaultMakeSearchableChange: (Boolean) -> Unit,
     onDefaultOcrLanguageChange: (String) -> Unit,
-    onDefaultSortOrderChange: (AppSortOrder) -> Unit
+    onDefaultSortOrderChange: (AppSortOrder) -> Unit,
+    onAppLockEnabledChange: (Boolean) -> Unit,
+    onAppLockTimeoutSecondsChange: (Int) -> Unit,
+    transientError: String?,
+    onTransientErrorConsumed: () -> Unit
 ) {
+    val context = LocalContext.current
     val resources = LocalResources.current
     val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
     val ocrAutoLabel = stringResource(R.string.ocr_language_auto)
@@ -70,6 +78,17 @@ fun SettingsScreen(
         buildOcrLanguageOptions(ocrAutoLabel, displayLocale)
     }
     var languageMenuExpanded by remember { mutableStateOf(false) }
+    var appLockTimeoutExpanded by remember { mutableStateOf(false) }
+    val timeoutOptions = remember {
+        listOf(0, 15, 30, 60, 300)
+    }
+
+    LaunchedEffect(transientError) {
+        if (transientError != null) {
+            android.widget.Toast.makeText(context, transientError, android.widget.Toast.LENGTH_SHORT).show()
+            onTransientErrorConsumed()
+        }
+    }
 
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
@@ -195,7 +214,81 @@ fun SettingsScreen(
                 )
             }
         }
+
+        item {
+            SettingsSectionCard(
+                icon = Icons.Default.Lock,
+                title = stringResource(R.string.settings_security_title)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.settings_app_lock_label),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Switch(
+                        checked = settings.appLockEnabled,
+                        onCheckedChange = onAppLockEnabledChange
+                    )
+                }
+
+                if (settings.appLockEnabled) {
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(R.string.settings_app_lock_timeout_label),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    ExposedDropdownMenuBox(
+                        expanded = appLockTimeoutExpanded,
+                        onExpandedChange = { appLockTimeoutExpanded = it }
+                    ) {
+                        OutlinedTextField(
+                            value = formatTimeoutLabel(settings.appLockTimeoutSeconds),
+                            onValueChange = {},
+                            readOnly = true,
+                            singleLine = true,
+                            label = { Text(stringResource(R.string.settings_app_lock_timeout_label)) },
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = appLockTimeoutExpanded)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                        )
+                        DropdownMenu(
+                            expanded = appLockTimeoutExpanded,
+                            onDismissRequest = { appLockTimeoutExpanded = false }
+                        ) {
+                            timeoutOptions.forEach { seconds ->
+                                DropdownMenuItem(
+                                    text = { Text(formatTimeoutLabel(seconds)) },
+                                    onClick = {
+                                        onAppLockTimeoutSecondsChange(seconds)
+                                        appLockTimeoutExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
+}
+
+@Composable
+private fun formatTimeoutLabel(seconds: Int): String = when (seconds) {
+    0 -> stringResource(R.string.settings_app_lock_timeout_immediately)
+    15 -> stringResource(R.string.settings_app_lock_timeout_15s)
+    30 -> stringResource(R.string.settings_app_lock_timeout_30s)
+    60 -> stringResource(R.string.settings_app_lock_timeout_1m)
+    300 -> stringResource(R.string.settings_app_lock_timeout_5m)
+    else -> stringResource(R.string.settings_app_lock_timeout_custom, seconds)
 }
 
 @Composable

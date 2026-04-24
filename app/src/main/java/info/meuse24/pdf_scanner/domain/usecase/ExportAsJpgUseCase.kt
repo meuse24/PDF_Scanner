@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.util.DownloadEntry
 import info.meuse24.pdf_scanner.util.DownloadsStorage
 import info.meuse24.pdf_scanner.util.PdfPageJpgRenderer
@@ -23,7 +23,7 @@ class ExportAsJpgUseCase @Inject constructor(
     private val downloadsStorage: DownloadsStorage,
     private val pdfPageJpgRenderer: PdfPageJpgRenderer
 ) {
-    suspend operator fun invoke(record: ScanRecord): Int {
+    suspend operator fun invoke(record: Document): Int {
         val sourceFile = File(record.filepath)
         if (!sourceFile.exists()) error("Quelldatei nicht gefunden: ${record.filepath}")
 
@@ -51,3 +51,4 @@ class ExportAsJpgUseCase @Inject constructor(
         return committed.size
     }
 }
+

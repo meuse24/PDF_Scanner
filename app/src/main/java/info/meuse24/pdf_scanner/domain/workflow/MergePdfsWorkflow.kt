@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.MergePdfsUseCase
 import java.io.File
 import java.io.IOException
@@ -14,7 +14,7 @@ class MergePdfsWorkflow @Inject constructor(
     private val mergePdfsUseCase: MergePdfsUseCase
 ) {
     suspend operator fun invoke(
-        records: List<ScanRecord>,
+        records: List<Document>,
         outputFilename: String,
         scansDir: File
     ): WorkflowResult<MergePdfsWorkflowResult> {
@@ -50,3 +50,4 @@ class MergePdfsWorkflow @Inject constructor(
         }
     }
 }
+

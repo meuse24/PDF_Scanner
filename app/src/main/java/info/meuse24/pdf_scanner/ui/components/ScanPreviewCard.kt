@@ -30,14 +30,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
 fun ScanPreviewCard(
-    record: ScanRecord,
+    record: Document,
     modifier: Modifier = Modifier
 ) {
     val thumbnail by produceState<ImageBitmap?>(initialValue = null, key1 = record.thumbnailPath) {
@@ -95,3 +95,4 @@ fun ScanPreviewCard(
         }
     }
 }
+

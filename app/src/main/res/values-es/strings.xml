@@ -72,6 +72,7 @@
     <string name="error_export_jpg_failed">Error al exportar JPEG</string>
     <string name="error_device_unsupported">El escáner no es compatible con este dispositivo</string>
     <string name="share_pdf_title">Compartir PDF</string>
+    <string name="help_item_external_share">Puedes enviar PDFs o imágenes desde otra app a M24 PDF Scanner mediante Compartir de Android. Los PDFs abren el diálogo normal de guardar importación; las imágenes compartidas abren el flujo Imágenes a PDF. Si el bloqueo de la app está activado, los archivos compartidos esperan hasta que la app se desbloquee.</string>
     <string name="scan_item_subtitle">%1$s · %2$d p. · %3$s</string>
     <string name="help_screen_title">Instrucciones</string>
     <string name="help_section_contents">Contenido</string>
@@ -134,6 +135,7 @@
     <string name="info_section_privacy">Privacidad</string>
     <string name="info_section_features">Funciones</string>
     <string name="info_features_body">La app escanea, importa, crea, anexa y muestra PDFs dentro de la app, mantiene los documentos eliminados en la papelera durante 30 días, realiza OCR en el dispositivo, guarda localmente el texto OCR y los metadatos de calidad para la búsqueda del archivo y la revisión OCR, y ofrece edición de páginas, anotaciones, firmas, edición de metadatos, escala de grises, protección y redacción segura con reconstrucción OCR opcional para copias redactadas.</string>
+    <string name="info_feature_print_share">La impresión y el uso compartido de Android utilizan diálogos del sistema. Imprimir envía el PDF seleccionado a Android Print; los PDFs e imágenes recibidos desde Compartir se copian al archivo de la app solo tras confirmación.</string>
     <string name="info_privacy_body">Sin anuncios, sin cuenta y sin backend propio. Los PDF, miniaturas, copias generadas, elementos de la papelera, texto OCR y metadatos de calidad OCR permanecen en el almacenamiento de la app en tu dispositivo hasta que los exportas, compartes o eliminas definitivamente. El escaneo, el OCR y las descargas de modelos o fuentes dependen de Google Play Services; esta app no sube el contenido de tus documentos.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
@@ -144,7 +146,7 @@
     <string name="privacy_point_2">Ningún documento ni contenido se sube automáticamente. Compartir o exportar solo ocurre cuando lo activas explícitamente. La redacción segura crea una copia nueva; el original permanece hasta que lo elimines.</string>
     <string name="privacy_point_3">Las funciones de escaneo y OCR usan Google Play Services. Pueden transmitirse datos técnicos de diagnóstico para el análisis de errores. El modo automático usa un reconocedor de texto latino integrado que funciona sin conexión. Los modelos de idioma para hindi, chino, japonés y coreano pueden obtenerse mediante Play Services en el primer uso manual; el contenido de tus documentos no es enviado por esta app.</string>
     <string name="privacy_point_4">La app no recopila datos personales, no usa analítica propia y no solicita un permiso de red propio.</string>
-    <string name="privacy_footer">Actualizado: 23 de abril de 2026</string>
+    <string name="privacy_footer">Actualizado: 24 de abril de 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Extraer texto</string>

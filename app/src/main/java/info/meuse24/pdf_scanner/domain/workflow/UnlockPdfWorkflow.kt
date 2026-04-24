@@ -1,10 +1,10 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfSecurityOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfWrongPasswordException
 import info.meuse24.pdf_scanner.domain.usecase.UnlockPdfUseCase
-import info.meuse24.pdf_scanner.util.PdfEditor
 import java.io.File
-import java.io.IOException
 import javax.inject.Inject
 
 data class UnlockPdfWorkflowResult(
@@ -13,36 +13,34 @@ data class UnlockPdfWorkflowResult(
 
 class UnlockPdfWorkflow @Inject constructor(
     private val unlockPdfUseCase: UnlockPdfUseCase,
-    private val pdfEditor: PdfEditor
+    private val pdfEditor: PdfSecurityOps,
+    private val workflowGuard: DocumentWorkflowGuard
 ) {
     suspend operator fun invoke(
-        record: ScanRecord,
+        record: Document,
         password: String,
         scansDir: File
-    ): WorkflowResult<UnlockPdfWorkflowResult> {
-        val input = File(record.filepath)
-        if (!input.exists()) {
-            return WorkflowResult.Failure(ScanWorkflowError.MissingFiles(listOf(record.filename)))
-        }
-        if (!pdfEditor.isPdfEncrypted(input)) {
-            return WorkflowResult.Failure(ScanWorkflowError.NotProtected)
-        }
-        if (password.isBlank()) {
-            return WorkflowResult.Failure(ScanWorkflowError.PasswordRequired)
-        }
-
-        return try {
-            WorkflowResult.Success(
-                UnlockPdfWorkflowResult(
-                    outputFilename = unlockPdfUseCase(record, password.trim(), scansDir)
-                )
+    ): WorkflowResult<UnlockPdfWorkflowResult> =
+        workflowGuard.run(
+            record = record,
+            failureMapper = ScanWorkflowError::UnlockFailed,
+            validate = { input ->
+                when {
+                    !pdfEditor.isPdfEncrypted(input) -> ScanWorkflowError.NotProtected
+                    password.isBlank() -> ScanWorkflowError.PasswordRequired
+                    else -> null
+                }
+            },
+            exceptionMapper = { throwable ->
+                when (throwable) {
+                    is PdfWrongPasswordException -> ScanWorkflowError.WrongPassword
+                    else -> null
+                }
+            }
+        ) {
+            UnlockPdfWorkflowResult(
+                outputFilename = unlockPdfUseCase(record, password.trim(), scansDir)
             )
-        } catch (e: PdfEditor.WrongPasswordException) {
-            WorkflowResult.Failure(ScanWorkflowError.WrongPassword)
-        } catch (e: IOException) {
-            WorkflowResult.Failure(ScanWorkflowError.StorageWriteFailed(e))
-        } catch (t: Throwable) {
-            WorkflowResult.Failure(ScanWorkflowError.UnlockFailed(t))
         }
-    }
 }
+

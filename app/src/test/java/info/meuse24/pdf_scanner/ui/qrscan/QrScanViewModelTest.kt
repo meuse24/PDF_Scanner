@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toEntity
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.QrCodeResult
 import info.meuse24.pdf_scanner.domain.usecase.ScanQrCodesUseCase
@@ -135,7 +137,7 @@ class QrScanViewModelTest {
 
     private fun buildViewModel(
         scanner: QrCodeScanner,
-        record: ScanRecord = record(tmpFolder.newFile("scan.pdf").apply { writeText("pdf") })
+        record: Document = record(tmpFolder.newFile("scan.pdf").apply { writeText("pdf") })
     ): QrScanViewModel {
         val dao = SingleRecordScanDao(record)
         val repository = ScanRepository(dao)
@@ -152,7 +154,7 @@ class QrScanViewModelTest {
         )
     }
 
-    private fun record(file: File) = ScanRecord(
+    private fun record(file: File) = Document(
         id = 1L,
         filename = file.nameWithoutExtension,
         filepath = file.absolutePath,
@@ -185,9 +187,9 @@ private class BlockingQrCodeScanner(
 }
 
 private class SingleRecordScanDao(
-    private val record: ScanRecord
+    private val record: Document
 ) : ScanDao {
-    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(listOf(record))
+    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(listOf(record.toEntity()))
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun insert(record: ScanRecord): Long = record.id
     override suspend fun insertAll(records: List<ScanRecord>) = Unit
@@ -213,4 +215,10 @@ private class SingleRecordScanDao(
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) = Unit
     override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) = Unit
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) = Unit
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) = Unit
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) = Unit
 }
+
+

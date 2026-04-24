@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.AppendSource
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.domain.workflow.AppendToPdfWorkflow
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppendViewModel @Inject constructor(
-    repository: ScanRepository,
+    repository: DocumentRepository,
     private val appendWorkflow: AppendToPdfWorkflow,
     private val workflowErrorMapper: WorkflowErrorMapper,
     private val resourceProvider: ResourceProvider,
@@ -36,7 +36,7 @@ class AppendViewModel @Inject constructor(
 
     private val scanId: Long = checkNotNull(savedStateHandle["scanId"])
 
-    val record: StateFlow<ScanRecord?> = repository.getAllScans()
+    val record: StateFlow<Document?> = repository.getAllScans()
         .map { records -> records.find { it.id == scanId } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
@@ -109,3 +109,4 @@ class AppendViewModel @Inject constructor(
         }
     }
 }
+

@@ -3,9 +3,13 @@ package info.meuse24.pdf_scanner.ui.pageedit
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toDomain
+import info.meuse24.pdf_scanner.data.mapper.toEntity
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.RotatePagesUseCase
 import info.meuse24.pdf_scanner.domain.workflow.DeletePagesWorkflow
+import info.meuse24.pdf_scanner.domain.workflow.DocumentWorkflowGuard
 import info.meuse24.pdf_scanner.domain.workflow.DuplicatePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ExtractPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RotatePagesWorkflow
@@ -54,7 +58,7 @@ class PageSelectionViewModelTest {
     fun `rotatePages uses storage provider scans dir`() = runTest(testDispatcher) {
         val scansDir = File(tmpFolder.root, "customScans").apply { mkdirs() }
         val pdfFile = tmpFolder.newFile("scan_1.pdf").apply { writeText("pdf") }
-        val record = ScanRecord(
+        val record = Document(
             id = 1L,
             filename = "scan_1",
             filepath = pdfFile.absolutePath,
@@ -65,7 +69,14 @@ class PageSelectionViewModelTest {
         val dao = TestScanDao(listOf(record))
         val repository = ScanRepository(dao)
         val pdfEditor = RotatingPageSelectionPdfEditor(scansDir)
-        val workflow = RotatePagesWorkflow(RotatePagesUseCase(pdfEditor, repository))
+        val workflow = RotatePagesWorkflow(
+            RotatePagesUseCase(
+                pdfEditor,
+                info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository),
+                repository
+            ),
+            DocumentWorkflowGuard(pdfEditor)
+        )
 
         val viewModel = PageSelectionViewModel(
             repository = repository,
@@ -95,15 +106,15 @@ class PageSelectionViewModelTest {
 }
 
 private class TestScanDao(
-    private val initialRecords: List<ScanRecord> = emptyList()
+    private val initialRecords: List<Document> = emptyList()
 ) : ScanDao {
-    val inserted = mutableListOf<ScanRecord>()
-    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(initialRecords)
+    val inserted = mutableListOf<Document>()
+    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(initialRecords.map { it.toEntity() })
     override suspend fun insert(record: ScanRecord): Long {
-        inserted.add(record)
+        inserted.add(record.toDomain())
         return inserted.size.toLong()
     }
-    override suspend fun insertAll(records: List<ScanRecord>) { inserted.addAll(records) }
+    override suspend fun insertAll(records: List<ScanRecord>) { inserted.addAll(records.map { it.toDomain() }) }
     override suspend fun delete(record: ScanRecord) = Unit
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun markSearchableWithContent(
@@ -127,6 +138,10 @@ private class TestScanDao(
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) = Unit
     override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) = Unit
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) = Unit
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) = Unit
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) = Unit
 }
 
 private class RotatingPageSelectionPdfEditor(
@@ -153,3 +168,4 @@ private class RotatingPageSelectionPdfEditor(
         return true
     }
 }
+

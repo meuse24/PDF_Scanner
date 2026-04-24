@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 
 /**
  * Gemeinsames Layout für Aktions-Screens (Overlay + DocumentAction).
@@ -23,7 +23,7 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
  */
 @Composable
 fun ActionScreenContent(
-    record: ScanRecord?,
+    record: Document?,
     title: String,
     body: String,
     form: @Composable () -> Unit = {},
@@ -75,3 +75,4 @@ fun ActionScreenContent(
         }
     }
 }
+

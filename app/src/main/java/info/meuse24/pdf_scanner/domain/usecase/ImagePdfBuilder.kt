@@ -3,7 +3,7 @@ package info.meuse24.pdf_scanner.domain.usecase
 import android.content.Context
 import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
-import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
 import info.meuse24.pdf_scanner.util.StorageProvider
 import java.io.File
 import javax.inject.Inject
@@ -18,7 +18,7 @@ data class ImagePdfBuildResult(
 @Singleton
 open class ImagePdfBuilder @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val pdfEditor: PdfEditor,
+    private val pdfEditor: PdfRenderingOps,
     private val storageProvider: StorageProvider
 ) {
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_business_card">扫描名片</string>
+    <string name="business_card_title">名片</string>
+    <string name="business_card_subtitle">在导出 vCard 之前，请检查并更正识别到的联系人信息。</string>
+    <string name="business_card_name">全名</string>
+    <string name="business_card_organization">组织</string>
+    <string name="business_card_job_title">职位</string>
+    <string name="business_card_emails">电子邮件地址</string>
+    <string name="business_card_phones">电话号码</string>
+    <string name="business_card_urls">网站</string>
+    <string name="business_card_address">地址</string>
+    <string name="business_card_add_to_contacts">添加到联系人</string>
+    <string name="business_card_share_vcard">分享 vCard</string>
+    <string name="business_card_scan_failed">名片扫描失败</string>
+    <string name="business_card_export_failed">vCard 导出失败</string>
+    <string name="business_card_no_contact_app">未找到兼容的联系人应用</string>
+    <string name="error_document_not_found">未找到文档</string>
+    <string name="help_item_business_card">打开任意扫描 PDF 的三点菜单，选择扫描名片。应用将运行 OCR 并提取姓名、组织、职位、电子邮件、电话、网站和地址。检查并编辑识别到的字段，然后点击添加到联系人直接保存，或点击分享 vCard 发送文件。</string>
+    <string name="info_feature_businesscard">名片扫描仪对 PDF 页面运行 OCR，提取结构化联系人数据，并导出可添加到联系人应用或分享的 vCard 3.0 文件。</string>
+</resources>

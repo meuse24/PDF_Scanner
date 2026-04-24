@@ -2,7 +2,7 @@ package info.meuse24.pdf_scanner.ui.ocr
 
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
@@ -14,7 +14,6 @@ import info.meuse24.pdf_scanner.util.OcrPipeline
 import info.meuse24.pdf_scanner.util.OcrResultStats
 import info.meuse24.pdf_scanner.util.PdfPageInputImageLoader
 import info.meuse24.pdf_scanner.util.TextRecognizerRunner
-import info.meuse24.pdf_scanner.util.toOcrPageTextJson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +39,7 @@ class OcrReviewViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
     private lateinit var repository: ScanRepository
-    private lateinit var recordsFlow: MutableStateFlow<List<ScanRecord>>
+    private lateinit var recordsFlow: MutableStateFlow<List<Document>>
     private lateinit var resourceProvider: FakeResourceProvider
 
     @Before
@@ -70,7 +69,7 @@ class OcrReviewViewModelTest {
             extractedText = "First page\n\nSecond page",
             ocrConfidence = 0.78f,
             ocrLanguage = "en",
-            ocrPageTextJson = "[\"First page\",\"Second page\"]"
+            pageTexts = listOf("First page", "Second page")
         )
         recordsFlow.value = listOf(record)
         val extractTextUseCase = RecordingExtractTextUseCase()
@@ -92,7 +91,7 @@ class OcrReviewViewModelTest {
     fun `legacy cached text without page json stays a single block`() = runTest(dispatcher) {
         val record = scanRecord(
             extractedText = "Paragraph one\n\nParagraph two",
-            ocrPageTextJson = null
+            pageTexts = emptyList()
         )
         recordsFlow.value = listOf(record)
         val extractTextUseCase = RecordingExtractTextUseCase()
@@ -110,7 +109,7 @@ class OcrReviewViewModelTest {
     fun `reExtract persists updated OCR data`() = runTest(dispatcher) {
         val record = scanRecord(
             extractedText = "Old text",
-            ocrPageTextJson = listOf("Old text").toOcrPageTextJson()
+            pageTexts = listOf("Old text")
         )
         recordsFlow.value = listOf(record)
         val result = OcrDocumentResult(
@@ -132,7 +131,7 @@ class OcrReviewViewModelTest {
             "Updated text",
             0.82f,
             "en",
-            listOf("Updated text").toOcrPageTextJson()
+            listOf("Updated text")
         )
 
         recordsFlow.value = listOf(
@@ -140,7 +139,7 @@ class OcrReviewViewModelTest {
                 extractedText = result.fullText,
                 ocrConfidence = result.stats?.confidence,
                 ocrLanguage = result.stats?.recognizedLanguage,
-                ocrPageTextJson = result.pageTexts.toOcrPageTextJson()
+                pageTexts = result.pageTexts
             )
         )
         advanceUntilIdle()
@@ -157,7 +156,7 @@ class OcrReviewViewModelTest {
     fun `reExtract failure keeps cached text and reports update error`() = runTest(dispatcher) {
         val record = scanRecord(
             extractedText = "Old text",
-            ocrPageTextJson = listOf("Old text").toOcrPageTextJson()
+            pageTexts = listOf("Old text")
         )
         recordsFlow.value = listOf(record)
         val extractTextUseCase = RecordingExtractTextUseCase { _, _ -> throw IllegalStateException("boom") }
@@ -177,7 +176,7 @@ class OcrReviewViewModelTest {
 
     @Test
     fun `missing cached text triggers OCR and surfaces no-text error`() = runTest(dispatcher) {
-        val record = scanRecord(extractedText = null, ocrPageTextJson = null)
+        val record = scanRecord(extractedText = null, pageTexts = emptyList())
         recordsFlow.value = listOf(record)
         val extractTextUseCase = RecordingExtractTextUseCase { _, _ -> throw OcrNoTextException() }
 
@@ -192,7 +191,7 @@ class OcrReviewViewModelTest {
 
     @Test
     fun `clearError resets error state`() = runTest(dispatcher) {
-        val record = scanRecord(extractedText = null, ocrPageTextJson = null)
+        val record = scanRecord(extractedText = null, pageTexts = emptyList())
         recordsFlow.value = listOf(record)
         val extractTextUseCase = RecordingExtractTextUseCase { _, _ -> throw OcrNoTextException() }
         val viewModel = buildViewModel(extractTextUseCase, record.id)
@@ -224,8 +223,8 @@ class OcrReviewViewModelTest {
         extractedText: String? = "Cached text",
         ocrConfidence: Float? = null,
         ocrLanguage: String? = null,
-        ocrPageTextJson: String? = listOf("Cached text").toOcrPageTextJson()
-    ) = ScanRecord(
+        pageTexts: List<String> = listOf("Cached text")
+    ) = Document(
         id = id,
         filename = "scan",
         filepath = "/tmp/scan.pdf",
@@ -235,12 +234,12 @@ class OcrReviewViewModelTest {
         extractedText = extractedText,
         ocrConfidence = ocrConfidence,
         ocrLanguage = ocrLanguage,
-        ocrPageTextJson = ocrPageTextJson
+        pageTexts = pageTexts
     )
 }
 
 private class RecordingExtractTextUseCase(
-    private val handler: suspend (List<ScanRecord>, String) -> List<OcrDocumentResult> = { _, _ -> emptyList() }
+    private val handler: suspend (List<Document>, String) -> List<OcrDocumentResult> = { _, _ -> emptyList() }
 ) : ExtractTextUseCase(
     ocrPipeline = mock(OcrPipeline::class.java),
     inputImageLoader = mock(OcrInputImageLoader::class.java),
@@ -248,10 +247,10 @@ private class RecordingExtractTextUseCase(
     dispatcherProvider = TestDispatcherProvider(StandardTestDispatcher()),
     textRecognizerRunner = mock(TextRecognizerRunner::class.java)
 ) {
-    val invocations = mutableListOf<Pair<List<ScanRecord>, String>>()
+    val invocations = mutableListOf<Pair<List<Document>, String>>()
 
     override suspend fun invoke(
-        records: List<ScanRecord>,
+        records: List<Document>,
         languageCode: String,
         onStatus: (info.meuse24.pdf_scanner.util.OcrPipelineStatus) -> Unit
     ): List<OcrDocumentResult> {
@@ -259,3 +258,4 @@ private class RecordingExtractTextUseCase(
         return handler(records, languageCode)
     }
 }
+

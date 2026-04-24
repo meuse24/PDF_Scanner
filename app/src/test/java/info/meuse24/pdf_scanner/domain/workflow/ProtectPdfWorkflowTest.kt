@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.ProtectPdfUseCase
@@ -17,9 +17,9 @@ class ProtectPdfWorkflowTest {
 
     @get:Rule val tmpFolder = TemporaryFolder()
 
-    private fun record(id: Long, encrypted: Boolean = false): ScanRecord {
+    private fun record(id: Long, encrypted: Boolean = false): Document {
         val file = tmpFolder.newFile("scan_$id.pdf").apply { writeText("pdf") }
-        return ScanRecord(
+        return Document(
             id = id,
             filename = "scan_$id",
             filepath = file.absolutePath,
@@ -37,8 +37,8 @@ class ProtectPdfWorkflowTest {
     private fun workflow(pdfEditor: PdfEditor): Pair<ProtectPdfWorkflow, FakeScanDao> {
         val dao = FakeScanDao()
         val repository = ScanRepository(dao)
-        val useCase = ProtectPdfUseCase(pdfEditor, repository)
-        return ProtectPdfWorkflow(useCase, pdfEditor) to dao
+        val useCase = ProtectPdfUseCase(pdfEditor, info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository))
+        return ProtectPdfWorkflow(useCase, pdfEditor, DocumentWorkflowGuard(pdfEditor)) to dao
     }
 
     @Test
@@ -81,3 +81,5 @@ private class FakeProtectPdfEditor(
         return File(outputDir, "${input.nameWithoutExtension}_Geschuetzt.pdf").apply { writeText("copy") }
     }
 }
+
+

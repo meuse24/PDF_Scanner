@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_all_documents">Alle Dokumente</string>
+    <string name="folder_favorites">Favoriten</string>
+    <string name="folder_manage">Ordner verwalten</string>
+    <string name="folder_management_title">Ordner</string>
+    <string name="folder_create">Ordner erstellen</string>
+    <string name="folder_create_failed">Ordner konnte nicht erstellt werden</string>
+    <string name="folder_rename">Umbenennen</string>
+    <string name="folder_rename_failed">Ordner konnte nicht umbenannt werden</string>
+    <string name="folder_delete">Löschen</string>
+    <string name="folder_delete_failed">Ordner konnte nicht gelöscht werden</string>
+    <string name="folder_delete_confirm">Ordner \"%1$s\" löschen? Die Dokumente bleiben in der Ablage erhalten.</string>
+    <string name="folder_name_label">Ordnername</string>
+    <string name="folder_move_success">Dokumente verschoben</string>
+    <string name="folder_move_failed">Dokumente konnten nicht verschoben werden</string>
+    <string name="favorite_toggle_failed">Favoritenstatus konnte nicht aktualisiert werden</string>
+    <string name="folder_picker_title">In Ordner verschieben</string>
+    <string name="folder_picker_root">Kein Ordner</string>
+    <string name="folder_picker_root_subtitle">Dokumente auf oberster Ebene belassen</string>
+    <string name="folder_picker_move_here">Dokumente hierher verschieben</string>
+    <string name="label_bulk_move_folder">Ordner</string>
+    <string name="help_item_folders">Öffne das Seitenmenü, um zwischen allen Dokumenten, deinen Favoriten und benannten Ordnern zu wechseln. Tippe auf das Stern-Symbol einer Dokumentkarte, um sie als Favorit zu markieren oder aufzuheben. Wähle Dokumente aus und tippe auf den Ordner-Button, um sie zu verschieben. Drücke im Menü lang auf einen Ordner, um ihn umzubenennen oder zu löschen — Dokumente wandern auf die oberste Ebene, wenn ein Ordner gelöscht wird.</string>
+    <string name="info_feature_folders">Dokumente können in Ordnern organisiert und als Favoriten markiert werden. Das Seitenmenü listet alle Ordner und einen Favoriten-Filter. Ordner sind flach (keine Verschachtelung); Löschen eines Ordners verschiebt seine Dokumente auf die oberste Ebene zurück.</string>
+</resources>

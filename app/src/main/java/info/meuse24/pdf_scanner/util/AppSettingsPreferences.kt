@@ -11,6 +11,8 @@ object AppSettingsPreferences {
     private const val KEY_DEFAULT_MAKE_SEARCHABLE = "default_make_searchable"
     private const val KEY_DEFAULT_OCR_LANGUAGE = "default_ocr_language"
     private const val KEY_DEFAULT_SORT_ORDER = "default_sort_order"
+    private const val KEY_APP_LOCK_ENABLED = "app_lock_enabled"
+    private const val KEY_APP_LOCK_TIMEOUT_SECONDS = "app_lock_timeout_seconds"
 
     fun load(context: Context): AppSettings {
         val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -24,7 +26,9 @@ object AppSettingsPreferences {
             ) ?: AppSettings.OCR_LANGUAGE_AUTO,
             defaultSortOrder = AppSortOrder.fromStorageValue(
                 prefs.getString(KEY_DEFAULT_SORT_ORDER, null)
-            )
+            ),
+            appLockEnabled = prefs.getBoolean(KEY_APP_LOCK_ENABLED, false),
+            appLockTimeoutSeconds = prefs.getInt(KEY_APP_LOCK_TIMEOUT_SECONDS, 30)
         )
     }
 
@@ -36,6 +40,8 @@ object AppSettingsPreferences {
             .putBoolean(KEY_DEFAULT_MAKE_SEARCHABLE, settings.defaultMakeSearchable)
             .putString(KEY_DEFAULT_OCR_LANGUAGE, settings.defaultOcrLanguage)
             .putString(KEY_DEFAULT_SORT_ORDER, settings.defaultSortOrder.storageValue)
+            .putBoolean(KEY_APP_LOCK_ENABLED, settings.appLockEnabled)
+            .putInt(KEY_APP_LOCK_TIMEOUT_SECONDS, settings.appLockTimeoutSeconds)
             .apply()
     }
 

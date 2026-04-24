@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_scan_business_card">名刺をスキャン</string>
+    <string name="business_card_title">名刺</string>
+    <string name="business_card_subtitle">vCardをエクスポートする前に、検出された連絡先データを確認・修正してください。</string>
+    <string name="business_card_name">フルネーム</string>
+    <string name="business_card_organization">組織</string>
+    <string name="business_card_job_title">役職</string>
+    <string name="business_card_emails">メールアドレス</string>
+    <string name="business_card_phones">電話番号</string>
+    <string name="business_card_urls">ウェブサイト</string>
+    <string name="business_card_address">住所</string>
+    <string name="business_card_add_to_contacts">連絡先に追加</string>
+    <string name="business_card_share_vcard">vCardを共有</string>
+    <string name="business_card_scan_failed">名刺のスキャンに失敗しました</string>
+    <string name="business_card_export_failed">vCardのエクスポートに失敗しました</string>
+    <string name="business_card_no_contact_app">互換性のある連絡先アプリが見つかりませんでした</string>
+    <string name="error_document_not_found">ドキュメントが見つかりません</string>
+    <string name="help_item_business_card">スキャンしたPDFの三点メニューを開いて名刺をスキャンを選択します。アプリがOCRを実行し、氏名・組織・役職・メール・電話・ウェブサイト・住所を抽出します。検出されたフィールドを確認・編集して、連絡先に追加をタップして直接保存するか、vCardを共有でファイルを送信します。</string>
+    <string name="info_feature_businesscard">名刺スキャナーはPDFページでOCRを実行し、構造化された連絡先データを抽出して、連絡先アプリに追加または共有できるvCard 3.0ファイルをエクスポートします。</string>
+</resources>

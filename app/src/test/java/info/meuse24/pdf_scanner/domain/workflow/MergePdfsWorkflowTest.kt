@@ -1,7 +1,7 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.MergePdfsUseCase
 import info.meuse24.pdf_scanner.util.PdfEditor
@@ -18,13 +18,13 @@ class MergePdfsWorkflowTest {
 
     @get:Rule val tmpFolder = TemporaryFolder()
 
-    private fun record(id: Long, exists: Boolean = true): ScanRecord {
+    private fun record(id: Long, exists: Boolean = true): Document {
         val file = if (exists) {
             tmpFolder.newFile("scan_$id.pdf")
         } else {
             File(tmpFolder.root, "missing_$id.pdf")
         }
-        return ScanRecord(
+        return Document(
             id = id,
             filename = "scan_$id",
             filepath = file.absolutePath,
@@ -36,7 +36,10 @@ class MergePdfsWorkflowTest {
 
     private fun workflow(pdfEditor: PdfEditor): MergePdfsWorkflow {
         val repository = ScanRepository(FakeScanDao())
-        val useCase = MergePdfsUseCase(pdfEditor, repository)
+        val useCase = MergePdfsUseCase(
+            pdfEditor,
+            info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository)
+        )
         return MergePdfsWorkflow(useCase)
     }
 

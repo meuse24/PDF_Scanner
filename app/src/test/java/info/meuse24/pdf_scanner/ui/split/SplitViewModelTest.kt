@@ -3,8 +3,12 @@ package info.meuse24.pdf_scanner.ui.split
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toDomain
+import info.meuse24.pdf_scanner.data.mapper.toEntity
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.SplitPdfUseCase
+import info.meuse24.pdf_scanner.domain.workflow.DocumentWorkflowGuard
 import info.meuse24.pdf_scanner.domain.workflow.SplitPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
@@ -55,7 +59,7 @@ class SplitViewModelTest {
     private fun pdfFile(name: String = "scan_1.pdf"): File =
         tmpFolder.newFile(name).apply { writeText("pdf") }
 
-    private fun record(file: File, pageCount: Int = 4): ScanRecord = ScanRecord(
+    private fun record(file: File, pageCount: Int = 4): Document = Document(
         id = 1L,
         filename = file.nameWithoutExtension,
         filepath = file.absolutePath,
@@ -71,13 +75,16 @@ class SplitViewModelTest {
 
     private fun buildVm(
         pdfEditor: PdfEditor,
-        scanRecord: ScanRecord,
+        scanRecord: Document,
         errorMapper: WorkflowErrorMapper = stubMapper()
     ): SplitViewModel {
         val dao = TestScanDao(listOf(scanRecord))
         val repository = ScanRepository(dao)
-        val useCase = SplitPdfUseCase(pdfEditor, repository)
-        val workflow = SplitPdfWorkflow(useCase)
+        val useCase = SplitPdfUseCase(
+            pdfEditor,
+            info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository)
+        )
+        val workflow = SplitPdfWorkflow(useCase, DocumentWorkflowGuard(pdfEditor))
         val savedState = SavedStateHandle(mapOf("scanId" to 1L))
         return SplitViewModel(
             repository = repository,
@@ -140,12 +147,16 @@ class SplitViewModelTest {
         val rec = record(file)
         val dao = TestScanDao(listOf(rec))
         val repository = ScanRepository(dao)
-        val useCase = SplitPdfUseCase(SuccessSplitPdfEditor(tmpFolder.root), repository)
-        val workflow = SplitPdfWorkflow(useCase)
+        val successPdfEditor = SuccessSplitPdfEditor(tmpFolder.root)
+        val useCase = SplitPdfUseCase(
+            successPdfEditor,
+            info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(successPdfEditor, repository)
+        )
+        val workflow = SplitPdfWorkflow(useCase, DocumentWorkflowGuard(successPdfEditor))
         val savedState = SavedStateHandle(mapOf("scanId" to 1L))
         val vm = SplitViewModel(
             repository = repository,
-            pdfEditor = SuccessSplitPdfEditor(tmpFolder.root),
+            pdfEditor = successPdfEditor,
             splitPdfWorkflow = workflow,
             errorMapper = stubMapper(),
             storageProvider = TestStorageProvider(tmpFolder.root),
@@ -182,15 +193,15 @@ class SplitViewModelTest {
 // ── Fake DAO ──────────────────────────────────────────────────────────────────
 
 private class TestScanDao(
-    private val initialRecords: List<ScanRecord> = emptyList()
+    private val initialRecords: List<Document> = emptyList()
 ) : ScanDao {
-    val inserted = mutableListOf<ScanRecord>()
-    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(initialRecords)
+    val inserted = mutableListOf<Document>()
+    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(initialRecords.map { it.toEntity() })
     override suspend fun insert(record: ScanRecord): Long {
-        inserted.add(record)
+        inserted.add(record.toDomain())
         return inserted.size.toLong()
     }
-    override suspend fun insertAll(records: List<ScanRecord>) { inserted.addAll(records) }
+    override suspend fun insertAll(records: List<ScanRecord>) { inserted.addAll(records.map { it.toDomain() }) }
     override suspend fun delete(record: ScanRecord) {}
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun markSearchableWithContent(
@@ -214,6 +225,10 @@ private class TestScanDao(
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {}
     override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) {}
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) {}
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) {}
 }
 
 // ── Fake PdfEditors ───────────────────────────────────────────────────────────
@@ -250,3 +265,5 @@ private class FailSplitPdfEditor : PdfEditor() {
 
     override fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int) = null
 }
+
+

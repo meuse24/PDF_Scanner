@@ -1,6 +1,6 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.SplitPdfUseCase
@@ -22,13 +22,13 @@ class SplitPdfWorkflowTest {
         id: Long,
         pageCount: Int = 4,
         exists: Boolean = true
-    ): ScanRecord {
+    ): Document {
         val file = if (exists) {
             tmpFolder.newFile("scan_$id.pdf").apply { writeText("pdf") }
         } else {
             File(tmpFolder.root, "missing_$id.pdf")
         }
-        return ScanRecord(
+        return Document(
             id = id,
             filename = "scan_$id",
             filepath = file.absolutePath,
@@ -41,8 +41,8 @@ class SplitPdfWorkflowTest {
     private fun workflow(pdfEditor: PdfEditor): Pair<SplitPdfWorkflow, FakeScanDao> {
         val dao = FakeScanDao()
         val repository = ScanRepository(dao)
-        val useCase = SplitPdfUseCase(pdfEditor, repository)
-        return SplitPdfWorkflow(useCase) to dao
+        val useCase = SplitPdfUseCase(pdfEditor, info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository))
+        return SplitPdfWorkflow(useCase, DocumentWorkflowGuard(pdfEditor)) to dao
     }
 
     @Test
@@ -131,3 +131,5 @@ private class FakeSplitPdfEditor(
 
     override fun getPageCount(pdfFile: File): Int = 1
 }
+
+

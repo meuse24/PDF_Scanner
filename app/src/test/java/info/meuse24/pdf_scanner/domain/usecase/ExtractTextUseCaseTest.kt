@@ -2,7 +2,7 @@ package info.meuse24.pdf_scanner.domain.usecase
 
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognizer
-import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.util.OcrInputImageLoader
 import info.meuse24.pdf_scanner.util.OcrModelInstaller
@@ -158,7 +158,7 @@ class ExtractTextUseCaseTest {
 
         val result = useCase(
             records = listOf(
-                ScanRecord(
+                Document(
                     id = 1L,
                     filename = "document",
                     filepath = pdfFile.absolutePath,
@@ -178,8 +178,8 @@ class ExtractTextUseCaseTest {
         verify(recognizer).close()
     }
 
-    private fun record(name: String, thumbnail: File): ScanRecord {
-        return ScanRecord(
+    private fun record(name: String, thumbnail: File): Document {
+        return Document(
             id = 1L,
             filename = name,
             filepath = File(tmpFolder.root, "$name.pdf").absolutePath,
@@ -262,3 +262,4 @@ private class FakeTextRecognizerRunner(
         return results.getValue(image)
     }
 }
+

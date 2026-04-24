@@ -3,8 +3,12 @@ package info.meuse24.pdf_scanner.ui.reorder
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toDomain
+import info.meuse24.pdf_scanner.data.mapper.toEntity
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.ReorderPagesUseCase
+import info.meuse24.pdf_scanner.domain.workflow.DocumentWorkflowGuard
 import info.meuse24.pdf_scanner.domain.workflow.ReorderPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
@@ -60,7 +64,7 @@ class ReorderViewModelTest {
      * pageCount=1 so that getCurrentOrder()=[0] and the workflow's
      * expectedOrder check ([0].sorted() == [0]) passes.
      */
-    private fun record(file: File, pageCount: Int = 1): ScanRecord = ScanRecord(
+    private fun record(file: File, pageCount: Int = 1): Document = Document(
         id = 1L,
         filename = file.nameWithoutExtension,
         filepath = file.absolutePath,
@@ -76,13 +80,17 @@ class ReorderViewModelTest {
 
     private fun buildVm(
         pdfEditor: PdfEditor,
-        scanRecord: ScanRecord,
+        scanRecord: Document,
         errorMapper: WorkflowErrorMapper = stubMapper()
     ): ReorderViewModel {
         val dao = TestScanDao(listOf(scanRecord))
         val repository = ScanRepository(dao)
-        val useCase = ReorderPagesUseCase(pdfEditor, repository)
-        val workflow = ReorderPagesWorkflow(useCase)
+        val useCase = ReorderPagesUseCase(
+            pdfEditor,
+            info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository),
+            repository
+        )
+        val workflow = ReorderPagesWorkflow(useCase, DocumentWorkflowGuard(pdfEditor))
         val savedState = SavedStateHandle(mapOf("scanId" to 1L))
         return ReorderViewModel(
             repository = repository,
@@ -159,15 +167,15 @@ class ReorderViewModelTest {
 // ── Fake DAO ──────────────────────────────────────────────────────────────────
 
 private class TestScanDao(
-    private val initialRecords: List<ScanRecord> = emptyList()
+    private val initialRecords: List<Document> = emptyList()
 ) : ScanDao {
-    val inserted = mutableListOf<ScanRecord>()
-    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(initialRecords)
+    val inserted = mutableListOf<Document>()
+    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(initialRecords.map { it.toEntity() })
     override suspend fun insert(record: ScanRecord): Long {
-        inserted.add(record)
+        inserted.add(record.toDomain())
         return inserted.size.toLong()
     }
-    override suspend fun insertAll(records: List<ScanRecord>) { inserted.addAll(records) }
+    override suspend fun insertAll(records: List<ScanRecord>) { inserted.addAll(records.map { it.toDomain() }) }
     override suspend fun delete(record: ScanRecord) {}
     override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun markSearchableWithContent(
@@ -191,6 +199,10 @@ private class TestScanDao(
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {}
     override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) {}
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) {}
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) {}
 }
 
 // ── Fake PdfEditors ───────────────────────────────────────────────────────────
@@ -226,3 +238,5 @@ private class FailReorderPdfEditor : PdfEditor() {
 
     override fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int) = null
 }
+
+

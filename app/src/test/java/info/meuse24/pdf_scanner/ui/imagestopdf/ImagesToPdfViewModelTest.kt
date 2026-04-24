@@ -2,7 +2,10 @@ package info.meuse24.pdf_scanner.ui.imagestopdf
 
 import android.net.Uri
 import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toDomain
+import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
 import info.meuse24.pdf_scanner.domain.usecase.CreatePdfFromImagesResult
 import info.meuse24.pdf_scanner.domain.usecase.CreatePdfFromImagesUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImagePdfBuilder
@@ -125,8 +128,10 @@ class ImagesToPdfViewModelTest {
 
 private class StubSuccessUseCase(private val skipped: Int = 0) : CreatePdfFromImagesUseCase(
     imagePdfBuilder = mock(ImagePdfBuilder::class.java),
-    pdfEditor = mock(info.meuse24.pdf_scanner.util.PdfEditor::class.java),
-    repository = ScanRepository(StubScanDao())
+    persister = ScanArtifactPersister(
+        mock(info.meuse24.pdf_scanner.util.PdfEditor::class.java),
+        ScanRepository(StubScanDao())
+    )
 ) {
     var callCount = 0
     override suspend fun invoke(
@@ -142,8 +147,10 @@ private class StubSuccessUseCase(private val skipped: Int = 0) : CreatePdfFromIm
 
 private class StubFailUseCase(private val message: String) : CreatePdfFromImagesUseCase(
     imagePdfBuilder = mock(ImagePdfBuilder::class.java),
-    pdfEditor = mock(info.meuse24.pdf_scanner.util.PdfEditor::class.java),
-    repository = ScanRepository(StubScanDao())
+    persister = ScanArtifactPersister(
+        mock(info.meuse24.pdf_scanner.util.PdfEditor::class.java),
+        ScanRepository(StubScanDao())
+    )
 ) {
     override suspend fun invoke(
         imageUris: List<Uri>,
@@ -180,4 +187,9 @@ private class StubScanDao : info.meuse24.pdf_scanner.data.local.ScanDao {
     override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) {}
     override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) {}
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) {}
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) {}
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) {}
 }
+

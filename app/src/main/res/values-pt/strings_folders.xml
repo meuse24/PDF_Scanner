@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_all_documents">Todos os documentos</string>
+    <string name="folder_favorites">Favoritos</string>
+    <string name="folder_manage">Gerenciar pastas</string>
+    <string name="folder_management_title">Pastas</string>
+    <string name="folder_create">Criar pasta</string>
+    <string name="folder_create_failed">Não foi possível criar a pasta</string>
+    <string name="folder_rename">Renomear</string>
+    <string name="folder_rename_failed">Não foi possível renomear a pasta</string>
+    <string name="folder_delete">Excluir</string>
+    <string name="folder_delete_failed">Não foi possível excluir a pasta</string>
+    <string name="folder_delete_confirm">Excluir a pasta \"%1$s\"? Os documentos permanecerão no arquivo.</string>
+    <string name="folder_name_label">Nome da pasta</string>
+    <string name="folder_move_success">Documentos movidos</string>
+    <string name="folder_move_failed">Não foi possível mover os documentos</string>
+    <string name="favorite_toggle_failed">Não foi possível atualizar o status de favorito</string>
+    <string name="folder_picker_title">Mover para pasta</string>
+    <string name="folder_picker_root">Sem pasta</string>
+    <string name="folder_picker_root_subtitle">Manter os documentos no nível superior</string>
+    <string name="folder_picker_move_here">Mover documentos aqui</string>
+    <string name="label_bulk_move_folder">Pasta</string>
+    <string name="help_item_folders">Abra o menu lateral para alternar entre todos os documentos, seus favoritos e pastas nomeadas. Toque no ícone de estrela em um cartão para marcá-lo ou desmarcá-lo como favorito. Selecione documentos e toque no botão Pasta para movê-los. Mantenha pressionada uma pasta no menu para renomeá-la ou excluí-la.</string>
+    <string name="info_feature_folders">Os documentos podem ser organizados em pastas e marcados como favoritos. O menu lateral lista todas as pastas e um filtro de favoritos. As pastas são planas (sem aninhamento) e excluir uma pasta move seus documentos para o nível superior.</string>
+</resources>

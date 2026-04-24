@@ -6,6 +6,16 @@
     <string name="images_to_pdf_layout_single">एकल</string>
     <string name="images_to_pdf_layout_two">2/पृष्ठ</string>
     <string name="images_to_pdf_layout_four">4/पृष्ठ</string>
+    <string name="images_to_pdf_page_setup_label">पेज सेटअप</string>
+    <string name="images_to_pdf_page_size_a5">A5</string>
+    <string name="images_to_pdf_page_size_a4">A4</string>
+    <string name="images_to_pdf_page_size_a3">A3</string>
+    <string name="images_to_pdf_page_size_letter">Letter</string>
+    <string name="images_to_pdf_orientation_portrait">पोर्ट्रेट</string>
+    <string name="images_to_pdf_orientation_landscape">लैंडस्केप</string>
+    <string name="images_to_pdf_margin_small">छोटा</string>
+    <string name="images_to_pdf_margin_medium">मध्यम</string>
+    <string name="images_to_pdf_margin_large">बड़ा</string>
     <string name="images_to_pdf_filename_label">फ़ाइल नाम</string>
     <string name="images_to_pdf_filename_default">छवियाँ_%s</string>
     <string name="images_to_pdf_action">PDF बनाएँ</string>

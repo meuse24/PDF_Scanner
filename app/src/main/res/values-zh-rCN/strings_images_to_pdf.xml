@@ -6,6 +6,16 @@
     <string name="images_to_pdf_layout_single">单张</string>
     <string name="images_to_pdf_layout_two">2/页</string>
     <string name="images_to_pdf_layout_four">4/页</string>
+    <string name="images_to_pdf_page_setup_label">页面设置</string>
+    <string name="images_to_pdf_page_size_a5">A5</string>
+    <string name="images_to_pdf_page_size_a4">A4</string>
+    <string name="images_to_pdf_page_size_a3">A3</string>
+    <string name="images_to_pdf_page_size_letter">Letter</string>
+    <string name="images_to_pdf_orientation_portrait">纵向</string>
+    <string name="images_to_pdf_orientation_landscape">横向</string>
+    <string name="images_to_pdf_margin_small">小</string>
+    <string name="images_to_pdf_margin_medium">中</string>
+    <string name="images_to_pdf_margin_large">大</string>
     <string name="images_to_pdf_filename_label">文件名</string>
     <string name="images_to_pdf_filename_default">图片_%s</string>
     <string name="images_to_pdf_action">创建 PDF</string>

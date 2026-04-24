@@ -24,7 +24,7 @@ open class ImagePdfBuilder @Inject constructor(
 
     open suspend fun createPdf(
         imageUris: List<Uri>,
-        layout: ImagePageLayout,
+        options: ImagePdfOptions,
         outputFile: File
     ): ImagePdfBuildResult {
         require(imageUris.isNotEmpty())
@@ -39,7 +39,7 @@ open class ImagePdfBuilder @Inject constructor(
         require(skippedCount < imageUris.size)
 
         try {
-            pdfEditor.createPdfFromImages(imageBytes, layout, outputFile)
+            pdfEditor.createPdfFromImages(imageBytes, options, outputFile)
             val pageCount = pdfEditor.getPageCount(outputFile)
             return ImagePdfBuildResult(
                 pdfFile = outputFile,
@@ -54,9 +54,9 @@ open class ImagePdfBuilder @Inject constructor(
 
     open suspend fun createTempPdf(
         imageUris: List<Uri>,
-        layout: ImagePageLayout
+        options: ImagePdfOptions
     ): ImagePdfBuildResult {
         val outputFile = File.createTempFile("append_images_", ".pdf", storageProvider.tempDir())
-        return createPdf(imageUris, layout, outputFile)
+        return createPdf(imageUris, options, outputFile)
     }
 }

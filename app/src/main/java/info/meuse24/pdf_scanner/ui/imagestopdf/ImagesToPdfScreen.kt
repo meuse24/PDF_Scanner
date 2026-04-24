@@ -36,6 +36,7 @@ fun ImagesToPdfScreen(
     val error       by viewModel.error.collectAsStateWithLifecycle()
     val success     by viewModel.success.collectAsStateWithLifecycle()
     val skippedCount by viewModel.skippedCount.collectAsStateWithLifecycle()
+    val pageSetup by viewModel.pageSetup.collectAsStateWithLifecycle()
 
     val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
     val defaultFilename = stringResource(R.string.images_to_pdf_filename_default, today)
@@ -74,6 +75,8 @@ fun ImagesToPdfScreen(
             imageUris = imageUris,
             selectedLayout = selectedLayout,
             onLayoutSelected = { selectedLayout = it },
+            pageSetup = pageSetup,
+            onPageSetupChange = viewModel::updatePageSetup,
             actionLabel = stringResource(R.string.images_to_pdf_action),
             actionEnabled = imageUris.isNotEmpty() && !editLoading,
             actionInProgress = editLoading,

@@ -27,12 +27,12 @@ open class CreatePdfFromImagesUseCase @Inject constructor(
     open suspend operator fun invoke(
         imageUris: List<Uri>,
         filename: String,
-        layout: ImagePageLayout,
+        options: ImagePdfOptions,
         scansDir: File
     ): CreatePdfFromImagesResult {
         val baseName = resolveUniqueFilename(scansDir, filename)
         val destFile = File(scansDir, "$baseName.pdf")
-        val buildResult = imagePdfBuilder.createPdf(imageUris, layout, destFile)
+        val buildResult = imagePdfBuilder.createPdf(imageUris, options, destFile)
 
         persister.persistDerived(destFile, scansDir, buildResult.pageCount)
         return CreatePdfFromImagesResult(baseName, buildResult.skippedCount)

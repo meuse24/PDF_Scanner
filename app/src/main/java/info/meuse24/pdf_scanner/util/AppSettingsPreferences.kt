@@ -1,6 +1,10 @@
 package info.meuse24.pdf_scanner.util
 
 import android.content.Context
+import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
+import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
+import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
+import info.meuse24.pdf_scanner.domain.model.PdfPageSizePreset
 import info.meuse24.pdf_scanner.ui.theme.ThemeMode
 
 object AppSettingsPreferences {
@@ -13,6 +17,9 @@ object AppSettingsPreferences {
     private const val KEY_DEFAULT_SORT_ORDER = "default_sort_order"
     private const val KEY_APP_LOCK_ENABLED = "app_lock_enabled"
     private const val KEY_APP_LOCK_TIMEOUT_SECONDS = "app_lock_timeout_seconds"
+    private const val KEY_IMG_PDF_SIZE_PRESET = "img_pdf_size_preset"
+    private const val KEY_IMG_PDF_ORIENTATION = "img_pdf_orientation"
+    private const val KEY_IMG_PDF_MARGIN_PRESET = "img_pdf_margin_preset"
 
     fun load(context: Context): AppSettings {
         val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -28,7 +35,21 @@ object AppSettingsPreferences {
                 prefs.getString(KEY_DEFAULT_SORT_ORDER, null)
             ),
             appLockEnabled = prefs.getBoolean(KEY_APP_LOCK_ENABLED, false),
-            appLockTimeoutSeconds = prefs.getInt(KEY_APP_LOCK_TIMEOUT_SECONDS, 30)
+            appLockTimeoutSeconds = prefs.getInt(KEY_APP_LOCK_TIMEOUT_SECONDS, 30),
+            defaultImagePdfPageSetup = PdfPageSetup(
+                sizePreset = enumPreference(
+                    prefs.getString(KEY_IMG_PDF_SIZE_PRESET, null),
+                    PdfPageSizePreset.ISO_A4
+                ),
+                orientation = enumPreference(
+                    prefs.getString(KEY_IMG_PDF_ORIENTATION, null),
+                    PdfPageOrientation.PORTRAIT
+                ),
+                marginPreset = enumPreference(
+                    prefs.getString(KEY_IMG_PDF_MARGIN_PRESET, null),
+                    PdfMarginPreset.MEDIUM
+                )
+            )
         )
     }
 
@@ -42,6 +63,9 @@ object AppSettingsPreferences {
             .putString(KEY_DEFAULT_SORT_ORDER, settings.defaultSortOrder.storageValue)
             .putBoolean(KEY_APP_LOCK_ENABLED, settings.appLockEnabled)
             .putInt(KEY_APP_LOCK_TIMEOUT_SECONDS, settings.appLockTimeoutSeconds)
+            .putString(KEY_IMG_PDF_SIZE_PRESET, settings.defaultImagePdfPageSetup.sizePreset.name)
+            .putString(KEY_IMG_PDF_ORIENTATION, settings.defaultImagePdfPageSetup.orientation.name)
+            .putString(KEY_IMG_PDF_MARGIN_PRESET, settings.defaultImagePdfPageSetup.marginPreset.name)
             .apply()
     }
 
@@ -50,5 +74,13 @@ object AppSettingsPreferences {
         val updated = current.copy(themeMode = mode)
         save(context, updated)
         return updated
+    }
+
+    private inline fun <reified T : Enum<T>> enumPreference(
+        value: String?,
+        default: T
+    ): T {
+        val storedValue = value ?: return default
+        return runCatching { enumValueOf<T>(storedValue) }.getOrDefault(default)
     }
 }

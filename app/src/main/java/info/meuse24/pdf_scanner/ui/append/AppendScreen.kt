@@ -63,6 +63,7 @@ fun AppendScreen(
     val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
     val success by viewModel.success.collectAsStateWithLifecycle()
+    val pageSetup by viewModel.pageSetup.collectAsStateWithLifecycle()
 
     val errorDeviceUnsupported = stringResource(R.string.error_device_unsupported)
     val errorScannerUnavailable = stringResource(R.string.error_scanner_unavailable)
@@ -162,6 +163,8 @@ fun AppendScreen(
             imageUris = pendingImageUris,
             selectedLayout = selectedLayout,
             onLayoutSelected = { selectedLayout = it },
+            pageSetup = pageSetup,
+            onPageSetupChange = viewModel::updatePageSetup,
             actionLabel = stringResource(R.string.action_append_pages),
             actionEnabled = true,
             actionInProgress = false,

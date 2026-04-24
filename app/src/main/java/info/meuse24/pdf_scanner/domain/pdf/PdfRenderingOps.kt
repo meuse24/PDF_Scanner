@@ -1,7 +1,7 @@
 package info.meuse24.pdf_scanner.domain.pdf
 
 import android.graphics.Bitmap
-import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import java.io.File
 
@@ -10,7 +10,7 @@ interface PdfRenderingOps {
     fun convertToGrayscale(input: File, outputDir: File): File
     fun createPdfFromImages(
         imageBytes: List<ByteArray?>,
-        layout: ImagePageLayout,
+        options: ImagePdfOptions,
         outputFile: File
     ): File
 

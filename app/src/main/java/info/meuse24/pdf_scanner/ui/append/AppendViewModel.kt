@@ -7,8 +7,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
+import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.usecase.AppendSource
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.domain.workflow.AppendToPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
@@ -31,6 +34,7 @@ class AppendViewModel @Inject constructor(
     private val workflowErrorMapper: WorkflowErrorMapper,
     private val resourceProvider: ResourceProvider,
     private val dispatcherProvider: DispatcherProvider,
+    private val settingsRepository: AppSettingsRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -52,6 +56,14 @@ class AppendViewModel @Inject constructor(
     private val _pendingImageUris = MutableStateFlow<List<Uri>>(emptyList())
     val pendingImageUris: StateFlow<List<Uri>> = _pendingImageUris.asStateFlow()
 
+    private val _pageSetup = MutableStateFlow(settingsRepository.settings.value.defaultImagePdfPageSetup)
+    val pageSetup: StateFlow<PdfPageSetup> = _pageSetup.asStateFlow()
+
+    fun updatePageSetup(setup: PdfPageSetup) {
+        _pageSetup.value = setup
+        settingsRepository.updateDefaultImagePdfPageSetup(setup)
+    }
+
     fun setPendingImageUris(uris: List<Uri>) {
         _pendingImageUris.value = uris
     }
@@ -71,7 +83,11 @@ class AppendViewModel @Inject constructor(
     fun appendImages(layout: ImagePageLayout) {
         val uris = pendingImageUris.value
         if (uris.isEmpty()) return
-        runAppend(AppendSource.Images(uris, layout)) {
+        val options = ImagePdfOptions(
+            layout = layout,
+            pageSetup = _pageSetup.value
+        )
+        runAppend(AppendSource.Images(uris, options)) {
             clearPendingImageUris()
         }
     }

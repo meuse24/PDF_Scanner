@@ -2,22 +2,26 @@ package info.meuse24.pdf_scanner.ui.append
 
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
+import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
 import info.meuse24.pdf_scanner.domain.usecase.AppendResult
 import info.meuse24.pdf_scanner.domain.usecase.AppendSource
 import info.meuse24.pdf_scanner.domain.usecase.AppendToPdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImagePdfBuilder
+import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.domain.workflow.AppendToPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
+import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
+import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
+import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.util.FileUtil
 import info.meuse24.pdf_scanner.util.PdfEditor
-import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
-import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -107,10 +111,29 @@ class AppendViewModelTest {
         runCurrent()
         viewModel.setPendingImageUris(listOf(mock(android.net.Uri::class.java)))
 
-        viewModel.appendImages(info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout.SINGLE)
+        viewModel.appendImages(ImagePageLayout.SINGLE)
         advanceUntilIdle()
 
         assertTrue(viewModel.pendingImageUris.value.isEmpty())
+        recordObserver.cancel()
+    }
+
+    @Test
+    fun `appendImages baut ImagePdfOptions mit aktuellem PageSetup`() = runTest(dispatcher) {
+        appendUseCase.handler = { _, _ -> AppendResult(pageCount = 4, fileSize = 90L, appendedPageCount = 1) }
+        val viewModel = buildViewModel()
+        val recordObserver = observeRecord(viewModel)
+        val setup = PdfPageSetup(marginPreset = PdfMarginPreset.SMALL)
+        runCurrent()
+        viewModel.setPendingImageUris(listOf(mock(android.net.Uri::class.java)))
+
+        viewModel.updatePageSetup(setup)
+        viewModel.appendImages(ImagePageLayout.TWO_PER_PAGE)
+        advanceUntilIdle()
+
+        val source = appendUseCase.invocations.single().second as AppendSource.Images
+        assertEquals(ImagePageLayout.TWO_PER_PAGE, source.options.layout)
+        assertEquals(setup, source.options.pageSetup)
         recordObserver.cancel()
     }
 
@@ -170,6 +193,7 @@ class AppendViewModelTest {
             workflowErrorMapper = WorkflowErrorMapper(resourceProvider),
             resourceProvider = resourceProvider,
             dispatcherProvider = TestDispatcherProvider(dispatcher),
+            settingsRepository = FakeSettingsRepository(),
             savedStateHandle = SavedStateHandle(mapOf("scanId" to record.id))
         )
     }

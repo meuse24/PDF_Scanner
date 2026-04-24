@@ -42,13 +42,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
+import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
+import info.meuse24.pdf_scanner.ui.components.PdfPageSetupSection
 
 @Composable
 fun ImagesPdfOptionsContent(
     imageUris: List<Uri>,
     selectedLayout: ImagePageLayout,
     onLayoutSelected: (ImagePageLayout) -> Unit,
+    pageSetup: PdfPageSetup,
+    onPageSetupChange: (PdfPageSetup) -> Unit,
     actionLabel: String,
     actionEnabled: Boolean,
     actionInProgress: Boolean,
@@ -125,10 +130,19 @@ fun ImagesPdfOptionsContent(
                             }
                             LayoutPreviewCanvas(
                                 layout = selectedLayout,
-                                modifier = Modifier.size(width = 36.dp, height = 50.dp)
+                                modifier = if (pageSetup.orientation == PdfPageOrientation.LANDSCAPE) {
+                                    Modifier.size(width = 50.dp, height = 36.dp)
+                                } else {
+                                    Modifier.size(width = 36.dp, height = 50.dp)
+                                }
                             )
                         }
                     }
+
+                    PdfPageSetupSection(
+                        setup = pageSetup,
+                        onSetupChange = onPageSetupChange
+                    )
 
                     Button(
                         onClick = onAction,

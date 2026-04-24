@@ -4,7 +4,10 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
+import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.usecase.CreatePdfFromImagesUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.util.DispatcherProvider
 import info.meuse24.pdf_scanner.util.StorageProvider
@@ -18,7 +21,8 @@ import javax.inject.Inject
 class ImagesToPdfViewModel @Inject constructor(
     private val createPdfFromImagesUseCase: CreatePdfFromImagesUseCase,
     private val storageProvider: StorageProvider,
-    private val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider,
+    private val settingsRepository: AppSettingsRepository
 ) : ViewModel() {
 
     private val _editLoading = MutableStateFlow(false)
@@ -34,13 +38,25 @@ class ImagesToPdfViewModel @Inject constructor(
     private val _skippedCount = MutableStateFlow(0)
     val skippedCount: StateFlow<Int> = _skippedCount.asStateFlow()
 
+    private val _pageSetup = MutableStateFlow(settingsRepository.settings.value.defaultImagePdfPageSetup)
+    val pageSetup: StateFlow<PdfPageSetup> = _pageSetup.asStateFlow()
+
+    fun updatePageSetup(setup: PdfPageSetup) {
+        _pageSetup.value = setup
+        settingsRepository.updateDefaultImagePdfPageSetup(setup)
+    }
+
     fun createPdf(imageUris: List<Uri>, filename: String, layout: ImagePageLayout) {
         if (_editLoading.value) return
         _editLoading.value = true
         viewModelScope.launch(dispatcherProvider.io) {
             try {
+                val options = ImagePdfOptions(
+                    layout = layout,
+                    pageSetup = _pageSetup.value
+                )
                 val result = createPdfFromImagesUseCase(
-                    imageUris, filename, layout, storageProvider.scansDir()
+                    imageUris, filename, options, storageProvider.scansDir()
                 )
                 _skippedCount.value = result.skippedCount
                 _success.value = true

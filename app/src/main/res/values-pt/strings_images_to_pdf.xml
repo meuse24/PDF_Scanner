@@ -6,6 +6,16 @@
     <string name="images_to_pdf_layout_single">Individual</string>
     <string name="images_to_pdf_layout_two">2/Pág.</string>
     <string name="images_to_pdf_layout_four">4/Pág.</string>
+    <string name="images_to_pdf_page_setup_label">Configuração da página</string>
+    <string name="images_to_pdf_page_size_a5">A5</string>
+    <string name="images_to_pdf_page_size_a4">A4</string>
+    <string name="images_to_pdf_page_size_a3">A3</string>
+    <string name="images_to_pdf_page_size_letter">Carta</string>
+    <string name="images_to_pdf_orientation_portrait">Retrato</string>
+    <string name="images_to_pdf_orientation_landscape">Paisagem</string>
+    <string name="images_to_pdf_margin_small">Pequena</string>
+    <string name="images_to_pdf_margin_medium">Média</string>
+    <string name="images_to_pdf_margin_large">Grande</string>
     <string name="images_to_pdf_filename_label">Nome do ficheiro</string>
     <string name="images_to_pdf_filename_default">Imagens_%s</string>
     <string name="images_to_pdf_action">Criar PDF</string>

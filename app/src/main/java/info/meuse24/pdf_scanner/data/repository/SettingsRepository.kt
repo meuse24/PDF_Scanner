@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.data.repository
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.ui.theme.ThemeMode
 import info.meuse24.pdf_scanner.util.AppSortOrder
@@ -64,6 +65,14 @@ class SettingsRepository @Inject constructor(
         val current = _settings.value
         if (current.appLockTimeoutSeconds == seconds) return
         val updated = current.copy(appLockTimeoutSeconds = seconds.coerceAtLeast(0))
+        AppSettingsPreferences.save(context, updated)
+        _settings.value = updated
+    }
+
+    override fun updateDefaultImagePdfPageSetup(setup: PdfPageSetup) {
+        val current = _settings.value
+        if (current.defaultImagePdfPageSetup == setup) return
+        val updated = current.copy(defaultImagePdfPageSetup = setup)
         AppSettingsPreferences.save(context, updated)
         _settings.value = updated
     }

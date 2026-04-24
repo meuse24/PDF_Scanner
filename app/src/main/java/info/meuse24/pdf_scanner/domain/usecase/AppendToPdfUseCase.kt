@@ -13,7 +13,7 @@ import javax.inject.Inject
 sealed interface AppendSource {
     data class Scan(val pdfUri: Uri, val pageCount: Int) : AppendSource
     data class Pdf(val pdfUri: Uri) : AppendSource
-    data class Images(val uris: List<Uri>, val layout: ImagePageLayout) : AppendSource
+    data class Images(val uris: List<Uri>, val options: ImagePdfOptions) : AppendSource
 }
 
 data class AppendResult(
@@ -51,7 +51,7 @@ open class AppendToPdfUseCase @Inject constructor(
         val sourcePdf = when (source) {
             is AppendSource.Pdf -> fileUtil.copyToTemp(source.pdfUri, ".pdf")
             is AppendSource.Scan -> fileUtil.copyToTemp(source.pdfUri, ".pdf")
-            is AppendSource.Images -> imagePdfBuilder.createTempPdf(source.uris, source.layout).pdfFile
+            is AppendSource.Images -> imagePdfBuilder.createTempPdf(source.uris, source.options).pdfFile
         }
 
         try {

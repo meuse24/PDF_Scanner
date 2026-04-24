@@ -6,6 +6,16 @@
     <string name="images_to_pdf_layout_single">1枚/ページ</string>
     <string name="images_to_pdf_layout_two">2枚/ページ</string>
     <string name="images_to_pdf_layout_four">4枚/ページ</string>
+    <string name="images_to_pdf_page_setup_label">ページ設定</string>
+    <string name="images_to_pdf_page_size_a5">A5</string>
+    <string name="images_to_pdf_page_size_a4">A4</string>
+    <string name="images_to_pdf_page_size_a3">A3</string>
+    <string name="images_to_pdf_page_size_letter">Letter</string>
+    <string name="images_to_pdf_orientation_portrait">縦</string>
+    <string name="images_to_pdf_orientation_landscape">横</string>
+    <string name="images_to_pdf_margin_small">小</string>
+    <string name="images_to_pdf_margin_medium">中</string>
+    <string name="images_to_pdf_margin_large">大</string>
     <string name="images_to_pdf_filename_label">ファイル名</string>
     <string name="images_to_pdf_filename_default">画像_%s</string>
     <string name="images_to_pdf_action">PDFを作成</string>

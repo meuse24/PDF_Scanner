@@ -4,12 +4,16 @@ import android.net.Uri
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.mapper.toDomain
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
+import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
 import info.meuse24.pdf_scanner.domain.usecase.CreatePdfFromImagesResult
 import info.meuse24.pdf_scanner.domain.usecase.CreatePdfFromImagesUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImagePdfBuilder
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
+import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
 import kotlinx.coroutines.Dispatchers
@@ -48,11 +52,15 @@ class ImagesToPdfViewModelTest {
 
     private fun fakeUri(): Uri = mock(Uri::class.java)
 
-    private fun buildVm(useCase: CreatePdfFromImagesUseCase): ImagesToPdfViewModel =
+    private fun buildVm(
+        useCase: CreatePdfFromImagesUseCase,
+        settingsRepository: FakeSettingsRepository = FakeSettingsRepository()
+    ): ImagesToPdfViewModel =
         ImagesToPdfViewModel(
             createPdfFromImagesUseCase = useCase,
             storageProvider = TestStorageProvider(tmpFolder.root),
-            dispatcherProvider = TestDispatcherProvider(testDispatcher)
+            dispatcherProvider = TestDispatcherProvider(testDispatcher),
+            settingsRepository = settingsRepository
         )
 
     // ── Tests ─────────────────────────────────────────────────────────────────
@@ -122,6 +130,32 @@ class ImagesToPdfViewModelTest {
 
         assertNull(vm.error.value)
     }
+
+    @Test
+    fun `updatePageSetup aktualisiert State und Repository`() = runTest(testDispatcher) {
+        val repository = FakeSettingsRepository()
+        val vm = buildVm(StubSuccessUseCase(), repository)
+        val setup = PdfPageSetup(marginPreset = PdfMarginPreset.LARGE)
+
+        vm.updatePageSetup(setup)
+
+        assertEquals(setup, vm.pageSetup.value)
+        assertEquals(setup, repository.settings.value.defaultImagePdfPageSetup)
+    }
+
+    @Test
+    fun `createPdf reicht Layout und PageSetup als Optionen weiter`() = runTest(testDispatcher) {
+        val setup = PdfPageSetup(marginPreset = PdfMarginPreset.SMALL)
+        val useCase = StubSuccessUseCase()
+        val vm = buildVm(useCase)
+        vm.updatePageSetup(setup)
+
+        vm.createPdf(listOf(fakeUri()), "test", ImagePageLayout.FOUR_PER_PAGE)
+        advanceUntilIdle()
+
+        assertEquals(ImagePageLayout.FOUR_PER_PAGE, useCase.lastOptions?.layout)
+        assertEquals(setup, useCase.lastOptions?.pageSetup)
+    }
 }
 
 // ── Stub-UseCases ─────────────────────────────────────────────────────────────
@@ -134,13 +168,15 @@ private class StubSuccessUseCase(private val skipped: Int = 0) : CreatePdfFromIm
     )
 ) {
     var callCount = 0
+    var lastOptions: ImagePdfOptions? = null
     override suspend fun invoke(
         imageUris: List<Uri>,
         filename: String,
-        layout: ImagePageLayout,
+        options: ImagePdfOptions,
         scansDir: File
     ): CreatePdfFromImagesResult {
         callCount++
+        lastOptions = options
         return CreatePdfFromImagesResult("result", skipped)
     }
 }
@@ -155,7 +191,7 @@ private class StubFailUseCase(private val message: String) : CreatePdfFromImages
     override suspend fun invoke(
         imageUris: List<Uri>,
         filename: String,
-        layout: ImagePageLayout,
+        options: ImagePdfOptions,
         scansDir: File
     ): CreatePdfFromImagesResult = throw IOException(message)
 }

@@ -78,13 +78,13 @@ class CreatePdfFromImagesUseCaseTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `leere URI-Liste wirft Exception`() = runTest {
-        buildUseCase().invoke(emptyList(), "test", ImagePageLayout.SINGLE, tmpFolder.root)
+        buildUseCase().invoke(emptyList(), "test", ImagePdfOptions(ImagePageLayout.SINGLE), tmpFolder.root)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun `alle Bilder unlesbar wirft Exception`() = runTest {
         val uris = listOf(badUri("1"), badUri("2"))
-        buildUseCase(okUris = emptySet()).invoke(uris, "test", ImagePageLayout.SINGLE, tmpFolder.root)
+        buildUseCase(okUris = emptySet()).invoke(uris, "test", ImagePdfOptions(ImagePageLayout.SINGLE), tmpFolder.root)
     }
 
     @Test
@@ -92,7 +92,7 @@ class CreatePdfFromImagesUseCaseTest {
         val u1 = okUri("1")
         val uris = listOf(u1)
         val editor = FakeImagesPdfEditor(tmpFolder)
-        buildUseCase(setOf(u1), editor).invoke(uris, "test", ImagePageLayout.SINGLE, tmpFolder.root)
+        buildUseCase(setOf(u1), editor).invoke(uris, "test", ImagePdfOptions(ImagePageLayout.SINGLE), tmpFolder.root)
 
         assertEquals(1, editor.lastPageCount)
     }
@@ -101,7 +101,7 @@ class CreatePdfFromImagesUseCaseTest {
     fun `3 Bilder TWO_PER_PAGE ergibt 2 Seiten`() = runTest {
         val uris = (1..3).map { okUri("$it") }
         val editor = FakeImagesPdfEditor(tmpFolder)
-        buildUseCase(uris.toSet(), editor).invoke(uris, "test", ImagePageLayout.TWO_PER_PAGE, tmpFolder.root)
+        buildUseCase(uris.toSet(), editor).invoke(uris, "test", ImagePdfOptions(ImagePageLayout.TWO_PER_PAGE), tmpFolder.root)
 
         assertEquals(2, editor.lastPageCount)
     }
@@ -110,7 +110,7 @@ class CreatePdfFromImagesUseCaseTest {
     fun `4 Bilder FOUR_PER_PAGE ergibt 1 Seite`() = runTest {
         val uris = (1..4).map { okUri("$it") }
         val editor = FakeImagesPdfEditor(tmpFolder)
-        buildUseCase(uris.toSet(), editor).invoke(uris, "test", ImagePageLayout.FOUR_PER_PAGE, tmpFolder.root)
+        buildUseCase(uris.toSet(), editor).invoke(uris, "test", ImagePdfOptions(ImagePageLayout.FOUR_PER_PAGE), tmpFolder.root)
 
         assertEquals(1, editor.lastPageCount)
     }
@@ -119,7 +119,7 @@ class CreatePdfFromImagesUseCaseTest {
     fun `5 Bilder FOUR_PER_PAGE ergibt 2 Seiten`() = runTest {
         val uris = (1..5).map { okUri("$it") }
         val editor = FakeImagesPdfEditor(tmpFolder)
-        buildUseCase(uris.toSet(), editor).invoke(uris, "test", ImagePageLayout.FOUR_PER_PAGE, tmpFolder.root)
+        buildUseCase(uris.toSet(), editor).invoke(uris, "test", ImagePdfOptions(ImagePageLayout.FOUR_PER_PAGE), tmpFolder.root)
 
         assertEquals(2, editor.lastPageCount)
     }
@@ -131,7 +131,7 @@ class CreatePdfFromImagesUseCaseTest {
         val all = goodUris + badUris
 
         val result = buildUseCase(goodUris.toSet())
-            .invoke(all, "test", ImagePageLayout.SINGLE, tmpFolder.root)
+            .invoke(all, "test", ImagePdfOptions(ImagePageLayout.SINGLE), tmpFolder.root)
 
         assertEquals(2, result.skippedCount)
     }
@@ -143,7 +143,7 @@ class CreatePdfFromImagesUseCaseTest {
         val u = okUri("1")
 
         val result = buildUseCase(setOf(u))
-            .invoke(listOf(u), "mein_pdf", ImagePageLayout.SINGLE, scansDir)
+            .invoke(listOf(u), "mein_pdf", ImagePdfOptions(ImagePageLayout.SINGLE), scansDir)
 
         assertEquals("mein_pdf_2", result.baseName)
     }
@@ -160,7 +160,7 @@ class CreatePdfFromImagesUseCaseTest {
             ),
             persister = ScanArtifactPersister(FakeImagesPdfEditor(tmpFolder), ScanRepository(dao))
         )
-        useCase.invoke(listOf(u), "test", ImagePageLayout.SINGLE, tmpFolder.root)
+        useCase.invoke(listOf(u), "test", ImagePdfOptions(ImagePageLayout.SINGLE), tmpFolder.root)
 
         assertNull(dao.lastInserted?.tags)
     }
@@ -176,10 +176,10 @@ private class FakeImagesPdfEditor(
 
     override fun createPdfFromImages(
         imageBytes: List<ByteArray?>,
-        layout: ImagePageLayout,
+        options: ImagePdfOptions,
         outputFile: File
     ): File {
-        lastPageCount = (imageBytes.size + layout.imagesPerPage - 1) / layout.imagesPerPage
+        lastPageCount = (imageBytes.size + options.layout.imagesPerPage - 1) / options.layout.imagesPerPage
         outputFile.writeText("fake-pdf")
         return outputFile
     }

@@ -1,5 +1,6 @@
 package info.meuse24.pdf_scanner.util
 
+import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
 import info.meuse24.pdf_scanner.ui.theme.ThemeMode
 
 /**
@@ -13,7 +14,8 @@ data class AppSettings(
     val defaultOcrLanguage: String = OCR_LANGUAGE_AUTO,
     val defaultSortOrder: AppSortOrder = AppSortOrder.BY_DATE,
     val appLockEnabled: Boolean = false,
-    val appLockTimeoutSeconds: Int = 30
+    val appLockTimeoutSeconds: Int = 30,
+    val defaultImagePdfPageSetup: PdfPageSetup = PdfPageSetup()
 ) {
     companion object {
         const val OCR_LANGUAGE_AUTO = "auto"

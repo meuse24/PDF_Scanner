@@ -41,7 +41,6 @@ import info.meuse24.pdf_scanner.domain.pdf.PdfStructureOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfTextOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfWrongPasswordException
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
-import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationShapeStyle
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationStroke
@@ -52,6 +51,7 @@ import info.meuse24.pdf_scanner.domain.usecase.HIGHLIGHT_COLOR_GREEN
 import info.meuse24.pdf_scanner.domain.usecase.HIGHLIGHT_COLOR_RED
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.domain.usecase.TextLine
@@ -427,22 +427,23 @@ open class PdfEditor @Inject constructor() :
     }
 
     /**
-     * Erzeugt ein neues A4-PDF aus einer Liste von Bild-ByteArrays.
+     * Erzeugt ein neues PDF aus einer Liste von Bild-ByteArrays.
      * Null-Einträge (nicht lesbare Bilder) erzeugen eine leere Zelle.
      * Das Layout bestimmt, wie viele Bilder pro Seite angeordnet werden.
      * Bilder werden proportional (fit-inside) zentriert in ihre Zelle skaliert.
      */
     override open fun createPdfFromImages(
         imageBytes: List<ByteArray?>,
-        layout: ImagePageLayout,
+        options: ImagePdfOptions,
         outputFile: File
     ): File {
         require(imageBytes.isNotEmpty()) { "Bildliste darf nicht leer sein" }
         return writePdf("CreatePdfFromImages", outputFile) { target ->
             PDDocument().use { doc ->
-                val cells = a4LayoutCells(layout)
-                imageBytes.chunked(layout.imagesPerPage).forEach { chunk ->
-                    val page = PDPage(PDRectangle.A4)
+                val cells = layoutCells(options)
+                val pageRectangle = pageRectangle(options.pageSetup)
+                imageBytes.chunked(options.layout.imagesPerPage).forEach { chunk ->
+                    val page = PDPage(pageRectangle)
                     doc.addPage(page)
                     // Einen einzigen Content-Stream pro Seite öffnen, damit alle Bilder
                     // erhalten bleiben. Mehrere Streams ohne APPEND überschreiben sich.

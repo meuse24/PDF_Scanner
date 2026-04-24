@@ -94,7 +94,7 @@ class AppendToPdfUseCaseTest {
 
         val result = useCase(
             record(9L, targetFile, pageCount = 1),
-            AppendSource.Images(listOf(mock(Uri::class.java)), ImagePageLayout.SINGLE)
+            AppendSource.Images(listOf(mock(Uri::class.java)), ImagePdfOptions(ImagePageLayout.SINGLE))
         )
 
         assertEquals(2, result.pageCount)
@@ -212,7 +212,7 @@ private class StubImagePdfBuilder(
 ) {
     override suspend fun createTempPdf(
         imageUris: List<Uri>,
-        layout: ImagePageLayout
+        options: ImagePdfOptions
     ): ImagePdfBuildResult = ImagePdfBuildResult(
         pdfFile = tempFile,
         pageCount = pageCount,

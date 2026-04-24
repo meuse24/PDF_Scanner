@@ -220,6 +220,12 @@ fun HomeScreen(
         onNavigateToOcrReview = navigation.onOcrReview,
         onConsumed = viewModel::clearOcrReviewRequest
     )
+    HandleHomePlayReviewEffect(
+        playReviewRequestId = operationUiState.playReviewRequestId,
+        context = context,
+        onLaunchReview = viewModel::launchPlayReview,
+        onConsumed = viewModel::clearPlayReviewRequest
+    )
     HandleHomeListHaptics(listState = listState, haptic = haptic)
 
     BackHandler(enabled = isSelectionMode) { selectedIds = emptySet() }

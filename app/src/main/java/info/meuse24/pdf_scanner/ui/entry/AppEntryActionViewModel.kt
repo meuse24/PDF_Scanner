@@ -44,8 +44,18 @@ object AppEntryActionCodec {
         }
 
         return when (intent.action) {
+            Intent.ACTION_VIEW -> parseView(intent)
             Intent.ACTION_SEND -> parseSingleShare(intent)
             Intent.ACTION_SEND_MULTIPLE -> parseMultipleShare(intent)
+            else -> null
+        }
+    }
+
+    private fun parseView(intent: Intent): AppEntryAction? {
+        val uri = intent.data ?: return null
+        return when {
+            intent.type == "application/pdf" -> AppEntryAction.SharePdf(uri)
+            intent.type?.startsWith("image/") == true -> AppEntryAction.ShareImages(listOf(uri))
             else -> null
         }
     }

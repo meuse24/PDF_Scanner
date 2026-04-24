@@ -29,6 +29,7 @@ data class HomeOcrProgress(
 data class HomeOperationUiState(
     val ocrText: String? = null,
     val ocrReviewRequestId: Long? = null,
+    val playReviewRequestId: Long = 0L,
     val ocrLoading: Boolean = false,
     val ocrProgress: HomeOcrProgress? = null,
     val ocrStatusText: String? = null,

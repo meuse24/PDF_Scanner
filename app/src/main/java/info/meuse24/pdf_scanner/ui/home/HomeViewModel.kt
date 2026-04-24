@@ -2,6 +2,7 @@
 
 package info.meuse24.pdf_scanner.ui.home
 
+import android.app.Activity
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -36,6 +37,7 @@ import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.OcrResultStats
 import info.meuse24.pdf_scanner.util.OcrThresholds
+import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
 import info.meuse24.pdf_scanner.util.ResourceProvider
 import info.meuse24.pdf_scanner.util.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,7 +74,8 @@ class HomeViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val storageProvider: StorageProvider,
     private val dispatcherProvider: DispatcherProvider,
-    private val archiveFilterStore: ArchiveFilterStore
+    private val archiveFilterStore: ArchiveFilterStore,
+    private val playReviewPromptManager: PlayReviewPromptManager
 ) : ViewModel() {
 
     private val archiveFilterFlow = archiveFilterStore.filter
@@ -106,6 +109,7 @@ class HomeViewModel @Inject constructor(
 
     private val _ocrText = MutableStateFlow<String?>(null)
     private val _ocrReviewRequestId = MutableStateFlow<Long?>(null)
+    private val _playReviewRequestId = MutableStateFlow(0L)
     private val _ocrLoading = MutableStateFlow(false)
     private val _ocrProgress = MutableStateFlow<HomeOcrProgress?>(null)
     private val _ocrStatusText = MutableStateFlow<String?>(null)
@@ -163,9 +167,13 @@ class HomeViewModel @Inject constructor(
                 ocrStatusText = ocrStatusText
             )
         },
+        _playReviewRequestId,
         _editLoading
-    ) { state, editLoading ->
-        state.copy(editLoading = editLoading)
+    ) { state, playReviewRequestId, editLoading ->
+        state.copy(
+            playReviewRequestId = playReviewRequestId,
+            editLoading = editLoading
+        )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeOperationUiState())
 
     val messageUiState: StateFlow<HomeMessageUiState> = combine(
@@ -227,6 +235,7 @@ class HomeViewModel @Inject constructor(
                     onStatus = ::updateOcrStatus
                 )
                 assignToCurrentFolder(document.id)
+                maybeRequestPlayReview()
             } catch (_: OcrModelInstallException) {
                 _error.value = resourceProvider.getString(R.string.ocr_model_download_failed)
             } catch (exception: Exception) {
@@ -246,6 +255,7 @@ class HomeViewModel @Inject constructor(
             try {
                 val document = importFileUseCase(pdfUri, filename)
                 assignToCurrentFolder(document.id)
+                maybeRequestPlayReview()
             } catch (exception: Exception) {
                 _error.value = exception.message ?: resourceProvider.getString(R.string.error_save_failed)
             } finally {
@@ -518,6 +528,14 @@ class HomeViewModel @Inject constructor(
         _ocrReviewRequestId.value = null
     }
 
+    fun launchPlayReview(activity: Activity, onComplete: () -> Unit) {
+        playReviewPromptManager.launchReviewFlow(activity, onComplete)
+    }
+
+    fun clearPlayReviewRequest() {
+        _playReviewRequestId.value = 0L
+    }
+
     fun reportError(message: String) {
         _error.value = message
     }
@@ -587,6 +605,12 @@ class HomeViewModel @Inject constructor(
         val filter = archiveFilterFlow.value
         if (documentId <= 0L || filter !is ArchiveFilter.Folder) return
         moveDocumentsUseCase(listOf(documentId), filter.folderId)
+    }
+
+    private fun maybeRequestPlayReview() {
+        if (playReviewPromptManager.recordSuccessfulDocumentActionAndCheckEligibility()) {
+            _playReviewRequestId.value = System.currentTimeMillis()
+        }
     }
 
     private fun maybeWarnAboutUncertainAutoMode(languageCode: String, stats: OcrResultStats?) {

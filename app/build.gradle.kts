@@ -96,6 +96,8 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.biometric)
+    implementation(libs.play.review)
+    implementation(libs.play.review.ktx)
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

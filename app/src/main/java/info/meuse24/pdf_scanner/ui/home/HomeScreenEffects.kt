@@ -1,6 +1,8 @@
 package info.meuse24.pdf_scanner.ui.home
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.lazy.LazyListState
@@ -120,6 +122,24 @@ internal fun HandleHomeOcrReviewEffect(
 }
 
 @Composable
+internal fun HandleHomePlayReviewEffect(
+    playReviewRequestId: Long,
+    context: Context,
+    onLaunchReview: (Activity, () -> Unit) -> Unit,
+    onConsumed: () -> Unit
+) {
+    LaunchedEffect(playReviewRequestId) {
+        if (playReviewRequestId == 0L) return@LaunchedEffect
+        val activity = context.findActivity()
+        if (activity == null) {
+            onConsumed()
+            return@LaunchedEffect
+        }
+        onLaunchReview(activity, onConsumed)
+    }
+}
+
+@Composable
 internal fun HandleHomeListHaptics(
     listState: LazyListState,
     haptic: HapticFeedback
@@ -133,4 +153,10 @@ internal fun HandleHomeListHaptics(
             initialized = true
         }
     }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

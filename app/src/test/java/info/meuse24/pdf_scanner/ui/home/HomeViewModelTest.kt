@@ -30,6 +30,7 @@ import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
 import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import info.meuse24.pdf_scanner.util.AppSettings
+import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -78,6 +79,7 @@ class HomeViewModelTest {
     private lateinit var mergePdfsWorkflow: MergePdfsWorkflow
     private lateinit var resourceProvider: FakeResourceProvider
     private lateinit var storageProvider: TestStorageProvider
+    private lateinit var playReviewPromptManager: PlayReviewPromptManager
 
     @Before
     fun setUp() {
@@ -97,6 +99,7 @@ class HomeViewModelTest {
         extractTextUseCase = mock(ExtractTextUseCase::class.java)
         makeSearchableWorkflow = mock(MakeSearchableWorkflow::class.java)
         mergePdfsWorkflow = mock(MergePdfsWorkflow::class.java)
+        playReviewPromptManager = mock(PlayReviewPromptManager::class.java)
 
         `when`(repository.getAllScans()).thenReturn(flowOf(emptyList()))
         `when`(repository.getFavoriteScans()).thenReturn(flowOf(emptyList()))
@@ -389,7 +392,8 @@ class HomeViewModelTest {
             resourceProvider = resourceProvider,
             storageProvider = storageProvider,
             dispatcherProvider = TestDispatcherProvider(testDispatcher),
-            archiveFilterStore = ArchiveFilterStore()
+            archiveFilterStore = ArchiveFilterStore(),
+            playReviewPromptManager = playReviewPromptManager
         )
     }
 

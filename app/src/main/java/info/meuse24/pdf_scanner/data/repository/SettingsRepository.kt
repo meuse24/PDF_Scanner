@@ -29,6 +29,14 @@ class SettingsRepository @Inject constructor(
         _settings.value = updated
     }
 
+    override fun updateM24AnimationEnabled(enabled: Boolean) {
+        val current = _settings.value
+        if (current.m24AnimationEnabled == enabled) return
+        val updated = current.copy(m24AnimationEnabled = enabled)
+        AppSettingsPreferences.save(context, updated)
+        _settings.value = updated
+    }
+
     override fun updateDefaultMakeSearchable(enabled: Boolean) {
         val current = _settings.value
         if (current.defaultMakeSearchable == enabled) return
@@ -49,6 +57,15 @@ class SettingsRepository @Inject constructor(
         val current = _settings.value
         if (current.defaultSortOrder == sortOrder) return
         val updated = current.copy(defaultSortOrder = sortOrder)
+        AppSettingsPreferences.save(context, updated)
+        _settings.value = updated
+    }
+
+    override fun updateTrashUndoSnackbarSeconds(seconds: Int) {
+        val normalized = seconds.coerceAtLeast(1)
+        val current = _settings.value
+        if (current.trashUndoSnackbarSeconds == normalized) return
+        val updated = current.copy(trashUndoSnackbarSeconds = normalized)
         AppSettingsPreferences.save(context, updated)
         _settings.value = updated
     }

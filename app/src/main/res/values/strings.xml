@@ -12,11 +12,14 @@
     <string name="nav_settings">Settings</string>
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_theme_mode_label">Theme mode</string>
+    <string name="settings_m24_animation_label">Animate M24 icon</string>
     <string name="settings_scan_ocr_title">Scan &amp; OCR</string>
     <string name="settings_default_make_searchable_label">Default: make searchable</string>
     <string name="settings_default_ocr_language_label">Default OCR language</string>
     <string name="settings_archive_title">Archive</string>
     <string name="settings_default_sort_order_label">Default sort order</string>
+    <string name="settings_trash_undo_duration_label">Trash undo message duration</string>
+    <string name="settings_trash_undo_duration_seconds">%1$d seconds</string>
     <string name="settings_more_coming">More settings will be added here.</string>
     <string name="theme_mode_system">System</string>
     <string name="theme_mode_light">Light</string>

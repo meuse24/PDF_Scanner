@@ -24,6 +24,10 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.updateThemeMode(mode)
     }
 
+    fun setM24AnimationEnabled(enabled: Boolean) {
+        settingsRepository.updateM24AnimationEnabled(enabled)
+    }
+
     fun setDefaultMakeSearchable(enabled: Boolean) {
         settingsRepository.updateDefaultMakeSearchable(enabled)
     }
@@ -34,6 +38,10 @@ class SettingsViewModel @Inject constructor(
 
     fun setDefaultSortOrder(sortOrder: AppSortOrder) {
         settingsRepository.updateDefaultSortOrder(sortOrder)
+    }
+
+    fun setTrashUndoSnackbarSeconds(seconds: Int) {
+        settingsRepository.updateTrashUndoSnackbarSeconds(seconds)
     }
 
     fun setAppLockEnabled(enabled: Boolean) {

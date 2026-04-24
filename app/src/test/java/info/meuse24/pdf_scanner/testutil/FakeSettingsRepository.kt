@@ -19,6 +19,10 @@ class FakeSettingsRepository(
         _settings.value = _settings.value.copy(themeMode = mode)
     }
 
+    override fun updateM24AnimationEnabled(enabled: Boolean) {
+        _settings.value = _settings.value.copy(m24AnimationEnabled = enabled)
+    }
+
     override fun updateDefaultMakeSearchable(enabled: Boolean) {
         _settings.value = _settings.value.copy(defaultMakeSearchable = enabled)
     }
@@ -29,6 +33,10 @@ class FakeSettingsRepository(
 
     override fun updateDefaultSortOrder(sortOrder: AppSortOrder) {
         _settings.value = _settings.value.copy(defaultSortOrder = sortOrder)
+    }
+
+    override fun updateTrashUndoSnackbarSeconds(seconds: Int) {
+        _settings.value = _settings.value.copy(trashUndoSnackbarSeconds = seconds)
     }
 
     override fun updateAppLockEnabled(enabled: Boolean) {

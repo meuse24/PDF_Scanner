@@ -1,18 +1,19 @@
 package info.meuse24.pdf_scanner.ui.components
 
 import android.text.format.Formatter
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.BrandingWatermark
 import androidx.compose.material.icons.automirrored.filled.RotateRight
@@ -42,6 +43,7 @@ import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -85,6 +87,7 @@ sealed interface ScanAction {
     data object Print : ScanAction
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DocumentEditSheet(
     record: Document,
@@ -99,131 +102,301 @@ fun DocumentEditSheet(
     val sizeStr = remember(record.fileSize, context) {
         Formatter.formatShortFileSize(context, record.fileSize.coerceAtLeast(0L))
     }
+    val showMetadata = true
+    val showRename = showRenameAction
+    val showPrint = showPrintAction && notEncrypted
+    val showExportAsJpg = showExportAsJpgAction && notEncrypted
+    val showReorder = notEncrypted && multiPage
+    val showRotate = notEncrypted
+    val showAppend = notEncrypted
+    val showExtractPages = notEncrypted && multiPage
+    val showDuplicatePages = true
+    val showSplit = notEncrypted && multiPage
+    val showDeletePages = notEncrypted && multiPage
+    val showAnnotate = notEncrypted
+    val showSignature = notEncrypted
+    val showPageNumbers = notEncrypted
+    val showTextWatermark = notEncrypted
+    val showRedact = notEncrypted
+    val showQrScan = notEncrypted
+    val showBusinessCard = notEncrypted && record.pageCount >= 1
+    val showRemoveTextLayer = record.isSearchable && notEncrypted
+    val showGrayscale = notEncrypted
+    val showCompress = notEncrypted && !record.isSearchable
+    val showProtect = notEncrypted
+    val showRestrictUsage = notEncrypted
+    val showUnlock = record.isEncrypted
+    val showRemovePassword = record.isEncrypted
 
-    Column(
+    val showQuickSection = showRename || showMetadata || showPrint || showExportAsJpg
+    val showPagesSection = showReorder || showRotate || showAppend || showExtractPages ||
+        showDuplicatePages || showSplit || showDeletePages
+    val showEditSection = showAnnotate || showSignature || showPageNumbers || showTextWatermark || showRedact
+    val showAnalyseSection = showQrScan || showBusinessCard || showRemoveTextLayer
+    val showExportSection = showGrayscale || showCompress
+    val showSecuritySection = showProtect || showRestrictUsage || showUnlock || showRemovePassword
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
+            .heightIn(max = 520.dp)
             .navigationBarsPadding()
             .padding(bottom = 16.dp)
     ) {
+        stickyHeader {
+            SheetHeader(
+                filename = record.filename,
+                meta = stringResource(R.string.sheet_header_meta, record.pageCount, sizeStr)
+            )
+        }
+
+        if (showQuickSection) {
+            item {
+                SheetSection(R.string.sheet_section_document)
+            }
+        }
+        if (showRename) {
+            item {
+                SheetItem(Icons.Default.DriveFileRenameOutline, R.string.action_rename, true) {
+                    onAction(ScanAction.Rename)
+                }
+            }
+        }
+        if (showMetadata) {
+            item {
+                SheetItem(Icons.Default.Info, R.string.action_pdf_metadata, true) {
+                    onAction(ScanAction.PdfMetadata)
+                }
+            }
+        }
+        if (showPrint) {
+            item {
+                SheetItem(Icons.Default.Print, R.string.action_print_pdf, true) {
+                    onAction(ScanAction.Print)
+                }
+            }
+        }
+        if (showExportAsJpg) {
+            item {
+                SheetItem(Icons.Default.Image, R.string.action_export_as_jpg, true) {
+                    onAction(ScanAction.ExportAsJpg)
+                }
+            }
+        }
+
+        if (showPagesSection) {
+            item {
+                SheetSection(R.string.sheet_section_pages)
+            }
+        }
+        if (showReorder) {
+            item {
+                SheetItem(Icons.Default.SwapVert, R.string.action_reorder, true) {
+                    onAction(ScanAction.Reorder)
+                }
+            }
+        }
+        if (showRotate) {
+            item {
+                SheetItem(Icons.AutoMirrored.Filled.RotateRight, R.string.action_rotate, true) {
+                    onAction(ScanAction.Rotate)
+                }
+            }
+        }
+        if (showAppend) {
+            item {
+                SheetItem(Icons.Default.PostAdd, R.string.action_append_pages, true) {
+                    onAction(ScanAction.AppendPages)
+                }
+            }
+        }
+        if (showExtractPages) {
+            item {
+                SheetItem(Icons.Default.PictureAsPdf, R.string.action_extract_pages, true) {
+                    onAction(ScanAction.ExtractPages)
+                }
+            }
+        }
+        if (showDuplicatePages) {
+            item {
+                SheetItem(Icons.Default.ContentCopy, R.string.action_duplicate_pages, true) {
+                    onAction(ScanAction.DuplicatePages)
+                }
+            }
+        }
+        if (showSplit) {
+            item {
+                SheetItem(Icons.Default.ContentCut, R.string.action_split, true) {
+                    onAction(ScanAction.Split)
+                }
+            }
+        }
+        if (showDeletePages) {
+            item {
+                SheetItem(Icons.Default.Delete, R.string.action_delete_pages, true) {
+                    onAction(ScanAction.DeletePages)
+                }
+            }
+        }
+
+        if (showEditSection) {
+            item {
+                SheetSection(R.string.sheet_section_edit)
+            }
+        }
+        if (showAnnotate) {
+            item {
+                SheetItem(Icons.Default.BorderColor, R.string.action_annotate_pdf, true) {
+                    onAction(ScanAction.Annotate)
+                }
+            }
+        }
+        if (showSignature) {
+            item {
+                SheetItem(Icons.Default.Draw, R.string.action_sign_pdf, true) {
+                    onAction(ScanAction.Signature)
+                }
+            }
+        }
+        if (showPageNumbers) {
+            item {
+                SheetItem(Icons.Default.FormatListNumbered, R.string.action_page_numbers, true) {
+                    onAction(ScanAction.PageNumbers)
+                }
+            }
+        }
+        if (showTextWatermark) {
+            item {
+                SheetItem(Icons.AutoMirrored.Filled.BrandingWatermark, R.string.action_text_watermark, true) {
+                    onAction(ScanAction.TextWatermark)
+                }
+            }
+        }
+        if (showRedact) {
+            item {
+                SheetItem(Icons.Default.Block, R.string.action_redact_pdf, true) {
+                    onAction(ScanAction.Redact)
+                }
+            }
+        }
+
+        if (showAnalyseSection) {
+            item {
+                SheetSection(R.string.sheet_section_analyse)
+            }
+        }
+        if (showQrScan) {
+            item {
+                SheetItem(Icons.Default.QrCodeScanner, R.string.action_scan_qr_codes, true) {
+                    onAction(ScanAction.ScanQrCodes)
+                }
+            }
+        }
+        if (showBusinessCard) {
+            item {
+                SheetItem(Icons.Default.ContactPage, R.string.action_scan_business_card, true) {
+                    onAction(ScanAction.ScanBusinessCard)
+                }
+            }
+        }
+        if (showRemoveTextLayer) {
+            item {
+                SheetItem(Icons.Default.FindInPage, R.string.action_remove_text_layer, true) {
+                    onAction(ScanAction.RemoveTextLayer)
+                }
+            }
+        }
+
+        if (showExportSection) {
+            item {
+                SheetSection(R.string.sheet_section_export)
+            }
+        }
+        if (showGrayscale) {
+            item {
+                SheetItem(Icons.Default.InvertColors, R.string.action_grayscale_pdf, true) {
+                    onAction(ScanAction.Grayscale)
+                }
+            }
+        }
+        if (showCompress) {
+            item {
+                SheetItem(Icons.Default.Compress, R.string.action_compress_pdf, true) {
+                    onAction(ScanAction.CompressPdf)
+                }
+            }
+        }
+
+        if (showSecuritySection) {
+            item {
+                SheetSection(R.string.sheet_section_security)
+            }
+        }
+        if (showProtect) {
+            item {
+                SheetItem(Icons.Default.Lock, R.string.action_protect_pdf, true) {
+                    onAction(ScanAction.ProtectPdf)
+                }
+            }
+        }
+        if (showRestrictUsage) {
+            item {
+                SheetItem(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage, true) {
+                    onAction(ScanAction.RestrictUsage)
+                }
+            }
+        }
+        if (showUnlock) {
+            item {
+                SheetItem(Icons.Default.LockOpen, R.string.action_unlock_pdf, true) {
+                    onAction(ScanAction.UnlockPdf)
+                }
+            }
+        }
+        if (showRemovePassword) {
+            item {
+                SheetItem(Icons.Default.NoEncryption, R.string.action_remove_password, true) {
+                    onAction(ScanAction.RemovePassword)
+                }
+            }
+        }
+
+        item {
+            Spacer(Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+private fun SheetHeader(
+    filename: String,
+    meta: String
+) {
+    Surface(color = MaterialTheme.colorScheme.surface) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 12.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = record.filename,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(Modifier.height(2.dp))
-            Text(
-                text = stringResource(R.string.sheet_header_meta, record.pageCount, sizeStr),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline
-            )
-        }
-        HorizontalDivider()
-
-        SheetSection(R.string.sheet_section_document)
-        if (showRenameAction) {
-            SheetItem(Icons.Default.DriveFileRenameOutline, R.string.action_rename, true) {
-                onAction(ScanAction.Rename)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 12.dp)
+            ) {
+                Text(
+                    text = filename,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = meta,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline
+                )
             }
+            HorizontalDivider()
         }
-        SheetItem(Icons.Default.Info, R.string.action_pdf_metadata, true) {
-            onAction(ScanAction.PdfMetadata)
-        }
-
-        SheetSection(R.string.sheet_section_pages)
-        SheetItem(Icons.Default.SwapVert, R.string.action_reorder, notEncrypted && multiPage) {
-            onAction(ScanAction.Reorder)
-        }
-        SheetItem(Icons.AutoMirrored.Filled.RotateRight, R.string.action_rotate, notEncrypted) {
-            onAction(ScanAction.Rotate)
-        }
-        SheetItem(Icons.Default.ContentCut, R.string.action_split, notEncrypted && multiPage) {
-            onAction(ScanAction.Split)
-        }
-        SheetItem(Icons.Default.PictureAsPdf, R.string.action_extract_pages, notEncrypted && multiPage) {
-            onAction(ScanAction.ExtractPages)
-        }
-        SheetItem(Icons.Default.PostAdd, R.string.action_append_pages, notEncrypted) {
-            onAction(ScanAction.AppendPages)
-        }
-        SheetItem(Icons.Default.ContentCopy, R.string.action_duplicate_pages, true) {
-            onAction(ScanAction.DuplicatePages)
-        }
-        SheetItem(Icons.Default.Delete, R.string.action_delete_pages, notEncrypted && multiPage) {
-            onAction(ScanAction.DeletePages)
-        }
-
-        SheetSection(R.string.sheet_section_edit)
-        SheetItem(Icons.Default.BorderColor, R.string.action_annotate_pdf, notEncrypted) {
-            onAction(ScanAction.Annotate)
-        }
-        SheetItem(Icons.Default.Draw, R.string.action_sign_pdf, notEncrypted) {
-            onAction(ScanAction.Signature)
-        }
-        SheetItem(Icons.Default.FormatListNumbered, R.string.action_page_numbers, notEncrypted) {
-            onAction(ScanAction.PageNumbers)
-        }
-        SheetItem(Icons.AutoMirrored.Filled.BrandingWatermark, R.string.action_text_watermark, notEncrypted) {
-            onAction(ScanAction.TextWatermark)
-        }
-        SheetItem(Icons.Default.Block, R.string.action_redact_pdf, notEncrypted) {
-            onAction(ScanAction.Redact)
-        }
-
-        SheetSection(R.string.sheet_section_analyse)
-        SheetItem(Icons.Default.QrCodeScanner, R.string.action_scan_qr_codes, notEncrypted) {
-            onAction(ScanAction.ScanQrCodes)
-        }
-        SheetItem(Icons.Default.ContactPage, R.string.action_scan_business_card, notEncrypted && record.pageCount >= 1) {
-            onAction(ScanAction.ScanBusinessCard)
-        }
-        if (record.isSearchable && notEncrypted) {
-            SheetItem(Icons.Default.FindInPage, R.string.action_remove_text_layer, true) {
-                onAction(ScanAction.RemoveTextLayer)
-            }
-        }
-
-        SheetSection(R.string.sheet_section_export)
-        if (showPrintAction) {
-            SheetItem(Icons.Default.Print, R.string.action_print_pdf, notEncrypted) {
-                onAction(ScanAction.Print)
-            }
-        }
-        if (showExportAsJpgAction) {
-            SheetItem(Icons.Default.Image, R.string.action_export_as_jpg, notEncrypted) {
-                onAction(ScanAction.ExportAsJpg)
-            }
-        }
-        SheetItem(Icons.Default.InvertColors, R.string.action_grayscale_pdf, notEncrypted) {
-            onAction(ScanAction.Grayscale)
-        }
-        SheetItem(Icons.Default.Compress, R.string.action_compress_pdf, notEncrypted && !record.isSearchable) {
-            onAction(ScanAction.CompressPdf)
-        }
-
-        SheetSection(R.string.sheet_section_security)
-        SheetItem(Icons.Default.Lock, R.string.action_protect_pdf, notEncrypted) {
-            onAction(ScanAction.ProtectPdf)
-        }
-        SheetItem(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage, notEncrypted) {
-            onAction(ScanAction.RestrictUsage)
-        }
-        SheetItem(Icons.Default.LockOpen, R.string.action_unlock_pdf, record.isEncrypted) {
-            onAction(ScanAction.UnlockPdf)
-        }
-        SheetItem(Icons.Default.NoEncryption, R.string.action_remove_password, record.isEncrypted) {
-            onAction(ScanAction.RemovePassword)
-        }
-
-        Spacer(Modifier.height(8.dp))
     }
 }
 

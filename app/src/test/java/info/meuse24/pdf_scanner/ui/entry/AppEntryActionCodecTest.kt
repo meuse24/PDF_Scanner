@@ -9,6 +9,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
 
 class AppEntryActionCodecTest {
@@ -39,8 +40,9 @@ class AppEntryActionCodecTest {
     @Test
     fun `parses shared pdf from clip data when extra stream is missing`() {
         val uri = mockUri("shared_document.pdf")
+        val mockedClipData = mockClipData(uris = arrayOf(uri), mimeTypes = arrayOf("application/pdf"))
         val intent = mockSendIntent(type = "application/pdf").apply {
-            `when`(clipData).thenReturn(mockClipData(uris = arrayOf(uri), mimeTypes = arrayOf("application/pdf")))
+            `when`(clipData).thenReturn(mockedClipData)
         }
 
         val action = AppEntryActionCodec.fromIntent(intent)
@@ -52,8 +54,9 @@ class AppEntryActionCodecTest {
     fun `parses multiple shared images from clip data without mime type`() {
         val first = mockUri("photo_1.jpg")
         val second = mockUri("photo_2.png")
+        val mockedClipData = mockClipData(uris = arrayOf(first, second))
         val intent = mockSendMultipleIntent(type = null).apply {
-            `when`(clipData).thenReturn(mockClipData(uris = arrayOf(first, second)))
+            `when`(clipData).thenReturn(mockedClipData)
         }
 
         val action = AppEntryActionCodec.fromIntent(intent)

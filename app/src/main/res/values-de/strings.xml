@@ -10,11 +10,14 @@
     <string name="nav_settings">Einstellungen</string>
     <string name="settings_appearance_title">Darstellung</string>
     <string name="settings_theme_mode_label">Designmodus</string>
+    <string name="settings_m24_animation_label">M24-Icon animieren</string>
     <string name="settings_scan_ocr_title">Scan &amp; OCR</string>
     <string name="settings_default_make_searchable_label">Standard: durchsuchbar machen</string>
     <string name="settings_default_ocr_language_label">Standard-OCR-Sprache</string>
     <string name="settings_archive_title">Ablage</string>
     <string name="settings_default_sort_order_label">Standard-Sortierung</string>
+    <string name="settings_trash_undo_duration_label">Dauer des Papierkorb-Hinweises</string>
+    <string name="settings_trash_undo_duration_seconds">%1$d Sekunden</string>
     <string name="settings_more_coming">Weitere Einstellungen folgen hier.</string>
     <string name="theme_mode_system">System</string>
     <string name="theme_mode_light">Hell</string>

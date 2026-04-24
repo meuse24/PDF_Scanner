@@ -1,6 +1,5 @@
 package info.meuse24.pdf_scanner.ui.navigation
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,9 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,6 +39,7 @@ import info.meuse24.pdf_scanner.ui.home.ArchiveFilter
 
 @Composable
 internal fun AppDrawerContent(
+    m24AnimationEnabled: Boolean,
     currentRoute: String?,
     folders: List<Folder>,
     archiveFilter: ArchiveFilter,
@@ -60,17 +58,15 @@ internal fun AppDrawerContent(
                 .padding(horizontal = 24.dp, vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(R.drawable.app_icon),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
+            AnimatedM24Badge(
+                text = "M24",
+                animationKey = "drawer_header",
+                enabled = m24AnimationEnabled
             )
             Spacer(Modifier.width(16.dp))
             Column {
                 Text(
-                    text = stringResource(R.string.app_name),
+                    text = "PDF Scanner",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface

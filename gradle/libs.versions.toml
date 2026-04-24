@@ -23,7 +23,7 @@ pdfboxAndroid = "2.0.27.0"
 navigationCompose = "2.9.7"
 reorderable = "2.4.3"
 coroutinesTest = "1.10.1"
-mockito = "5.2.0"
+mockito = "5.11.0"
 biometric = "1.4.0-alpha04"
 playReview = "2.0.2"
 
@@ -65,7 +65,7 @@ pdfbox-android          = { group = "com.tom-roush",                 name = "pdf
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
-mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito" }
+mockito-inline = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 play-review = { group = "com.google.android.play", name = "review", version.ref = "playReview" }
 play-review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "playReview" }

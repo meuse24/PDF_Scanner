@@ -279,7 +279,8 @@ internal fun ScanItem(
     if (sheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { sheetVisible = false },
-            sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            sheetGesturesEnabled = false
         ) {
             DocumentEditSheet(
                 record   = record,

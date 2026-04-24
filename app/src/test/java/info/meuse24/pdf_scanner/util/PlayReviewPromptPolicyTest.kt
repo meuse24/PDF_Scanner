@@ -27,7 +27,7 @@ class PlayReviewPromptPolicyTest {
 
     @Test
     fun `not eligible while cooldown is active`() {
-        val now = 1_000_000_000L
+        val now = PlayReviewPromptPolicy.REVIEW_REQUEST_COOLDOWN_MILLIS + PlayReviewPromptPolicy.MIN_APP_AGE_MILLIS + 1_000_000L
         val snapshot = eligibleSnapshot(
             firstSeenAtMillis = now - PlayReviewPromptPolicy.MIN_APP_AGE_MILLIS,
             lastReviewRequestAtMillis = now - PlayReviewPromptPolicy.REVIEW_REQUEST_COOLDOWN_MILLIS + 1,

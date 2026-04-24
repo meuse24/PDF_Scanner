@@ -10,6 +10,7 @@
     <string name="nav_settings">सेटिंग्स</string>
     <string name="settings_appearance_title">रूप-रंग</string>
     <string name="settings_theme_mode_label">थीम मोड</string>
+    <string name="settings_m24_animation_label">M24 आइकन एनिमेट करें</string>
     <string name="settings_scan_ocr_title">स्कैन और OCR</string>
     <string name="settings_default_make_searchable_label">डिफ़ॉल्ट: खोजयोग्य बनाएं</string>
     <string name="settings_default_ocr_language_label">डिफ़ॉल्ट OCR भाषा</string>

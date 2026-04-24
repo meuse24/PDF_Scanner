@@ -210,6 +210,7 @@ fun HomeScreen(
     )
     HandleHomeTrashEffect(
         trashMessage = messageUiState.trashMessage,
+        trashUndoSnackbarSeconds = archiveUiState.settings.trashUndoSnackbarSeconds,
         snackbarHostState = snackbarHostState,
         undoLabel = undoLabel,
         onUndo = viewModel::restoreLastTrashed,

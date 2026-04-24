@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,6 +64,19 @@ internal fun HomeArchiveContent(
     modifier: Modifier = Modifier
 ) {
     val folderNamesById = remember(folders) { folders.associateBy({ it.id }, { it.name }) }
+    val showSearchBar by remember(listState, searchQuery, sortOrder, filteredScans.size) {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val hasMoreItemsBelow =
+                layoutInfo.visibleItemsInfo.lastOrNull()?.index?.let { it < layoutInfo.totalItemsCount - 1 } == true
+            val hasScrollableArchive =
+                listState.firstVisibleItemIndex > 0 ||
+                    listState.firstVisibleItemScrollOffset > 0 ||
+                    hasMoreItemsBelow
+
+            searchQuery.isNotEmpty() || sortOrder != SortOrder.ByDate || hasScrollableArchive
+        }
+    }
 
     if (isSelectionMode) {
         SelectionTitleBar(
@@ -81,12 +95,14 @@ internal fun HomeArchiveContent(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
             }
-            HomeSearchBar(
-                searchQuery = searchQuery,
-                sortOrder = sortOrder,
-                onSearchQueryChange = onSearchQueryChange,
-                onSortOrderSelected = onSortOrderSelected
-            )
+            if (showSearchBar) {
+                HomeSearchBar(
+                    searchQuery = searchQuery,
+                    sortOrder = sortOrder,
+                    onSearchQueryChange = onSearchQueryChange,
+                    onSortOrderSelected = onSortOrderSelected
+                )
+            }
         }
     }
 

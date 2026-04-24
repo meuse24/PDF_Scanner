@@ -62,9 +62,11 @@ import java.util.Locale
 fun SettingsScreen(
     settings: AppSettings,
     onThemeModeChange: (ThemeMode) -> Unit,
+    onM24AnimationEnabledChange: (Boolean) -> Unit,
     onDefaultMakeSearchableChange: (Boolean) -> Unit,
     onDefaultOcrLanguageChange: (String) -> Unit,
     onDefaultSortOrderChange: (AppSortOrder) -> Unit,
+    onTrashUndoSnackbarSecondsChange: (Int) -> Unit,
     onAppLockEnabledChange: (Boolean) -> Unit,
     onAppLockTimeoutSecondsChange: (Int) -> Unit,
     transientError: String?,
@@ -78,7 +80,11 @@ fun SettingsScreen(
         buildOcrLanguageOptions(ocrAutoLabel, displayLocale)
     }
     var languageMenuExpanded by remember { mutableStateOf(false) }
+    var trashUndoSnackbarExpanded by remember { mutableStateOf(false) }
     var appLockTimeoutExpanded by remember { mutableStateOf(false) }
+    val trashUndoSnackbarOptions = remember {
+        listOf(5, 10, 15, 30, 60)
+    }
     val timeoutOptions = remember {
         listOf(0, 15, 30, 60, 300)
     }
@@ -120,6 +126,23 @@ fun SettingsScreen(
                     selected = settings.themeMode == ThemeMode.DARK,
                     onClick = { onThemeModeChange(ThemeMode.DARK) }
                 )
+                Spacer(Modifier.height(12.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                Spacer(Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.settings_m24_animation_label),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Switch(
+                        checked = settings.m24AnimationEnabled,
+                        onCheckedChange = onM24AnimationEnabledChange
+                    )
+                }
             }
         }
 
@@ -212,6 +235,46 @@ fun SettingsScreen(
                     selected = settings.defaultSortOrder == AppSortOrder.BY_SIZE,
                     onClick = { onDefaultSortOrderChange(AppSortOrder.BY_SIZE) }
                 )
+
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = stringResource(R.string.settings_trash_undo_duration_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(Modifier.height(8.dp))
+                ExposedDropdownMenuBox(
+                    expanded = trashUndoSnackbarExpanded,
+                    onExpandedChange = { trashUndoSnackbarExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = formatTrashUndoDurationLabel(settings.trashUndoSnackbarSeconds),
+                        onValueChange = {},
+                        readOnly = true,
+                        singleLine = true,
+                        label = { Text(stringResource(R.string.settings_trash_undo_duration_label)) },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = trashUndoSnackbarExpanded)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                    )
+                    DropdownMenu(
+                        expanded = trashUndoSnackbarExpanded,
+                        onDismissRequest = { trashUndoSnackbarExpanded = false }
+                    ) {
+                        trashUndoSnackbarOptions.forEach { seconds ->
+                            DropdownMenuItem(
+                                text = { Text(formatTrashUndoDurationLabel(seconds)) },
+                                onClick = {
+                                    onTrashUndoSnackbarSecondsChange(seconds)
+                                    trashUndoSnackbarExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -290,6 +353,10 @@ private fun formatTimeoutLabel(seconds: Int): String = when (seconds) {
     300 -> stringResource(R.string.settings_app_lock_timeout_5m)
     else -> stringResource(R.string.settings_app_lock_timeout_custom, seconds)
 }
+
+@Composable
+private fun formatTrashUndoDurationLabel(seconds: Int): String =
+    stringResource(R.string.settings_trash_undo_duration_seconds, seconds)
 
 @Composable
 private fun ThemeModeOptionRow(

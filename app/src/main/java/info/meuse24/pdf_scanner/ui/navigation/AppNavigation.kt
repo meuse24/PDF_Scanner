@@ -47,6 +47,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation(
+    m24AnimationEnabled: Boolean,
     onThemeModeChange: (ThemeMode) -> Unit,
     pendingAppEntryAction: AppEntryAction? = null,
     onConsumeAppEntryAction: (AppEntryAction) -> Unit = {},
@@ -116,6 +117,7 @@ fun AppNavigation(
         gesturesEnabled = drawerGesturesEnabled,
         drawerContent = {
             AppDrawerContent(
+                m24AnimationEnabled = m24AnimationEnabled,
                 currentRoute = currentRoute,
                 folders = folders,
                 archiveFilter = archiveFilter,
@@ -170,7 +172,11 @@ fun AppNavigation(
             topBar = {
                 TopAppBar(
                     title = {
-                        AppBarTitle(currentRoute = currentRoute, isHomeRoute = isHomeRoute)
+                        AppBarTitle(
+                            currentRoute = currentRoute,
+                            isHomeRoute = isHomeRoute,
+                            m24AnimationEnabled = m24AnimationEnabled
+                        )
                     },
                     navigationIcon = {
                         if (canNavigateBack) {

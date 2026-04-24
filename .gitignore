@@ -20,5 +20,6 @@ plan-*.txt
 .kotlin/
 .claude/
 .gradle-user/
+.gradle-user-home/
 .gradle-verify/
 .g/

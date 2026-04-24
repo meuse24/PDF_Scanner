@@ -11,10 +11,12 @@ object AppSettingsPreferences {
     private const val PREFS_NAME = "app_settings"
 
     private const val KEY_THEME_MODE = "theme_mode"
+    private const val KEY_M24_ANIMATION_ENABLED = "m24_animation_enabled"
     private const val KEY_KEEP_SCREEN_ON_DURING_SCAN = "keep_screen_on_during_scan"
     private const val KEY_DEFAULT_MAKE_SEARCHABLE = "default_make_searchable"
     private const val KEY_DEFAULT_OCR_LANGUAGE = "default_ocr_language"
     private const val KEY_DEFAULT_SORT_ORDER = "default_sort_order"
+    private const val KEY_TRASH_UNDO_SNACKBAR_SECONDS = "trash_undo_snackbar_seconds"
     private const val KEY_APP_LOCK_ENABLED = "app_lock_enabled"
     private const val KEY_APP_LOCK_TIMEOUT_SECONDS = "app_lock_timeout_seconds"
     private const val KEY_IMG_PDF_SIZE_PRESET = "img_pdf_size_preset"
@@ -25,6 +27,7 @@ object AppSettingsPreferences {
         val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return AppSettings(
             themeMode = ThemeMode.fromStorageValue(prefs.getString(KEY_THEME_MODE, null)),
+            m24AnimationEnabled = prefs.getBoolean(KEY_M24_ANIMATION_ENABLED, true),
             keepScreenOnDuringScan = prefs.getBoolean(KEY_KEEP_SCREEN_ON_DURING_SCAN, false),
             defaultMakeSearchable = prefs.getBoolean(KEY_DEFAULT_MAKE_SEARCHABLE, false),
             defaultOcrLanguage = prefs.getString(
@@ -34,6 +37,10 @@ object AppSettingsPreferences {
             defaultSortOrder = AppSortOrder.fromStorageValue(
                 prefs.getString(KEY_DEFAULT_SORT_ORDER, null)
             ),
+            trashUndoSnackbarSeconds = prefs.getInt(
+                KEY_TRASH_UNDO_SNACKBAR_SECONDS,
+                AppSettings.DEFAULT_TRASH_UNDO_SNACKBAR_SECONDS
+            ).coerceAtLeast(1),
             appLockEnabled = prefs.getBoolean(KEY_APP_LOCK_ENABLED, false),
             appLockTimeoutSeconds = prefs.getInt(KEY_APP_LOCK_TIMEOUT_SECONDS, 30),
             defaultImagePdfPageSetup = PdfPageSetup(
@@ -57,10 +64,12 @@ object AppSettingsPreferences {
         val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit()
             .putString(KEY_THEME_MODE, settings.themeMode.storageValue)
+            .putBoolean(KEY_M24_ANIMATION_ENABLED, settings.m24AnimationEnabled)
             .putBoolean(KEY_KEEP_SCREEN_ON_DURING_SCAN, settings.keepScreenOnDuringScan)
             .putBoolean(KEY_DEFAULT_MAKE_SEARCHABLE, settings.defaultMakeSearchable)
             .putString(KEY_DEFAULT_OCR_LANGUAGE, settings.defaultOcrLanguage)
             .putString(KEY_DEFAULT_SORT_ORDER, settings.defaultSortOrder.storageValue)
+            .putInt(KEY_TRASH_UNDO_SNACKBAR_SECONDS, settings.trashUndoSnackbarSeconds.coerceAtLeast(1))
             .putBoolean(KEY_APP_LOCK_ENABLED, settings.appLockEnabled)
             .putInt(KEY_APP_LOCK_TIMEOUT_SECONDS, settings.appLockTimeoutSeconds)
             .putString(KEY_IMG_PDF_SIZE_PRESET, settings.defaultImagePdfPageSetup.sizePreset.name)

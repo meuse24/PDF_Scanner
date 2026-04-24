@@ -168,9 +168,11 @@ private fun NavGraphBuilder.infoNavGraph(
         SettingsScreen(
             settings = settings,
             onThemeModeChange = onThemeModeChange,
+            onM24AnimationEnabledChange = settingsViewModel::setM24AnimationEnabled,
             onDefaultMakeSearchableChange = settingsViewModel::setDefaultMakeSearchable,
             onDefaultOcrLanguageChange = settingsViewModel::setDefaultOcrLanguage,
             onDefaultSortOrderChange = settingsViewModel::setDefaultSortOrder,
+            onTrashUndoSnackbarSecondsChange = settingsViewModel::setTrashUndoSnackbarSeconds,
             onAppLockEnabledChange = { enabled ->
                 if (!enabled) {
                     settingsViewModel.setAppLockEnabled(false)

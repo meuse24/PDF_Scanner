@@ -10,6 +10,7 @@
     <string name="nav_settings">Configurações</string>
     <string name="settings_appearance_title">Aparência</string>
     <string name="settings_theme_mode_label">Modo de tema</string>
+    <string name="settings_m24_animation_label">Animar ícone M24</string>
     <string name="settings_scan_ocr_title">Scan e OCR</string>
     <string name="settings_default_make_searchable_label">Padrão: tornar pesquisável</string>
     <string name="settings_default_ocr_language_label">Idioma OCR padrão</string>

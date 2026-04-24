@@ -10,6 +10,7 @@
     <string name="nav_settings">设置</string>
     <string name="settings_appearance_title">外观</string>
     <string name="settings_theme_mode_label">主题模式</string>
+    <string name="settings_m24_animation_label">为 M24 图标启用动画</string>
     <string name="settings_scan_ocr_title">扫描与OCR</string>
     <string name="settings_default_make_searchable_label">默认：设为可搜索</string>
     <string name="settings_default_ocr_language_label">默认OCR语言</string>

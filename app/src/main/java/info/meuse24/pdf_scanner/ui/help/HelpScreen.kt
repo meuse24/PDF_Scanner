@@ -135,11 +135,12 @@ fun HelpScreen() {
                 titleRes = R.string.help_group_selection_menu,
                 actions = listOf(
                     HelpAction(Icons.Default.Share, R.string.cd_share, R.string.help_desc_share),
-                    HelpAction(Icons.Default.Download, R.string.action_export, R.string.help_desc_export),
-                    HelpAction(Icons.AutoMirrored.Filled.MergeType, R.string.cd_merge, R.string.help_item_merge),
+                    HelpAction(Icons.Default.FolderOpen, R.string.label_bulk_move_folder, R.string.help_item_folders),
                     HelpAction(Icons.AutoMirrored.Filled.TextSnippet, R.string.cd_extract_text, R.string.help_item_extract_text),
                     HelpAction(Icons.Default.FindInPage, R.string.cd_make_searchable, R.string.help_item_make_searchable),
-                    HelpAction(Icons.Default.Delete, R.string.cd_delete, R.string.help_item_delete)
+                    HelpAction(Icons.Default.Delete, R.string.cd_delete, R.string.help_item_delete),
+                    HelpAction(Icons.Default.Download, R.string.action_export, R.string.help_desc_export),
+                    HelpAction(Icons.AutoMirrored.Filled.MergeType, R.string.cd_merge, R.string.help_item_merge)
                 )
             ),
             HelpSection(
@@ -147,7 +148,9 @@ fun HelpScreen() {
                 titleRes = R.string.sheet_section_document,
                 actions = listOf(
                     HelpAction(Icons.Default.DriveFileRenameOutline, R.string.action_rename,       R.string.help_item_rename),
-                    HelpAction(Icons.Default.Info,                   R.string.action_pdf_metadata, R.string.help_item_pdf_metadata)
+                    HelpAction(Icons.Default.Info,                   R.string.action_pdf_metadata, R.string.help_item_pdf_metadata),
+                    HelpAction(Icons.Default.Print,                  R.string.action_print_pdf,    R.string.help_item_print_pdf),
+                    HelpAction(Icons.Default.Image,                  R.string.action_export_as_jpg, R.string.help_item_export_as_jpg)
                 )
             ),
             HelpSection(
@@ -155,11 +158,11 @@ fun HelpScreen() {
                 titleRes = R.string.sheet_section_pages,
                 actions = listOf(
                     HelpAction(Icons.Default.SwapVert,                R.string.action_reorder,         R.string.help_item_reorder),
-                    HelpAction(Icons.Default.PostAdd,                 R.string.action_append_pages,    R.string.append_pages_body),
                     HelpAction(Icons.AutoMirrored.Filled.RotateRight, R.string.action_rotate,          R.string.help_item_rotate),
-                    HelpAction(Icons.Default.ContentCut,              R.string.action_split,           R.string.help_item_split),
+                    HelpAction(Icons.Default.PostAdd,                 R.string.action_append_pages,    R.string.append_pages_body),
                     HelpAction(Icons.Default.PictureAsPdf,            R.string.action_extract_pages,   R.string.help_item_extract_pages),
                     HelpAction(Icons.Default.ContentCopy,             R.string.action_duplicate_pages, R.string.help_item_duplicate_pages),
+                    HelpAction(Icons.Default.ContentCut,              R.string.action_split,           R.string.help_item_split),
                     HelpAction(Icons.Default.Delete,                  R.string.action_delete_pages,    R.string.help_item_delete_pages)
                 )
             ),
@@ -188,8 +191,6 @@ fun HelpScreen() {
                 icon = Icons.Default.Print,
                 titleRes = R.string.sheet_section_export,
                 actions = listOf(
-                    HelpAction(Icons.Default.Print,        R.string.action_print_pdf,     R.string.help_item_print_pdf),
-                    HelpAction(Icons.Default.Image,        R.string.action_export_as_jpg, R.string.help_item_export_as_jpg),
                     HelpAction(Icons.Default.InvertColors, R.string.action_grayscale_pdf, R.string.help_item_grayscale_pdf),
                     HelpAction(Icons.Default.Compress,     R.string.action_compress_pdf,  R.string.help_item_compress_pdf)
                 )

@@ -16,8 +16,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import info.meuse24.pdf_scanner.ui.entry.AppEntryAction
 import kotlinx.coroutines.withTimeoutOrNull
 
-private const val TRASH_UNDO_SNACKBAR_TIMEOUT_MS = 30_000L
-
 @Composable
 internal fun HandleHomeAddActionEffect(
     addActionTrigger: Boolean,
@@ -88,15 +86,17 @@ internal fun HandleHomeSuccessEffect(
 @Composable
 internal fun HandleHomeTrashEffect(
     trashMessage: String?,
+    trashUndoSnackbarSeconds: Int,
     snackbarHostState: SnackbarHostState,
     undoLabel: String,
     onUndo: () -> Unit,
     onConsumed: () -> Unit
 ) {
-    LaunchedEffect(trashMessage) {
+    LaunchedEffect(trashMessage, trashUndoSnackbarSeconds) {
         val message = trashMessage ?: return@LaunchedEffect
+        val timeoutMillis = trashUndoSnackbarSeconds.coerceAtLeast(1) * 1_000L
         var result: SnackbarResult? = null
-        withTimeoutOrNull(TRASH_UNDO_SNACKBAR_TIMEOUT_MS) {
+        withTimeoutOrNull(timeoutMillis) {
             result = snackbarHostState.showSnackbar(
                 message = message,
                 actionLabel = undoLabel

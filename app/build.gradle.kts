@@ -74,7 +74,15 @@ android {
         buildConfig = true
     }
     testOptions {
-        unitTests.isReturnDefaultValues = true
+        unitTests {
+            isReturnDefaultValues = true
+            all {
+                it.jvmArgs(
+                    "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+                    "-XX:+EnableDynamicAgentLoading"
+                )
+            }
+        }
     }
 }
 

@@ -57,6 +57,7 @@ class MainActivity : FragmentActivity() {
             PDF_ScannerTheme(themeMode = settings.themeMode) {
                 Box {
                     AppNavigation(
+                        m24AnimationEnabled = settings.m24AnimationEnabled,
                         onThemeModeChange = settingsViewModel::setThemeMode,
                         pendingAppEntryAction = if (settings.appLockEnabled && isLocked) null else pendingEntryAction,
                         onConsumeAppEntryAction = appEntryActionViewModel::consume,

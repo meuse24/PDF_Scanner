@@ -10,6 +10,7 @@
     <string name="nav_settings">الإعدادات</string>
     <string name="settings_appearance_title">المظهر</string>
     <string name="settings_theme_mode_label">وضع السمة</string>
+    <string name="settings_m24_animation_label">تحريك أيقونة M24</string>
     <string name="settings_scan_ocr_title">المسح الضوئي وOCR</string>
     <string name="settings_default_make_searchable_label">الافتراضي: جعل الملف قابلاً للبحث</string>
     <string name="settings_default_ocr_language_label">لغة OCR الافتراضية</string>

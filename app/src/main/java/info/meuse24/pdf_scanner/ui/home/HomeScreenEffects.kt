@@ -43,6 +43,7 @@ internal fun HandleHomeAppEntryActionEffect(
 ) {
     LaunchedEffect(pendingAppEntryAction) {
         when (val action = pendingAppEntryAction) {
+            // Home is the actual consumer for non-navigation app-entry actions.
             AppEntryAction.ScanNew -> {
                 onConsume(action)
                 onLaunchScanner()

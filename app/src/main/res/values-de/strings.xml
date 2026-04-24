@@ -74,7 +74,7 @@
     <string name="error_export_jpg_failed">JPEG-Export fehlgeschlagen</string>
     <string name="error_device_unsupported">Scanner wird auf diesem Gerät nicht unterstützt</string>
     <string name="share_pdf_title">PDF teilen</string>
-    <string name="help_item_external_share">Du kannst PDFs oder Bilder aus einer anderen App per Android-Teilen an M24 PDF-Scanner senden. PDFs öffnen den normalen Import-Speichern-Dialog; geteilte Bilder öffnen den Bilder-zu-PDF-Ablauf. Wenn die App-Sperre aktiv ist, warten geteilte Dateien bis zum Entsperren.</string>
+    <string name="help_item_external_share">Du kannst PDFs oder Bilder aus einer anderen App per Android-Teilen oder Öffnen mit an M24 PDF-Scanner übergeben. PDFs öffnen den normalen Import-Speichern-Dialog; geteilte oder geöffnete Bilder öffnen den Bilder-zu-PDF-Ablauf. Wenn die App-Sperre aktiv ist, warten eingehende Dateien bis zum Entsperren.</string>
     <string name="scan_item_subtitle">%1$s · %2$d S. · %3$s</string>
     <string name="help_screen_title">Anleitung</string>
     <string name="help_section_contents">Inhaltsverzeichnis</string>
@@ -137,7 +137,7 @@
     <string name="info_section_privacy">Datenschutz</string>
     <string name="info_section_features">Funktionen</string>
     <string name="info_features_body">Die App scannt, importiert, erstellt, ergänzt und betrachtet PDFs direkt in der App, hält gelöschte Dokumente 30 Tage im Papierkorb, führt OCR auf dem Gerät aus, speichert OCR-Text und Qualitätsmetadaten lokal für die Suche in der Ablage und die OCR-Prüfung und bietet Seitenbearbeitung, Beschriftung, Signaturen, Metadatenbearbeitung, Graustufen, Schutz sowie sichere Schwärzung mit optionaler OCR-Rekonstruktion für geschwärzte Kopien.</string>
-    <string name="info_feature_print_share">Android-Drucken und Teilen nutzen Systemdialoge. Beim Drucken wird das ausgewählte PDF an Android Print übergeben; eingehend geteilte PDFs und Bilder werden erst nach Bestätigung in das App-Archiv kopiert.</string>
+    <string name="info_feature_print_share">Android-Drucken, Teilen und Öffnen mit nutzen Systemdialoge. Beim Drucken wird das ausgewählte PDF an Android Print übergeben; eingehende PDFs und Bilder, die geteilt oder mit dieser App geöffnet werden, werden erst nach Bestätigung in das App-Archiv kopiert.</string>
     <string name="info_privacy_body">Keine Werbung, kein Konto und kein eigenes Backend. PDFs, Vorschaubilder, erzeugte Kopien, Einträge im Papierkorb, OCR-Text und OCR-Qualitätsmetadaten bleiben lokal im App-Speicher auf Ihrem Gerät, bis Sie sie exportieren, teilen oder endgültig löschen. Scan, OCR sowie herunterladbare Modelle und Schriftarten nutzen Google Play Services; Dokumentinhalte werden von der App selbst nicht hochgeladen.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Lokal</string>

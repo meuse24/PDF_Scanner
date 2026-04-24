@@ -72,7 +72,7 @@
     <string name="error_export_jpg_failed">JPEG 导出失败</string>
     <string name="error_device_unsupported">此设备不支持扫描仪</string>
     <string name="share_pdf_title">分享 PDF</string>
-    <string name="help_item_external_share">你可以通过 Android 分享把其他应用中的 PDF 或图片发送到 M24 PDF Scanner。PDF 会打开常规的导入保存对话框；分享的图片会进入“图片转 PDF”流程。如果启用了应用锁，共享文件会等待应用解锁后再处理。</string>
+    <string name="help_item_external_share">你可以通过 Android 分享或 Open with 把其他应用中的 PDF 或图片交给 M24 PDF Scanner。PDF 会打开常规的导入保存对话框；分享过来或用本应用打开的图片会进入“图片转 PDF”流程。如果启用了应用锁，传入文件会等待应用解锁后再处理。</string>
     <string name="scan_item_subtitle">%1$s · %2$d 页 · %3$s</string>
     <string name="help_screen_title">使用说明</string>
     <string name="help_section_contents">目录</string>
@@ -135,7 +135,7 @@
     <string name="info_section_privacy">隐私</string>
     <string name="info_section_features">功能</string>
     <string name="info_features_body">本应用可在应用内扫描、导入、创建、追加并查看 PDF，将已删除文档在回收站中保留 30 天，在设备本地执行 OCR，并将 OCR 文本和质量元数据保存在本地，用于文件库搜索和 OCR 审核。同时还提供页面编辑、批注、签名、元数据编辑、灰度转换、保护以及安全遮蔽，并可为遮蔽副本选择性重建 OCR。</string>
-    <string name="info_feature_print_share">Android 打印和分享集成使用系统对话框。打印会把所选 PDF 发送给 Android Print；从分享接收的 PDF 和图片只会在用户确认后复制到应用归档中。</string>
+    <string name="info_feature_print_share">Android 打印、分享和 Open with 集成使用系统对话框。打印会把所选 PDF 发送给 Android Print；共享到本应用或通过本应用打开的传入 PDF 和图片，只会在用户确认后复制到应用归档中。</string>
     <string name="info_privacy_body">无广告、无需账号、没有自有后端。PDF、缩略图、生成的副本、回收站项目、OCR 文本和 OCR 质量元数据都会保留在您设备上的应用存储中，直到您导出、分享或永久删除它们。扫描、OCR 以及模型和字体下载依赖 Google Play 服务；本应用不会上传文档内容。</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">本地</string>

@@ -31,7 +31,9 @@ object AppEntryActionCodec {
         putExtra(EXTRA_KEY, actionValue)
     }
 
-    fun fromIntent(intent: Intent?): AppEntryAction? {
+    fun fromIntent(intent: Intent?): AppEntryAction? = fromIntent(context = null, intent = intent)
+
+    fun fromIntent(context: Context?, intent: Intent?): AppEntryAction? {
         intent ?: return null
 
         intent.getStringExtra(EXTRA_KEY)?.let { value ->
@@ -44,37 +46,42 @@ object AppEntryActionCodec {
         }
 
         return when (intent.action) {
-            Intent.ACTION_VIEW -> parseView(intent)
-            Intent.ACTION_SEND -> parseSingleShare(intent)
-            Intent.ACTION_SEND_MULTIPLE -> parseMultipleShare(intent)
+            Intent.ACTION_VIEW -> parseView(context, intent)
+            Intent.ACTION_SEND -> parseSingleShare(context, intent)
+            Intent.ACTION_SEND_MULTIPLE -> parseMultipleShare(context, intent)
             else -> null
         }
     }
 
-    private fun parseView(intent: Intent): AppEntryAction? {
-        val uri = intent.data ?: return null
+    private fun parseView(context: Context?, intent: Intent): AppEntryAction? {
+        val uri = intent.data ?: intent.firstClipDataUri() ?: return null
         return when {
-            intent.type == "application/pdf" -> AppEntryAction.SharePdf(uri)
-            intent.type?.startsWith("image/") == true -> AppEntryAction.ShareImages(listOf(uri))
+            intent.matchesPdf(context, uri) -> AppEntryAction.SharePdf(uri)
+            intent.matchesImage(context, uri) -> AppEntryAction.ShareImages(listOf(uri))
             else -> null
         }
     }
 
-    private fun parseSingleShare(intent: Intent): AppEntryAction? {
-        val uri = intent.parcelableExtraCompat(Intent.EXTRA_STREAM) ?: return null
+    private fun parseSingleShare(context: Context?, intent: Intent): AppEntryAction? {
+        val uri = intent.sharedUris().firstOrNull() ?: return null
         return when {
-            intent.type == "application/pdf" -> AppEntryAction.SharePdf(uri)
-            intent.type?.startsWith("image/") == true -> AppEntryAction.ShareImages(listOf(uri))
+            intent.matchesPdf(context, uri) -> AppEntryAction.SharePdf(uri)
+            intent.matchesImage(context, uri) -> AppEntryAction.ShareImages(listOf(uri))
             else -> null
         }
     }
 
-    private fun parseMultipleShare(intent: Intent): AppEntryAction? {
-        if (intent.type?.startsWith("image/") != true) return null
-        val uris = intent.parcelableArrayListExtraCompat(Intent.EXTRA_STREAM)
-            ?.filterNotNull()
-            .orEmpty()
-        return if (uris.isEmpty()) null else AppEntryAction.ShareImages(uris)
+    private fun parseMultipleShare(context: Context?, intent: Intent): AppEntryAction? {
+        val uris = intent.sharedUris()
+        if (uris.isEmpty()) return null
+
+        // Multiple-share import intentionally supports images only.
+        // Multiple PDFs are not auto-merged implicitly.
+        return if (uris.all { uri -> intent.matchesImage(context, uri) }) {
+            AppEntryAction.ShareImages(uris)
+        } else {
+            null
+        }
     }
 }
 
@@ -113,3 +120,67 @@ private fun Intent.parcelableArrayListExtraCompat(name: String): ArrayList<Uri>?
     } else {
         getParcelableArrayListExtra(name)
     }
+
+private fun Intent.sharedUris(): List<Uri> {
+    val many = parcelableArrayListExtraCompat(Intent.EXTRA_STREAM)
+        ?.filterNotNull()
+        .orEmpty()
+    if (many.isNotEmpty()) return many
+
+    val single = parcelableExtraCompat(Intent.EXTRA_STREAM)
+    if (single != null) return listOf(single)
+
+    val clipUris = clipData
+        ?.let { clip ->
+            buildList {
+                repeat(clip.itemCount) { index ->
+                    clip.getItemAt(index).uri?.let(::add)
+                }
+            }
+        }
+        .orEmpty()
+    if (clipUris.isNotEmpty()) return clipUris
+
+    return listOfNotNull(data)
+}
+
+private fun Intent.firstClipDataUri(): Uri? = clipData
+    ?.let { clip ->
+        (0 until clip.itemCount)
+            .asSequence()
+            .mapNotNull { index -> clip.getItemAt(index).uri }
+            .firstOrNull()
+    }
+
+private fun Intent.matchesPdf(context: Context?, uri: Uri): Boolean = resolvedMimeTypes(context, uri).any {
+    it.equals("application/pdf", ignoreCase = true) ||
+        it.equals("application/x-pdf", ignoreCase = true)
+} || uri.looksLikePdf()
+
+private fun Intent.matchesImage(context: Context?, uri: Uri): Boolean = resolvedMimeTypes(context, uri).any {
+    it.startsWith("image/", ignoreCase = true)
+} || uri.looksLikeImage()
+
+private fun Intent.resolvedMimeTypes(context: Context?, uri: Uri): Set<String> = buildSet {
+    type?.let(::add)
+    clipData?.description?.let { description ->
+        repeat(description.mimeTypeCount) { index ->
+            description.getMimeType(index)?.let(::add)
+        }
+    }
+    context?.contentResolver?.getType(uri)?.let(::add)
+}
+
+private fun Uri.looksLikePdf(): Boolean {
+    val extension = lastPathSegment
+        ?.substringAfterLast('.', "")
+        ?.lowercase()
+    return extension == "pdf"
+}
+
+private fun Uri.looksLikeImage(): Boolean {
+    val extension = lastPathSegment
+        ?.substringAfterLast('.', "")
+        ?.lowercase()
+    return extension in setOf("jpg", "jpeg", "png", "webp", "bmp", "gif", "heic", "heif", "tif", "tiff")
+}

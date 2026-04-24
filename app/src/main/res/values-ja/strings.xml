@@ -72,7 +72,7 @@
     <string name="error_export_jpg_failed">JPEGエクスポートに失敗しました</string>
     <string name="error_device_unsupported">このデバイスはスキャナーをサポートしていません</string>
     <string name="share_pdf_title">PDF を共有</string>
-    <string name="help_item_external_share">Android の共有を使って、他のアプリから PDF や画像を M24 PDF Scanner に送れます。PDF は通常のインポート保存ダイアログを開き、共有された画像は画像から PDF へのフローを開きます。アプリロックが有効な場合、共有ファイルはロック解除まで待機します。</string>
+    <string name="help_item_external_share">Android の共有や Open with を使って、他のアプリから PDF や画像を M24 PDF Scanner に渡せます。PDF は通常のインポート保存ダイアログを開き、共有またはこのアプリで開いた画像は画像から PDF へのフローを開きます。アプリロックが有効な場合、受信ファイルはロック解除まで待機します。</string>
     <string name="scan_item_subtitle">%1$s · %2$d ページ · %3$s</string>
     <string name="help_screen_title">使い方</string>
     <string name="help_section_contents">目次</string>
@@ -135,7 +135,7 @@
     <string name="info_section_privacy">プライバシー</string>
     <string name="info_section_features">機能</string>
     <string name="info_features_body">このアプリは PDF のスキャン、インポート、作成、追記、アプリ内表示に対応し、削除したドキュメントをゴミ箱に 30 日間保持し、端末上で OCR を実行して、アーカイブ検索と OCR レビューのために OCR テキストと品質メタデータをローカル保存します。さらに、ページ編集、注釈、署名、メタデータ編集、グレースケール化、保護、安全な黒塗り、黒塗りコピー向けの任意の OCR 再構築も利用できます。</string>
-    <string name="info_feature_print_share">Android 印刷と共有連携はシステムダイアログを使用します。印刷は選択した PDF を Android Print に送信し、共有で受け取った PDF と画像はユーザー確認後にのみアプリのアーカイブへコピーされます。</string>
+    <string name="info_feature_print_share">Android の印刷、共有、Open with 連携はシステムダイアログを使用します。印刷は選択した PDF を Android Print に送信し、このアプリに共有された、またはこのアプリで開かれた受信 PDF と画像は、ユーザー確認後にのみアプリのアーカイブへコピーされます。</string>
     <string name="info_privacy_body">広告なし、アカウント不要、独自バックエンドなし。PDF、サムネイル、生成されたコピー、ゴミ箱内の項目、OCR テキスト、OCR 品質メタデータは、エクスポート、共有、または完全削除するまで端末内のアプリ保存領域に残ります。スキャン、OCR、モデルやフォントの取得には Google Play Services を利用しますが、このアプリが文書内容をアップロードすることはありません。</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">ローカル</string>

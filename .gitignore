@@ -19,3 +19,5 @@ app/release/
 plan-*.txt
 .kotlin/
 .claude/
+.gradle-user/
+.g/

@@ -72,7 +72,7 @@
     <string name="error_export_jpg_failed">فشل تصدير JPEG</string>
     <string name="error_device_unsupported">الماسح الضوئي غير مدعوم على هذا الجهاز</string>
     <string name="share_pdf_title">مشاركة PDF</string>
-    <string name="help_item_external_share">يمكنك إرسال ملفات PDF أو الصور من تطبيق آخر إلى M24 PDF Scanner عبر مشاركة Android. تفتح ملفات PDF مربع حوار الاستيراد والحفظ المعتاد، وتفتح الصور المشتركة مسار الصور إلى PDF. إذا كان قفل التطبيق مفعّلًا، تنتظر الملفات المشتركة حتى يتم فتح التطبيق.</string>
+    <string name="help_item_external_share">يمكنك إرسال ملفات PDF أو الصور من تطبيق آخر إلى M24 PDF Scanner عبر مشاركة Android أو Open with. تفتح ملفات PDF مربع حوار الاستيراد والحفظ المعتاد، وتفتح الصور المشتركة أو المفتوحة باستخدام التطبيق مسار الصور إلى PDF. إذا كان قفل التطبيق مفعّلًا، تنتظر الملفات الواردة حتى يتم فتح التطبيق.</string>
     <string name="scan_item_subtitle">%1$s · %2$d ص. · %3$s</string>
     <string name="help_screen_title">التعليمات</string>
     <string name="help_section_contents">المحتويات</string>
@@ -135,7 +135,7 @@
     <string name="info_section_privacy">الخصوصية</string>
     <string name="info_section_features">الوظائف</string>
     <string name="info_features_body">يقوم التطبيق بمسح ملفات PDF واستيرادها وإنشائها وإلحاق صفحات بها وعرضها داخل التطبيق، ويحتفظ بالمستندات المحذوفة في سلة المهملات لمدة 30 يومًا، ويجري OCR على الجهاز، ويخزن نص OCR وبيانات الجودة محليًا للبحث في الأرشيف ولمراجعة OCR، ويوفر تحرير الصفحات والتعليقات التوضيحية والتواقيع وتحرير البيانات الوصفية والتدرج الرمادي والحماية والطمس الآمن مع إعادة بناء OCR اختياريًا للنسخ المطموسة.</string>
-    <string name="info_feature_print_share">يستخدم تكامل الطباعة والمشاركة في Android مربعات حوار النظام. ترسل الطباعة ملف PDF المحدد إلى Android Print؛ ولا تُنسخ ملفات PDF والصور الواردة عبر المشاركة إلى أرشيف التطبيق إلا بعد تأكيد المستخدم.</string>
+    <string name="info_feature_print_share">يستخدم تكامل الطباعة والمشاركة وOpen with في Android مربعات حوار النظام. ترسل الطباعة ملف PDF المحدد إلى Android Print؛ ولا تُنسخ ملفات PDF والصور الواردة التي تمت مشاركتها مع هذا التطبيق أو فتحها فيه إلى أرشيف التطبيق إلا بعد تأكيد المستخدم.</string>
     <string name="info_privacy_body">من دون إعلانات أو حساب أو خادم خلفي خاص. تبقى ملفات PDF والصور المصغرة والنسخ المُنشأة وعناصر سلة المهملات ونص OCR وبيانات جودة OCR داخل مساحة تخزين التطبيق على جهازك إلى أن تقوم بتصديرها أو مشاركتها أو حذفها نهائيًا. يعتمد المسح وOCR وتنزيل النماذج أو الخطوط على خدمات Google Play؛ وهذا التطبيق لا يرفع محتوى مستنداتك.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">محلي</string>

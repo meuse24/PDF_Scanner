@@ -99,6 +99,6 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun handleIntent(intent: Intent?) {
-        AppEntryActionCodec.fromIntent(intent)?.let(appEntryActionViewModel::offer)
+        AppEntryActionCodec.fromIntent(this, intent)?.let(appEntryActionViewModel::offer)
     }
 }

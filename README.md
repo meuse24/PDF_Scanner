@@ -7,7 +7,7 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - Scan documents to PDF with Google's ML Kit Document Scanner
 - Import existing PDFs into the app archive
 - Start scans from app shortcuts, a Quick Settings tile, or a home-screen widget
-- Accept shared PDFs and images from other Android apps
+- Accept PDFs and images from other Android apps via Share or Open with
 - View PDFs directly in the app with PdfRenderer, page scrolling, zoom, print, share, export, and external-open fallback
 - Extract OCR text and create searchable PDFs with automatic/manual language selection and on-demand ML Kit model downloads
 - Review OCR text per page with recognized language and quality badges
@@ -33,7 +33,7 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - No cloud upload
 - No account required
 - Files stay in app-internal storage unless you explicitly export them
-- Incoming shared files are copied into the archive only after user confirmation
+- Incoming shared or opened files are copied into the archive only after user confirmation
 - App Lock is a local UI gate; it does not encrypt PDFs or the database
 - No internet permission
 - Backup/export of internal app data is disabled
@@ -88,7 +88,7 @@ Main editor flows:
 
 Recent structure work:
 
-- Added app shortcuts, a Quick Settings tile, a home-screen scan widget, and Android share-target import via a shared `AppEntryAction` bridge
+- Added app shortcuts, a Quick Settings tile, a home-screen scan widget, and Android Share/Open-with import via a shared `AppEntryAction` bridge
 - Added folders, favorites, app-lock settings, business-card vCard export, and Android Print integration
 - Added an in-app PdfRenderer viewer with lazy page rendering, local bitmap cache, zoom overlay, and viewer action bar
 - `PdfEditor` split into focused ops files for annotations, overlays, redaction, images, and shared core helpers
@@ -99,6 +99,7 @@ Recent structure work:
 ## Testing
 
 - JVM tests cover use cases, workflows, view models, and `PdfEditor` helpers
+- JVM tests also cover external app-entry decoding and navigation guards for Share/Open-with flows
 - Business-card parsing/vCard generation and Room migrations are covered by unit or instrumentation tests where practical
 - Viewer JVM tests cover `PdfViewerViewModel` render-window behavior and the bitmap cache
 - Instrumentation tests cover Android-specific paths such as `PdfRenderer`, URI import, MediaStore export, annotation rendering, redaction, and image-to-PDF generation

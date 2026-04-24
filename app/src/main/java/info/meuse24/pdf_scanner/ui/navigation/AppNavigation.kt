@@ -93,11 +93,13 @@ fun AppNavigation(
                 onConsumeAppEntryAction(pendingAppEntryAction)
             }
 
-            is AppEntryAction.ImportImages,
-            is AppEntryAction.ScanNew,
+            AppEntryAction.ImportImages,
+            AppEntryAction.ScanNew,
             is AppEntryAction.ShareImages,
             is AppEntryAction.SharePdf -> {
-                if (currentRoute != Screen.Ablage.route) {
+                // HomeScreen consumes these actions after it opens the corresponding
+                // dialog/launcher flow. AppNavigation only makes sure the archive is visible.
+                if (shouldNavigatePendingHomeActionToArchive(pendingAppEntryAction, currentRoute)) {
                     navController.navigate(Screen.Ablage.route) {
                         popUpTo(Screen.Ablage.route) { inclusive = true }
                         launchSingleTop = true
@@ -229,4 +231,20 @@ fun AppNavigation(
             }
         }
     }
+}
+
+internal fun shouldNavigatePendingHomeActionToArchive(
+    pendingAppEntryAction: AppEntryAction?,
+    currentRoute: String?
+): Boolean = when (pendingAppEntryAction) {
+    AppEntryAction.ImportImages,
+    AppEntryAction.ScanNew,
+    is AppEntryAction.ShareImages,
+    is AppEntryAction.SharePdf -> {
+        // On cold start the NavHost has not published its start destination yet.
+        // Navigating again here can recreate Home before the share/import UI is shown.
+        currentRoute != null && currentRoute != Screen.Ablage.route
+    }
+    AppEntryAction.OpenTrash,
+    null -> false
 }

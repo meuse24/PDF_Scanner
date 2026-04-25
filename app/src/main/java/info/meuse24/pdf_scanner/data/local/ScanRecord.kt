@@ -2,12 +2,26 @@ package info.meuse24.pdf_scanner.data.local
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "scan_records",
-    indices = [Index("folder_id")]
+    foreignKeys = [
+        ForeignKey(
+            entity = FolderEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["folder_id"],
+            onDelete = ForeignKey.SET_NULL
+        )
+    ],
+    indices = [
+        Index("folder_id"),
+        Index("deleted_at"),
+        Index("timestamp"),
+        Index("is_favorite")
+    ]
 )
 data class ScanRecord(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

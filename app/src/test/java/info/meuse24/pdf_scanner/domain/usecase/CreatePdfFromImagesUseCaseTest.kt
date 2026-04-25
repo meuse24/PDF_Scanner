@@ -9,6 +9,7 @@ import info.meuse24.pdf_scanner.data.mapper.toEntity
 import info.meuse24.pdf_scanner.data.local.ScanDao
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfImageRenderer
 import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
 import info.meuse24.pdf_scanner.util.PdfEditor
@@ -67,9 +68,12 @@ class CreatePdfFromImagesUseCaseTest {
         okUris: Set<Uri> = emptySet(),
         pdfEditor: PdfEditor = FakeImagesPdfEditor(tmpFolder)
     ): CreatePdfFromImagesUseCase {
-        val context = buildContext(okUris)
         return CreatePdfFromImagesUseCase(
-            imagePdfBuilder = ImagePdfBuilder(context, pdfEditor, TestStorageProvider(tmpFolder.root)),
+            imagePdfBuilder = ImagePdfBuilder(
+                FakePdfImageRenderer(okUris, fakeBytes),
+                pdfEditor,
+                TestStorageProvider(tmpFolder.root)
+            ),
             persister = ScanArtifactPersister(pdfEditor, ScanRepository(FakeImagesScanDao()))
         )
     }
@@ -154,7 +158,7 @@ class CreatePdfFromImagesUseCaseTest {
         val dao = FakeImagesScanDao()
         val useCase = CreatePdfFromImagesUseCase(
             imagePdfBuilder = ImagePdfBuilder(
-                buildContext(setOf(u)),
+                FakePdfImageRenderer(setOf(u), fakeBytes),
                 FakeImagesPdfEditor(tmpFolder),
                 TestStorageProvider(tmpFolder.root)
             ),
@@ -163,6 +167,15 @@ class CreatePdfFromImagesUseCaseTest {
         useCase.invoke(listOf(u), "test", ImagePdfOptions(ImagePageLayout.SINGLE), tmpFolder.root)
 
         assertNull(dao.lastInserted?.tags)
+    }
+}
+
+private class FakePdfImageRenderer(
+    private val readableUris: Set<Uri>,
+    private val bytes: ByteArray
+) : PdfImageRenderer {
+    override suspend fun decodeBitmapBytes(uri: Any, maxDimension: Int): ByteArray? {
+        return if (uri in readableUris) bytes else null
     }
 }
 

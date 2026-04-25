@@ -50,6 +50,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
@@ -103,6 +105,12 @@ class HomeViewModelTest {
 
         `when`(repository.getAllScans()).thenReturn(flowOf(emptyList()))
         `when`(repository.getFavoriteScans()).thenReturn(flowOf(emptyList()))
+        `when`(repository.getAllScansForList()).thenReturn(flowOf(emptyList()))
+        `when`(repository.getFavoriteScansForList()).thenReturn(flowOf(emptyList()))
+        `when`(repository.getScansInFolderForList(anyLong())).thenReturn(flowOf(emptyList()))
+        `when`(repository.searchScansForList(anyString())).thenReturn(flowOf(emptyList()))
+        `when`(repository.searchScansInFolderForList(anyString(), anyLong())).thenReturn(flowOf(emptyList()))
+        `when`(repository.searchFavoriteScansForList(anyString())).thenReturn(flowOf(emptyList()))
         `when`(settingsRepository.settings).thenReturn(MutableStateFlow(AppSettings()))
         `when`(folderRepository.observeFolders()).thenReturn(flowOf(emptyList()))
 
@@ -132,6 +140,35 @@ class HomeViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `buildFtsQuery tokenizes and adds prefix operators`() {
+        assertEquals("foo* bar*", buildFtsQuery("foo bar"))
+        assertEquals("invoice* 2026* final*", buildFtsQuery("invoice:2026/final"))
+        assertEquals("", buildFtsQuery(" - "))
+    }
+
+    @Test
+    fun `folder search uses context specific repository query`() = runTest(testDispatcher) {
+        val archiveFilterStore = ArchiveFilterStore().apply { showFolder(42L) }
+        val matchingDocument = Document(
+            id = 42L,
+            filename = "alpha",
+            filepath = File(tmpFolder.root, "alpha.pdf").absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = 0L,
+            folderId = 42L
+        )
+        `when`(repository.searchScansInFolderForList("alpha*", 42L)).thenReturn(flowOf(listOf(matchingDocument)))
+
+        val viewModel = buildViewModel(archiveFilterStore = archiveFilterStore)
+        viewModel.updateSearchQuery("alpha")
+        advanceUntilIdle()
+
+        assertEquals(listOf(matchingDocument), viewModel.archiveUiState.value.filteredScans)
+        verify(repository).searchScansInFolderForList("alpha*", 42L)
     }
 
     @Test
@@ -371,7 +408,8 @@ class HomeViewModelTest {
     private fun buildViewModel(
         extractTextUseCase: ExtractTextUseCase = this.extractTextUseCase,
         trashScansUseCase: TrashScansUseCase = this.trashScansUseCase,
-        restoreScansUseCase: RestoreScansUseCase = this.restoreScansUseCase
+        restoreScansUseCase: RestoreScansUseCase = this.restoreScansUseCase,
+        archiveFilterStore: ArchiveFilterStore = ArchiveFilterStore()
     ): HomeViewModel {
         return HomeViewModel(
             repository = repository,
@@ -392,7 +430,7 @@ class HomeViewModelTest {
             resourceProvider = resourceProvider,
             storageProvider = storageProvider,
             dispatcherProvider = TestDispatcherProvider(testDispatcher),
-            archiveFilterStore = ArchiveFilterStore(),
+            archiveFilterStore = archiveFilterStore,
             playReviewPromptManager = playReviewPromptManager
         )
     }
@@ -402,7 +440,6 @@ class HomeViewModelTest {
         object : ExtractTextUseCase(
             ocrPipeline = mock(info.meuse24.pdf_scanner.util.OcrPipeline::class.java),
             inputImageLoader = mock(info.meuse24.pdf_scanner.util.OcrInputImageLoader::class.java),
-            pdfPageInputImageLoader = mock(info.meuse24.pdf_scanner.util.PdfPageInputImageLoader::class.java),
             dispatcherProvider = TestDispatcherProvider(testDispatcher),
             textRecognizerRunner = mock(info.meuse24.pdf_scanner.util.TextRecognizerRunner::class.java)
         ) {

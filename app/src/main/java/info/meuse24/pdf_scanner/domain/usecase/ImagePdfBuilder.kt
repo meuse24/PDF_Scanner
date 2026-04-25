@@ -1,8 +1,6 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import android.content.Context
-import android.net.Uri
-import dagger.hilt.android.qualifiers.ApplicationContext
+import info.meuse24.pdf_scanner.domain.pdf.PdfImageRenderer
 import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
 import info.meuse24.pdf_scanner.util.StorageProvider
 import java.io.File
@@ -15,24 +13,24 @@ data class ImagePdfBuildResult(
     val skippedCount: Int
 )
 
+private const val IMAGE_PDF_MAX_SOURCE_DIMENSION = 3000
+
 @Singleton
 open class ImagePdfBuilder @Inject constructor(
-    @param:ApplicationContext private val context: Context,
+    private val imageRenderer: PdfImageRenderer,
     private val pdfEditor: PdfRenderingOps,
     private val storageProvider: StorageProvider
 ) {
 
     open suspend fun createPdf(
-        imageUris: List<Uri>,
+        imageUris: List<Any>,
         options: ImagePdfOptions,
         outputFile: File
     ): ImagePdfBuildResult {
         require(imageUris.isNotEmpty())
 
         val imageBytes: List<ByteArray?> = imageUris.map { uri ->
-            runCatching {
-                context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            }.getOrNull()
+            imageRenderer.decodeBitmapBytes(uri, IMAGE_PDF_MAX_SOURCE_DIMENSION)
         }
 
         val skippedCount = imageBytes.count { it == null }
@@ -53,7 +51,7 @@ open class ImagePdfBuilder @Inject constructor(
     }
 
     open suspend fun createTempPdf(
-        imageUris: List<Uri>,
+        imageUris: List<Any>,
         options: ImagePdfOptions
     ): ImagePdfBuildResult {
         val outputFile = File.createTempFile("append_images_", ".pdf", storageProvider.tempDir())

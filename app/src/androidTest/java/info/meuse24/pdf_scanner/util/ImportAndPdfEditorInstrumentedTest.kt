@@ -16,6 +16,9 @@ import com.tom_roush.pdfbox.pdmodel.common.PDRectangle
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanDao
+import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toDomain
+import info.meuse24.pdf_scanner.data.mapper.toEntity
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
@@ -23,6 +26,7 @@ import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationShapeStyle
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationText
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
@@ -607,7 +611,7 @@ class ImportAndPdfEditorInstrumentedTest {
         val imageBytes = listOf(createJpegBytes(200, 200, android.graphics.Color.RED))
         val outputFile = File(scansDir, "androidtest_imgpdf_single.pdf")
 
-        pdfEditor.createPdfFromImages(imageBytes, ImagePageLayout.SINGLE, outputFile)
+        pdfEditor.createPdfFromImages(imageBytes, ImagePdfOptions(ImagePageLayout.SINGLE), outputFile)
 
         assertTrue(outputFile.exists())
         assertEquals(1, pdfEditor.getPageCount(outputFile))
@@ -621,7 +625,7 @@ class ImportAndPdfEditorInstrumentedTest {
         )
         val outputFile = File(scansDir, "androidtest_imgpdf_two2.pdf")
 
-        pdfEditor.createPdfFromImages(imageBytes, ImagePageLayout.TWO_PER_PAGE, outputFile)
+        pdfEditor.createPdfFromImages(imageBytes, ImagePdfOptions(ImagePageLayout.TWO_PER_PAGE), outputFile)
 
         assertTrue(outputFile.exists())
         assertEquals(1, pdfEditor.getPageCount(outputFile))
@@ -632,7 +636,7 @@ class ImportAndPdfEditorInstrumentedTest {
         val imageBytes = (1..3).map { createJpegBytes(200, 200, android.graphics.Color.GREEN) }
         val outputFile = File(scansDir, "androidtest_imgpdf_two3.pdf")
 
-        pdfEditor.createPdfFromImages(imageBytes, ImagePageLayout.TWO_PER_PAGE, outputFile)
+        pdfEditor.createPdfFromImages(imageBytes, ImagePdfOptions(ImagePageLayout.TWO_PER_PAGE), outputFile)
 
         assertEquals(2, pdfEditor.getPageCount(outputFile))
     }
@@ -642,7 +646,7 @@ class ImportAndPdfEditorInstrumentedTest {
         val imageBytes = (1..4).map { createJpegBytes(200, 200, android.graphics.Color.CYAN) }
         val outputFile = File(scansDir, "androidtest_imgpdf_four4.pdf")
 
-        pdfEditor.createPdfFromImages(imageBytes, ImagePageLayout.FOUR_PER_PAGE, outputFile)
+        pdfEditor.createPdfFromImages(imageBytes, ImagePdfOptions(ImagePageLayout.FOUR_PER_PAGE), outputFile)
 
         assertEquals(1, pdfEditor.getPageCount(outputFile))
     }
@@ -654,7 +658,7 @@ class ImportAndPdfEditorInstrumentedTest {
         val blueBytes = createJpegBytes(200, 300, android.graphics.Color.BLUE)
         val outputFile = File(scansDir, "androidtest_imgpdf_slots.pdf")
 
-        pdfEditor.createPdfFromImages(listOf(redBytes, blueBytes), ImagePageLayout.TWO_PER_PAGE, outputFile)
+        pdfEditor.createPdfFromImages(listOf(redBytes, blueBytes), ImagePdfOptions(ImagePageLayout.TWO_PER_PAGE), outputFile)
 
         val bitmap = pdfEditor.renderPageThumbnail(outputFile, pageIndex = 0, maxSizePx = 400)
         assertNotNull(bitmap)
@@ -674,7 +678,7 @@ class ImportAndPdfEditorInstrumentedTest {
         val outputFile = File(scansDir, "androidtest_imgpdf_thumb.pdf")
         val thumbFile  = File(scansDir, "androidtest_imgpdf_thumb.jpg")
 
-        pdfEditor.createPdfFromImages(imageBytes, ImagePageLayout.SINGLE, outputFile)
+        pdfEditor.createPdfFromImages(imageBytes, ImagePdfOptions(ImagePageLayout.SINGLE), outputFile)
         pdfEditor.generateThumbnail(outputFile, thumbFile)
 
         assertTrue(thumbFile.exists())
@@ -1001,20 +1005,20 @@ private inline fun <T> android.graphics.Bitmap.useBitmap(block: (android.graphic
 private class InstrumentedFakeScanDao : ScanDao {
     val inserted = mutableListOf<Document>()
 
-    override fun getAllScans(): Flow<List<Document>> = flowOf(emptyList())
+    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
 
-    override fun searchScansFlow(query: String): Flow<List<Document>> = flowOf(emptyList())
+    override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
 
-    override suspend fun insert(record: Document): Long {
-        inserted.add(record)
+    override suspend fun insert(record: ScanRecord): Long {
+        inserted.add(record.toDomain())
         return inserted.size.toLong()
     }
 
-    override suspend fun insertAll(records: List<Document>) {
-        inserted.addAll(records)
+    override suspend fun insertAll(records: List<ScanRecord>) {
+        inserted.addAll(records.map { it.toDomain() })
     }
 
-    override suspend fun delete(record: Document) = Unit
+    override suspend fun delete(record: ScanRecord) = Unit
 
     override suspend fun markSearchable(id: Long, fileSize: Long) = Unit
 
@@ -1043,5 +1047,13 @@ private class InstrumentedFakeScanDao : ScanDao {
     override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) = Unit
 
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) = Unit
+
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) = Unit
+
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) = Unit
 }
 

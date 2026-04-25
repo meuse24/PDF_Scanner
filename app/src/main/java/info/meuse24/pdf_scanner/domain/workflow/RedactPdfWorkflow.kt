@@ -6,6 +6,7 @@ import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactPdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
+import kotlinx.coroutines.CancellationException
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -93,6 +94,8 @@ class RedactPdfWorkflow @Inject constructor(
                     outputFilename = outputRecord.filename
                 )
             )
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: IOException) {
             WorkflowResult.Failure(ScanWorkflowError.StorageWriteFailed(e))
         } catch (t: Throwable) {

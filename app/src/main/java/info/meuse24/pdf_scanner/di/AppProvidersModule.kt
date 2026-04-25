@@ -24,6 +24,8 @@ import info.meuse24.pdf_scanner.util.StorageProvider
 import info.meuse24.pdf_scanner.util.MlKitTextRecognizerRunner
 import info.meuse24.pdf_scanner.util.TextRecognizerRunner
 import info.meuse24.pdf_scanner.util.AndroidOcrModelInstaller
+import info.meuse24.pdf_scanner.domain.pdf.PdfImageRenderer
+import info.meuse24.pdf_scanner.util.BitmapPdfImageRenderer
 import javax.inject.Singleton
 
 @Module
@@ -71,6 +73,12 @@ abstract class AppProvidersModule {
     abstract fun bindOcrInputImageLoader(
         impl: AndroidOcrInputImageLoader
     ): OcrInputImageLoader
+
+    @Binds
+    @Singleton
+    abstract fun bindPdfImageRenderer(
+        impl: BitmapPdfImageRenderer
+    ): PdfImageRenderer
 
     @Binds
     @Singleton

@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import info.meuse24.pdf_scanner.data.local.AppDatabase
 import info.meuse24.pdf_scanner.data.local.FolderDao
 import info.meuse24.pdf_scanner.data.local.ScanDao
+import info.meuse24.pdf_scanner.data.local.ScanListDao
 import info.meuse24.pdf_scanner.data.local.TrashDao
 import javax.inject.Singleton
 
@@ -28,12 +29,16 @@ object DatabaseModule {
                 AppDatabase.MIGRATION_4_5,
                 AppDatabase.MIGRATION_5_6,
                 AppDatabase.MIGRATION_6_7,
-                AppDatabase.MIGRATION_7_8
+                AppDatabase.MIGRATION_7_8,
+                AppDatabase.MIGRATION_8_9
             )
             .build()
 
     @Provides
     fun provideScanDao(db: AppDatabase): ScanDao = db.scanDao()
+
+    @Provides
+    fun provideScanListDao(db: AppDatabase): ScanListDao = db.scanListDao()
 
     @Provides
     fun provideTrashDao(db: AppDatabase): TrashDao = db.trashDao()

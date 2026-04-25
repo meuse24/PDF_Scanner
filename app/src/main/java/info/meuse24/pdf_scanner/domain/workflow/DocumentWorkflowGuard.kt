@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.pdf.PdfSecurityOps
+import kotlinx.coroutines.CancellationException
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -32,6 +33,8 @@ class DocumentWorkflowGuard @Inject constructor(
 
         return try {
             WorkflowResult.Success(block())
+        } catch (exception: CancellationException) {
+            throw exception
         } catch (throwable: Throwable) {
             exceptionMapper(throwable)?.let { error ->
                 return WorkflowResult.Failure(error)

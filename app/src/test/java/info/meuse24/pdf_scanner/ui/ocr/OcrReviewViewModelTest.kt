@@ -243,7 +243,6 @@ private class RecordingExtractTextUseCase(
 ) : ExtractTextUseCase(
     ocrPipeline = mock(OcrPipeline::class.java),
     inputImageLoader = mock(OcrInputImageLoader::class.java),
-    pdfPageInputImageLoader = mock(PdfPageInputImageLoader::class.java),
     dispatcherProvider = TestDispatcherProvider(StandardTestDispatcher()),
     textRecognizerRunner = mock(TextRecognizerRunner::class.java)
 ) {

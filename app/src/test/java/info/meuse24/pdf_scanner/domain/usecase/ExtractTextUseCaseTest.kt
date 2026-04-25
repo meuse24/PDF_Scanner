@@ -13,8 +13,6 @@ import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.OcrUsage
 import info.meuse24.pdf_scanner.util.OcrResultStats
 import info.meuse24.pdf_scanner.util.OcrScript
-import info.meuse24.pdf_scanner.util.PdfPageInputImageLoader
-
 import info.meuse24.pdf_scanner.util.TextRecognizerRunner
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -40,7 +38,6 @@ class ExtractTextUseCaseTest {
         val recognizer = mock(TextRecognizer::class.java)
         val ocrPipeline = FakeOcrPipeline(recognizer)
         val inputImageLoader = mock(OcrInputImageLoader::class.java)
-        val pdfPageInputImageLoader = mock(PdfPageInputImageLoader::class.java)
         val textRecognizerRunner = mock(TextRecognizerRunner::class.java)
         val image = mock(InputImage::class.java)
         val firstThumb = thumbnailFile("first.jpg")
@@ -65,7 +62,6 @@ class ExtractTextUseCaseTest {
         val useCase = ExtractTextUseCase(
             ocrPipeline = ocrPipeline,
             inputImageLoader = inputImageLoader,
-            pdfPageInputImageLoader = pdfPageInputImageLoader,
             dispatcherProvider = TestDispatcherProvider(testDispatcher),
             textRecognizerRunner = textRecognizerRunner
         )
@@ -93,7 +89,6 @@ class ExtractTextUseCaseTest {
         val recognizer = mock(TextRecognizer::class.java)
         val ocrPipeline = FakeOcrPipeline(recognizer)
         val inputImageLoader = mock(OcrInputImageLoader::class.java)
-        val pdfPageInputImageLoader = mock(PdfPageInputImageLoader::class.java)
         val textRecognizerRunner = mock(TextRecognizerRunner::class.java)
         val image = mock(InputImage::class.java)
         val thumb = thumbnailFile("blank.jpg")
@@ -109,7 +104,6 @@ class ExtractTextUseCaseTest {
         val useCase = ExtractTextUseCase(
             ocrPipeline = ocrPipeline,
             inputImageLoader = inputImageLoader,
-            pdfPageInputImageLoader = pdfPageInputImageLoader,
             dispatcherProvider = TestDispatcherProvider(testDispatcher),
             textRecognizerRunner = textRecognizerRunner
         )
@@ -129,7 +123,6 @@ class ExtractTextUseCaseTest {
         val inputImageLoader = FailingOcrInputImageLoader()
         val firstPage = mock(InputImage::class.java)
         val secondPage = mock(InputImage::class.java)
-        val pdfPageInputImageLoader = FakePdfPageInputImageLoader(firstPage, secondPage)
 
         val alphaText = mock(com.google.mlkit.vision.text.Text::class.java).apply {
             `when`(text).thenReturn("Alpha")
@@ -143,7 +136,8 @@ class ExtractTextUseCaseTest {
             results = mapOf(
                 firstPage to (alphaText to stats),
                 secondPage to (betaText to stats)
-            )
+            ),
+            pageImages = listOf(firstPage, secondPage)
         )
         val pdfFile = tmpFolder.newFile("document.pdf").apply { writeText("pdf") }
         val thumb = thumbnailFile("document.jpg")
@@ -151,7 +145,6 @@ class ExtractTextUseCaseTest {
         val useCase = ExtractTextUseCase(
             ocrPipeline = ocrPipeline,
             inputImageLoader = inputImageLoader,
-            pdfPageInputImageLoader = pdfPageInputImageLoader,
             dispatcherProvider = TestDispatcherProvider(testDispatcher),
             textRecognizerRunner = textRecognizerRunner
         )
@@ -173,7 +166,7 @@ class ExtractTextUseCaseTest {
 
         assertEquals("Alpha\n\nBeta", result.fullText)
         assertEquals(listOf("Alpha", "Beta"), result.pageTexts)
-        assertEquals(listOf(pdfFile), pdfPageInputImageLoader.sourceFiles)
+        assertEquals(listOf(pdfFile), textRecognizerRunner.sourceFiles)
         assertEquals(0, inputImageLoader.calls)
         verify(recognizer).close()
     }
@@ -192,20 +185,6 @@ class ExtractTextUseCaseTest {
 
     private fun thumbnailFile(name: String): File {
         return tmpFolder.newFile(name).apply { writeText("thumb") }
-    }
-}
-
-private class FakePdfPageInputImageLoader(
-    private vararg val images: InputImage
-) : PdfPageInputImageLoader {
-    val sourceFiles = mutableListOf<File>()
-
-    override suspend fun forEachPageImage(
-        sourceFile: File,
-        onPageImage: suspend (InputImage) -> Unit
-    ) {
-        sourceFiles += sourceFile
-        images.forEach { image -> onPageImage(image) }
     }
 }
 
@@ -246,8 +225,11 @@ private class FailingOcrInputImageLoader : OcrInputImageLoader {
 }
 
 private class FakeTextRecognizerRunner(
-    private val results: Map<InputImage, Pair<com.google.mlkit.vision.text.Text, info.meuse24.pdf_scanner.util.OcrResultStats>>
+    private val results: Map<InputImage, Pair<com.google.mlkit.vision.text.Text, info.meuse24.pdf_scanner.util.OcrResultStats>>,
+    private val pageImages: List<InputImage> = emptyList()
 ) : TextRecognizerRunner {
+    val sourceFiles = mutableListOf<File>()
+
     override suspend fun recognizeText(recognizer: TextRecognizer, image: InputImage): String {
         return results.getValue(image).first.text
     }
@@ -260,6 +242,18 @@ private class FakeTextRecognizerRunner(
         image: InputImage
     ): Pair<com.google.mlkit.vision.text.Text, info.meuse24.pdf_scanner.util.OcrResultStats> {
         return results.getValue(image)
+    }
+
+    override suspend fun processPages(
+        pdfFile: File,
+        recognizer: TextRecognizer,
+        onPage: suspend (text: String, stats: info.meuse24.pdf_scanner.util.OcrResultStats?) -> Unit
+    ) {
+        sourceFiles += pdfFile
+        pageImages.forEach { image ->
+            val (text, stats) = recognizeWithStats(recognizer, image)
+            onPage(text.text, stats)
+        }
     }
 }
 

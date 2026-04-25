@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.MergePdfsUseCase
+import kotlinx.coroutines.CancellationException
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -43,6 +44,8 @@ class MergePdfsWorkflow @Inject constructor(
                     outputFilename = mergePdfsUseCase(records, trimmedName, scansDir)
                 )
             )
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: IOException) {
             WorkflowResult.Failure(ScanWorkflowError.StorageWriteFailed(e))
         } catch (t: Throwable) {

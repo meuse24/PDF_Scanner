@@ -3,6 +3,7 @@ package info.meuse24.pdf_scanner.domain.workflow
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
+import kotlinx.coroutines.CancellationException
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -55,6 +56,8 @@ class MakeSearchableWorkflow @Inject constructor(
                     blankOcrCount  = blankOcrCount
                 )
             )
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: IOException) {
             WorkflowResult.Failure(ScanWorkflowError.StorageWriteFailed(e))
         } catch (t: Throwable) {

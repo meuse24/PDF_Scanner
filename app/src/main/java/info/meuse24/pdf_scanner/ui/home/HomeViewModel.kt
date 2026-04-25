@@ -47,6 +47,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -83,13 +84,7 @@ class HomeViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, ArchiveFilter.AllDocuments)
 
     private val scansFlow = archiveFilterFlow
-        .flatMapLatest { filter ->
-            when (filter) {
-                ArchiveFilter.AllDocuments -> repository.getAllScans()
-                ArchiveFilter.Favorites -> repository.getFavoriteScans()
-                is ArchiveFilter.Folder -> repository.getScansInFolder(filter.folderId)
-            }
-        }
+        .flatMapLatest { filter -> listScansFor(filter) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val foldersFlow = folderRepository.observeFolders()
@@ -100,9 +95,21 @@ class HomeViewModel @Inject constructor(
     private val _selectedIds = MutableStateFlow<Set<Long>>(emptySet())
     val selectedIds: StateFlow<Set<Long>> = _selectedIds.asStateFlow()
 
-    private val filteredScansFlow = combine(scansFlow, _searchQuery, _sortOrder) { scans, rawQuery, sortOrder ->
-        val filtered = filterScans(scans, rawQuery)
-        sortScans(filtered, sortOrder)
+    private val filteredScansFlow = combine(archiveFilterFlow, _searchQuery, _sortOrder) { filter, rawQuery, sortOrder ->
+        SearchListRequest(filter, rawQuery.trim(), sortOrder)
+    }.flatMapLatest { request ->
+        val query = request.query
+        val source = if (query.isBlank()) {
+            listScansFor(request.filter)
+        } else {
+            val ftsQuery = buildFtsQuery(query)
+            if (ftsQuery.isBlank()) {
+                flowOf(emptyList())
+            } else {
+                searchScansFor(request.filter, ftsQuery)
+            }
+        }
+        source.map { scans -> sortScans(scans, request.sortOrder) }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val _error = MutableStateFlow<String?>(null)
@@ -639,16 +646,31 @@ class HomeViewModel @Inject constructor(
             _error.value = resourceProvider.getString(R.string.ocr_auto_detection_uncertain)
         }
     }
+
+    private fun listScansFor(filter: ArchiveFilter) = when (filter) {
+        ArchiveFilter.AllDocuments -> repository.getAllScansForList()
+        ArchiveFilter.Favorites -> repository.getFavoriteScansForList()
+        is ArchiveFilter.Folder -> repository.getScansInFolderForList(filter.folderId)
+    }
+
+    private fun searchScansFor(filter: ArchiveFilter, ftsQuery: String) = when (filter) {
+        ArchiveFilter.AllDocuments -> repository.searchScansForList(ftsQuery)
+        ArchiveFilter.Favorites -> repository.searchFavoriteScansForList(ftsQuery)
+        is ArchiveFilter.Folder -> repository.searchScansInFolderForList(ftsQuery, filter.folderId)
+    }
 }
 
-private fun filterScans(scans: List<Document>, rawQuery: String): List<Document> {
-    val query = rawQuery.trim()
-    if (query.isBlank()) return scans
-    val queryLower = query.lowercase(Locale.ROOT)
-    return scans.filter { document ->
-        document.filename.lowercase(Locale.ROOT).contains(queryLower) ||
-            document.extractedText?.lowercase(Locale.ROOT)?.contains(queryLower) == true
-    }
+private data class SearchListRequest(
+    val filter: ArchiveFilter,
+    val query: String,
+    val sortOrder: SortOrder
+)
+
+internal fun buildFtsQuery(rawQuery: String): String {
+    return Regex("[\\p{L}\\p{N}_]+")
+        .findAll(rawQuery.trim())
+        .map { match -> "${match.value}*" }
+        .joinToString(" ")
 }
 
 private fun buildCombinedOcrText(

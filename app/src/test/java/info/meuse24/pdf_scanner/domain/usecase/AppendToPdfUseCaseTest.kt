@@ -3,6 +3,7 @@ package info.meuse24.pdf_scanner.domain.usecase
 import android.content.Context
 import android.net.Uri
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.pdf.PdfImageRenderer
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
@@ -206,18 +207,22 @@ private class StubImagePdfBuilder(
     private val pageCount: Int,
     rootDir: File
 ) : ImagePdfBuilder(
-    context = mock(Context::class.java),
+    imageRenderer = EmptyPdfImageRenderer,
     pdfEditor = PdfEditor(),
     storageProvider = TestStorageProvider(rootDir)
 ) {
     override suspend fun createTempPdf(
-        imageUris: List<Uri>,
+        imageUris: List<Any>,
         options: ImagePdfOptions
     ): ImagePdfBuildResult = ImagePdfBuildResult(
         pdfFile = tempFile,
         pageCount = pageCount,
         skippedCount = 0
     )
+}
+
+private object EmptyPdfImageRenderer : PdfImageRenderer {
+    override suspend fun decodeBitmapBytes(uri: Any, maxDimension: Int): ByteArray? = null
 }
 
 private class FailingMergePdfEditor : JvmAppendPdfEditor() {

@@ -22,7 +22,7 @@ class OcrPipelineInstrumentedTest {
     private val ocrManager = OcrManager()
     private val ocrModelInstaller = AndroidOcrModelInstaller(context)
     private val ocrPipeline = OcrPipeline(ocrManager, ocrModelInstaller)
-    private val textRecognizerRunner = MlKitTextRecognizerRunner()
+    private val textRecognizerRunner = MlKitTextRecognizerRunner(AndroidPdfPageInputImageLoader())
 
     @Test
     fun latinOcrProducesHighConfidenceOnLatinText() = runBlocking {

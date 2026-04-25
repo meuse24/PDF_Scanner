@@ -7,6 +7,7 @@ import info.meuse24.pdf_scanner.domain.usecase.AppendSource
 import info.meuse24.pdf_scanner.domain.usecase.AppendTargetMissingException
 import info.meuse24.pdf_scanner.domain.usecase.AppendTargetEncryptedException
 import info.meuse24.pdf_scanner.domain.usecase.AppendToPdfUseCase
+import kotlinx.coroutines.CancellationException
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -42,6 +43,8 @@ class AppendToPdfWorkflow @Inject constructor(
                     appendedPageCount = result.appendedPageCount
                 )
             )
+        } catch (exception: CancellationException) {
+            throw exception
         } catch (_: AppendTargetEncryptedException) {
             WorkflowResult.Failure(ScanWorkflowError.AppendTargetEncrypted)
         } catch (_: AppendSourceEncryptedException) {

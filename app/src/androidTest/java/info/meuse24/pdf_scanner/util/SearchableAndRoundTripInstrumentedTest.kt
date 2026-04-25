@@ -20,6 +20,8 @@ import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
 import com.tom_roush.pdfbox.pdmodel.graphics.image.LosslessFactory
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import info.meuse24.pdf_scanner.data.local.ScanDao
+import info.meuse24.pdf_scanner.data.local.ScanRecord
+import info.meuse24.pdf_scanner.data.mapper.toDomain
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
@@ -51,7 +53,7 @@ class SearchableAndRoundTripInstrumentedTest {
     private val ocrManager = OcrManager()
     private val ocrModelInstaller = AndroidOcrModelInstaller(context)
     private val ocrPipeline = OcrPipeline(ocrManager, ocrModelInstaller)
-    private val textRecognizerRunner = MlKitTextRecognizerRunner()
+    private val textRecognizerRunner = MlKitTextRecognizerRunner(AndroidPdfPageInputImageLoader())
     private val pdfEditor = PdfEditor()
     private val searchablePdfBuilder = SearchablePdfBuilder(
         context,
@@ -286,8 +288,7 @@ class SearchableAndRoundTripInstrumentedTest {
         assertTrue(normalizeText(record.extractedText).contains("IMPORTSCAN"))
         assertTrue(normalizeText(record.extractedText).contains("2468"))
         assertNotNull(record.ocrConfidence)
-        assertNotNull(record.ocrPageTextJson)
-        assertTrue(record.ocrPageTextJson.fromOcrPageTextJson().isNotEmpty())
+        assertTrue(record.pageTexts.isNotEmpty())
         assertTrue(normalizeText(extractPdfText(File(record.filepath))).contains("IMPORTSCAN"))
     }
 
@@ -583,20 +584,20 @@ private class TrackingScanDao : ScanDao {
     val searchableUpdates = mutableListOf<SearchableUpdate>()
     val inserted = mutableListOf<Document>()
 
-    override fun getAllScans(): Flow<List<Document>> = flowOf(emptyList())
+    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
 
-    override fun searchScansFlow(query: String): Flow<List<Document>> = flowOf(emptyList())
+    override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
 
-    override suspend fun insert(record: Document): Long {
-        inserted.add(record)
+    override suspend fun insert(record: ScanRecord): Long {
+        inserted.add(record.toDomain())
         return inserted.size.toLong()
     }
 
-    override suspend fun insertAll(records: List<Document>) {
-        inserted.addAll(records)
+    override suspend fun insertAll(records: List<ScanRecord>) {
+        inserted.addAll(records.map { it.toDomain() })
     }
 
-    override suspend fun delete(record: Document) = Unit
+    override suspend fun delete(record: ScanRecord) = Unit
 
     override suspend fun markSearchable(id: Long, fileSize: Long) = Unit
 
@@ -627,5 +628,13 @@ private class TrackingScanDao : ScanDao {
     override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) = Unit
 
     override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) = Unit
+
+    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
+
+    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
+
+    override suspend fun moveScans(ids: List<Long>, folderId: Long?) = Unit
+
+    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) = Unit
 }
 

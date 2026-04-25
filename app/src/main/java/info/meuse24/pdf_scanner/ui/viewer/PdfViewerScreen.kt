@@ -2,8 +2,6 @@ package info.meuse24.pdf_scanner.ui.viewer
 
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.print.PrintManager
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -56,6 +54,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -79,6 +78,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.ui.components.DocumentEditSheet
 import info.meuse24.pdf_scanner.ui.components.ScanAction
@@ -88,6 +88,7 @@ import info.meuse24.pdf_scanner.util.buildPdfShareIntent
 import info.meuse24.pdf_scanner.util.openPdfExternally
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -121,15 +122,22 @@ fun PdfViewerScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val snackbarHostState = LocalAppSnackbarHostState.current
+    val scope = rememberCoroutineScope()
     val errorNoPdfViewer = stringResource(R.string.error_no_pdf_viewer)
     val shareTitle = stringResource(R.string.share_pdf_title)
     val listState = rememberLazyListState()
     var editSheetVisible by remember { mutableStateOf(false) }
     var zoomPageIndex by remember { mutableStateOf<Int?>(null) }
 
+    fun showMessage(message: String) {
+        val hostState = snackbarHostState ?: return
+        scope.launch { hostState.showSnackbar(message) }
+    }
+
     LaunchedEffect(state.transientMessage) {
         val message = state.transientMessage ?: return@LaunchedEffect
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        snackbarHostState?.showSnackbar(message)
         viewModel.clearTransientMessage()
     }
 
@@ -155,7 +163,7 @@ fun PdfViewerScreen(
                 onNavigateBack = onNavigateBack,
                 onOpenExternal = { record ->
                     if (!openPdfExternally(context, record)) {
-                        Toast.makeText(context, errorNoPdfViewer, Toast.LENGTH_SHORT).show()
+                        showMessage(errorNoPdfViewer)
                     }
                 }
             )
@@ -166,7 +174,7 @@ fun PdfViewerScreen(
                 onNavigateBack = onNavigateBack,
                 onOpenExternal = { record ->
                     if (!openPdfExternally(context, record)) {
-                        Toast.makeText(context, errorNoPdfViewer, Toast.LENGTH_SHORT).show()
+                        showMessage(errorNoPdfViewer)
                     }
                 }
             )
@@ -219,7 +227,7 @@ fun PdfViewerScreen(
                         },
                         onOpenExternal = {
                             if (!openPdfExternally(context, record)) {
-                                Toast.makeText(context, errorNoPdfViewer, Toast.LENGTH_SHORT).show()
+                                showMessage(errorNoPdfViewer)
                             }
                         },
                         modifier = Modifier.align(Alignment.BottomCenter)

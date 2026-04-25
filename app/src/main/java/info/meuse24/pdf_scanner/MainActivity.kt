@@ -14,6 +14,8 @@ import androidx.compose.runtime.setValue
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import dagger.hilt.android.AndroidEntryPoint
 import info.meuse24.pdf_scanner.ui.entry.AppEntryActionCodec
 import info.meuse24.pdf_scanner.ui.entry.AppEntryActionViewModel
@@ -35,6 +37,7 @@ class MainActivity : FragmentActivity() {
     @Inject lateinit var folderRepository: FolderRepository
     @Inject lateinit var archiveFilterStore: ArchiveFilterStore
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
@@ -53,11 +56,14 @@ class MainActivity : FragmentActivity() {
                 .firstOrNull()
             val scope = rememberCoroutineScope()
             var isAuthenticating by remember { mutableStateOf(false) }
+            val windowSizeClass = calculateWindowSizeClass(this)
 
             PDF_ScannerTheme(themeMode = settings.themeMode) {
                 Box {
                     AppNavigation(
                         m24AnimationEnabled = settings.m24AnimationEnabled,
+                        widthSizeClass = windowSizeClass.widthSizeClass,
+                        heightSizeClass = windowSizeClass.heightSizeClass,
                         onThemeModeChange = settingsViewModel::setThemeMode,
                         pendingAppEntryAction = if (settings.appLockEnabled && isLocked) null else pendingEntryAction,
                         onConsumeAppEntryAction = appEntryActionViewModel::consume,

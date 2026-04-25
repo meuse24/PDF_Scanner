@@ -2,7 +2,6 @@ package info.meuse24.pdf_scanner.ui.append
 
 import android.app.Activity
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,8 +49,10 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
+import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.ui.components.ScanPreviewCard
 import info.meuse24.pdf_scanner.ui.imagestopdf.ImagesPdfOptionsContent
+import kotlinx.coroutines.launch
 
 @Composable
 fun AppendScreen(
@@ -58,6 +60,8 @@ fun AppendScreen(
     viewModel: AppendViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val snackbarHostState = LocalAppSnackbarHostState.current
+    val scope = rememberCoroutineScope()
     val record by viewModel.record.collectAsStateWithLifecycle()
     val pendingImageUris by viewModel.pendingImageUris.collectAsStateWithLifecycle()
     val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
@@ -69,6 +73,11 @@ fun AppendScreen(
     val errorScannerUnavailable = stringResource(R.string.error_scanner_unavailable)
 
     var selectedLayout by rememberSaveable { mutableStateOf(ImagePageLayout.TWO_PER_PAGE) }
+
+    fun showMessage(message: String) {
+        val hostState = snackbarHostState ?: return
+        scope.launch { hostState.showSnackbar(message) }
+    }
 
     val scanLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
@@ -118,14 +127,14 @@ fun AppendScreen(
                     exception.message ?: errorScannerUnavailable
                 }
                 viewModel.clearError()
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                showMessage(message)
             }
     }
 
     LaunchedEffect(success) {
         val message = success ?: return@LaunchedEffect
         val scanId = record?.id ?: return@LaunchedEffect
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        showMessage(message)
         viewModel.clearSuccess()
         onAppendComplete(scanId)
     }

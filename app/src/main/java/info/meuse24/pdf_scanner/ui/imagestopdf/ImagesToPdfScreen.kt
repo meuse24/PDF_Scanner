@@ -1,7 +1,6 @@
 package info.meuse24.pdf_scanner.ui.imagestopdf
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,18 +11,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
+import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.launch
 
 @Composable
 fun ImagesToPdfScreen(
@@ -31,7 +32,8 @@ fun ImagesToPdfScreen(
     onNavigateBack: () -> Unit,
     viewModel: ImagesToPdfViewModel = hiltViewModel()
 ) {
-    val context     = LocalContext.current
+    val snackbarHostState = LocalAppSnackbarHostState.current
+    val scope = rememberCoroutineScope()
     val editLoading by viewModel.editLoading.collectAsStateWithLifecycle()
     val error       by viewModel.error.collectAsStateWithLifecycle()
     val success     by viewModel.success.collectAsStateWithLifecycle()
@@ -53,19 +55,16 @@ fun ImagesToPdfScreen(
     LaunchedEffect(success) {
         if (success) {
             if (skippedMessage != null) {
-                Toast.makeText(
-                    context,
-                    skippedMessage,
-                    Toast.LENGTH_LONG
-                ).show()
+                scope.launch { snackbarHostState?.showSnackbar(skippedMessage) }
             }
             onNavigateBack()
         }
     }
 
     LaunchedEffect(error) {
-        if (error != null) {
-            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+        val message = error
+        if (message != null) {
+            snackbarHostState?.showSnackbar(message)
             viewModel.clearError()
         }
     }

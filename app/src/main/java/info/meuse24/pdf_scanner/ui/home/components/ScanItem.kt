@@ -34,11 +34,13 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -54,6 +56,8 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -77,6 +81,7 @@ internal fun ScanItem(
     record:           Document,
     isSelected:       Boolean,
     inSelectionMode:  Boolean  = false,
+    compact:          Boolean  = false,
     modifier:         Modifier = Modifier,
     onClick:          () -> Unit,
     onCheckboxToggle: () -> Unit,
@@ -98,6 +103,11 @@ internal fun ScanItem(
         Formatter.formatShortFileSize(context, record.fileSize.coerceAtLeast(0L))
     }
     val subtitle = stringResource(R.string.scan_item_subtitle, dateStr, record.pageCount, sizeStr)
+    val favoriteDescription = stringResource(
+        if (record.isFavorite) R.string.cd_remove_favorite else R.string.cd_add_favorite
+    )
+    val actionsDescription = stringResource(R.string.cd_document_actions)
+    val selectDescription = stringResource(R.string.cd_select_document, record.filename)
 
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -134,7 +144,7 @@ internal fun ScanItem(
                 indication        = LocalIndication.current,
                 onClick           = onClick
             ),
-        shape     = RoundedCornerShape(28.dp),
+        shape     = RoundedCornerShape(if (compact) 12.dp else 16.dp),
         colors    = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
                              else            MaterialTheme.colorScheme.surfaceContainerLow
@@ -149,7 +159,66 @@ internal fun ScanItem(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+        if (compact) {
+            Row(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val thumb = thumbnail
+                if (thumb != null) {
+                    Image(
+                        painter = BitmapPainter(thumb),
+                        contentDescription = stringResource(R.string.cd_pdf_document),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.PictureAsPdf,
+                        contentDescription = stringResource(R.string.cd_pdf_document),
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+
+                Spacer(Modifier.width(8.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        record.filename,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        subtitle,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Spacer(Modifier.width(4.dp))
+
+                ScanItemActions(
+                    isFavorite = record.isFavorite,
+                    showDocumentActions = record.pageCount >= 1,
+                    inSelectionMode = inSelectionMode,
+                    isSelected = isSelected,
+                    favoriteDescription = favoriteDescription,
+                    actionsDescription = actionsDescription,
+                    selectDescription = selectDescription,
+                    onToggleFavorite = onToggleFavorite,
+                    onShowActions = { sheetVisible = true },
+                    onCheckboxToggle = onCheckboxToggle
+                )
+            }
+        } else {
+            Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
             // Dateiname — volle Breite
             Text(
                 record.filename,
@@ -235,52 +304,28 @@ internal fun ScanItem(
                     }
                 }
 
-                if (!inSelectionMode) {
-                    IconButton(
-                        onClick = onToggleFavorite,
-                        modifier = Modifier.size(36.dp)
-                    ) {
-                        Icon(
-                            imageVector = if (record.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
-                            contentDescription = null,
-                            tint = if (record.isFavorite) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            },
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
-
-                if (!inSelectionMode && record.pageCount >= 1) {
-                    IconButton(
-                        onClick = { sheetVisible = true },
-                        modifier = Modifier.size(36.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.MoreVert,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
-
-                Checkbox(
-                    checked         = isSelected,
-                    onCheckedChange = { onCheckboxToggle() },
-                    modifier        = Modifier.size(40.dp)
+                ScanItemActions(
+                    isFavorite = record.isFavorite,
+                    showDocumentActions = record.pageCount >= 1,
+                    inSelectionMode = inSelectionMode,
+                    isSelected = isSelected,
+                    favoriteDescription = favoriteDescription,
+                    actionsDescription = actionsDescription,
+                    selectDescription = selectDescription,
+                    onToggleFavorite = onToggleFavorite,
+                    onShowActions = { sheetVisible = true },
+                    onCheckboxToggle = onCheckboxToggle
                 )
             } // Row
         } // Column
+        }
     } // Card
 
     // ── Action Bottom Sheet ──────────────────────────────────────────────────
     if (sheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { sheetVisible = false },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            sheetGesturesEnabled = false
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ) {
             DocumentEditSheet(
                 record   = record,
@@ -292,6 +337,70 @@ internal fun ScanItem(
         }
     }
 }
+
+@Composable
+private fun ScanItemActions(
+    isFavorite: Boolean,
+    showDocumentActions: Boolean,
+    inSelectionMode: Boolean,
+    isSelected: Boolean,
+    favoriteDescription: String,
+    actionsDescription: String,
+    selectDescription: String,
+    onToggleFavorite: () -> Unit,
+    onShowActions: () -> Unit,
+    onCheckboxToggle: () -> Unit
+) {
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides ScanItemActionWidth) {
+        if (!inSelectionMode) {
+            IconButton(
+                onClick = onToggleFavorite,
+                modifier = Modifier.size(
+                    width = ScanItemActionWidth,
+                    height = ScanItemActionHeight
+                )
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
+                    contentDescription = favoriteDescription,
+                    tint = if (isFavorite) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+
+        if (!inSelectionMode && showDocumentActions) {
+            IconButton(
+                onClick = onShowActions,
+                modifier = Modifier.size(
+                    width = ScanItemActionWidth,
+                    height = ScanItemActionHeight
+                )
+            ) {
+                Icon(
+                    Icons.Default.MoreVert,
+                    contentDescription = actionsDescription,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+
+        Checkbox(
+            checked = isSelected,
+            onCheckedChange = { onCheckboxToggle() },
+            modifier = Modifier
+                .size(width = ScanItemActionWidth, height = ScanItemActionHeight)
+                .semantics { contentDescription = selectDescription }
+        )
+    }
+}
+
+private val ScanItemActionWidth = 40.dp
+private val ScanItemActionHeight = 48.dp
 
 @Composable
 private fun tagLabel(tagKey: String): String = when (tagKey) {

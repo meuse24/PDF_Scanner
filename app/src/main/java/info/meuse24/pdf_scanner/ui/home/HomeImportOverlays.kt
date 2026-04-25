@@ -3,7 +3,6 @@ package info.meuse24.pdf_scanner.ui.home
 import android.content.ClipData
 import android.content.Intent
 import android.content.res.Resources
-import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.hapticfeedback.HapticFeedback
@@ -13,6 +12,7 @@ import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.stringResource
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.ui.home.components.HomeAddDocumentSheet
 import info.meuse24.pdf_scanner.ui.home.components.HomeOcrResultSheet
 import info.meuse24.pdf_scanner.ui.home.components.HomeSaveImportDialog
@@ -47,6 +47,7 @@ internal fun HomeImportOverlays(
     viewModel: HomeViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = LocalAppSnackbarHostState.current
     val actionShareTextLabel = stringResource(R.string.action_share_text)
     val ocrCopiedMessage = stringResource(R.string.ocr_copied)
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -87,7 +88,7 @@ internal fun HomeImportOverlays(
             onCopy = {
                 coroutineScope.launch {
                     clipboard.setClipEntry(ClipData.newPlainText("", ocrText).toClipEntry())
-                    Toast.makeText(context, ocrCopiedMessage, Toast.LENGTH_SHORT).show()
+                    snackbarHostState?.showSnackbar(ocrCopiedMessage)
                 }
             }
         )

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -13,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.ui.entry.AppEntryAction
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -71,14 +71,14 @@ internal fun HandleHomeAppEntryActionEffect(
 @Composable
 internal fun HandleHomeSuccessEffect(
     success: String?,
-    context: Context,
     haptic: HapticFeedback,
     onConsumed: () -> Unit
 ) {
+    val snackbarHostState = LocalAppSnackbarHostState.current
     LaunchedEffect(success) {
         val message = success ?: return@LaunchedEffect
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        snackbarHostState?.showSnackbar(message)
         onConsumed()
     }
 }

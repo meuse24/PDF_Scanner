@@ -32,6 +32,10 @@
     <string name="cd_share">Share</string>
     <string name="cd_delete">Delete</string>
     <string name="cd_pdf_document">PDF document</string>
+    <string name="cd_add_favorite">Add to favorites</string>
+    <string name="cd_remove_favorite">Remove from favorites</string>
+    <string name="cd_document_actions">Open document actions</string>
+    <string name="cd_select_document">Select %1$s</string>
     <string name="action_open_document">Open PDF</string>
     <string name="action_open_external">Open externally</string>
     <string name="action_edit_pdf">Edit PDF</string>
@@ -493,6 +497,7 @@
     <string name="label_bulk_extract">Text</string>
     <string name="label_bulk_searchable">OCR</string>
     <string name="label_bulk_delete">Delete</string>
+    <string name="label_bulk_more">More</string>
 
     <!-- Print -->
     <string name="action_print_pdf">Print PDF</string>

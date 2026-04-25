@@ -2,7 +2,6 @@ package info.meuse24.pdf_scanner.ui.trash
 
 import android.graphics.BitmapFactory
 import android.text.format.Formatter
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -64,6 +63,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.util.TrashConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -82,9 +82,9 @@ fun TrashScreen(
     val loading by viewModel.loading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
     val success by viewModel.success.collectAsStateWithLifecycle()
-    val context = LocalContext.current
+    val selectedIds by viewModel.selectedIds.collectAsStateWithLifecycle()
+    val snackbarHostState = LocalAppSnackbarHostState.current
 
-    var selectedIds by remember { mutableStateOf(emptySet<Long>()) }
     var pendingPurge by remember { mutableStateOf<List<Document>>(emptyList()) }
     var showEmptyConfirm by remember { mutableStateOf(false) }
 
@@ -92,7 +92,7 @@ fun TrashScreen(
 
     LaunchedEffect(success) {
         val message = success ?: return@LaunchedEffect
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        snackbarHostState?.showSnackbar(message)
         viewModel.clearSuccess()
     }
 
@@ -104,11 +104,11 @@ fun TrashScreen(
                     TrashActionRow(
                         selectedCount = selectedIds.size,
                         totalCount = scans.size,
-                        onClearSelection = { selectedIds = emptySet() },
-                        onSelectAll = { selectedIds = scans.map { it.id }.toSet() },
+                        onClearSelection = viewModel::clearSelectedIds,
+                        onSelectAll = { viewModel.setSelectedIds(scans.map { it.id }.toSet()) },
                         onRestoreSelected = {
                             viewModel.restore(selectedRecords)
-                            selectedIds = emptySet()
+                            viewModel.clearSelectedIds()
                         },
                         onPurgeSelected = { pendingPurge = selectedRecords },
                         onEmptyTrash = { showEmptyConfirm = true }
@@ -123,11 +123,7 @@ fun TrashScreen(
                                 record = record,
                                 selected = record.id in selectedIds,
                                 onSelectionToggle = {
-                                    selectedIds = if (record.id in selectedIds) {
-                                        selectedIds - record.id
-                                    } else {
-                                        selectedIds + record.id
-                                    }
+                                    viewModel.toggleSelectedId(record.id)
                                 },
                                 onRestore = { viewModel.restore(listOf(record)) },
                                 onPurge = { pendingPurge = listOf(record) }
@@ -161,7 +157,7 @@ fun TrashScreen(
                 TextButton(
                     onClick = {
                         viewModel.purge(pendingPurge)
-                        selectedIds = selectedIds - pendingPurge.map { it.id }.toSet()
+                        viewModel.setSelectedIds(selectedIds - pendingPurge.map { it.id }.toSet())
                         pendingPurge = emptyList()
                     }
                 ) {
@@ -188,7 +184,7 @@ fun TrashScreen(
                 TextButton(
                     onClick = {
                         viewModel.emptyTrash()
-                        selectedIds = emptySet()
+                        viewModel.clearSelectedIds()
                         showEmptyConfirm = false
                     }
                 ) {

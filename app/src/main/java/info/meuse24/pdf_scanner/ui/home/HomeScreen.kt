@@ -50,6 +50,7 @@ fun HomeScreen(
     addActionTrigger: Boolean = false,
     onAddActionTriggered: () -> Unit = {},
     onSelectionModeChange: (Boolean) -> Unit = {},
+    isLandscapeCompact: Boolean = false,
     pendingAppEntryAction: AppEntryAction? = null,
     onConsumeAppEntryAction: (AppEntryAction) -> Unit = {},
     navigation: HomeNavigationCallbacks = HomeNavigationCallbacks(),
@@ -58,6 +59,7 @@ fun HomeScreen(
     val archiveUiState by viewModel.archiveUiState.collectAsStateWithLifecycle()
     val operationUiState by viewModel.operationUiState.collectAsStateWithLifecycle()
     val messageUiState by viewModel.messageUiState.collectAsStateWithLifecycle()
+    val selectedIds by viewModel.selectedIds.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -84,7 +86,6 @@ fun HomeScreen(
     var selectedLang by rememberSaveable { mutableStateOf(archiveUiState.settings.defaultOcrLanguage) }
     var langMenuExpanded by remember { mutableStateOf(false) }
 
-    var selectedIds by remember { mutableStateOf(emptySet<Long>()) }
     val isSelectionMode = selectedIds.isNotEmpty()
     var pendingDeleteRecord by remember { mutableStateOf<Document?>(null) }
     var showBulkDeleteConfirm by remember { mutableStateOf(false) }
@@ -204,7 +205,6 @@ fun HomeScreen(
     )
     HandleHomeSuccessEffect(
         success = messageUiState.success,
-        context = context,
         haptic = haptic,
         onConsumed = viewModel::clearSuccess
     )
@@ -229,14 +229,62 @@ fun HomeScreen(
     )
     HandleHomeListHaptics(listState = listState, haptic = haptic)
 
-    BackHandler(enabled = isSelectionMode) { selectedIds = emptySet() }
+    BackHandler(enabled = isSelectionMode) { viewModel.clearSelectedIds() }
 
     androidx.compose.runtime.LaunchedEffect(isSelectionMode) {
         onSelectionModeChange(isSelectionMode)
     }
 
+    val selectedRecords = archiveUiState.scans.filter { it.id in selectedIds }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
+            if (isSelectionMode && isLandscapeCompact) {
+                LandscapeSelectionTopBar(
+                    selectedRecords = selectedRecords,
+                    totalCount = archiveUiState.filteredScans.size,
+                    onClearSelection = viewModel::clearSelectedIds,
+                    onSelectAll = { viewModel.setSelectedIds(archiveUiState.filteredScans.map { it.id }.toSet()) },
+                    onShare = {
+                        buildPdfShareIntent(context, selectedRecords)?.let { intent ->
+                            context.startActivity(Intent.createChooser(intent, sharePdfTitle))
+                        }
+                    },
+                    onExport = {
+                        selectedRecords.forEach(viewModel::exportScan)
+                        viewModel.clearSelectedIds()
+                    },
+                    onExtractTexts = {
+                        selectedBulkLang = archiveUiState.settings.defaultOcrLanguage
+                        bulkLangForSearchable = false
+                        showBulkLangDialog = true
+                    },
+                    onMakeSearchable = {
+                        if (selectedRecords.none { !it.isSearchable || it.extractedText == null }) {
+                            viewModel.reportError(resources.getString(R.string.searchable_nothing_to_do))
+                        } else {
+                            selectedBulkLang = archiveUiState.settings.defaultOcrLanguage
+                            bulkLangForSearchable = true
+                            showBulkLangDialog = true
+                        }
+                    },
+                    onMerge = {
+                        mergeFilenameInput = resources.getString(
+                            R.string.merge_filename_default,
+                            SimpleDateFormat("ddMMyyyy", Locale.getDefault()).format(Date())
+                        )
+                        showMergeDialog = true
+                    },
+                    onMoveToFolder = { showFolderPicker = true },
+                    onDelete = {
+                        if (selectedRecords.size == 1) {
+                            pendingDeleteRecord = selectedRecords.first()
+                        } else {
+                            showBulkDeleteConfirm = true
+                        }
+                    }
+                )
+            }
             HomeArchiveContent(
                 scans = archiveUiState.scans,
                 filteredScans = archiveUiState.filteredScans,
@@ -247,13 +295,14 @@ fun HomeScreen(
                 sortOrder = archiveUiState.sortOrder,
                 selectedIds = selectedIds,
                 isSelectionMode = isSelectionMode,
+                isLandscapeCompact = isLandscapeCompact,
                 listState = listState,
                 onSearchQueryChange = viewModel::updateSearchQuery,
                 onSortOrderSelected = viewModel::setSortOrder,
-                onClearSelection = { selectedIds = emptySet() },
-                onSelectAll = { selectedIds = archiveUiState.filteredScans.map { it.id }.toSet() },
+                onClearSelection = viewModel::clearSelectedIds,
+                onSelectAll = { viewModel.setSelectedIds(archiveUiState.filteredScans.map { it.id }.toSet()) },
                 onSelectionToggle = { record ->
-                    selectedIds = if (record.id in selectedIds) selectedIds - record.id else selectedIds + record.id
+                    viewModel.toggleSelectedId(record.id)
                 },
                 onOpenRecord = { record -> navigation.onViewer(record.id) },
                 onToggleFavorite = viewModel::toggleFavorite,
@@ -264,8 +313,7 @@ fun HomeScreen(
             )
         }
 
-        if (isSelectionMode) {
-            val selectedRecords = archiveUiState.scans.filter { it.id in selectedIds }
+        if (isSelectionMode && !isLandscapeCompact) {
             HomeSelectionBar(
                 selectedRecords = selectedRecords,
                 onShare = {
@@ -275,7 +323,7 @@ fun HomeScreen(
                 },
                 onExport = {
                     selectedRecords.forEach(viewModel::exportScan)
-                    selectedIds = emptySet()
+                    viewModel.clearSelectedIds()
                 },
                 onExtractTexts = {
                     selectedBulkLang = archiveUiState.settings.defaultOcrLanguage
@@ -314,14 +362,17 @@ fun HomeScreen(
             hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp, vertical = if (isSelectionMode) 84.dp else 16.dp)
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = if (isSelectionMode && !isLandscapeCompact) 84.dp else 16.dp
+                )
         )
     }
 
     HomeBulkOverlays(
         scans = archiveUiState.scans,
         selectedIds = selectedIds,
-        onSelectedIdsChange = { selectedIds = it },
+        onSelectedIdsChange = viewModel::setSelectedIds,
         pendingDeleteRecord = pendingDeleteRecord,
         onPendingDeleteRecordChange = { pendingDeleteRecord = it },
         showBulkDeleteConfirm = showBulkDeleteConfirm,

@@ -43,6 +43,7 @@ import info.meuse24.pdf_scanner.util.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -96,6 +97,8 @@ class HomeViewModel @Inject constructor(
 
     private val _searchQuery = MutableStateFlow("")
     private val _sortOrder = MutableStateFlow(SortOrder.ByDate)
+    private val _selectedIds = MutableStateFlow<Set<Long>>(emptySet())
+    val selectedIds: StateFlow<Set<Long>> = _selectedIds.asStateFlow()
 
     private val filteredScansFlow = combine(scansFlow, _searchQuery, _sortOrder) { scans, rawQuery, sortOrder ->
         val filtered = filterScans(scans, rawQuery)
@@ -480,6 +483,19 @@ class HomeViewModel @Inject constructor(
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun setSelectedIds(ids: Set<Long>) {
+        _selectedIds.value = ids
+    }
+
+    fun toggleSelectedId(id: Long) {
+        val current = _selectedIds.value
+        _selectedIds.value = if (id in current) current - id else current + id
+    }
+
+    fun clearSelectedIds() {
+        _selectedIds.value = emptySet()
     }
 
     fun showAllDocuments() {

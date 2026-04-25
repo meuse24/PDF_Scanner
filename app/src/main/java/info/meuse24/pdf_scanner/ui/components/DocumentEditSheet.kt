@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -50,8 +51,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -102,6 +105,9 @@ fun DocumentEditSheet(
     val sizeStr = remember(record.fileSize, context) {
         Formatter.formatShortFileSize(context, record.fileSize.coerceAtLeast(0L))
     }
+    val configuration = LocalConfiguration.current
+    val maxSheetHeight = (configuration.screenHeightDp.dp * 0.78f)
+        .coerceIn(360.dp, 640.dp)
     val showMetadata = true
     val showRename = showRenameAction
     val showPrint = showPrintAction && notEncrypted
@@ -139,7 +145,7 @@ fun DocumentEditSheet(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(max = 520.dp)
+            .heightIn(max = maxSheetHeight)
             .navigationBarsPadding()
             .padding(bottom = 16.dp)
     ) {
@@ -425,7 +431,8 @@ private fun SheetItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = enabled, onClick = onClick)
+            .sizeIn(minHeight = 48.dp)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 24.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

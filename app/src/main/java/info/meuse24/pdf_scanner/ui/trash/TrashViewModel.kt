@@ -41,10 +41,26 @@ class TrashViewModel @Inject constructor(
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading.asStateFlow()
 
+    private val _selectedIds = MutableStateFlow<Set<Long>>(emptySet())
+    val selectedIds: StateFlow<Set<Long>> = _selectedIds.asStateFlow()
+
     init {
         viewModelScope.launch(dispatcherProvider.io) {
             purgeTrashUseCase.purgeExpired(TrashConstants.RETENTION_MILLIS)
         }
+    }
+
+    fun setSelectedIds(ids: Set<Long>) {
+        _selectedIds.value = ids
+    }
+
+    fun toggleSelectedId(id: Long) {
+        val current = _selectedIds.value
+        _selectedIds.value = if (id in current) current - id else current + id
+    }
+
+    fun clearSelectedIds() {
+        _selectedIds.value = emptySet()
     }
 
     fun restore(records: List<Document>) {

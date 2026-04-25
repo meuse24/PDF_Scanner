@@ -68,6 +68,7 @@ internal fun AppNavigationHost(
     addActionTrigger: Boolean,
     onAddActionTriggered: () -> Unit,
     onSelectionModeChange: (Boolean) -> Unit,
+    isLandscapeCompact: Boolean,
     onThemeModeChange: (ThemeMode) -> Unit,
     pendingAppEntryAction: AppEntryAction?,
     onConsumeAppEntryAction: (AppEntryAction) -> Unit,
@@ -85,6 +86,7 @@ internal fun AppNavigationHost(
             addActionTrigger = addActionTrigger,
             onAddActionTriggered = onAddActionTriggered,
             onSelectionModeChange = onSelectionModeChange,
+            isLandscapeCompact = isLandscapeCompact,
             pendingAppEntryAction = pendingAppEntryAction,
             onConsumeAppEntryAction = onConsumeAppEntryAction
         )
@@ -105,6 +107,7 @@ private fun NavGraphBuilder.homeNavGraph(
     addActionTrigger: Boolean,
     onAddActionTriggered: () -> Unit,
     onSelectionModeChange: (Boolean) -> Unit,
+    isLandscapeCompact: Boolean,
     pendingAppEntryAction: AppEntryAction?,
     onConsumeAppEntryAction: (AppEntryAction) -> Unit
 ) {
@@ -113,6 +116,7 @@ private fun NavGraphBuilder.homeNavGraph(
             addActionTrigger = addActionTrigger,
             onAddActionTriggered = onAddActionTriggered,
             onSelectionModeChange = onSelectionModeChange,
+            isLandscapeCompact = isLandscapeCompact,
             pendingAppEntryAction = pendingAppEntryAction,
             onConsumeAppEntryAction = onConsumeAppEntryAction,
             navigation = HomeNavigationCallbacks(

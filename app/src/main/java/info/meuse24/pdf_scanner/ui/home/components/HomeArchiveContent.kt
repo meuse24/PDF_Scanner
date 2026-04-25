@@ -52,6 +52,7 @@ internal fun HomeArchiveContent(
     sortOrder: SortOrder,
     selectedIds: Set<Long>,
     isSelectionMode: Boolean,
+    isLandscapeCompact: Boolean = false,
     listState: LazyListState,
     onSearchQueryChange: (String) -> Unit,
     onSortOrderSelected: (SortOrder) -> Unit,
@@ -78,7 +79,7 @@ internal fun HomeArchiveContent(
         }
     }
 
-    if (isSelectionMode) {
+    if (isSelectionMode && !isLandscapeCompact) {
         SelectionTitleBar(
             count = selectedIds.size,
             total = filteredScans.size,
@@ -125,8 +126,12 @@ internal fun HomeArchiveContent(
                 state = listState,
                 modifier = modifier,
                 contentPadding = PaddingValues(
-                    top = 8.dp,
-                    bottom = if (isSelectionMode) 80.dp else 88.dp
+                    top = if (isLandscapeCompact) 4.dp else 8.dp,
+                    bottom = when {
+                        isLandscapeCompact -> 8.dp
+                        isSelectionMode -> 80.dp
+                        else -> 88.dp
+                    }
                 )
             ) {
                 itemsIndexed(filteredScans, key = { _, it -> it.id }) { index, record ->
@@ -135,7 +140,11 @@ internal fun HomeArchiveContent(
                         record = record,
                         isSelected = isSelected,
                         inSelectionMode = isSelectionMode,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                        compact = isLandscapeCompact,
+                        modifier = Modifier.padding(
+                            horizontal = 16.dp,
+                            vertical = if (isLandscapeCompact) 2.dp else 4.dp
+                        ),
                         onClick = {
                             if (isSelectionMode) onSelectionToggle(record) else onOpenRecord(record)
                         },

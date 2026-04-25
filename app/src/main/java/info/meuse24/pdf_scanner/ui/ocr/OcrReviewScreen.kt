@@ -2,7 +2,6 @@ package info.meuse24.pdf_scanner.ui.ocr
 
 import android.content.ClipData
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -48,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.util.OcrQuality
 import info.meuse24.pdf_scanner.util.toQualityPercent
 import java.util.Locale
@@ -62,6 +62,7 @@ fun OcrReviewScreen(
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val resources = LocalResources.current
+    val snackbarHostState = LocalAppSnackbarHostState.current
     val coroutineScope = rememberCoroutineScope()
     val copiedMessage = stringResource(R.string.ocr_copied)
     val shareTextLabel = stringResource(R.string.action_share_text)
@@ -225,7 +226,7 @@ fun OcrReviewScreen(
                             onClick = {
                                 coroutineScope.launch {
                                     clipboard.setClipEntry(ClipData.newPlainText("", displayText).toClipEntry())
-                                    Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
+                                    snackbarHostState?.showSnackbar(copiedMessage)
                                 }
                             },
                             enabled = displayText.isNotBlank()

@@ -45,12 +45,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
 import info.meuse24.pdf_scanner.ui.theme.ThemeMode
 import info.meuse24.pdf_scanner.util.AppSettings
@@ -72,7 +72,7 @@ fun SettingsScreen(
     transientError: String?,
     onTransientErrorConsumed: () -> Unit
 ) {
-    val context = LocalContext.current
+    val snackbarHostState = LocalAppSnackbarHostState.current
     val resources = LocalResources.current
     val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
     val ocrAutoLabel = stringResource(R.string.ocr_language_auto)
@@ -91,7 +91,7 @@ fun SettingsScreen(
 
     LaunchedEffect(transientError) {
         if (transientError != null) {
-            android.widget.Toast.makeText(context, transientError, android.widget.Toast.LENGTH_SHORT).show()
+            snackbarHostState?.showSnackbar(transientError)
             onTransientErrorConsumed()
         }
     }

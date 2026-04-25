@@ -3,7 +3,6 @@ package info.meuse24.pdf_scanner.ui.qrscan
 import android.os.Build
 import android.content.ClipData
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +40,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,6 +57,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.mlkit.vision.barcode.common.Barcode
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.usecase.QrCodeResult
+import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
+import kotlinx.coroutines.launch
 
 @Composable
 fun QrScanScreen(
@@ -70,6 +72,8 @@ fun QrScanScreen(
     val progress by viewModel.progress.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
+    val snackbarHostState = LocalAppSnackbarHostState.current
+    val scope = rememberCoroutineScope()
     val clipboardManager = context.getSystemService(android.content.ClipboardManager::class.java)
     val uriHandler = LocalUriHandler.current
     val copiedMessage = stringResource(R.string.qr_scan_copied)
@@ -123,7 +127,7 @@ fun QrScanScreen(
                             onCopy = { value ->
                                 clipboardManager?.setPrimaryClip(ClipData.newPlainText("", value))
                                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                                    Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
+                                    scope.launch { snackbarHostState?.showSnackbar(copiedMessage) }
                                 }
                             },
                             onShare = { value ->

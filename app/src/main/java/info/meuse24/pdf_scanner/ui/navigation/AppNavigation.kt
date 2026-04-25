@@ -1,17 +1,29 @@
 package info.meuse24.pdf_scanner.ui.navigation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -19,10 +31,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,13 +50,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Folder
+import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.ui.entry.AppEntryAction
 import info.meuse24.pdf_scanner.ui.home.ArchiveFilter
 import info.meuse24.pdf_scanner.ui.theme.ThemeMode
@@ -48,6 +70,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppNavigation(
     m24AnimationEnabled: Boolean,
+    widthSizeClass: WindowWidthSizeClass = WindowWidthSizeClass.Compact,
+    heightSizeClass: WindowHeightSizeClass = WindowHeightSizeClass.Medium,
     onThemeModeChange: (ThemeMode) -> Unit,
     pendingAppEntryAction: AppEntryAction? = null,
     onConsumeAppEntryAction: (AppEntryAction) -> Unit = {},
@@ -60,14 +84,23 @@ fun AppNavigation(
 ) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val currentEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentEntry?.destination?.route
     val canNavigateBack = navController.previousBackStackEntry != null
     val isHomeRoute = currentRoute == Screen.Ablage.route || currentRoute == null
+    val showNavigationRail = widthSizeClass != WindowWidthSizeClass.Compact
+    val isLandscapeCompact = showNavigationRail && heightSizeClass == WindowHeightSizeClass.Compact
+    val contentMaxWidth = when (widthSizeClass) {
+        WindowWidthSizeClass.Compact -> null
+        WindowWidthSizeClass.Medium -> 840.dp
+        else -> 1040.dp
+    }
 
     var addActionTrigger by remember { mutableStateOf(false) }
     var isSelectionMode by remember { mutableStateOf(false) }
+    val snackbarBottomPadding = if (currentRoute?.startsWith(Screen.Viewer.route.substringBefore("{")) == true) 88.dp else 0.dp
 
     val drawerGesturesEnabled = currentRoute in setOf(
         null,
@@ -112,26 +145,25 @@ fun AppNavigation(
         }
     }
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        gesturesEnabled = drawerGesturesEnabled,
-        drawerContent = {
-            AppDrawerContent(
+    fun navigateToTopLevel(screen: Screen) {
+        navController.navigate(screen.route) {
+            if (screen == Screen.Ablage) {
+                popUpTo(Screen.Ablage.route) { inclusive = true }
+            } else {
+                popUpTo(Screen.Ablage.route)
+                launchSingleTop = true
+            }
+        }
+        closeDrawer()
+    }
+
+    val drawerContent: @Composable () -> Unit = {
+        AppDrawerContent(
                 m24AnimationEnabled = m24AnimationEnabled,
                 currentRoute = currentRoute,
                 folders = folders,
                 archiveFilter = archiveFilter,
-                onNavigateToTopLevel = { screen ->
-                    navController.navigate(screen.route) {
-                        if (screen == Screen.Ablage) {
-                            popUpTo(Screen.Ablage.route) { inclusive = true }
-                        } else {
-                            popUpTo(Screen.Ablage.route)
-                            launchSingleTop = true
-                        }
-                    }
-                    closeDrawer()
-                },
+                onNavigateToTopLevel = { screen -> navigateToTopLevel(screen) },
                 onShowAllDocuments = {
                     onShowAllDocuments()
                     navController.navigate(Screen.Ablage.route) {
@@ -163,44 +195,47 @@ fun AppNavigation(
                     closeDrawer()
                 }
             )
-        }
-    ) {
+    }
+
+    val appContent: @Composable () -> Unit = {
         Scaffold(
             contentWindowInsets = WindowInsets.safeDrawing.only(
                 WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
             ),
             topBar = {
-                TopAppBar(
-                    title = {
-                        AppBarTitle(
-                            currentRoute = currentRoute,
-                            isHomeRoute = isHomeRoute,
-                            m24AnimationEnabled = m24AnimationEnabled
+                if (!(isLandscapeCompact && isSelectionMode && isHomeRoute)) {
+                    TopAppBar(
+                        title = {
+                            AppBarTitle(
+                                currentRoute = currentRoute,
+                                isHomeRoute = isHomeRoute,
+                                m24AnimationEnabled = m24AnimationEnabled
+                            )
+                        },
+                        navigationIcon = {
+                            if (canNavigateBack) {
+                                IconButton(onClick = { navController.navigateUp() }) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        stringResource(R.string.cd_navigate_back)
+                                    )
+                                }
+                            } else {
+                                IconButton(onClick = { openDrawer() }) {
+                                    Icon(Icons.Default.Menu, stringResource(R.string.cd_open_menu))
+                                }
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            titleContentColor = MaterialTheme.colorScheme.onSurface,
+                            navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                         )
-                    },
-                    navigationIcon = {
-                        if (canNavigateBack) {
-                            IconButton(onClick = { navController.navigateUp() }) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.ArrowBack,
-                                    stringResource(R.string.cd_navigate_back)
-                                )
-                            }
-                        } else {
-                            IconButton(onClick = { openDrawer() }) {
-                                Icon(Icons.Default.Menu, stringResource(R.string.cd_open_menu))
-                            }
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        titleContentColor = MaterialTheme.colorScheme.onSurface,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                     )
-                )
+                }
             },
             floatingActionButton = {
-                if ((currentRoute == Screen.Ablage.route || currentRoute == null) && !isSelectionMode) {
+                if (!showNavigationRail && isHomeRoute && !isSelectionMode) {
                     FloatingActionButton(
                         onClick = { addActionTrigger = true },
                         shape = RoundedCornerShape(20.dp)
@@ -208,6 +243,12 @@ fun AppNavigation(
                         Icon(Icons.Default.Add, stringResource(R.string.cd_new_scan))
                     }
                 }
+            },
+            snackbarHost = {
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.padding(bottom = snackbarBottomPadding)
+                )
             }
         ) { innerPadding ->
             Box(
@@ -223,20 +264,125 @@ fun AppNavigation(
                         )
                     )
             ) {
-                AppNavigationHost(
-                    navController = navController,
-                    innerPadding = innerPadding,
-                    addActionTrigger = addActionTrigger,
-                    onAddActionTriggered = { addActionTrigger = false },
-                    onSelectionModeChange = { isSelectionMode = it },
-                    onThemeModeChange = onThemeModeChange,
-                    pendingAppEntryAction = pendingAppEntryAction,
-                    onConsumeAppEntryAction = onConsumeAppEntryAction,
-                    appLockManager = appLockManager
-                )
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                    val contentModifier = if (contentMaxWidth == null) {
+                        Modifier.fillMaxSize()
+                    } else {
+                        Modifier
+                            .fillMaxHeight()
+                            .widthIn(max = contentMaxWidth)
+                            .fillMaxWidth()
+                    }
+                    Box(modifier = contentModifier) {
+                        CompositionLocalProvider(LocalAppSnackbarHostState provides snackbarHostState) {
+                            AppNavigationHost(
+                                navController = navController,
+                                innerPadding = innerPadding,
+                                addActionTrigger = addActionTrigger,
+                                onAddActionTriggered = { addActionTrigger = false },
+                                onSelectionModeChange = { isSelectionMode = it },
+                                isLandscapeCompact = isLandscapeCompact,
+                                onThemeModeChange = onThemeModeChange,
+                                pendingAppEntryAction = pendingAppEntryAction,
+                                onConsumeAppEntryAction = onConsumeAppEntryAction,
+                                appLockManager = appLockManager
+                            )
+                        }
+                    }
+                }
             }
         }
     }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = !showNavigationRail && drawerGesturesEnabled,
+        drawerContent = drawerContent
+    ) {
+        if (showNavigationRail) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                AppNavigationRail(
+                    currentRoute = currentRoute,
+                    showAddAction = isHomeRoute && !isSelectionMode,
+                    onAddAction = { addActionTrigger = true },
+                    onNavigateToTopLevel = { screen -> navigateToTopLevel(screen) }
+                )
+                appContent()
+            }
+        } else {
+            appContent()
+        }
+    }
+}
+
+@Composable
+private fun AppNavigationRail(
+    currentRoute: String?,
+    showAddAction: Boolean,
+    onAddAction: () -> Unit,
+    onNavigateToTopLevel: (Screen) -> Unit
+) {
+    NavigationRail(
+        header = if (showAddAction) {
+            {
+                FloatingActionButton(
+                    onClick = onAddAction,
+                    shape = RoundedCornerShape(18.dp)
+                ) {
+                    Icon(Icons.Default.Add, stringResource(R.string.cd_new_scan))
+                }
+            }
+        } else {
+            null
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            RailItem(
+                icon = Icons.Default.FolderOpen,
+                label = stringResource(R.string.folder_all_documents),
+                selected = currentRoute == Screen.Ablage.route || currentRoute == null,
+                onClick = { onNavigateToTopLevel(Screen.Ablage) }
+            )
+            RailItem(
+                icon = Icons.Default.Delete,
+                label = stringResource(R.string.nav_trash),
+                selected = currentRoute == Screen.Trash.route,
+                onClick = { onNavigateToTopLevel(Screen.Trash) }
+            )
+            RailItem(
+                icon = Icons.Default.Settings,
+                label = stringResource(R.string.nav_settings),
+                selected = currentRoute == Screen.Settings.route,
+                onClick = { onNavigateToTopLevel(Screen.Settings) }
+            )
+            RailItem(
+                icon = Icons.AutoMirrored.Filled.Help,
+                label = stringResource(R.string.nav_help),
+                selected = currentRoute == Screen.Help.route,
+                onClick = { onNavigateToTopLevel(Screen.Help) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun RailItem(
+    icon: ImageVector,
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    NavigationRailItem(
+        selected = selected,
+        onClick = onClick,
+        icon = { Icon(icon, contentDescription = label) },
+        label = { androidx.compose.material3.Text(label) }
+    )
 }
 
 internal fun shouldNavigatePendingHomeActionToArchive(

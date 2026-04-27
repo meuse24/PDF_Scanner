@@ -22,6 +22,16 @@ interface ScanDao {
         """
         SELECT * FROM scan_records
         WHERE deleted_at IS NULL
+          AND (',' || tags || ',') LIKE '%,' || :tagKey || ',%'
+        ORDER BY timestamp DESC
+        """
+    )
+    fun getScansWithTag(tagKey: String): Flow<List<ScanRecord>>
+
+    @Query(
+        """
+        SELECT * FROM scan_records
+        WHERE deleted_at IS NULL
           AND id IN (SELECT docid FROM scan_records_fts WHERE scan_records_fts MATCH :query)
         ORDER BY timestamp DESC
         """
@@ -86,6 +96,20 @@ interface ScanDao {
         language: String?,
         pageTextJson: String?
     )
+
+    @Query(
+        """
+        SELECT * FROM scan_records
+        WHERE extracted_text IS NOT NULL
+          AND extracted_text != ''
+          AND (tags IS NULL OR tags = '')
+          AND deleted_at IS NULL
+        """
+    )
+    suspend fun getAllSearchableWithoutTags(): List<ScanRecord>
+
+    @Query("UPDATE scan_records SET tags = :tags WHERE id = :id")
+    suspend fun updateTags(id: Long, tags: String)
 
     @Query(
         """

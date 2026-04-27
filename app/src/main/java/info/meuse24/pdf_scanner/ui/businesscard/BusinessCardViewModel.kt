@@ -51,7 +51,7 @@ class BusinessCardViewModel @Inject constructor(
     private val exportVCardUseCase: ExportVCardUseCase,
     private val resourceProvider: ResourceProvider,
     private val dispatcherProvider: DispatcherProvider,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val scanId: Long = checkNotNull(savedStateHandle["scanId"])

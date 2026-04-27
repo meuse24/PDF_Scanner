@@ -12,6 +12,8 @@ data class ScanListItem(
     @ColumnInfo(name = "thumbnail_path") val thumbnailPath: String? = null,
     @ColumnInfo(name = "is_searchable") val isSearchable: Boolean = false,
     @ColumnInfo(name = "is_encrypted") val isEncrypted: Boolean = false,
+    @ColumnInfo(name = "extracted_text") val extractedText: String? = null,
+    val tags: String? = null,
     @ColumnInfo(name = "deleted_at") val deletedAt: Long? = null,
     @ColumnInfo(name = "folder_id") val folderId: Long? = null,
     @ColumnInfo(name = "is_favorite") val isFavorite: Boolean = false

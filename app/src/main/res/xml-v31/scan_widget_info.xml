@@ -4,6 +4,9 @@
     android:initialLayout="@layout/widget_scan"
     android:minHeight="96dp"
     android:minWidth="180dp"
+    android:previewLayout="@layout/widget_scan"
     android:resizeMode="horizontal|vertical"
+    android:targetCellHeight="1"
+    android:targetCellWidth="2"
     android:updatePeriodMillis="0"
     android:widgetCategory="home_screen" />

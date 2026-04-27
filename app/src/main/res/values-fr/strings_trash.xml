@@ -24,18 +24,22 @@
     <string name="privacy_point_6">Lorsque vous supprimez un document, il reste d’abord localement dans la corbeille de l’app pendant 30 jours au maximum. Il est retiré plus tôt si vous le supprimez définitivement ou videz la corbeille.</string>
     <plurals name="trash_moved">
         <item quantity="one">%1$d document déplacé vers la corbeille</item>
+        <item quantity="many">%1$d documents déplacés vers la corbeille</item>
         <item quantity="other">%1$d documents déplacés vers la corbeille</item>
     </plurals>
     <plurals name="trash_restored">
         <item quantity="one">%1$d document restauré</item>
+        <item quantity="many">%1$d documents restaurés</item>
         <item quantity="other">%1$d documents restaurés</item>
     </plurals>
     <plurals name="trash_purged">
         <item quantity="one">%1$d document supprimé définitivement</item>
+        <item quantity="many">%1$d documents supprimés définitivement</item>
         <item quantity="other">%1$d documents supprimés définitivement</item>
     </plurals>
     <plurals name="trash_days_remaining">
         <item quantity="one">Suppression définitive dans %1$d jour</item>
+        <item quantity="many">Suppression définitive dans %1$d jours</item>
         <item quantity="other">Suppression définitive dans %1$d jours</item>
     </plurals>
 </resources>

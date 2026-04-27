@@ -16,6 +16,8 @@
     <string name="settings_default_ocr_language_label">默认OCR语言</string>
     <string name="settings_archive_title">文件库</string>
     <string name="settings_default_sort_order_label">默认排序</string>
+    <string name="settings_trash_undo_duration_label">回收站撤销消息时长</string>
+    <string name="settings_trash_undo_duration_seconds">%1$d 秒</string>
     <string name="settings_more_coming">此处将添加更多设置。</string>
     <string name="theme_mode_system">跟随系统</string>
     <string name="theme_mode_light">浅色</string>
@@ -26,6 +28,10 @@
     <string name="cd_share">分享</string>
     <string name="cd_delete">删除</string>
     <string name="cd_pdf_document">PDF 文档</string>
+    <string name="cd_add_favorite">添加到收藏</string>
+    <string name="cd_remove_favorite">从收藏中移除</string>
+    <string name="cd_document_actions">打开文档操作</string>
+    <string name="cd_select_document">选择 %1$s</string>
     <string name="action_open_document">打开 PDF</string>
     <string name="action_select_documents">选择文档</string>
     <string name="home_empty_title">暂无文档</string>
@@ -146,7 +152,7 @@
     <string name="privacy_point_1">本应用会将 PDF、预览图、已遮蔽副本和可选的可搜索 OCR 文本保存在您的设备本地。</string>
     <string name="privacy_point_2">不会自动上传任何文档或内容。只有在您明确触发时才会进行分享或导出。安全遮蔽会创建一份新副本；原始文件会一直保留，直到您删除它。</string>
     <string name="privacy_point_3">扫描和 OCR 功能使用 Google Play 服务。为进行错误分析，可能会传输技术诊断数据。自动模式使用内置的拉丁文字识别器，可离线工作。印地语、中文、日语和韩语的语言模型可能会在首次手动使用时通过 Play Services 获取；本应用不会发送您的文档内容。</string>
-    <string name="privacy_point_4">应用本身不收集个人数据，不使用自有分析服务，也不请求自有网络权限。</string>
+    <string name="privacy_point_4">应用本身不收集个人数据，也不使用自有分析服务或后端。Google Play Services / ML Kit 可能会为模型、兼容性和诊断添加网络权限。</string>
     <string name="privacy_footer">更新时间：2026年4月24日</string>
 
     <!-- OCR -->
@@ -371,7 +377,7 @@
     <string name="action_submenu_security">Security &amp; Password</string>
     <!-- Restrict usage -->
     <string name="restrict_usage_screen_title">Restrict usage rights</string>
-    <string name="restrict_usage_description">Set usage rights via owner password</string>
+    <string name="restrict_usage_description">使用所有者密码设置使用权限</string>
     <string name="restrict_usage_details">Creates a new PDF copy with usage restrictions controlled by an owner password. The document can still be opened without a password, but printing, copying, and editing can be individually restricted. The original file stays unchanged.</string>
     <string name="restrict_usage_owner_password_label">Owner password</string>
     <string name="restrict_usage_can_print">Allow printing</string>
@@ -485,6 +491,7 @@
     <string name="metadata_apply">保存元数据</string>
     <string name="metadata_error">保存 PDF 元数据时出错</string>
     <string name="help_item_pdf_metadata">点击"PDF 信息"可查看并编辑文档的嵌入元数据——标题、作者、创建应用、主题、关键词以及创建和修改日期。可编辑字段会写回同一个 PDF 文件。</string>
+    <string name="label_bulk_more">更多</string>
 
     <!-- Images to PDF -->
 
@@ -505,8 +512,16 @@
     <string name="pdf_viewer_invalid_page">无法打开此页面。</string>
     <string name="pdf_viewer_out_of_memory">此页面过大，无法在本设备上渲染。</string>
     <string name="pdf_viewer_renderer_failed">PDF 查看器无法渲染此文档。</string>
-</resources>
-
-
-
-
+    <string name="filter_tag_all">All</string>
+    <string name="filter_tag_invoice">Invoices</string>
+    <string name="filter_tag_contract">Contracts</string>
+    <string name="filter_tag_insurance">Insurance</string>
+    <string name="filter_tag_certificate">Certificates</string>
+    <string name="filter_tag_bank">Bank</string>
+    <string name="filter_tag_delivery">Delivery notes</string>
+    <string name="settings_retro_tag_action">Tag documents automatically</string>
+    <string name="settings_retro_tag_done">%1$d documents tagged</string>
+    <string name="ocr_export_as_file">Save as text file</string>
+    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
+    <string name="ocr_export_error">Text export failed</string>
+    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>

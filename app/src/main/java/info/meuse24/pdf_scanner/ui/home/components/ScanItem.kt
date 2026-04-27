@@ -13,6 +13,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Star
@@ -75,14 +76,14 @@ import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun ScanItem(
     record:           Document,
     isSelected:       Boolean,
+    modifier:         Modifier = Modifier,
     inSelectionMode:  Boolean  = false,
     compact:          Boolean  = false,
-    modifier:         Modifier = Modifier,
     onClick:          () -> Unit,
     onCheckboxToggle: () -> Unit,
     onToggleFavorite: () -> Unit = {},
@@ -200,6 +201,10 @@ internal fun ScanItem(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
+                    if (record.isSearchable) {
+                        Spacer(Modifier.height(2.dp))
+                        SearchableBadges(record = record)
+                    }
                 }
 
                 Spacer(Modifier.width(4.dp))
@@ -260,21 +265,7 @@ internal fun ScanItem(
                     )
                     if (record.isSearchable) {
                         Spacer(Modifier.height(2.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Badge(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                contentColor   = MaterialTheme.colorScheme.onSecondaryContainer
-                            ) {
-                                Text(
-                                    stringResource(R.string.searchable_badge),
-                                    style = MaterialTheme.typography.labelSmall
-                                )
-                            }
-                            OcrQualityBadge(
-                                quality = record.ocrConfidence.toQuality(),
-                                percent = record.ocrConfidence.toQualityPercent()
-                            )
-                        }
+                        SearchableBadges(record = record)
                     }
                     if (folderLabel != null) {
                         Spacer(Modifier.height(3.dp))
@@ -401,6 +392,32 @@ private fun ScanItemActions(
 
 private val ScanItemActionWidth = 40.dp
 private val ScanItemActionHeight = 48.dp
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SearchableBadges(record: Document) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(3.dp)
+    ) {
+        Badge(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        ) {
+            Text(
+                stringResource(R.string.searchable_badge),
+                style = MaterialTheme.typography.labelSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Clip,
+                softWrap = false
+            )
+        }
+        OcrQualityBadge(
+            quality = record.ocrConfidence.toQuality(),
+            percent = record.ocrConfidence.toQualityPercent()
+        )
+    }
+}
 
 @Composable
 private fun tagLabel(tagKey: String): String = when (tagKey) {

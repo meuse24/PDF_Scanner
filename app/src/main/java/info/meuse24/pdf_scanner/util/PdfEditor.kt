@@ -8,6 +8,7 @@ import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import androidx.core.graphics.createBitmap
 import com.tom_roush.pdfbox.cos.COSArray
 import com.tom_roush.pdfbox.cos.COSDictionary
 import com.tom_roush.pdfbox.cos.COSName
@@ -265,7 +266,7 @@ open class PdfEditor @Inject constructor() :
                                 val scale = preset.renderDpi / 72f
                                 val bitmapWidth = (page.width * scale).toInt().coerceAtLeast(1)
                                 val bitmapHeight = (page.height * scale).toInt().coerceAtLeast(1)
-                                val bitmap = Bitmap.createBitmap(
+                                val bitmap = createBitmap(
                                     bitmapWidth,
                                     bitmapHeight,
                                     Bitmap.Config.ARGB_8888
@@ -355,7 +356,7 @@ open class PdfEditor @Inject constructor() :
                             renderer.openPage(pageIndex).use { page ->
                                 val w = page.width.takeIf { it > 0 } ?: 595
                                 val h = page.height.takeIf { it > 0 } ?: 842
-                                val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                                val bitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
                                 try {
                                     Canvas(bitmap).drawColor(Color.WHITE)
                                     page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
@@ -394,11 +395,11 @@ open class PdfEditor @Inject constructor() :
                             renderer.openPage(pageIndex).use { page ->
                                 val w = page.width.takeIf { it > 0 } ?: 595
                                 val h = page.height.takeIf { it > 0 } ?: 842
-                                val colorBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                                val colorBitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
                                 try {
                                     Canvas(colorBitmap).drawColor(Color.WHITE)
                                     page.render(colorBitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                                    val grayBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                                    val grayBitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
                                     try {
                                         val paint = Paint()
                                         val cm = ColorMatrix()
@@ -649,7 +650,7 @@ open class PdfEditor @Inject constructor() :
                         }
                         val ap = AccessPermission()
                         ap.setCanPrint(canPrint)
-                        ap.setCanPrintDegraded(canPrint)
+                        ap.setCanPrintFaithful(canPrint)
                         ap.setCanExtractContent(canCopy)
                         ap.setCanModify(canEdit)
                         ap.setCanFillInForm(canEdit)
@@ -770,9 +771,9 @@ open class PdfEditor @Inject constructor() :
                         if (pageRects.isNotEmpty()) {
                             cs.setGraphicsStateParameters(gsRectHighlight)
                             cs.setNonStrokingColor(
-                                HIGHLIGHT_COLOR_RED,
-                                HIGHLIGHT_COLOR_GREEN,
-                                HIGHLIGHT_COLOR_BLUE
+                                HIGHLIGHT_COLOR_RED / 255f,
+                                HIGHLIGHT_COLOR_GREEN / 255f,
+                                HIGHLIGHT_COLOR_BLUE / 255f
                             )
                             pageRects.forEach { rect ->
                                 val topLeft = mapDisplayToPdfCoord(
@@ -803,9 +804,9 @@ open class PdfEditor @Inject constructor() :
 
                         cs.setGraphicsStateParameters(gsStrokeHighlight)
                         cs.setStrokingColor(
-                            HIGHLIGHT_COLOR_RED,
-                            HIGHLIGHT_COLOR_GREEN,
-                            HIGHLIGHT_COLOR_BLUE
+                            HIGHLIGHT_COLOR_RED / 255f,
+                            HIGHLIGHT_COLOR_GREEN / 255f,
+                            HIGHLIGHT_COLOR_BLUE / 255f
                         )
                         pageStrokes.forEach { stroke ->
                             val strokeWidthPt =
@@ -944,7 +945,7 @@ open class PdfEditor @Inject constructor() :
                         } else {
                             (maxSizePx * w / h).coerceAtLeast(1) to maxSizePx
                         }
-                        val bitmap = Bitmap.createBitmap(bmpW, bmpH, Bitmap.Config.ARGB_8888)
+                        val bitmap = createBitmap(bmpW, bmpH, Bitmap.Config.ARGB_8888)
                         Canvas(bitmap).drawColor(Color.WHITE)
                         page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
                         bitmap

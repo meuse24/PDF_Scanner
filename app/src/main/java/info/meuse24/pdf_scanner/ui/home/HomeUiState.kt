@@ -14,6 +14,8 @@ data class HomeArchiveUiState(
     val folders: List<Folder> = emptyList(),
     val currentFolder: Folder? = null,
     val favoritesFilter: Boolean = false,
+    val currentTagKey: String? = null,
+    val availableTagKeys: List<String> = emptyList(),
     val searchQuery: String = "",
     val sortOrder: SortOrder = SortOrder.ByDate,
     val pendingImageUris: List<Uri> = emptyList()

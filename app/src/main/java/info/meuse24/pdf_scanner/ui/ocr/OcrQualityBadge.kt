@@ -3,9 +3,10 @@ package info.meuse24.pdf_scanner.ui.ocr
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.util.OcrQuality
@@ -34,7 +36,7 @@ fun OcrQualityBadge(
     val icon = when (quality) {
         OcrQuality.HIGH, OcrQuality.MEDIUM -> Icons.Default.CheckCircle
         OcrQuality.LOW -> Icons.Default.WarningAmber
-        OcrQuality.UNKNOWN -> Icons.AutoMirrored.Filled.HelpOutline
+        OcrQuality.UNKNOWN -> Icons.Default.FindInPage
     }
     val label = percent?.let { stringResource(R.string.ocr_quality_badge_percent, it) }
         ?: stringResource(R.string.ocr_quality_badge_unknown)
@@ -52,11 +54,15 @@ fun OcrQualityBadge(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.size(14.dp)
             )
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelSmall
+                style = MaterialTheme.typography.labelSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Clip,
+                softWrap = false
             )
         }
     }

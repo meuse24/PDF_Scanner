@@ -27,6 +27,7 @@ internal data class HomeScanActionNavigator(
     val onQrScan: (Long) -> Unit,
     val onBusinessCard: (Long) -> Unit,
     val onExportAsJpg: (Document) -> Unit,
+    val onExportOcrText: (Document) -> Unit,
     val onPrint: (Document) -> Unit,
     val onRename: (Document) -> Unit
 )
@@ -54,6 +55,7 @@ internal fun dispatchHomeScanAction(
         ScanAction.RemovePassword -> navigator.onRemovePassword(record.id)
         ScanAction.RestrictUsage -> navigator.onRestrictUsage(record.id)
         ScanAction.ExportAsJpg -> navigator.onExportAsJpg(record)
+        ScanAction.ExportOcrText -> navigator.onExportOcrText(record)
         ScanAction.Annotate -> navigator.onAnnotate(record.id)
         ScanAction.Redact -> navigator.onRedact(record.id)
         ScanAction.Grayscale -> navigator.onGrayscale(record.id)

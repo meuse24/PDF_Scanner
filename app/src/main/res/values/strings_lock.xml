@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="settings_security_title">Security</string>
     <string name="settings_app_lock_label">Protect app with biometrics</string>
     <string name="settings_app_lock_timeout_label">Lock after background time</string>
@@ -8,7 +8,7 @@
     <string name="settings_app_lock_timeout_30s">After 30 seconds</string>
     <string name="settings_app_lock_timeout_1m">After 1 minute</string>
     <string name="settings_app_lock_timeout_5m">After 5 minutes</string>
-    <string name="settings_app_lock_timeout_custom">After %1$d seconds</string>
+    <string name="settings_app_lock_timeout_custom" tools:ignore="PluralsCandidate">After %1$d seconds</string>
     <string name="app_lock_prompt_title">Unlock M24 PDF-Scanner</string>
     <string name="app_lock_prompt_subtitle">Use biometrics or your device credentials</string>
     <string name="app_lock_screen_title">App locked</string>

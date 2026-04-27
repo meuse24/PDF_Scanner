@@ -12,6 +12,7 @@
     <string name="append_images_hint">Elige el diseño de página para las imágenes seleccionadas antes de anexarlas.</string>
     <plurals name="append_success">
         <item quantity="one">%1$d página anexada</item>
+        <item quantity="many">%1$d páginas anexadas</item>
         <item quantity="other">%1$d páginas anexadas</item>
     </plurals>
     <string name="append_error">No se pudieron anexar las páginas</string>

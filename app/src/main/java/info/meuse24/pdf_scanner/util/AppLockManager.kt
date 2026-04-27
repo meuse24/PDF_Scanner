@@ -37,7 +37,7 @@ sealed interface AppLockAuthResult {
 @Singleton
 class AppLockManager @Inject constructor(
     private val settingsRepository: AppSettingsRepository,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : DefaultLifecycleObserver {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val _isLocked = MutableStateFlow(settingsRepository.settings.value.appLockEnabled)

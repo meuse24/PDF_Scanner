@@ -26,6 +26,7 @@ coroutinesTest = "1.10.1"
 mockito = "5.11.0"
 biometric = "1.4.0-alpha04"
 playReview = "2.0.2"
+serialization = "1.8.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -70,6 +71,8 @@ mockito-inline = { group = "org.mockito", name = "mockito-core", version.ref = "
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 play-review = { group = "com.google.android.play", name = "review", version.ref = "playReview" }
 play-review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "playReview" }
+kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "serialization" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

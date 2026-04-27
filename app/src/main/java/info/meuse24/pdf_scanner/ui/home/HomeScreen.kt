@@ -173,6 +173,7 @@ fun HomeScreen(
         onQrScan = navigation.onQrScan,
         onBusinessCard = navigation.onBusinessCard,
         onExportAsJpg = viewModel::exportAsJpg,
+        onExportOcrText = viewModel::exportOcrText,
         onPrint = { record ->
             PdfPrintHelper.print(
                 context = context,
@@ -254,6 +255,10 @@ fun HomeScreen(
                         selectedRecords.forEach(viewModel::exportScan)
                         viewModel.clearSelectedIds()
                     },
+                    onExportOcrText = {
+                        viewModel.exportOcrTexts(selectedRecords)
+                        viewModel.clearSelectedIds()
+                    },
                     onExtractTexts = {
                         selectedBulkLang = archiveUiState.settings.defaultOcrLanguage
                         bulkLangForSearchable = false
@@ -291,6 +296,8 @@ fun HomeScreen(
                 folders = archiveUiState.folders,
                 currentFolder = archiveUiState.currentFolder,
                 favoritesFilter = archiveUiState.favoritesFilter,
+                currentTagKey = archiveUiState.currentTagKey,
+                availableTagKeys = archiveUiState.availableTagKeys,
                 searchQuery = archiveUiState.searchQuery,
                 sortOrder = archiveUiState.sortOrder,
                 selectedIds = selectedIds,
@@ -299,6 +306,8 @@ fun HomeScreen(
                 listState = listState,
                 onSearchQueryChange = viewModel::updateSearchQuery,
                 onSortOrderSelected = viewModel::setSortOrder,
+                onShowAllDocuments = viewModel::showAllDocuments,
+                onTagSelected = viewModel::showTag,
                 onClearSelection = viewModel::clearSelectedIds,
                 onSelectAll = { viewModel.setSelectedIds(archiveUiState.filteredScans.map { it.id }.toSet()) },
                 onSelectionToggle = { record ->
@@ -323,6 +332,10 @@ fun HomeScreen(
                 },
                 onExport = {
                     selectedRecords.forEach(viewModel::exportScan)
+                    viewModel.clearSelectedIds()
+                },
+                onExportOcrText = {
+                    viewModel.exportOcrTexts(selectedRecords)
                     viewModel.clearSelectedIds()
                 },
                 onExtractTexts = {

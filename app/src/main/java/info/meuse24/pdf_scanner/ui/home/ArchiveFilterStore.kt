@@ -10,6 +10,7 @@ sealed interface ArchiveFilter {
     data object AllDocuments : ArchiveFilter
     data object Favorites : ArchiveFilter
     data class Folder(val folderId: Long) : ArchiveFilter
+    data class Tag(val key: String) : ArchiveFilter
 }
 
 @Singleton
@@ -27,5 +28,9 @@ class ArchiveFilterStore @Inject constructor() {
 
     fun showFolder(folderId: Long) {
         _filter.value = ArchiveFilter.Folder(folderId)
+    }
+
+    fun showTag(tagKey: String) {
+        _filter.value = ArchiveFilter.Tag(tagKey)
     }
 }

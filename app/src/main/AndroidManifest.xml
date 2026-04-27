@@ -12,6 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:enableOnBackInvokedCallback="true"
+        tools:targetApi="tiramisu"
         android:theme="@style/Theme.PDF_Scanner">
         <activity
             android:name=".MainActivity"
@@ -51,6 +52,7 @@
         <activity
             android:name="com.google.mlkit.vision.documentscanner.internal.GmsDocumentScanningDelegateActivity"
             android:screenOrientation="unspecified"
+            tools:ignore="DiscouragedApi"
             tools:replace="android:screenOrientation" />
 
         <provider

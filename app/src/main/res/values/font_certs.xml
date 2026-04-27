@@ -4,7 +4,7 @@
     Required by androidx.compose.ui:ui-text-google-fonts to verify the font provider package.
     Source: https://developers.google.com/fonts/docs/android
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="Typos">
     <array name="com_google_android_gms_fonts_certs">
         <item>@array/com_google_android_gms_fonts_certs_dev</item>
         <item>@array/com_google_android_gms_fonts_certs_prod</item>

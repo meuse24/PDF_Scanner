@@ -9,7 +9,7 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted, extracted_text, tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL
@@ -21,7 +21,7 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted, extracted_text, tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL AND folder_id IS :folderId
@@ -33,7 +33,7 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted, extracted_text, tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL AND is_favorite = 1
@@ -45,7 +45,20 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted, extracted_text, tags, deleted_at,
+               folder_id, is_favorite
+        FROM scan_records
+        WHERE deleted_at IS NULL
+          AND (',' || tags || ',') LIKE '%,' || :tagKey || ',%'
+        ORDER BY timestamp DESC
+        """
+    )
+    fun getScanListItemsWithTag(tagKey: String): Flow<List<ScanListItem>>
+
+    @Query(
+        """
+        SELECT id, filename, filepath, timestamp, pageCount, fileSize,
+               thumbnail_path, is_searchable, is_encrypted, extracted_text, tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL
@@ -58,7 +71,7 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted, extracted_text, tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL
@@ -72,7 +85,7 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted, extracted_text, tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL

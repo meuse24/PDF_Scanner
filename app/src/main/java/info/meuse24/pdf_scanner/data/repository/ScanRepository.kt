@@ -33,6 +33,11 @@ class ScanRepository @Inject constructor(
         records.map { it.toDomain() }
     }
 
+    override fun getScansWithTagForList(tagKey: String): Flow<List<Document>> =
+        scanListDao.getScanListItemsWithTag(tagKey).map { records ->
+            records.map { it.toDomain() }
+        }
+
     override fun searchScansFlow(query: String): Flow<List<Document>> = dao.searchScansFlow(query).map { records ->
         records.map { it.toDomain() }
     }
@@ -64,6 +69,11 @@ class ScanRepository @Inject constructor(
     override fun searchFavoriteScansForList(query: String): Flow<List<Document>> =
         scanListDao.searchFavoriteScanListItems(query).map { records ->
             records.map { it.toDomain() }
+        }
+
+    override fun searchScansWithTagForList(query: String, tagKey: String): Flow<List<Document>> =
+        searchScansForList(query).map { documents ->
+            documents.filter { document -> document.tags.orEmpty().split(",").any { it.trim() == tagKey } }
         }
 
     override suspend fun saveScan(record: Document): Long = dao.insert(record.toEntity())
@@ -106,6 +116,11 @@ class ScanRepository @Inject constructor(
     override suspend fun moveDocumentsToFolder(ids: List<Long>, folderId: Long?) = dao.moveScans(ids, folderId)
 
     override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) = dao.setFavorite(ids, favorite)
+
+    override suspend fun getAllSearchableWithoutTags(): List<Document> =
+        dao.getAllSearchableWithoutTags().map { it.toDomain() }
+
+    override suspend fun updateTags(id: Long, tags: String) = dao.updateTags(id, tags)
 }
 
 private class ScanRecordBackedScanListDao(
@@ -119,6 +134,9 @@ private class ScanRecordBackedScanListDao(
 
     override fun getFavoriteScanListItems(): Flow<List<ScanListItem>> =
         dao.getFavoriteScans().map { records -> records.map { it.toListItem() } }
+
+    override fun getScanListItemsWithTag(tagKey: String): Flow<List<ScanListItem>> =
+        dao.getScansWithTag(tagKey).map { records -> records.map { it.toListItem() } }
 
     override fun searchScanListItems(query: String): Flow<List<ScanListItem>> =
         dao.searchScansFlow(query).map { records -> records.map { it.toListItem() } }

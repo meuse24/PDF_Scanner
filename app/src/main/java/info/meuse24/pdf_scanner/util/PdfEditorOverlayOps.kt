@@ -34,7 +34,7 @@ internal fun PdfEditor.appendPageNumber(
     ).use { contentStream ->
         contentStream.setGraphicsStateParameters(graphicsState)
         contentStream.beginText()
-        contentStream.setNonStrokingColor(82, 82, 91)
+        contentStream.setNonStrokingColor(82 / 255f, 82 / 255f, 91 / 255f)
         contentStream.setFont(font, fontSize)
         contentStream.newLineAtOffset(x, y)
         contentStream.showText(label)
@@ -65,7 +65,7 @@ internal fun PdfEditor.appendTextWatermark(
     ).use { contentStream ->
         contentStream.setGraphicsStateParameters(graphicsState)
         contentStream.beginText()
-        contentStream.setNonStrokingColor(75, 85, 99)
+        contentStream.setNonStrokingColor(75 / 255f, 85 / 255f, 99 / 255f)
         contentStream.setFont(font, fontSize)
         contentStream.setTextMatrix(Matrix.getRotateInstance(Math.toRadians(45.0), x, y))
         contentStream.showText(text)

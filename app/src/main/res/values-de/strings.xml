@@ -154,7 +154,7 @@
     <string name="privacy_point_1">Die App speichert PDFs, Vorschaubilder, Bild-zu-PDF-Ergebnisse, geschwärzte Kopien und optionalen durchsuchbaren OCR-Text lokal auf Ihrem Gerät.</string>
     <string name="privacy_point_2">Dokumente oder Inhalte werden nicht automatisch hochgeladen. Teilen, Drucken oder Exportieren erfolgt nur, wenn Sie es ausdrücklich auslösen. Sicheres Schwärzen erzeugt eine neue Kopie; das Original bleibt erhalten, bis Sie es löschen.</string>
     <string name="privacy_point_3">Scan- und OCR-Funktionen nutzen Google Play Services. Für die Fehleranalyse können technische Diagnosedaten übertragen werden. Der automatische Modus verwendet ein integriertes Lateinerkenner-Modell, das offline funktioniert. Die Sprachmodelle für Hindi, Chinesisch, Japanisch und Koreanisch können beim ersten manuellen Einsatz über Play Services geladen werden; Dokumentinhalte werden von der App nicht gesendet.</string>
-    <string name="privacy_point_4">Die App selbst erhebt keine personenbezogenen Daten, nutzt kein eigenes Analytics-System und fordert keine eigene Netzwerkberechtigung an.</string>
+    <string name="privacy_point_4">Die App selbst erhebt keine personenbezogenen Daten und nutzt weder eigenes Analytics noch ein eigenes Backend. Google Play Services / ML Kit können Netzwerkberechtigungen für Modelle, Kompatibilität und Diagnosen einbringen.</string>
     <string name="privacy_footer">Stand: 24. April 2026</string>
 
     <!-- OCR -->
@@ -515,5 +515,16 @@
     <string name="help_item_rename">Wähle PDF umbenennen, um einem Dokument einen neuen Namen zu geben. Der Dateiname muss in der Ablage eindeutig sein. Die Endung .pdf wird automatisch ergänzt.</string>
 
     <!-- Images to PDF -->
-</resources>
-
+    <string name="filter_tag_all">All</string>
+    <string name="filter_tag_invoice">Invoices</string>
+    <string name="filter_tag_contract">Contracts</string>
+    <string name="filter_tag_insurance">Insurance</string>
+    <string name="filter_tag_certificate">Certificates</string>
+    <string name="filter_tag_bank">Bank</string>
+    <string name="filter_tag_delivery">Delivery notes</string>
+    <string name="settings_retro_tag_action">Tag documents automatically</string>
+    <string name="settings_retro_tag_done">%1$d documents tagged</string>
+    <string name="ocr_export_as_file">Save as text file</string>
+    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
+    <string name="ocr_export_error">Text export failed</string>
+    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>

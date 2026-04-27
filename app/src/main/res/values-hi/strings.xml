@@ -16,6 +16,8 @@
     <string name="settings_default_ocr_language_label">डिफ़ॉल्ट OCR भाषा</string>
     <string name="settings_archive_title">संग्रह</string>
     <string name="settings_default_sort_order_label">डिफ़ॉल्ट क्रम</string>
+    <string name="settings_trash_undo_duration_label">ट्रैश पूर्ववत संदेश की अवधि</string>
+    <string name="settings_trash_undo_duration_seconds">%1$d सेकंड</string>
     <string name="settings_more_coming">यहां और सेटिंग्स जोड़ी जाएंगी।</string>
     <string name="theme_mode_system">सिस्टम</string>
     <string name="theme_mode_light">हल्का</string>
@@ -26,6 +28,10 @@
     <string name="cd_share">साझा करें</string>
     <string name="cd_delete">हटाएं</string>
     <string name="cd_pdf_document">PDF दस्तावेज़</string>
+    <string name="cd_add_favorite">पसंदीदा में जोड़ें</string>
+    <string name="cd_remove_favorite">पसंदीदा से हटाएं</string>
+    <string name="cd_document_actions">दस्तावेज़ कार्रवाइयां खोलें</string>
+    <string name="cd_select_document">%1$s चुनें</string>
     <string name="action_open_document">PDF खोलें</string>
     <string name="action_select_documents">दस्तावेज़ चुनें</string>
     <string name="home_empty_title">कोई दस्तावेज़ उपलब्ध नहीं</string>
@@ -146,7 +152,7 @@
     <string name="privacy_point_1">यह ऐप PDF, प्रीव्यू छवियाँ, रिडैक्टेड कॉपियाँ और वैकल्पिक खोजयोग्य OCR टेक्स्ट आपके डिवाइस पर स्थानीय रूप से संग्रहीत करता है।</string>
     <string name="privacy_point_2">कोई दस्तावेज़ या सामग्री अपने आप अपलोड नहीं की जाती। शेयर या एक्सपोर्ट केवल तभी होता है जब आप उसे स्पष्ट रूप से शुरू करते हैं। सुरक्षित रिडैक्शन एक नई कॉपी बनाता है; मूल फ़ाइल तब तक रहती है जब तक आप उसे हटाते नहीं हैं।</string>
     <string name="privacy_point_3">स्कैन और OCR फ़ंक्शन Google Play Services का उपयोग करते हैं। त्रुटि विश्लेषण के लिए तकनीकी डायग्नोस्टिक डेटा भेजा जा सकता है। स्वचालित मोड एक अंतर्निहित लैटिन टेक्स्ट पहचानकर्ता का उपयोग करता है जो ऑफ़लाइन काम करता है। हिंदी, चीनी, जापानी और कोरियाई भाषा मॉडल पहली बार मैन्युअल उपयोग पर Play Services के माध्यम से प्राप्त किए जा सकते हैं; इस ऐप द्वारा आपके दस्तावेज़ों की सामग्री नहीं भेजी जाती।</string>
-    <string name="privacy_point_4">ऐप स्वयं कोई व्यक्तिगत डेटा एकत्र नहीं करता, अपनी विश्लेषण सेवा का उपयोग नहीं करता, और अपनी अलग नेटवर्क अनुमति नहीं मांगता।</string>
+    <string name="privacy_point_4">ऐप स्वयं कोई व्यक्तिगत डेटा एकत्र नहीं करता और अपनी विश्लेषण सेवा या बैकएंड का उपयोग नहीं करता। Google Play Services / ML Kit मॉडल, संगतता और निदान के लिए नेटवर्क अनुमतियां जोड़ सकते हैं।</string>
     <string name="privacy_footer">अपडेट: 24 अप्रैल 2026</string>
 
     <!-- OCR -->
@@ -371,7 +377,7 @@
     <string name="action_submenu_security">Security &amp; Password</string>
     <!-- Restrict usage -->
     <string name="restrict_usage_screen_title">Restrict usage rights</string>
-    <string name="restrict_usage_description">Set usage rights via owner password</string>
+    <string name="restrict_usage_description">स्वामी पासवर्ड से उपयोग अधिकार सेट करें</string>
     <string name="restrict_usage_details">Creates a new PDF copy with usage restrictions controlled by an owner password. The document can still be opened without a password, but printing, copying, and editing can be individually restricted. The original file stays unchanged.</string>
     <string name="restrict_usage_owner_password_label">Owner password</string>
     <string name="restrict_usage_can_print">Allow printing</string>
@@ -485,6 +491,7 @@
     <string name="metadata_apply">मेटाडेटा सहेजें</string>
     <string name="metadata_error">PDF मेटाडेटा सहेजने में त्रुटि</string>
     <string name="help_item_pdf_metadata">किसी दस्तावेज़ के एम्बेडेड मेटाडेटा — शीर्षक, लेखक, निर्माता एप्लिकेशन, विषय, कीवर्ड और निर्माण व संशोधन तिथियां — देखने और संपादित करने के लिए "PDF जानकारी" पर टैप करें। संपादित किए जा सकने वाले फ़ील्ड उसी PDF फ़ाइल में वापस सहेजे जाते हैं।</string>
+    <string name="label_bulk_more">अधिक</string>
 
     <!-- Images to PDF -->
 
@@ -505,8 +512,16 @@
     <string name="pdf_viewer_invalid_page">यह पेज खोला नहीं जा सका।</string>
     <string name="pdf_viewer_out_of_memory">यह पेज इस डिवाइस पर रेंडर करने के लिए बहुत बड़ा है।</string>
     <string name="pdf_viewer_renderer_failed">PDF व्यूअर इस दस्तावेज़ को रेंडर नहीं कर सका।</string>
-</resources>
-
-
-
-
+    <string name="filter_tag_all">All</string>
+    <string name="filter_tag_invoice">Invoices</string>
+    <string name="filter_tag_contract">Contracts</string>
+    <string name="filter_tag_insurance">Insurance</string>
+    <string name="filter_tag_certificate">Certificates</string>
+    <string name="filter_tag_bank">Bank</string>
+    <string name="filter_tag_delivery">Delivery notes</string>
+    <string name="settings_retro_tag_action">Tag documents automatically</string>
+    <string name="settings_retro_tag_done">%1$d documents tagged</string>
+    <string name="ocr_export_as_file">Save as text file</string>
+    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
+    <string name="ocr_export_error">Text export failed</string>
+    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>

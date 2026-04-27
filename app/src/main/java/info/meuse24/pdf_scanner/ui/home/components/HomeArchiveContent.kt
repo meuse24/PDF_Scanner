@@ -11,13 +11,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,21 +51,25 @@ internal fun HomeArchiveContent(
     folders: List<Folder>,
     currentFolder: Folder?,
     favoritesFilter: Boolean,
+    currentTagKey: String?,
+    availableTagKeys: List<String>,
     searchQuery: String,
     sortOrder: SortOrder,
     selectedIds: Set<Long>,
     isSelectionMode: Boolean,
-    isLandscapeCompact: Boolean = false,
     listState: LazyListState,
     onSearchQueryChange: (String) -> Unit,
     onSortOrderSelected: (SortOrder) -> Unit,
+    onShowAllDocuments: () -> Unit,
+    onTagSelected: (String) -> Unit,
     onClearSelection: () -> Unit,
     onSelectAll: () -> Unit,
     onSelectionToggle: (Document) -> Unit,
     onOpenRecord: (Document) -> Unit,
     onToggleFavorite: (Document) -> Unit,
     onAction: (Document, ScanAction) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isLandscapeCompact: Boolean = false
 ) {
     val folderNamesById = remember(folders) { folders.associateBy({ it.id }, { it.name }) }
     val showSearchBar by remember(listState, searchQuery, sortOrder, filteredScans.size) {
@@ -94,6 +101,14 @@ internal fun HomeArchiveContent(
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
+            if (availableTagKeys.isNotEmpty()) {
+                TagFilterRow(
+                    currentTagKey = currentTagKey,
+                    availableTagKeys = availableTagKeys,
+                    onShowAllDocuments = onShowAllDocuments,
+                    onTagSelected = onTagSelected
                 )
             }
             if (showSearchBar) {
@@ -163,6 +178,46 @@ internal fun HomeArchiveContent(
             }
         }
     }
+}
+
+@Composable
+private fun TagFilterRow(
+    currentTagKey: String?,
+    availableTagKeys: List<String>,
+    onShowAllDocuments: () -> Unit,
+    onTagSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        item {
+            FilterChip(
+                selected = currentTagKey == null,
+                onClick = onShowAllDocuments,
+                label = { Text(stringResource(R.string.filter_tag_all)) }
+            )
+        }
+        items(availableTagKeys) { tagKey ->
+            FilterChip(
+                selected = currentTagKey == tagKey,
+                onClick = { onTagSelected(tagKey) },
+                label = { Text(stringResource(tagLabelRes(tagKey))) }
+            )
+        }
+    }
+}
+
+private fun tagLabelRes(tagKey: String): Int = when (tagKey) {
+    "invoice" -> R.string.filter_tag_invoice
+    "contract" -> R.string.filter_tag_contract
+    "insurance" -> R.string.filter_tag_insurance
+    "certificate" -> R.string.filter_tag_certificate
+    "bank" -> R.string.filter_tag_bank
+    "delivery" -> R.string.filter_tag_delivery
+    else -> R.string.filter_tag_all
 }
 
 @Composable

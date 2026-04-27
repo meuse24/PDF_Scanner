@@ -23,19 +23,15 @@
     <string name="privacy_keyword_6">ゴミ箱</string>
     <string name="privacy_point_6">文書を削除すると、まずアプリ内のローカルのゴミ箱に最大 30 日間残ります。完全に削除するかゴミ箱を空にすると、それより早く削除されます。</string>
     <plurals name="trash_moved">
-        <item quantity="one">%1$d 件の文書をゴミ箱に移動しました</item>
         <item quantity="other">%1$d 件の文書をゴミ箱に移動しました</item>
     </plurals>
     <plurals name="trash_restored">
-        <item quantity="one">%1$d 件の文書を復元しました</item>
         <item quantity="other">%1$d 件の文書を復元しました</item>
     </plurals>
     <plurals name="trash_purged">
-        <item quantity="one">%1$d 件の文書を完全に削除しました</item>
         <item quantity="other">%1$d 件の文書を完全に削除しました</item>
     </plurals>
     <plurals name="trash_days_remaining">
-        <item quantity="one">%1$d 日後に完全に削除</item>
         <item quantity="other">%1$d 日後に完全に削除</item>
     </plurals>
 </resources>

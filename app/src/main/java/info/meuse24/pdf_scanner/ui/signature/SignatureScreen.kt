@@ -3,6 +3,7 @@ package info.meuse24.pdf_scanner.ui.signature
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import androidx.core.graphics.createBitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +33,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -102,8 +105,8 @@ fun SignatureScreen(
         mutableStateOf(emptyList<Offset>())
     }
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
-    var selectedPageIndex by rememberSaveable { mutableStateOf(0) }
-    var selectedScale by rememberSaveable { mutableStateOf(0.24f) }
+    var selectedPageIndex by rememberSaveable { mutableIntStateOf(0) }
+    var selectedScale by rememberSaveable { mutableFloatStateOf(0.24f) }
     val currentCanvasSize by rememberUpdatedState(canvasSize)
 
     val completedStrokes = completedStrokesState.value
@@ -386,7 +389,7 @@ private fun createSignatureBitmap(
     val width = (right - left).toInt().coerceAtLeast(1)
     val height = (bottom - top).toInt().coerceAtLeast(1)
 
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val bitmap = createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = android.graphics.Color.BLACK

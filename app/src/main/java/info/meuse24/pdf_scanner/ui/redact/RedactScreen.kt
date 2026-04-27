@@ -42,6 +42,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -106,7 +108,7 @@ fun RedactScreen(
     }
     var currentRect by remember { mutableStateOf<RedactionRect?>(null) }
     var dragStartPoint by remember { mutableStateOf<Pair<Float, Float>?>(null) }
-    var selectedPageIndex by rememberSaveable { mutableStateOf(0) }
+    var selectedPageIndex by rememberSaveable { mutableIntStateOf(0) }
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
     var showInstructionsDialog by rememberSaveable { mutableStateOf(true) }
     var showSaveOptionsDialog by rememberSaveable { mutableStateOf(false) }
@@ -116,9 +118,9 @@ fun RedactScreen(
     var languageMenuExpanded by remember { mutableStateOf(false) }
     val currentCanvasSize by rememberUpdatedState(canvasSize)
 
-    var zoomScale by rememberSaveable { mutableStateOf(1f) }
-    var zoomOffsetX by rememberSaveable { mutableStateOf(0f) }
-    var zoomOffsetY by rememberSaveable { mutableStateOf(0f) }
+    var zoomScale by rememberSaveable { mutableFloatStateOf(1f) }
+    var zoomOffsetX by rememberSaveable { mutableFloatStateOf(0f) }
+    var zoomOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
     val currentZoomScale by rememberUpdatedState(zoomScale)
     val currentZoomOffsetX by rememberUpdatedState(zoomOffsetX)
     val currentZoomOffsetY by rememberUpdatedState(zoomOffsetY)

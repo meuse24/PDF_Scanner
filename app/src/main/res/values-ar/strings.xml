@@ -16,6 +16,8 @@
     <string name="settings_default_ocr_language_label">لغة OCR الافتراضية</string>
     <string name="settings_archive_title">الأرشيف</string>
     <string name="settings_default_sort_order_label">الترتيب الافتراضي</string>
+    <string name="settings_trash_undo_duration_label">مدة رسالة التراجع في سلة المهملات</string>
+    <string name="settings_trash_undo_duration_seconds">%1$d ثانية</string>
     <string name="settings_more_coming">ستتم إضافة المزيد من الإعدادات هنا.</string>
     <string name="theme_mode_system">النظام</string>
     <string name="theme_mode_light">فاتح</string>
@@ -26,6 +28,10 @@
     <string name="cd_share">مشاركة</string>
     <string name="cd_delete">حذف</string>
     <string name="cd_pdf_document">مستند PDF</string>
+    <string name="cd_add_favorite">إضافة إلى المفضلة</string>
+    <string name="cd_remove_favorite">إزالة من المفضلة</string>
+    <string name="cd_document_actions">فتح إجراءات المستند</string>
+    <string name="cd_select_document">تحديد %1$s</string>
     <string name="action_open_document">فتح PDF</string>
     <string name="action_select_documents">تحديد المستندات</string>
     <string name="home_empty_title">لا توجد مستندات</string>
@@ -146,7 +152,7 @@
     <string name="privacy_point_1">يخزن هذا التطبيق ملفات PDF وصور المعاينة والنسخ المطموسة ونص OCR القابل للبحث اختيارياً محلياً على جهازك.</string>
     <string name="privacy_point_2">لا يتم رفع أي مستندات أو محتوى تلقائياً. لا تحدث المشاركة أو التصدير إلا عندما تقوم أنت بتشغيلهما صراحةً. ينشئ الطمس الآمن نسخة جديدة؛ ويبقى الأصل موجوداً حتى تحذفه.</string>
     <string name="privacy_point_3">تستخدم وظائف المسح وOCR خدمات Google Play. قد تُرسل بيانات تشخيصية تقنية لتحليل الأخطاء. يستخدم الوضع التلقائي نموذج تعرف نصي لاتيني مدمجًا يعمل بدون اتصال. قد يتم جلب نماذج اللغة للهندية والصينية واليابانية والكورية عبر Play Services عند أول استخدام يدوي؛ ولا يرسل هذا التطبيق محتوى مستنداتك.</string>
-    <string name="privacy_point_4">لا يجمع التطبيق نفسه بيانات شخصية، ولا يستخدم تحليلات خاصة به، ولا يطلب إذناً شبكياً خاصاً به.</string>
+    <string name="privacy_point_4">لا يجمع التطبيق نفسه بيانات شخصية ولا يستخدم تحليلات أو خادماً خلفياً خاصاً به. قد تضيف Google Play Services / ML Kit أذونات شبكة للنماذج والتوافق والتشخيص.</string>
     <string name="privacy_footer">آخر تحديث: 24 أبريل 2026</string>
 
     <!-- OCR -->
@@ -371,7 +377,7 @@
     <string name="action_submenu_security">Security &amp; Password</string>
     <!-- Restrict usage -->
     <string name="restrict_usage_screen_title">Restrict usage rights</string>
-    <string name="restrict_usage_description">Set usage rights via owner password</string>
+    <string name="restrict_usage_description">تعيين حقوق الاستخدام بكلمة مرور المالك</string>
     <string name="restrict_usage_details">Creates a new PDF copy with usage restrictions controlled by an owner password. The document can still be opened without a password, but printing, copying, and editing can be individually restricted. The original file stays unchanged.</string>
     <string name="restrict_usage_owner_password_label">Owner password</string>
     <string name="restrict_usage_can_print">Allow printing</string>
@@ -485,6 +491,7 @@
     <string name="metadata_apply">حفظ البيانات الوصفية</string>
     <string name="metadata_error">خطأ أثناء حفظ بيانات PDF الوصفية</string>
     <string name="help_item_pdf_metadata">اضغط على «معلومات PDF» لعرض البيانات الوصفية المضمّنة في المستند وتعديلها — العنوان والمؤلف وتطبيق الإنشاء والموضوع والكلمات المفتاحية وتواريخ الإنشاء والتعديل. تُحفظ الحقول القابلة للتعديل مرة أخرى في ملف PDF نفسه.</string>
+    <string name="label_bulk_more">المزيد</string>
 
     <!-- Images to PDF -->
 
@@ -505,7 +512,16 @@
     <string name="pdf_viewer_invalid_page">تعذر فتح هذه الصفحة.</string>
     <string name="pdf_viewer_out_of_memory">هذه الصفحة كبيرة جدًا لعرضها على هذا الجهاز.</string>
     <string name="pdf_viewer_renderer_failed">تعذر على عارض PDF عرض هذا المستند.</string>
-</resources>
-
-
-
+    <string name="filter_tag_all">All</string>
+    <string name="filter_tag_invoice">Invoices</string>
+    <string name="filter_tag_contract">Contracts</string>
+    <string name="filter_tag_insurance">Insurance</string>
+    <string name="filter_tag_certificate">Certificates</string>
+    <string name="filter_tag_bank">Bank</string>
+    <string name="filter_tag_delivery">Delivery notes</string>
+    <string name="settings_retro_tag_action">Tag documents automatically</string>
+    <string name="settings_retro_tag_done">%1$d documents tagged</string>
+    <string name="ocr_export_as_file">Save as text file</string>
+    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
+    <string name="ocr_export_error">Text export failed</string>
+    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>

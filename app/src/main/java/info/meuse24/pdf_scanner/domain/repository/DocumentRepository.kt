@@ -12,12 +12,18 @@ interface DocumentRepository {
     fun getAllScansForList(): Flow<List<Document>> = getAllScans()
     fun getScansInFolderForList(folderId: Long): Flow<List<Document>> = getScansInFolder(folderId)
     fun getFavoriteScansForList(): Flow<List<Document>> = getFavoriteScans()
+    fun getScansWithTagForList(tagKey: String): Flow<List<Document>> =
+        getAllScansForList().map { documents -> documents.filter { it.hasTag(tagKey) } }
+
     fun searchScansForList(query: String): Flow<List<Document>> = searchScansFlow(query)
     fun searchScansInFolderForList(query: String, folderId: Long): Flow<List<Document>> =
         searchScansForList(query).map { documents -> documents.filter { it.folderId == folderId } }
 
     fun searchFavoriteScansForList(query: String): Flow<List<Document>> =
         searchScansForList(query).map { documents -> documents.filter { it.isFavorite } }
+
+    fun searchScansWithTagForList(query: String, tagKey: String): Flow<List<Document>> =
+        searchScansForList(query).map { documents -> documents.filter { it.hasTag(tagKey) } }
 
     suspend fun saveScan(record: Document): Long
     suspend fun saveScans(records: List<Document>)
@@ -47,4 +53,9 @@ interface DocumentRepository {
     suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?)
     suspend fun moveDocumentsToFolder(ids: List<Long>, folderId: Long?)
     suspend fun setFavorite(ids: List<Long>, favorite: Boolean)
+    suspend fun getAllSearchableWithoutTags(): List<Document> = emptyList()
+    suspend fun updateTags(id: Long, tags: String) = Unit
 }
+
+private fun Document.hasTag(tagKey: String): Boolean =
+    tags.orEmpty().split(",").any { it.trim() == tagKey }

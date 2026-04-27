@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class VCardExportRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : VCardExportRepository {
     override suspend fun export(filenameHint: String, vCardContent: String): File = withContext(Dispatchers.IO) {
         val directory = File(context.cacheDir, "vcards").apply { mkdirs() }

@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import androidx.core.graphics.createBitmap
 import com.google.mlkit.vision.common.InputImage
 import java.io.File
 import javax.inject.Inject
@@ -48,7 +49,7 @@ class AndroidPdfPageInputImageLoader @Inject constructor() : PdfPageInputImageLo
                 repeat(renderer.pageCount) { pageIndex ->
                     renderer.openPage(pageIndex).use { page ->
                         val (bitmapW, bitmapH) = ocrBitmapSize(page.width, page.height)
-                        val bitmap = Bitmap.createBitmap(bitmapW, bitmapH, Bitmap.Config.ARGB_8888)
+                        val bitmap = createBitmap(bitmapW, bitmapH, Bitmap.Config.ARGB_8888)
                         try {
                             bitmap.eraseColor(Color.WHITE)
                             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)

@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import androidx.core.graphics.createBitmap
 import java.io.File
 import java.io.OutputStream
 import javax.inject.Inject
@@ -37,7 +38,7 @@ class AndroidPdfPageJpgRenderer @Inject constructor() : PdfPageJpgRenderer {
                         val scale = 150f / 72f
                         val bmpW = (page.width * scale).toInt().coerceAtLeast(1)
                         val bmpH = (page.height * scale).toInt().coerceAtLeast(1)
-                        val bitmap = Bitmap.createBitmap(bmpW, bmpH, Bitmap.Config.ARGB_8888)
+                        val bitmap = createBitmap(bmpW, bmpH, Bitmap.Config.ARGB_8888)
                         try {
                             Canvas(bitmap).drawColor(Color.WHITE)
                             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT)

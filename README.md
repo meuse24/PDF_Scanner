@@ -35,7 +35,7 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - Files stay in app-internal storage unless you explicitly export them
 - Incoming shared or opened files are copied into the archive only after user confirmation
 - App Lock is a local UI gate; it does not encrypt PDFs or the database
-- No internet permission
+- No own backend or document upload; Google Play Services / ML Kit SDKs may declare network permissions for model, compatibility, and diagnostics traffic
 - Backup/export of internal app data is disabled
 
 ## Requirements

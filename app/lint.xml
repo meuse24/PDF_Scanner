@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Release lint should not force last-minute SDK or dependency upgrades. Track these separately. -->
+    <issue id="OldTargetApi" severity="ignore" />
+    <issue id="GradleDependency" severity="ignore" />
+    <issue id="NewerVersionAvailable" severity="ignore" />
+
+    <!-- Compose feature strings and localized help/action copy are kept intentionally. -->
+    <issue id="UnusedResources" severity="ignore" />
+
+    <!-- Reported inside the transitive BouncyCastle jar used by pdfbox-android, not in app network code. -->
+    <issue id="TrustAllX509TrustManager">
+        <ignore regexp=".*[\\/].gradle[\\/]caches[\\/]modules-2[\\/]files-2.1[\\/]org\.bouncycastle[\\/]bcpkix-jdk15to18[\\/].*" />
+    </issue>
+</lint>

@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfRenderer
+import androidx.core.graphics.createBitmap
 import com.tom_roush.pdfbox.cos.COSArray
 import com.tom_roush.pdfbox.cos.COSDictionary
 import com.tom_roush.pdfbox.cos.COSName
@@ -173,7 +174,7 @@ internal fun renderPdfPageForRebuild(
     val scale = (renderDpi / PDF_POINTS_PER_INCH).coerceAtLeast(1f)
     val bitmapWidth = (baseWidth * scale).toInt().coerceAtLeast(1)
     val bitmapHeight = (baseHeight * scale).toInt().coerceAtLeast(1)
-    val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+    val bitmap = createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
     Canvas(bitmap).drawColor(Color.WHITE)
     page.render(bitmap, null, null, renderMode)
     return bitmap

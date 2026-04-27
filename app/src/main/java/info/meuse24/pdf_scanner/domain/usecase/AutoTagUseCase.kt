@@ -11,57 +11,97 @@ class AutoTagUseCase @Inject constructor() {
 
     fun extractTags(text: String): String? {
         if (text.isBlank()) return null
+        val normalized = normalizeText(text)
         val found = mutableSetOf<String>()
 
-        for ((tagKey, keywords) in TAG_KEYWORDS) {
-            if (keywords.any { kw -> wordStartPattern(kw).containsMatchIn(text) }) {
+        for ((tagKey, rules) in TAG_RULES) {
+            val score = rules.sumOf { rule ->
+                if (wordPattern(rule.keyword).containsMatchIn(normalized)) rule.score else 0
+            } + extraScore(tagKey, normalized)
+            if (score >= TAG_THRESHOLD) {
                 found.add(tagKey)
             }
         }
-        if (IBAN_REGEX.containsMatchIn(text)) found.add("bank")
 
         return if (found.isEmpty()) null else found.sorted().joinToString(",")
     }
 
     companion object {
-        // IBAN: 2-letter country code + 2 digits + up to 30 alphanumeric chars (spaces allowed)
-        private val IBAN_REGEX = Regex("""[A-Z]{2}\d{2}[\s]?(?:[A-Z0-9]{4}[\s]?){3,7}""")
+        private const val TAG_THRESHOLD = 4
 
-        // Matches keyword only at the start of a word (not inside a longer word like "Berechnung").
+        private data class TagRule(
+            val keyword: String,
+            val score: Int
+        )
+
+        private val AMOUNT_REGEX = Regex("""(?<!\d)\d{1,3}(?:[.\s]\d{3})*[,.]\d{2}\s*(?:€|EUR)(?!\p{L})""")
+
+        // IBAN: country code + checksum + 15-34 alphanumeric chars in common grouped OCR form.
+        private val IBAN_REGEX = Regex("""(?<!\p{L})[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){3,7}(?!\p{L})""")
+
+        // Match full keyword boundaries so "Berechnung" and similar OCR fragments do not trigger tags.
         // \p{L} covers all Unicode letters including German umlauts.
-        private fun wordStartPattern(kw: String) =
-            Regex("""(?<!\p{L})${Regex.escape(kw)}""", RegexOption.IGNORE_CASE)
+        private fun wordPattern(kw: String) =
+            Regex("""(?<!\p{L})${Regex.escape(kw)}(?!\p{L})""", RegexOption.IGNORE_CASE)
 
-        val TAG_KEYWORDS: Map<String, List<String>> = mapOf(
-            // Generic "Rechnung"/"MwSt"/"VAT" removed — too common in any financial text.
+        private fun normalizeText(raw: String): String =
+            raw.replace(Regex("""(\w)-\s*\n\s*(\w)"""), "$1$2")
+                .replace(Regex("""\s+"""), " ")
+                .trim()
+
+        private fun extraScore(tagKey: String, text: String): Int = when (tagKey) {
+            "invoice" -> if (AMOUNT_REGEX.containsMatchIn(text)) 2 else 0
+            "bank" -> if (IBAN_REGEX.containsMatchIn(text)) 3 else 0
+            else -> 0
+        }
+
+        private fun r(score: Int, vararg keywords: String): List<TagRule> =
+            keywords.map { TagRule(it, score) }
+
+        private val TAG_RULES: Map<String, List<TagRule>> = mapOf(
             "invoice" to listOf(
-                "Invoice", "Faktura",
-                "Rechnungsnummer", "Rechnungsdatum", "Rechnungsbetrag",
-                "Nettobetrag", "Bruttobetrag", "Zahlungsziel"
+                *r(3, "Rechnungsnummer", "Rechnungsdatum", "Rechnungsbetrag", "Nettobetrag",
+                    "Bruttobetrag", "Zahlungsziel", "Invoice No", "Invoice Date", "Faktura").toTypedArray(),
+                *r(2, "Rechnung", "MwSt.-Betrag", "Mehrwertsteuer", "Umsatzsteuer", "USt.",
+                    "Fälligkeitsdatum", "Zahlbar bis", "Due date", "Total amount", "Subtotal",
+                    "Net amount", "Gross amount", "Steuernummer", "Tax number").toTypedArray(),
+                *r(1, "Betrag", "Amount", "Summe", "EUR", "inkl. MwSt", "zzgl. MwSt").toTypedArray()
             ),
-            // Generic "Vertrag"/"Contract" removed — "vertragen" etc. cause false positives.
             "contract" to listOf(
-                "Mietvertrag", "Arbeitsvertrag", "Kaufvertrag", "Dienstleistungsvertrag",
-                "Vereinbarung", "Agreement"
+                *r(3, "Mietvertrag", "Arbeitsvertrag", "Kaufvertrag", "Dienstleistungsvertrag",
+                    "Rahmenvertrag", "Werkvertrag", "Darlehensvertrag").toTypedArray(),
+                *r(2, "Vertrag", "Contract", "Vereinbarung", "Agreement", "Auftragsbestätigung",
+                    "Leistungsvereinbarung", "Allgemeine Geschäftsbedingungen", "AGB", "Kündigung",
+                    "Laufzeit", "§", "Vertragspartner").toTypedArray(),
+                *r(1, "Datum des Vertrags", "Vertragsschluss", "unterzeichnet").toTypedArray()
             ),
-            // "Police" removed — matches English texts about the police.
             "insurance" to listOf(
-                "Versicherungsschein", "Versicherungsbeitrag", "Schadensfall",
-                "Insurance", "Versicherung"
+                *r(3, "Versicherungsschein", "Versicherungsnummer", "Versicherungspolice",
+                    "Schadensfall", "Schadensnummer").toTypedArray(),
+                *r(2, "Versicherungsbeitrag", "Versicherungsschutz", "Prämie", "Insurance",
+                    "Deckungssumme", "Selbstbehalt", "Leistungsfall", "Versicherungsnehmer").toTypedArray(),
+                *r(1, "Versicherung", "versichert", "Policeninhaber").toTypedArray()
             ),
             "certificate" to listOf(
-                "Zeugnis", "Certificate", "Diplom", "Diploma",
-                "Bescheinigung", "Zertifikat", "Urkunde", "Abschlusszeugnis"
+                *r(3, "Zeugnis", "Certificate", "Diplom", "Diploma", "Abschlusszeugnis",
+                    "Hochschulzeugnis", "Zertifikat", "Urkunde").toTypedArray(),
+                *r(2, "Bescheinigung", "Nachweis", "Teilnahmebescheinigung", "Ausbildungszeugnis",
+                    "Führungszeugnis", "Bestätigung").toTypedArray(),
+                *r(1, "hiermit bestätigt", "hereby certify").toTypedArray()
             ),
-            // "BIC" (too short) and "Tracking" removed.
             "bank" to listOf(
-                "Kontoauszug", "Bank statement", "Kontonummer",
-                "Sparkasse", "Volksbank", "Commerzbank", "Deutsche Bank", "Girokonto"
+                *r(3, "Kontoauszug", "IBAN", "Kontonummer", "Bank statement", "Girokonto").toTypedArray(),
+                *r(2, "Sparkasse", "Volksbank", "Commerzbank", "Deutsche Bank", "ING-DiBa",
+                    "DKB", "Postbank", "Comdirect", "Buchungsdatum", "Wertstellung",
+                    "Haben", "Soll", "Saldo", "Kontostand", "BIC", "SWIFT").toTypedArray(),
+                *r(1, "Lastschrift", "Überweisung", "Dauerauftrag").toTypedArray()
             ),
-            // "Tracking" and generic "Lieferung" removed.
             "delivery" to listOf(
-                "Lieferschein", "Delivery note", "Frachtbrief",
-                "Sendungsnummer", "Wareneingang"
+                *r(3, "Lieferschein", "Frachtbrief", "Lieferscheinnummer").toTypedArray(),
+                *r(2, "Delivery note", "Sendungsnummer", "Trackingnummer", "Wareneingang",
+                    "Lieferadresse", "Empfänger", "Paketscheinnummer", "DHL", "UPS", "DPD",
+                    "GLS", "Hermes", "FedEx").toTypedArray(),
+                *r(1, "Lieferung", "Versand", "Paket").toTypedArray()
             )
         )
     }

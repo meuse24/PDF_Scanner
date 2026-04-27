@@ -23,19 +23,15 @@
     <string name="privacy_keyword_6">回收站</string>
     <string name="privacy_point_6">删除文档后，它会先在应用的本地回收站中保留最多 30 天。如果你永久删除或清空回收站，它会更早被移除。</string>
     <plurals name="trash_moved">
-        <item quantity="one">已将 %1$d 个文档移到回收站</item>
         <item quantity="other">已将 %1$d 个文档移到回收站</item>
     </plurals>
     <plurals name="trash_restored">
-        <item quantity="one">已恢复 %1$d 个文档</item>
         <item quantity="other">已恢复 %1$d 个文档</item>
     </plurals>
     <plurals name="trash_purged">
-        <item quantity="one">已永久删除 %1$d 个文档</item>
         <item quantity="other">已永久删除 %1$d 个文档</item>
     </plurals>
     <plurals name="trash_days_remaining">
-        <item quantity="one">%1$d 天后永久删除</item>
         <item quantity="other">%1$d 天后永久删除</item>
     </plurals>
 </resources>

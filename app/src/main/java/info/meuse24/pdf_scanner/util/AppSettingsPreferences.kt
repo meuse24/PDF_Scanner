@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.util
 
 import android.content.Context
+import androidx.core.content.edit
 import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
 import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
 import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
@@ -62,20 +63,20 @@ object AppSettingsPreferences {
 
     fun save(context: Context, settings: AppSettings) {
         val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit()
-            .putString(KEY_THEME_MODE, settings.themeMode.storageValue)
-            .putBoolean(KEY_M24_ANIMATION_ENABLED, settings.m24AnimationEnabled)
-            .putBoolean(KEY_KEEP_SCREEN_ON_DURING_SCAN, settings.keepScreenOnDuringScan)
-            .putBoolean(KEY_DEFAULT_MAKE_SEARCHABLE, settings.defaultMakeSearchable)
-            .putString(KEY_DEFAULT_OCR_LANGUAGE, settings.defaultOcrLanguage)
-            .putString(KEY_DEFAULT_SORT_ORDER, settings.defaultSortOrder.storageValue)
-            .putInt(KEY_TRASH_UNDO_SNACKBAR_SECONDS, settings.trashUndoSnackbarSeconds.coerceAtLeast(1))
-            .putBoolean(KEY_APP_LOCK_ENABLED, settings.appLockEnabled)
-            .putInt(KEY_APP_LOCK_TIMEOUT_SECONDS, settings.appLockTimeoutSeconds)
-            .putString(KEY_IMG_PDF_SIZE_PRESET, settings.defaultImagePdfPageSetup.sizePreset.name)
-            .putString(KEY_IMG_PDF_ORIENTATION, settings.defaultImagePdfPageSetup.orientation.name)
-            .putString(KEY_IMG_PDF_MARGIN_PRESET, settings.defaultImagePdfPageSetup.marginPreset.name)
-            .apply()
+        prefs.edit {
+            putString(KEY_THEME_MODE, settings.themeMode.storageValue)
+            putBoolean(KEY_M24_ANIMATION_ENABLED, settings.m24AnimationEnabled)
+            putBoolean(KEY_KEEP_SCREEN_ON_DURING_SCAN, settings.keepScreenOnDuringScan)
+            putBoolean(KEY_DEFAULT_MAKE_SEARCHABLE, settings.defaultMakeSearchable)
+            putString(KEY_DEFAULT_OCR_LANGUAGE, settings.defaultOcrLanguage)
+            putString(KEY_DEFAULT_SORT_ORDER, settings.defaultSortOrder.storageValue)
+            putInt(KEY_TRASH_UNDO_SNACKBAR_SECONDS, settings.trashUndoSnackbarSeconds.coerceAtLeast(1))
+            putBoolean(KEY_APP_LOCK_ENABLED, settings.appLockEnabled)
+            putInt(KEY_APP_LOCK_TIMEOUT_SECONDS, settings.appLockTimeoutSeconds)
+            putString(KEY_IMG_PDF_SIZE_PRESET, settings.defaultImagePdfPageSetup.sizePreset.name)
+            putString(KEY_IMG_PDF_ORIENTATION, settings.defaultImagePdfPageSetup.orientation.name)
+            putString(KEY_IMG_PDF_MARGIN_PRESET, settings.defaultImagePdfPageSetup.marginPreset.name)
+        }
     }
 
     fun updateThemeMode(context: Context, mode: ThemeMode): AppSettings {

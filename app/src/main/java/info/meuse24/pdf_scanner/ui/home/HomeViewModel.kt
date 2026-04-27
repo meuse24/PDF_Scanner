@@ -14,6 +14,8 @@ import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.repository.FolderRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
+import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
@@ -33,6 +35,8 @@ import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.ui.ocr.OCR_LANGUAGE_AUTO
 import info.meuse24.pdf_scanner.util.AppSortOrder
 import info.meuse24.pdf_scanner.util.DispatcherProvider
+import info.meuse24.pdf_scanner.util.DownloadEntry
+import info.meuse24.pdf_scanner.util.DownloadsStorage
 import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.OcrResultStats
@@ -65,11 +69,13 @@ class HomeViewModel @Inject constructor(
     private val importFileUseCase: ImportFileUseCase,
     private val exportScanUseCase: ExportScanUseCase,
     private val exportAsJpgUseCase: ExportAsJpgUseCase,
+    private val exportOcrTextUseCase: ExportOcrTextUseCase = defaultExportOcrTextUseCase(),
     private val trashScansUseCase: TrashScansUseCase,
     private val restoreScansUseCase: RestoreScansUseCase,
     private val moveDocumentsUseCase: MoveDocumentsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val extractTextUseCase: ExtractTextUseCase,
+    private val autoTagUseCase: AutoTagUseCase = AutoTagUseCase(),
     private val makeSearchableWorkflow: MakeSearchableWorkflow,
     private val mergePdfsWorkflow: MergePdfsWorkflow,
     private val workflowErrorMapper: WorkflowErrorMapper,
@@ -82,6 +88,9 @@ class HomeViewModel @Inject constructor(
 
     private val archiveFilterFlow = archiveFilterStore.filter
         .stateIn(viewModelScope, SharingStarted.Eagerly, ArchiveFilter.AllDocuments)
+
+    private val allScansForListFlow = repository.getAllScansForList()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val scansFlow = archiveFilterFlow
         .flatMapLatest { filter -> listScansFor(filter) }
@@ -127,24 +136,33 @@ class HomeViewModel @Inject constructor(
 
     private val _pendingImageUris = MutableStateFlow<List<Uri>>(emptyList())
 
-    private val archiveBaseState = combine(
-        settingsRepository.settings,
+    private val scanArchiveData = combine(
         scansFlow,
         filteredScansFlow,
+        allScansForListFlow
+    ) { scans, filteredScans, allScans ->
+        ScanArchiveData(scans, filteredScans, allScans)
+    }
+
+    private val archiveBaseState = combine(
+        settingsRepository.settings,
+        scanArchiveData,
         foldersFlow,
         archiveFilterFlow
-    ) { settings, scans, filteredScans, folders, archiveFilter ->
+    ) { settings, scanData, folders, archiveFilter ->
         HomeArchiveUiState(
             settings = settings,
-            scans = scans,
-            filteredScans = filteredScans,
+            scans = scanData.scans,
+            filteredScans = scanData.filteredScans,
             folders = folders,
             currentFolder = if (archiveFilter is ArchiveFilter.Folder) {
                 folders.firstOrNull { it.id == archiveFilter.folderId }
             } else {
                 null
             },
-            favoritesFilter = archiveFilter is ArchiveFilter.Favorites
+            favoritesFilter = archiveFilter is ArchiveFilter.Favorites,
+            currentTagKey = (archiveFilter as? ArchiveFilter.Tag)?.key,
+            availableTagKeys = availableTagKeys(scanData.allScans)
         )
     }
 
@@ -517,6 +535,10 @@ class HomeViewModel @Inject constructor(
         archiveFilterStore.showFolder(folderId)
     }
 
+    fun showTag(tagKey: String) {
+        archiveFilterStore.showTag(tagKey)
+    }
+
     fun moveScansToFolder(ids: Set<Long>, folderId: Long?) {
         viewModelScope.launch(dispatcherProvider.io) {
             try {
@@ -602,7 +624,7 @@ class HomeViewModel @Inject constructor(
                             id = record.id,
                             fileSize = File(record.filepath).length(),
                             text = result.fullText,
-                            tags = null,
+                            tags = autoTagUseCase.extractTags(result.fullText),
                             confidence = result.stats?.confidence,
                             language = result.stats?.recognizedLanguage,
                             pageTexts = result.pageTexts
@@ -647,23 +669,67 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun exportOcrText(record: Document) {
+        exportOcrTexts(listOf(record))
+    }
+
+    fun exportOcrTexts(records: List<Document>) {
+        viewModelScope.launch(dispatcherProvider.io) {
+            try {
+                val requestedIds = records.map { it.id }.toSet()
+                val fullRecords = repository.getAllScans().first()
+                    .filter { it.id in requestedIds && !it.extractedText.isNullOrBlank() }
+                if (fullRecords.isEmpty()) {
+                    _error.value = resourceProvider.getString(R.string.ocr_export_nothing_to_export)
+                    return@launch
+                }
+                val displayName = exportOcrTextUseCase(fullRecords)
+                _success.value = resourceProvider.getString(R.string.ocr_export_success, displayName)
+            } catch (_: Exception) {
+                _error.value = resourceProvider.getString(R.string.ocr_export_error)
+            }
+        }
+    }
+
     private fun listScansFor(filter: ArchiveFilter) = when (filter) {
         ArchiveFilter.AllDocuments -> repository.getAllScansForList()
         ArchiveFilter.Favorites -> repository.getFavoriteScansForList()
         is ArchiveFilter.Folder -> repository.getScansInFolderForList(filter.folderId)
+        is ArchiveFilter.Tag -> repository.getScansWithTagForList(filter.key)
     }
 
     private fun searchScansFor(filter: ArchiveFilter, ftsQuery: String) = when (filter) {
         ArchiveFilter.AllDocuments -> repository.searchScansForList(ftsQuery)
         ArchiveFilter.Favorites -> repository.searchFavoriteScansForList(ftsQuery)
         is ArchiveFilter.Folder -> repository.searchScansInFolderForList(ftsQuery, filter.folderId)
+        is ArchiveFilter.Tag -> repository.searchScansWithTagForList(ftsQuery, filter.key)
     }
 }
+
+private val TAG_ORDER = listOf("invoice", "contract", "insurance", "certificate", "bank", "delivery")
+
+private fun availableTagKeys(scans: List<Document>): List<String> =
+    scans.asSequence()
+        .flatMap { it.tags.orEmpty().split(",").asSequence() }
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+        .distinct()
+        .sortedBy { key ->
+            val index = TAG_ORDER.indexOf(key)
+            if (index >= 0) index else TAG_ORDER.size
+        }
+        .toList()
 
 private data class SearchListRequest(
     val filter: ArchiveFilter,
     val query: String,
     val sortOrder: SortOrder
+)
+
+private data class ScanArchiveData(
+    val scans: List<Document>,
+    val filteredScans: List<Document>,
+    val allScans: List<Document>
 )
 
 internal fun buildFtsQuery(rawQuery: String): String {
@@ -701,6 +767,16 @@ private fun SortOrder.toAppSortOrder(): AppSortOrder = when (this) {
     SortOrder.ByName -> AppSortOrder.BY_NAME
     SortOrder.BySize -> AppSortOrder.BY_SIZE
 }
+
+private fun defaultExportOcrTextUseCase() = ExportOcrTextUseCase(
+    object : DownloadsStorage {
+        override fun writeDownload(
+            displayName: String,
+            mimeType: String,
+            writer: (java.io.OutputStream) -> Unit
+        ): DownloadEntry = error("DownloadsStorage not configured")
+    }
+)
 
 internal fun sortScans(scans: List<Document>, sortOrder: SortOrder): List<Document> {
     val byName = compareBy<Document>(

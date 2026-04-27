@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -65,6 +66,7 @@ fun SettingsScreen(
     onM24AnimationEnabledChange: (Boolean) -> Unit,
     onDefaultMakeSearchableChange: (Boolean) -> Unit,
     onDefaultOcrLanguageChange: (String) -> Unit,
+    onRetroTagDocuments: () -> Unit,
     onDefaultSortOrderChange: (AppSortOrder) -> Unit,
     onTrashUndoSnackbarSecondsChange: (Int) -> Unit,
     onAppLockEnabledChange: (Boolean) -> Unit,
@@ -274,6 +276,10 @@ fun SettingsScreen(
                             )
                         }
                     }
+                }
+                Spacer(Modifier.height(12.dp))
+                Button(onClick = onRetroTagDocuments) {
+                    Text(stringResource(R.string.settings_retro_tag_action))
                 }
             }
         }

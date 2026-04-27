@@ -159,11 +159,13 @@ class AppEntryActionCodecTest {
         stubArrayListExtraStream(intent, null)
     }
 
+    @Suppress("DEPRECATION")
     private fun stubSingleExtraStream(intent: Intent, uri: Uri?) {
         `when`(intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)).thenReturn(uri)
         `when`(intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)).thenReturn(uri)
     }
 
+    @Suppress("DEPRECATION")
     private fun stubArrayListExtraStream(intent: Intent, uris: ArrayList<Uri>?) {
         `when`(intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)).thenReturn(uris)
         `when`(intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM, Uri::class.java)).thenReturn(uris)

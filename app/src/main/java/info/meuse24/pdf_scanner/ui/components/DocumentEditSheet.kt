@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.ContactPage
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.Image
@@ -51,8 +52,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -80,6 +82,7 @@ sealed interface ScanAction {
     data object RemovePassword : ScanAction
     data object RestrictUsage : ScanAction
     data object ExportAsJpg : ScanAction
+    data object ExportOcrText : ScanAction
     data object Annotate : ScanAction
     data object Redact : ScanAction
     data object Rename : ScanAction
@@ -105,13 +108,15 @@ fun DocumentEditSheet(
     val sizeStr = remember(record.fileSize, context) {
         Formatter.formatShortFileSize(context, record.fileSize.coerceAtLeast(0L))
     }
-    val configuration = LocalConfiguration.current
-    val maxSheetHeight = (configuration.screenHeightDp.dp * 0.78f)
+    val density = LocalDensity.current
+    val windowHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
+    val maxSheetHeight = (windowHeight * 0.78f)
         .coerceIn(360.dp, 640.dp)
     val showMetadata = true
     val showRename = showRenameAction
     val showPrint = showPrintAction && notEncrypted
     val showExportAsJpg = showExportAsJpgAction && notEncrypted
+    val showExportOcrText = !record.extractedText.isNullOrBlank()
     val showReorder = notEncrypted && multiPage
     val showRotate = notEncrypted
     val showAppend = notEncrypted
@@ -139,7 +144,7 @@ fun DocumentEditSheet(
         showDuplicatePages || showSplit || showDeletePages
     val showEditSection = showAnnotate || showSignature || showPageNumbers || showTextWatermark || showRedact
     val showAnalyseSection = showQrScan || showBusinessCard || showRemoveTextLayer
-    val showExportSection = showGrayscale || showCompress
+    val showExportSection = showGrayscale || showCompress || showExportOcrText
     val showSecuritySection = showProtect || showRestrictUsage || showUnlock || showRemovePassword
 
     LazyColumn(
@@ -316,6 +321,13 @@ fun DocumentEditSheet(
         if (showExportSection) {
             item {
                 SheetSection(R.string.sheet_section_export)
+            }
+        }
+        if (showExportOcrText) {
+            item {
+                SheetItem(Icons.Default.Download, R.string.ocr_export_as_file, true) {
+                    onAction(ScanAction.ExportOcrText)
+                }
             }
         }
         if (showGrayscale) {

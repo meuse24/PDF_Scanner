@@ -46,6 +46,7 @@ internal fun HomeSelectionBar(
     selectedRecords: List<Document>,
     onShare: () -> Unit,
     onExport: () -> Unit,
+    onExportOcrText: () -> Unit,
     onExtractTexts: () -> Unit,
     onMakeSearchable: () -> Unit,
     onMerge: () -> Unit,
@@ -56,8 +57,10 @@ internal fun HomeSelectionBar(
     BulkActionBar(
         onShare = onShare,
         onExport = onExport,
+        onExportOcrText = onExportOcrText,
         onExtractTexts = onExtractTexts,
         extractEnabled = selectedRecords.isNotEmpty(),
+        exportTextEnabled = selectedRecords.isNotEmpty(),
         onMakeSearchable = onMakeSearchable,
         makeSearchableEnabled = true,
         onMerge = onMerge,
@@ -76,6 +79,7 @@ internal fun LandscapeSelectionTopBar(
     onSelectAll: () -> Unit,
     onShare: () -> Unit,
     onExport: () -> Unit,
+    onExportOcrText: () -> Unit,
     onExtractTexts: () -> Unit,
     onMakeSearchable: () -> Unit,
     onMerge: () -> Unit,
@@ -179,6 +183,15 @@ internal fun LandscapeSelectionTopBar(
                         onClick = {
                             moreMenuExpanded = false
                             onExport()
+                        }
+                    )
+                    SelectionDropdownItem(
+                        icon = Icons.AutoMirrored.Filled.TextSnippet,
+                        labelRes = R.string.ocr_export_as_file,
+                        enabled = hasSelection,
+                        onClick = {
+                            moreMenuExpanded = false
+                            onExportOcrText()
                         }
                     )
                     if (mergeEnabled) {

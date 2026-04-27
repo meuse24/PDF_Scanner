@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import androidx.core.graphics.createBitmap
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -81,7 +82,7 @@ open class QrCodeScanner @Inject constructor(
                         renderer.openPage(index).use { page ->
                             val widthPx = (page.width * RENDER_SCALE).toInt().coerceAtLeast(1)
                             val heightPx = (page.height * RENDER_SCALE).toInt().coerceAtLeast(1)
-                            val bitmap = Bitmap.createBitmap(widthPx, heightPx, Bitmap.Config.ARGB_8888)
+                            val bitmap = createBitmap(widthPx, heightPx, Bitmap.Config.ARGB_8888)
                             bitmap.eraseColor(Color.WHITE)
 
                             try {

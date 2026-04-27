@@ -1,19 +1,20 @@
 <resources>
-    <string name="action_append_pages">Anexar paginas</string>
-    <string name="append_pages_screen_title">Anexar paginas</string>
+    <string name="action_append_pages">Anexar páginas</string>
+    <string name="append_pages_screen_title">Anexar páginas</string>
     <string name="append_pages_title">Anexar ao documento</string>
-    <string name="append_pages_body">Adiciona mais paginas a este PDF a partir do scanner, das tuas imagens ou de outro PDF.</string>
+    <string name="append_pages_body">Adiciona mais páginas a este PDF a partir do scanner, das tuas imagens ou de outro PDF.</string>
     <string name="append_source_scan_title">Anexar digitalizacao</string>
-    <string name="append_source_scan_subtitle">Digitaliza paginas extra e adiciona-as a este documento.</string>
+    <string name="append_source_scan_subtitle">Digitaliza páginas extra e adiciona-as a este documento.</string>
     <string name="append_source_images_title">Anexar imagens</string>
-    <string name="append_source_images_subtitle">Escolhe imagens e converte-as em paginas PDF anexadas.</string>
+    <string name="append_source_images_subtitle">Escolhe imagens e converte-as em páginas PDF anexadas.</string>
     <string name="append_source_pdf_title">Anexar PDF</string>
-    <string name="append_source_pdf_subtitle">Importa outro PDF e adiciona as paginas no fim.</string>
-    <string name="append_images_hint">Escolhe o esquema de pagina para as imagens selecionadas antes de as anexar.</string>
+    <string name="append_source_pdf_subtitle">Importa outro PDF e adiciona as páginas no fim.</string>
+    <string name="append_images_hint">Escolhe o esquema de página para as imagens selecionadas antes de as anexar.</string>
     <plurals name="append_success">
-        <item quantity="one">%1$d pagina anexada</item>
-        <item quantity="other">%1$d paginas anexadas</item>
+        <item quantity="one">%1$d página anexada</item>
+        <item quantity="many">%1$d páginas anexadas</item>
+        <item quantity="other">%1$d páginas anexadas</item>
     </plurals>
-    <string name="append_error">Falha ao anexar paginas</string>
-    <string name="append_target_encrypted">Remove primeiro a palavra-passe do PDF antes de anexar paginas.</string>
+    <string name="append_error">Falha ao anexar páginas</string>
+    <string name="append_target_encrypted">Remove primeiro a palavra-passe do PDF antes de anexar páginas.</string>
 </resources>

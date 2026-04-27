@@ -15,7 +15,7 @@ val keystoreProperties = Properties().apply {
 val releaseStoreFile = keystoreProperties["storeFile"]
     ?.toString()
     ?.takeIf { it.isNotBlank() }
-    ?.let { file(it) }
+    ?.let { rootProject.file(it) }
 val hasReleaseSigning = releaseStoreFile?.exists() == true &&
     listOf("storePassword", "keyAlias", "keyPassword")
         .all { key -> !keystoreProperties[key]?.toString().isNullOrBlank() }
@@ -73,6 +73,13 @@ android {
         compose = true
         buildConfig = true
     }
+    packaging {
+        jniLibs.keepDebugSymbols += setOf(
+            "**/libandroidx.graphics.path.so",
+            "**/libbarhopper_v3.so",
+            "**/libmlkit_google_ocr_pipeline.so"
+        )
+    }
     testOptions {
         unitTests {
             isReturnDefaultValues = true
@@ -85,7 +92,7 @@ android {
         }
     }
     sourceSets {
-        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+        getByName("androidTest").assets.directories.add("$projectDir/schemas")
     }
 }
 
@@ -163,8 +170,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.room.testing)
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.1")
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+    androidTestImplementation(libs.kotlinx.serialization.core)
+    androidTestImplementation(libs.kotlinx.serialization.json)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)

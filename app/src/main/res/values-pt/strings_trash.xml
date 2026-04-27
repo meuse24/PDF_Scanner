@@ -24,18 +24,22 @@
     <string name="privacy_point_6">Quando você exclui um documento, ele permanece localmente na lixeira do app por até 30 dias. Ele é removido antes se você o excluir permanentemente ou esvaziar a lixeira.</string>
     <plurals name="trash_moved">
         <item quantity="one">%1$d documento movido para a lixeira</item>
+        <item quantity="many">%1$d documentos movidos para a lixeira</item>
         <item quantity="other">%1$d documentos movidos para a lixeira</item>
     </plurals>
     <plurals name="trash_restored">
         <item quantity="one">%1$d documento restaurado</item>
+        <item quantity="many">%1$d documentos restaurados</item>
         <item quantity="other">%1$d documentos restaurados</item>
     </plurals>
     <plurals name="trash_purged">
         <item quantity="one">%1$d documento excluído permanentemente</item>
+        <item quantity="many">%1$d documentos excluídos permanentemente</item>
         <item quantity="other">%1$d documentos excluídos permanentemente</item>
     </plurals>
     <plurals name="trash_days_remaining">
         <item quantity="one">Exclusão permanente em %1$d dia</item>
+        <item quantity="many">Exclusão permanente em %1$d dias</item>
         <item quantity="other">Exclusão permanente em %1$d dias</item>
     </plurals>
 </resources>

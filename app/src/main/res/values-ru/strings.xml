@@ -16,6 +16,8 @@
     <string name="settings_default_ocr_language_label">Язык OCR по умолчанию</string>
     <string name="settings_archive_title">Архив</string>
     <string name="settings_default_sort_order_label">Сортировка по умолчанию</string>
+    <string name="settings_trash_undo_duration_label">Длительность сообщения отмены для корзины</string>
+    <string name="settings_trash_undo_duration_seconds">%1$d сек.</string>
     <string name="settings_more_coming">Здесь появятся дополнительные настройки.</string>
     <string name="theme_mode_system">Система</string>
     <string name="theme_mode_light">Светлая</string>
@@ -26,6 +28,10 @@
     <string name="cd_share">Поделиться</string>
     <string name="cd_delete">Удалить</string>
     <string name="cd_pdf_document">PDF-документ</string>
+    <string name="cd_add_favorite">Добавить в избранное</string>
+    <string name="cd_remove_favorite">Удалить из избранного</string>
+    <string name="cd_document_actions">Открыть действия с документом</string>
+    <string name="cd_select_document">Выбрать %1$s</string>
     <string name="action_open_document">Открыть PDF</string>
     <string name="action_select_documents">Выбрать документы</string>
     <string name="home_empty_title">Нет документов</string>
@@ -146,7 +152,7 @@
     <string name="privacy_point_1">Приложение локально хранит на вашем устройстве PDF-файлы, изображения предпросмотра, отредактированные копии и необязательный OCR-текст.</string>
     <string name="privacy_point_2">Документы и содержимое не загружаются автоматически. Передача или экспорт происходят только после вашего явного действия. Безопасное редактирование создаёт новую копию; оригинал остаётся, пока вы его не удалите.</string>
     <string name="privacy_point_3">Функции сканирования и OCR используют Google Play Services. Для анализа ошибок могут передаваться технические диагностические данные. Автоматический режим использует встроенную модель распознавания латинского текста, работающую офлайн. Языковые модели для хинди, китайского, японского и корейского могут быть получены через Play Services при первом ручном использовании; содержимое ваших документов этим приложением не отправляется.</string>
-    <string name="privacy_point_4">Само приложение не собирает персональные данные, не использует собственную аналитику и не запрашивает собственное сетевое разрешение.</string>
+    <string name="privacy_point_4">Само приложение не собирает персональные данные и не использует собственную аналитику или серверную часть. Google Play Services / ML Kit могут добавлять сетевые разрешения для моделей, совместимости и диагностики.</string>
     <string name="privacy_footer">Актуально: 24 апреля 2026 г.</string>
 
     <!-- OCR -->
@@ -371,7 +377,7 @@
     <string name="action_submenu_security">Security &amp; Password</string>
     <!-- Restrict usage -->
     <string name="restrict_usage_screen_title">Restrict usage rights</string>
-    <string name="restrict_usage_description">Set usage rights via owner password</string>
+    <string name="restrict_usage_description">Задать права использования паролем владельца</string>
     <string name="restrict_usage_details">Creates a new PDF copy with usage restrictions controlled by an owner password. The document can still be opened without a password, but printing, copying, and editing can be individually restricted. The original file stays unchanged.</string>
     <string name="restrict_usage_owner_password_label">Owner password</string>
     <string name="restrict_usage_can_print">Allow printing</string>
@@ -485,6 +491,7 @@
     <string name="metadata_apply">Сохранить метаданные</string>
     <string name="metadata_error">Ошибка при сохранении метаданных PDF</string>
     <string name="help_item_pdf_metadata">Нажмите «Инфо о PDF», чтобы просмотреть и изменить встроенные метаданные документа: заголовок, автор, приложение-создатель, тему, ключевые слова, а также даты создания и изменения. Редактируемые поля сохраняются обратно в тот же PDF-файл.</string>
+    <string name="label_bulk_more">Ещё</string>
 
     <!-- Images to PDF -->
 
@@ -505,7 +512,16 @@
     <string name="pdf_viewer_invalid_page">Не удалось открыть эту страницу.</string>
     <string name="pdf_viewer_out_of_memory">Эта страница слишком велика для отрисовки на этом устройстве.</string>
     <string name="pdf_viewer_renderer_failed">PDF-просмотрщик не смог отрисовать этот документ.</string>
-</resources>
-
-
-
+    <string name="filter_tag_all">All</string>
+    <string name="filter_tag_invoice">Invoices</string>
+    <string name="filter_tag_contract">Contracts</string>
+    <string name="filter_tag_insurance">Insurance</string>
+    <string name="filter_tag_certificate">Certificates</string>
+    <string name="filter_tag_bank">Bank</string>
+    <string name="filter_tag_delivery">Delivery notes</string>
+    <string name="settings_retro_tag_action">Tag documents automatically</string>
+    <string name="settings_retro_tag_done">%1$d documents tagged</string>
+    <string name="ocr_export_as_file">Save as text file</string>
+    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
+    <string name="ocr_export_error">Text export failed</string>
+    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>

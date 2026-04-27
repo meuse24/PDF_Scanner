@@ -24,18 +24,22 @@
     <string name="privacy_point_6">Cuando eliminas un documento, primero permanece localmente en la papelera de la app hasta 30 días. Se elimina antes si lo borras definitivamente o vacías la papelera.</string>
     <plurals name="trash_moved">
         <item quantity="one">%1$d documento movido a la papelera</item>
+        <item quantity="many">%1$d documentos movidos a la papelera</item>
         <item quantity="other">%1$d documentos movidos a la papelera</item>
     </plurals>
     <plurals name="trash_restored">
         <item quantity="one">%1$d documento restaurado</item>
+        <item quantity="many">%1$d documentos restaurados</item>
         <item quantity="other">%1$d documentos restaurados</item>
     </plurals>
     <plurals name="trash_purged">
         <item quantity="one">%1$d documento eliminado definitivamente</item>
+        <item quantity="many">%1$d documentos eliminados definitivamente</item>
         <item quantity="other">%1$d documentos eliminados definitivamente</item>
     </plurals>
     <plurals name="trash_days_remaining">
         <item quantity="one">Eliminación definitiva en %1$d día</item>
+        <item quantity="many">Eliminación definitiva en %1$d días</item>
         <item quantity="other">Eliminación definitiva en %1$d días</item>
     </plurals>
 </resources>

@@ -12,6 +12,7 @@
     <string name="append_images_hint">Choisis la mise en page des images selectionnees avant de les ajouter.</string>
     <plurals name="append_success">
         <item quantity="one">%1$d page ajoutee</item>
+        <item quantity="many">%1$d pages ajoutees</item>
         <item quantity="other">%1$d pages ajoutees</item>
     </plurals>
     <string name="append_error">Ajout des pages impossible</string>

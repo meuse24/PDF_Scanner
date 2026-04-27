@@ -22,7 +22,7 @@ class AutoTagUseCaseTest {
 
     @Test
     fun `contract keyword detected in English`() {
-        val tags = useCase.extractTags("This Agreement is entered into between the parties.")
+        val tags = useCase.extractTags("This Contract Agreement defines the Laufzeit between the parties.")
         assertNotNull(tags)
         assertTrue(tags!!.split(",").contains("contract"))
     }
@@ -36,7 +36,10 @@ class AutoTagUseCaseTest {
 
     @Test
     fun `multiple tags detected`() {
-        val tags = useCase.extractTags("Rechnungsnummer 001, Versicherungsbeitrag fällig, IBAN DE89 3704 0044 0532 0130 00")
+        val tags = useCase.extractTags(
+            "Rechnungsnummer 001, Bruttobetrag 100,00 EUR, " +
+                "Versicherungsnummer V-42, Versicherungsbeitrag fällig, IBAN DE89 3704 0044 0532 0130 00"
+        )
         assertNotNull(tags)
         val tagList = tags!!.split(",")
         assertTrue(tagList.contains("invoice"))
@@ -61,7 +64,10 @@ class AutoTagUseCaseTest {
 
     @Test
     fun `tags are comma separated and sorted`() {
-        val tags = useCase.extractTags("Mietvertrag, Versicherungsschein, Rechnungsnummer 42")
+        val tags = useCase.extractTags(
+            "Mietvertrag mit Vertragspartner, Versicherungsschein mit Versicherungsnummer, " +
+                "Rechnungsnummer 42 und Bruttobetrag 100,00 EUR"
+        )
         assertNotNull(tags)
         val tagList = tags!!.split(",")
         assertEquals(tagList.sorted(), tagList)

@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import android.util.Log
+import androidx.core.graphics.createBitmap
 import info.meuse24.pdf_scanner.domain.usecase.SearchableResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.tom_roush.pdfbox.pdmodel.PDDocument
@@ -190,7 +191,7 @@ open class SearchablePdfBuilder @Inject constructor(
                     renderer.openPage(i).use { page ->
                         val (bitmapW, bitmapH) = ocrBitmapSize(page.width, page.height)
 
-                        val bitmap = Bitmap.createBitmap(bitmapW, bitmapH, Bitmap.Config.ARGB_8888)
+                        val bitmap = createBitmap(bitmapW, bitmapH, Bitmap.Config.ARGB_8888)
                         val (ocrText, ocrStats) = try {
                             bitmap.eraseColor(Color.WHITE)
                             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)

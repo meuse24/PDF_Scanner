@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import androidx.core.graphics.createBitmap
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -177,7 +178,7 @@ private class AndroidPdfDocumentBitmapHandle(
         heightPx: Int,
         config: Bitmap.Config
     ): RenderedPdfPage {
-        val bitmap = Bitmap.createBitmap(widthPx, heightPx, config)
+        val bitmap = createBitmap(widthPx, heightPx, config)
         try {
             Canvas(bitmap).drawColor(Color.WHITE)
             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)

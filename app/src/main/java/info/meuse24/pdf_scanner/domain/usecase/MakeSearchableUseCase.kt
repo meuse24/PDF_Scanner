@@ -15,7 +15,8 @@ import javax.inject.Inject
  */
 class MakeSearchableUseCase @Inject constructor(
     private val searchablePdfBuilder: SearchablePdfBuilder,
-    private val repository:           DocumentRepository
+    private val repository:           DocumentRepository,
+    private val autoTagUseCase:       AutoTagUseCase = AutoTagUseCase()
 ) {
     /**
      * @return Pair(processedCount, blankOcrCount) — blankOcrCount zählt Dokumente, bei denen
@@ -39,7 +40,8 @@ class MakeSearchableUseCase @Inject constructor(
                 id = record.id,
                 fileSize = pdfFile.length(),
                 text = searchableResult.extractedText.ifBlank { null },
-                tags = null,
+                tags = searchableResult.extractedText.ifBlank { null }
+                    ?.let(autoTagUseCase::extractTags),
                 confidence = searchableResult.stats?.confidence,
                 language = searchableResult.stats?.recognizedLanguage,
                 pageTexts = searchableResult.pageTexts

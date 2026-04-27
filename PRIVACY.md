@@ -36,7 +36,7 @@ Nach der aktuellen Implementierung sind die gescannten PDFs und die lokale Daten
 
 ## 4. Netzwerk, Werbung, Konten und Berechtigungen
 
-- Die App fordert selbst keine Internet-Berechtigung an.
+- Die App nutzt kein eigenes Backend und lädt Dokumente nicht auf Server des Entwicklers hoch. Durch Google Play Services / ML Kit können im gemergten App-Manifest Netzwerkberechtigungen enthalten sein, etwa für Modell-, Kompatibilitäts- und Diagnosefunktionen.
 - Die App enthaelt keine Werbung.
 - Die App verwendet kein eigenes Analytics- oder Crash-Reporting-System.
 - Die App verlangt kein Benutzerkonto und kein Abonnement.

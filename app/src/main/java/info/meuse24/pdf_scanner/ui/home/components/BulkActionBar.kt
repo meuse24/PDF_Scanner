@@ -49,15 +49,17 @@ import info.meuse24.pdf_scanner.R
 internal fun BulkActionBar(
     onShare:               () -> Unit,
     onExport:              () -> Unit,
+    onExportOcrText:       () -> Unit,
     onExtractTexts:        () -> Unit,
     onMakeSearchable:      () -> Unit,
     onMerge:               () -> Unit,
     onMoveToFolder:        () -> Unit,
     onDelete:              () -> Unit,
+    modifier:              Modifier = Modifier,
     extractEnabled:        Boolean  = true,
+    exportTextEnabled:     Boolean  = false,
     makeSearchableEnabled: Boolean  = true,
-    mergeEnabled:          Boolean  = false,
-    modifier:              Modifier = Modifier
+    mergeEnabled:          Boolean  = false
 ) {
     var ocrSheetVisible by remember { mutableStateOf(false) }
     var moreSheetVisible by remember { mutableStateOf(false) }
@@ -133,6 +135,15 @@ internal fun BulkActionBar(
                 onClick = {
                     moreSheetVisible = false
                     onExport()
+                }
+            )
+            BulkSheetItem(
+                icon = Icons.AutoMirrored.Filled.TextSnippet,
+                labelRes = R.string.ocr_export_as_file,
+                enabled = exportTextEnabled,
+                onClick = {
+                    moreSheetVisible = false
+                    onExportOcrText()
                 }
             )
             if (mergeEnabled) {

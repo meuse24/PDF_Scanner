@@ -95,7 +95,7 @@ fun AnnotateScreen(
     var annotationHistory by rememberSaveable(stateSaver = annotateHistorySaver) { mutableStateOf(emptyList<AnnotationHistoryEntry>()) }
     var currentStroke by rememberSaveable(stateSaver = annotatePointListSaver) { mutableStateOf(emptyList<Pair<Float, Float>>()) }
 
-    var selectedPageIndex by rememberSaveable { mutableStateOf(0) }
+    var selectedPageIndex by rememberSaveable { mutableIntStateOf(0) }
     var selectedWidthFraction by rememberSaveable { mutableFloatStateOf(0.025f) }
     var selectedMarkerColor by rememberSaveable { mutableIntStateOf(defaultAnnotationColor()) }
     var selectedOpaqueColor by rememberSaveable { mutableIntStateOf(defaultTextAnnotationColor()) }
@@ -115,7 +115,7 @@ fun AnnotateScreen(
     var currentShapeDraft by remember { mutableStateOf<AnnotationShapeDraft?>(null) }
     var showCommentDialog by remember { mutableStateOf(false) }
     var pendingCommentAnchor by remember { mutableStateOf<Pair<Float, Float>?>(null) }
-    var editingCommentIndex by remember { mutableStateOf(-1) }
+    var editingCommentIndex by remember { mutableIntStateOf(-1) }
     var commentDialogText by remember { mutableStateOf("") }
 
     val elementStateSnapshot = AnnotationElementState(

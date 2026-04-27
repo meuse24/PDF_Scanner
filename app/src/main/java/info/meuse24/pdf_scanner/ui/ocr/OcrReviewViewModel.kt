@@ -7,9 +7,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
+import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
 import info.meuse24.pdf_scanner.util.DispatcherProvider
+import info.meuse24.pdf_scanner.util.DownloadEntry
+import info.meuse24.pdf_scanner.util.DownloadsStorage
 import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import info.meuse24.pdf_scanner.util.OcrQuality
 import info.meuse24.pdf_scanner.util.ResourceProvider
@@ -28,6 +31,7 @@ import javax.inject.Inject
 class OcrReviewViewModel @Inject constructor(
     private val repository: DocumentRepository,
     private val extractTextUseCase: ExtractTextUseCase,
+    private val exportOcrTextUseCase: ExportOcrTextUseCase = defaultExportOcrTextUseCase(),
     private val resourceProvider: ResourceProvider,
     private val dispatcherProvider: DispatcherProvider,
     savedStateHandle: SavedStateHandle
@@ -41,6 +45,8 @@ class OcrReviewViewModel @Inject constructor(
         val recognizedLanguage: String? = null,
         val quality: OcrQuality = OcrQuality.UNKNOWN,
         val loading: Boolean = false,
+        val exporting: Boolean = false,
+        val success: String? = null,
         val error: String? = null
     )
 
@@ -49,10 +55,13 @@ class OcrReviewViewModel @Inject constructor(
         .map { records -> records.find { it.id == scanId } }
 
     private val loading = MutableStateFlow(false)
+    private val exporting = MutableStateFlow(false)
+    private val success = MutableStateFlow<String?>(null)
     private val error = MutableStateFlow<String?>(null)
     private var initialLoadRequested = false
 
-    val uiState: StateFlow<UiState> = combine(record, loading, error) { record, loading, error ->
+    val uiState: StateFlow<UiState> = combine(record, loading, exporting, success, error) {
+            record, loading, exporting, success, error ->
         val pageTexts = record.pageTexts()
         UiState(
             record = record,
@@ -62,6 +71,8 @@ class OcrReviewViewModel @Inject constructor(
             recognizedLanguage = record?.ocrLanguage,
             quality = record?.ocrConfidence.toQuality(),
             loading = loading,
+            exporting = exporting,
+            success = success,
             error = error
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), UiState(loading = true))
@@ -125,6 +136,29 @@ class OcrReviewViewModel @Inject constructor(
     fun clearError() {
         error.value = null
     }
+
+    fun clearSuccess() {
+        success.value = null
+    }
+
+    fun exportAsText() {
+        val current = uiState.value.record ?: return
+        if (current.extractedText.isNullOrBlank() || exporting.value) return
+
+        exporting.value = true
+        error.value = null
+        success.value = null
+        viewModelScope.launch(dispatcherProvider.io) {
+            try {
+                val filename = exportOcrTextUseCase(listOf(current))
+                success.value = resourceProvider.getString(R.string.ocr_export_success, filename)
+            } catch (_: Exception) {
+                error.value = resourceProvider.getString(R.string.ocr_export_error)
+            } finally {
+                exporting.value = false
+            }
+        }
+    }
 }
 
 private fun Document?.pageTexts(): List<String> {
@@ -134,4 +168,14 @@ private fun Document?.pageTexts(): List<String> {
     if (fullText.isBlank()) return emptyList()
     return listOf(fullText)
 }
+
+private fun defaultExportOcrTextUseCase() = ExportOcrTextUseCase(
+    object : DownloadsStorage {
+        override fun writeDownload(
+            displayName: String,
+            mimeType: String,
+            writer: (java.io.OutputStream) -> Unit
+        ): DownloadEntry = error("DownloadsStorage not configured")
+    }
+)
 

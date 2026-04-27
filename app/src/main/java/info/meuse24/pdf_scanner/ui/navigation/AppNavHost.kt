@@ -175,6 +175,7 @@ private fun NavGraphBuilder.infoNavGraph(
             onM24AnimationEnabledChange = settingsViewModel::setM24AnimationEnabled,
             onDefaultMakeSearchableChange = settingsViewModel::setDefaultMakeSearchable,
             onDefaultOcrLanguageChange = settingsViewModel::setDefaultOcrLanguage,
+            onRetroTagDocuments = settingsViewModel::retroTagDocuments,
             onDefaultSortOrderChange = settingsViewModel::setDefaultSortOrder,
             onTrashUndoSnackbarSecondsChange = settingsViewModel::setTrashUndoSnackbarSeconds,
             onAppLockEnabledChange = { enabled ->

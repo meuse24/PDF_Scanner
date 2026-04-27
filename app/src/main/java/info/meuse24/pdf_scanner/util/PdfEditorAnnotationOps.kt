@@ -27,7 +27,11 @@ private data class PdfArgbColor(
     val red: Int,
     val green: Int,
     val blue: Int
-)
+) {
+    val redUnit: Float get() = red / 255f
+    val greenUnit: Float get() = green / 255f
+    val blueUnit: Float get() = blue / 255f
+}
 
 private data class AnnotationPdfBounds(
     val left: Float,
@@ -160,7 +164,7 @@ internal fun PdfEditor.appendAnnotationStroke(
     contentStream.setGraphicsStateParameters(
         PDExtendedGraphicsState().apply { strokingAlphaConstant = color.alpha }
     )
-    contentStream.setStrokingColor(color.red, color.green, color.blue)
+    contentStream.setStrokingColor(color.redUnit, color.greenUnit, color.blueUnit)
     contentStream.setLineWidth((displayedWidth * stroke.strokeWidthFraction).coerceIn(3f, 36f))
     contentStream.setLineCapStyle(1)
     contentStream.setLineJoinStyle(1)
@@ -213,7 +217,7 @@ internal fun PdfEditor.appendAnnotationRect(
             contentStream.setGraphicsStateParameters(
                 PDExtendedGraphicsState().apply { nonStrokingAlphaConstant = color.alpha }
             )
-            contentStream.setNonStrokingColor(color.red, color.green, color.blue)
+            contentStream.setNonStrokingColor(color.redUnit, color.greenUnit, color.blueUnit)
             contentStream.addRect(bounds.left, bounds.bottom, bounds.width, bounds.height)
             contentStream.fill()
         }
@@ -221,7 +225,7 @@ internal fun PdfEditor.appendAnnotationRect(
             contentStream.setGraphicsStateParameters(
                 PDExtendedGraphicsState().apply { strokingAlphaConstant = color.alpha }
             )
-            contentStream.setStrokingColor(color.red, color.green, color.blue)
+            contentStream.setStrokingColor(color.redUnit, color.greenUnit, color.blueUnit)
             contentStream.setLineWidth((displayedWidth * rect.strokeWidthFraction).coerceIn(2f, 36f))
             contentStream.setLineJoinStyle(1)
             contentStream.addRect(bounds.left, bounds.bottom, bounds.width, bounds.height)
@@ -254,14 +258,14 @@ internal fun PdfEditor.appendAnnotationOval(
             contentStream.setGraphicsStateParameters(
                 PDExtendedGraphicsState().apply { nonStrokingAlphaConstant = color.alpha }
             )
-            contentStream.setNonStrokingColor(color.red, color.green, color.blue)
+            contentStream.setNonStrokingColor(color.redUnit, color.greenUnit, color.blueUnit)
             contentStream.setLineJoinStyle(1)
         }
         AnnotationShapeStyle.FRAME -> {
             contentStream.setGraphicsStateParameters(
                 PDExtendedGraphicsState().apply { strokingAlphaConstant = color.alpha }
             )
-            contentStream.setStrokingColor(color.red, color.green, color.blue)
+            contentStream.setStrokingColor(color.redUnit, color.greenUnit, color.blueUnit)
             contentStream.setLineWidth((displayedWidth * oval.strokeWidthFraction).coerceIn(2f, 36f))
             contentStream.setLineJoinStyle(1)
         }
@@ -343,7 +347,7 @@ internal fun PdfEditor.appendTextComment(
         cs.setGraphicsStateParameters(
             PDExtendedGraphicsState().apply { nonStrokingAlphaConstant = color.alpha }
         )
-        cs.setNonStrokingColor(color.red, color.green, color.blue)
+        cs.setNonStrokingColor(color.redUnit, color.greenUnit, color.blueUnit)
         cs.setFont(font, fontSizePt)
         allLines.forEachIndexed { lineIdx, line ->
             val x = anchorPdfX + vecs.lineDX * lineIdx

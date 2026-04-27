@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.Button
@@ -31,6 +32,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,6 +82,13 @@ fun OcrReviewScreen(
 
     val record = state.record
     val displayText = state.text.orEmpty()
+
+    LaunchedEffect(state.success) {
+        state.success?.let { message ->
+            snackbarHostState?.showSnackbar(message)
+            viewModel.clearSuccess()
+        }
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -254,6 +263,16 @@ fun OcrReviewScreen(
                             Icon(Icons.Default.Share, contentDescription = null)
                             Text(
                                 text = stringResource(R.string.action_share_text),
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                        OutlinedButton(
+                            onClick = viewModel::exportAsText,
+                            enabled = displayText.isNotBlank() && !state.exporting
+                        ) {
+                            Icon(Icons.Default.Download, contentDescription = null)
+                            Text(
+                                text = stringResource(R.string.ocr_export_as_file),
                                 modifier = Modifier.padding(start = 8.dp)
                             )
                         }

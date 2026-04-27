@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.util
 
 import android.app.Activity
 import android.content.Context
+import androidx.core.content.edit
 import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -9,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 class PlayReviewPromptManager @Inject constructor(
-    @param:ApplicationContext context: Context
+    @ApplicationContext context: Context
 ) {
     private val appContext = context.applicationContext
     private val prefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -19,10 +20,10 @@ class PlayReviewPromptManager @Inject constructor(
         synchronized(lock) {
             val firstSeenAt = prefs.getLong(KEY_FIRST_SEEN_AT_MILLIS, 0L).takeIf { it > 0L } ?: nowMillis
             val launchCount = prefs.getInt(KEY_LAUNCH_COUNT, 0) + 1
-            prefs.edit()
-                .putLong(KEY_FIRST_SEEN_AT_MILLIS, firstSeenAt)
-                .putInt(KEY_LAUNCH_COUNT, launchCount)
-                .apply()
+            prefs.edit {
+                putLong(KEY_FIRST_SEEN_AT_MILLIS, firstSeenAt)
+                putInt(KEY_LAUNCH_COUNT, launchCount)
+            }
         }
     }
 
@@ -40,16 +41,14 @@ class PlayReviewPromptManager @Inject constructor(
         )
         val eligible = PlayReviewPromptPolicy.isEligible(snapshot, nowMillis)
 
-        prefs.edit()
-            .putLong(KEY_FIRST_SEEN_AT_MILLIS, firstSeenAt)
-            .putInt(KEY_SUCCESSFUL_DOCUMENT_ACTION_COUNT, actionCount)
-            .apply {
+        prefs.edit {
+            putLong(KEY_FIRST_SEEN_AT_MILLIS, firstSeenAt)
+            putInt(KEY_SUCCESSFUL_DOCUMENT_ACTION_COUNT, actionCount)
                 if (eligible) {
                     putLong(KEY_LAST_REVIEW_REQUEST_AT_MILLIS, nowMillis)
                     putInt(KEY_REVIEW_REQUEST_COUNT, snapshot.reviewRequestCount + 1)
                 }
             }
-            .apply()
 
         eligible
     }

@@ -291,6 +291,7 @@ fun PdfViewerScreen(
                             ScanAction.ScanQrCodes -> onNavigateToQrScan(record.id)
                             ScanAction.ScanBusinessCard -> onNavigateToBusinessCard(record.id)
                             ScanAction.ExportAsJpg,
+                            ScanAction.ExportOcrText,
                             ScanAction.Print,
                             ScanAction.Rename -> Unit
                         }

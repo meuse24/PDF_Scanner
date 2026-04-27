@@ -16,6 +16,8 @@
     <string name="settings_default_ocr_language_label">Idioma OCR predeterminado</string>
     <string name="settings_archive_title">Archivo</string>
     <string name="settings_default_sort_order_label">Orden predeterminado</string>
+    <string name="settings_trash_undo_duration_label">Duración del mensaje de deshacer de la papelera</string>
+    <string name="settings_trash_undo_duration_seconds">%1$d segundos</string>
     <string name="settings_more_coming">Se añadirán más ajustes aquí.</string>
     <string name="theme_mode_system">Sistema</string>
     <string name="theme_mode_light">Claro</string>
@@ -26,6 +28,10 @@
     <string name="cd_share">Compartir</string>
     <string name="cd_delete">Eliminar</string>
     <string name="cd_pdf_document">Documento PDF</string>
+    <string name="cd_add_favorite">Añadir a favoritos</string>
+    <string name="cd_remove_favorite">Quitar de favoritos</string>
+    <string name="cd_document_actions">Abrir acciones del documento</string>
+    <string name="cd_select_document">Seleccionar %1$s</string>
     <string name="action_open_document">Abrir PDF</string>
     <string name="action_select_documents">Seleccionar documentos</string>
     <string name="home_empty_title">No hay documentos disponibles</string>
@@ -146,7 +152,7 @@
     <string name="privacy_point_1">Esta app almacena localmente en tu dispositivo los PDF, las imágenes de vista previa, las copias redactadas y el texto OCR buscable opcional.</string>
     <string name="privacy_point_2">Ningún documento ni contenido se sube automáticamente. Compartir o exportar solo ocurre cuando lo activas explícitamente. La redacción segura crea una copia nueva; el original permanece hasta que lo elimines.</string>
     <string name="privacy_point_3">Las funciones de escaneo y OCR usan Google Play Services. Pueden transmitirse datos técnicos de diagnóstico para el análisis de errores. El modo automático usa un reconocedor de texto latino integrado que funciona sin conexión. Los modelos de idioma para hindi, chino, japonés y coreano pueden obtenerse mediante Play Services en el primer uso manual; el contenido de tus documentos no es enviado por esta app.</string>
-    <string name="privacy_point_4">La app no recopila datos personales, no usa analítica propia y no solicita un permiso de red propio.</string>
+    <string name="privacy_point_4">La app no recopila datos personales ni usa analítica o backend propios. Google Play Services / ML Kit pueden añadir permisos de red para modelos, compatibilidad y diagnósticos.</string>
     <string name="privacy_footer">Actualizado: 24 de abril de 2026</string>
 
     <!-- OCR -->
@@ -371,7 +377,7 @@
     <string name="action_submenu_security">Security &amp; Password</string>
     <!-- Restrict usage -->
     <string name="restrict_usage_screen_title">Restrict usage rights</string>
-    <string name="restrict_usage_description">Set usage rights via owner password</string>
+    <string name="restrict_usage_description">Definir derechos de uso con la contraseña de propietario</string>
     <string name="restrict_usage_details">Creates a new PDF copy with usage restrictions controlled by an owner password. The document can still be opened without a password, but printing, copying, and editing can be individually restricted. The original file stays unchanged.</string>
     <string name="restrict_usage_owner_password_label">Owner password</string>
     <string name="restrict_usage_can_print">Allow printing</string>
@@ -485,6 +491,7 @@
     <string name="metadata_apply">Guardar metadatos</string>
     <string name="metadata_error">Error al guardar los metadatos del PDF</string>
     <string name="help_item_pdf_metadata">Toca Info del PDF para ver y editar los metadatos integrados de un documento: título, autor, aplicación creadora, asunto, palabras clave y fechas de creación y modificación. Los campos editables se vuelven a guardar en el mismo archivo PDF.</string>
+    <string name="label_bulk_more">Más</string>
 
     <!-- Images to PDF -->
 
@@ -505,7 +512,16 @@
     <string name="pdf_viewer_invalid_page">No se pudo abrir esta página.</string>
     <string name="pdf_viewer_out_of_memory">Esta página es demasiado grande para renderizarla en este dispositivo.</string>
     <string name="pdf_viewer_renderer_failed">El visor PDF no pudo renderizar este documento.</string>
-</resources>
-
-
-
+    <string name="filter_tag_all">All</string>
+    <string name="filter_tag_invoice">Invoices</string>
+    <string name="filter_tag_contract">Contracts</string>
+    <string name="filter_tag_insurance">Insurance</string>
+    <string name="filter_tag_certificate">Certificates</string>
+    <string name="filter_tag_bank">Bank</string>
+    <string name="filter_tag_delivery">Delivery notes</string>
+    <string name="settings_retro_tag_action">Tag documents automatically</string>
+    <string name="settings_retro_tag_done">%1$d documents tagged</string>
+    <string name="ocr_export_as_file">Save as text file</string>
+    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
+    <string name="ocr_export_error">Text export failed</string>
+    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>

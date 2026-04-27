@@ -134,7 +134,7 @@ Testabhängigkeiten: `junit:4.13.2`, `kotlinx-coroutines-test:1.10.1`, `mockito-
 | Compose BOM | 2026.03.00 |
 
 Versionen in `gradle/libs.versions.toml`. Gradle-Besonderheiten:
-- `android.disallowKotlinSourceSets=false` (KSP + AGP 9), `ksp.workers.max=1` (KSP Worker-Race-Workaround)
+- `android.disallowKotlinSourceSets=false` with `android.suppressUnsupportedOptionWarnings` (KSP + AGP 9), `ksp.workers.max=1` (KSP Worker-Race-Workaround)
 - `org.gradle.caching=true`, `org.gradle.parallel=true`, `org.gradle.configuration-cache=true`
 - Bei Cache-Problemen: `--no-configuration-cache`
 

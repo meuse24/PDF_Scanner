@@ -80,6 +80,9 @@ class ScanRepository @Inject constructor(
 
     override suspend fun saveScans(records: List<Document>) = dao.insertAll(records.map { it.toEntity() })
 
+    override suspend fun getScansByIds(ids: List<Long>): List<Document> =
+        if (ids.isEmpty()) emptyList() else dao.getScansByIds(ids).map { it.toDomain() }
+
     override suspend fun deleteScan(record: Document) = dao.delete(record.toEntity())
 
     override suspend fun markSearchable(id: Long, fileSize: Long) = dao.markSearchable(id, fileSize)

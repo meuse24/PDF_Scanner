@@ -120,6 +120,7 @@ class FakeScanDao : ScanDao {
         val id: Long,
         val fileSize: Long,
         val text: String?,
+        val tags: String?,
         val confidence: Float?,
         val language: String?,
         val pageTextJson: String?
@@ -153,7 +154,7 @@ class FakeScanDao : ScanDao {
         pageTextJson: String?
     ) {
         searchableWithContentUpdates.add(
-            SearchableWithContentUpdate(id, fileSize, text, confidence, language, pageTextJson)
+            SearchableWithContentUpdate(id, fileSize, text, tags, confidence, language, pageTextJson)
         )
     }
     override suspend fun updateExtractedTextAndOcrStats(
@@ -164,7 +165,7 @@ class FakeScanDao : ScanDao {
         pageTextJson: String?
     ) {
         extractedTextAndOcrUpdates.add(
-            SearchableWithContentUpdate(id, 0L, text, confidence, language, pageTextJson)
+            SearchableWithContentUpdate(id, 0L, text, null, confidence, language, pageTextJson)
         )
     }
     override suspend fun updateFileSize(id: Long, fileSize: Long) { fileSizeUpdates.add(id to fileSize) }
@@ -179,6 +180,7 @@ class FakeScanDao : ScanDao {
     override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun moveScans(ids: List<Long>, folderId: Long?) {}
     override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) {}
+    override suspend fun getScansByIds(ids: List<Long>): List<info.meuse24.pdf_scanner.data.local.ScanRecord> = emptyList()
     override fun getScansWithTag(tagKey: String): kotlinx.coroutines.flow.Flow<List<info.meuse24.pdf_scanner.data.local.ScanRecord>> = kotlinx.coroutines.flow.flowOf(emptyList())
     override suspend fun getAllSearchableWithoutTags(): List<info.meuse24.pdf_scanner.data.local.ScanRecord> = emptyList()
     override suspend fun updateTags(id: Long, tags: String) = Unit

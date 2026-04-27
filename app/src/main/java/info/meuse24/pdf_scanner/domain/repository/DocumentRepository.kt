@@ -27,6 +27,7 @@ interface DocumentRepository {
 
     suspend fun saveScan(record: Document): Long
     suspend fun saveScans(records: List<Document>)
+    suspend fun getScansByIds(ids: List<Long>): List<Document> = emptyList()
     suspend fun deleteScan(record: Document)
     suspend fun markSearchable(id: Long, fileSize: Long)
     suspend fun markSearchableWithContent(

@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
@@ -14,6 +15,8 @@ import info.meuse24.pdf_scanner.util.OcrPipeline
 import info.meuse24.pdf_scanner.util.OcrResultStats
 import info.meuse24.pdf_scanner.util.PdfPageInputImageLoader
 import info.meuse24.pdf_scanner.util.TextRecognizerRunner
+import info.meuse24.pdf_scanner.util.DownloadEntry
+import info.meuse24.pdf_scanner.util.DownloadsStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -212,11 +215,22 @@ class OcrReviewViewModelTest {
         return OcrReviewViewModel(
             repository = repository,
             extractTextUseCase = extractTextUseCase,
+            exportOcrTextUseCase = testExportOcrTextUseCase(),
             resourceProvider = resourceProvider,
             dispatcherProvider = TestDispatcherProvider(dispatcher),
             savedStateHandle = SavedStateHandle(mapOf("scanId" to scanId))
         )
     }
+
+    private fun testExportOcrTextUseCase() = ExportOcrTextUseCase(
+        object : DownloadsStorage {
+            override fun writeDownload(
+                displayName: String,
+                mimeType: String,
+                writer: (java.io.OutputStream) -> Unit
+            ): DownloadEntry = error("DownloadsStorage not configured")
+        }
+    )
 
     private fun scanRecord(
         id: Long = 7L,

@@ -36,8 +36,8 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 
 ### Schichtübersicht
 
-**`domain/usecase/`** — alle fachlichen Operationen (Import/Export, Trash/Restore/Purge, OCR/Searchable, Merge/Split/Reorder/Rotate/Delete/Duplicate, Redact/Highlight/Annotate, Grayscale, Folders, Favorites, BusinessCard/vCard, ImagesToPdf, Append).
-`AutoTagUseCase` ist **inaktiv** (nicht mehr aufgerufen; Klasse + Tests bleiben erhalten, `tags`-Spalte immer null).
+**`domain/usecase/`** — alle fachlichen Operationen (Import/Export, OCR-TXT-Export, Trash/Restore/Purge, OCR/Searchable, AutoTags/RetroTag, Merge/Split/Reorder/Rotate/Delete/Duplicate, Redact/Highlight/Annotate, Grayscale, Folders, Favorites, BusinessCard/vCard, ImagesToPdf, Append).
+`AutoTagUseCase` ist aktiv und über `AppSettings.autoTaggingEnabled` abschaltbar: `MakeSearchableUseCase` und der stille OCR-Backfill speichern Tags nur bei aktivierter Option; `RetroTagUseCase` ergänzt Tags für vorhandene OCR-Dokumente.
 
 **`domain/workflow/`** — dünne Workflow-Guards um UseCases: prüfen Datei-Existenz, Verschlüsselung, leere Inputs; mappen Fehler via `WorkflowErrorMapper`.
 
@@ -46,7 +46,7 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 **`util/PdfEditor.kt`** + `PdfEditorCore/Annotation/Overlay/Redaction/ImageOps` — zentrale PdfBox-Implementierung aller Ports.
 `SearchablePdfBuilder`: Phase1 PdfRenderer+OCR, Phase2 PdfBox. ZH/JA/KO: OCR-Text ja, Searchable-PDF-Textlayer **nein** (TTC/OTC-Font-Problem).
 
-**`data/local/`** — Room DB v8 (`pdf_scanner_db`), `ScanRecord` + `FolderEntity` + FTS4, Migrationen 1–8.
+**`data/local/`** — Room DB v9 (`pdf_scanner_db`), `ScanRecord` + `FolderEntity` + FTS4, Migrationen 1–9.
 `ScanRecord`-Felder: `extracted_text`, `ocr_confidence`, `ocr_language`, `ocr_page_text_json`, `deleted_at`, `folder_id`, `is_favorite`.
 
 **`ui/`** — Compose-Screens nach Feature gegliedert: `home/`, `viewer/`, `documentaction/`, `annotate/`, `redact/`, `pageedit/`, `split/`, `reorder/`, `append/`, `imagestopdf/`, `ocr/`, `trash/`, `folders/`, `businesscard/`, `settings/`, `signature/`, `qrscan/`, `lock/`, `tile/`, `widget/`.
@@ -71,6 +71,7 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 - **Fehler HomeScreen:** `viewModel.reportError(String)` → `_error: StateFlow` → AlertDialog.
 - **Fehler Edit-Screens:** eigener `_error: StateFlow<String?>` im ViewModel → AlertDialog.
 - **Erfolg HomeScreen:** `_success: StateFlow<String?>` → Toast + `clearSuccess()`.
+- **Settings:** eigener `_success: StateFlow<String?>` → Snackbar + `clearSuccess()`; AutoTag-Switch persistiert über `AppSettingsRepository`.
 - **Erfolg Edit-Screens:** meist `_success: StateFlow<Boolean>` → `LaunchedEffect` → `onNavigateBack()`.
 - **Aktions-Screens** nutzen `ActionScreenContent` aus `ui/components/`; Dokument-Aktionen via `ScanAction` in `DocumentEditSheet`.
 - **PDF öffnen** → `Screen.Viewer`; externer Viewer nur als explizite Aktion im Viewer.
@@ -82,18 +83,21 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 - `ACTION_SEND_MULTIPLE` unterstützt absichtlich nur Bilder; mehrere PDFs werden nicht implizit gemerged.
 - Doppelte Dateinamen: `resolveUniqueFilename()` (`_2`, `_3`, …).
 - Export: `MediaStore.Downloads` IS_PENDING-Pattern; bei Fehler `resolver.delete()`.
+- OCR-TXT-Export: `ExportOcrTextUseCase` schreibt gespeicherten OCR-Text via `DownloadsStorage`; Home-Bulk-Export lädt vollständige Records gezielt per `DocumentRepository.getScansByIds()`, nicht über `ScanListItem`.
 - Backup: `allowBackup=false`; `backup_rules.xml` + `data_extraction_rules.xml` schließen `filesDir/scans/` und DB-Dateien aus.
 - **OCR:** `OcrPipeline`, Auto-Default, manuelle Sprache möglich, unbundled Modelle via `ModuleInstallClient`.
+- **AutoTags:** Scoring-basiertes lokales Keyword-Matching mit vorkompilierten Regexen; Tags als kommaseparierte Keys (`invoice`, `contract`, `insurance`, `certificate`, `bank`, `delivery`). Listenqueries laden nur `tags`, nicht `extracted_text`; automatische Vergabe respektiert `AppSettings.autoTaggingEnabled`.
 - **Viewer:** `PdfPageBitmapRenderer` (Mutex, ±1 Seiten rendern); Fit-width-Cache byte-budgetiert; Zoom-Renderings nicht gecacht; `CancellationException` nicht schlucken; `onCleared()` schließt File-Descriptors.
 
 ## Mehrfachauswahl
 
 - Checkbox (rechts) → Auswahlmodus; Back/✕ beendet.
 - **SelectionTitleBar** (ab 1 Auswahl): ✕ · „X ausgewählt" · SelectAll.
-- **BulkActionBar**: Teilen · Export · Ordner · Merge · Text · OCR · Löschen (rot).
+- **BulkActionBar**: Teilen · Ordner · OCR-Menü · Mehr-Menü mit PDF-Export, OCR-TXT-Export, Merge und Löschen (rot).
   - Share: `ACTION_SEND` (1) vs. `ACTION_SEND_MULTIPLE` (mehrere).
   - Delete: `confirm_delete_single` vs. `confirm_delete_multi` — immer mit Dialog.
   - OCR: `ExtractTextUseCase` — Einzel → OCR-Review-Screen; >1 → kombiniertes Result-Sheet.
+  - OCR-TXT-Export: nur Dokumente mit gespeichertem OCR-Text werden geschrieben; keine OCR-Nacherkennung beim Export.
   - MakeSearchable: `MakeSearchableUseCase` — überspringt bereits durchsuchbare; Button immer aktiv (Klick ohne Kandidaten → `reportError(searchable_nothing_to_do)`).
 
 ## Tests
@@ -101,7 +105,7 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 **Muster:** `UnconfinedTestDispatcher` + reale Workflow-Instanzen mit Fake-`PdfEditor`-Subklassen; `StateFlow.first { !it }` für IO-Synchronisierung.
 
 **JVM-Unit-Tests (`test/`):**
-- `domain/usecase/`: Delete/Trash/Restore/Purge/Append/MakeSearchable/ImportFile/AutoTag/CreatePdfFromImages
+- `domain/usecase/`: Delete/Trash/Restore/Purge/Append/MakeSearchable/ImportFile/AutoTag/RetroTag/ExportOcrText/CreatePdfFromImages
 - `domain/workflow/`: alle Workflow-Guards (Merge/Split/Reorder/Rotate/Delete/Extract/Duplicate/PageNumbers/Watermark/Compress/Protect/Unlock/Signature/Searchable/Redact/Highlight/Annotate)
 - `ui/`: HomeViewModel, SplitVM, ReorderVM, AppendVM, DocumentEditVM, TrashVM, ImagesToPdfVM, OcrReviewVM, QrScanVM, PdfViewerVM, AnnotateInteractionHelpers, PdfViewportMath
 - `ui/entry/`: `AppEntryActionCodecTest`

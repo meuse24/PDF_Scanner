@@ -4,7 +4,9 @@ import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.FakeSearchablePdfBuilder
+import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
+import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -23,7 +25,9 @@ class MakeSearchableWorkflowTest {
         val repository = ScanRepository(FakeScanDao())
         val useCase = MakeSearchableUseCase(
             FakeSearchablePdfBuilder(onMakeSearchable),
-            repository
+            repository,
+            AutoTagUseCase(),
+            FakeSettingsRepository()
         )
         return MakeSearchableWorkflow(useCase)
     }

@@ -16,7 +16,7 @@ class AutoTagUseCase @Inject constructor() {
 
         for ((tagKey, rules) in TAG_RULES) {
             val score = rules.sumOf { rule ->
-                if (wordPattern(rule.keyword).containsMatchIn(normalized)) rule.score else 0
+                if (WORD_PATTERNS.getValue(rule.keyword).containsMatchIn(normalized)) rule.score else 0
             } + extraScore(tagKey, normalized)
             if (score >= TAG_THRESHOLD) {
                 found.add(tagKey)
@@ -38,15 +38,14 @@ class AutoTagUseCase @Inject constructor() {
 
         // IBAN: country code + checksum + 15-34 alphanumeric chars in common grouped OCR form.
         private val IBAN_REGEX = Regex("""(?<!\p{L})[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){3,7}(?!\p{L})""")
+        private val HYPHENATED_LINE_BREAK_REGEX = Regex("""(\w)-\s*\n\s*(\w)""")
+        private val WHITESPACE_REGEX = Regex("""\s+""")
 
         // Match full keyword boundaries so "Berechnung" and similar OCR fragments do not trigger tags.
         // \p{L} covers all Unicode letters including German umlauts.
-        private fun wordPattern(kw: String) =
-            Regex("""(?<!\p{L})${Regex.escape(kw)}(?!\p{L})""", RegexOption.IGNORE_CASE)
-
         private fun normalizeText(raw: String): String =
-            raw.replace(Regex("""(\w)-\s*\n\s*(\w)"""), "$1$2")
-                .replace(Regex("""\s+"""), " ")
+            raw.replace(HYPHENATED_LINE_BREAK_REGEX, "$1$2")
+                .replace(WHITESPACE_REGEX, " ")
                 .trim()
 
         private fun extraScore(tagKey: String, text: String): Int = when (tagKey) {
@@ -72,8 +71,8 @@ class AutoTagUseCase @Inject constructor() {
                     "Rahmenvertrag", "Werkvertrag", "Darlehensvertrag").toTypedArray(),
                 *r(2, "Vertrag", "Contract", "Vereinbarung", "Agreement", "Auftragsbestätigung",
                     "Leistungsvereinbarung", "Allgemeine Geschäftsbedingungen", "AGB", "Kündigung",
-                    "Laufzeit", "§", "Vertragspartner").toTypedArray(),
-                *r(1, "Datum des Vertrags", "Vertragsschluss", "unterzeichnet").toTypedArray()
+                    "Laufzeit", "Vertragspartner").toTypedArray(),
+                *r(1, "§", "Datum des Vertrags", "Vertragsschluss", "unterzeichnet").toTypedArray()
             ),
             "insurance" to listOf(
                 *r(3, "Versicherungsschein", "Versicherungsnummer", "Versicherungspolice",
@@ -104,5 +103,13 @@ class AutoTagUseCase @Inject constructor() {
                 *r(1, "Lieferung", "Versand", "Paket").toTypedArray()
             )
         )
+
+        private val WORD_PATTERNS: Map<String, Regex> = TAG_RULES.values
+            .flatten()
+            .map { it.keyword }
+            .distinct()
+            .associateWith { kw ->
+                Regex("""(?<!\p{L})${Regex.escape(kw)}(?!\p{L})""", RegexOption.IGNORE_CASE)
+            }
     }
 }

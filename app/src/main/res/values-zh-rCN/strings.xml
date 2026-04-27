@@ -13,6 +13,7 @@
     <string name="settings_m24_animation_label">为 M24 图标启用动画</string>
     <string name="settings_scan_ocr_title">扫描与OCR</string>
     <string name="settings_default_make_searchable_label">默认：设为可搜索</string>
+    <string name="settings_auto_tagging_label">自动文档标签</string>
     <string name="settings_default_ocr_language_label">默认OCR语言</string>
     <string name="settings_archive_title">文件库</string>
     <string name="settings_default_sort_order_label">默认排序</string>
@@ -95,7 +96,7 @@
     <string name="help_item_select">点击复选框即可选择一个或多个条目。标题栏会显示数量，并支持全选。</string>
     <string name="help_item_add_document_scan">点击 + 并选择“扫描文档”，即可使用系统扫描器采集新页面。保存后，PDF 会像其他文档一样出现在归档中。</string>
     <string name="help_item_add_document_import">点击 + 并选择“导入 PDF”，即可打开系统文件选择器。从设备中选择现有 PDF；保存后，它会被复制到归档中。</string>
-    <string name="help_item_share_export">使用分享可将 PDF 发送到其他应用。使用导出可将文件复制到下载目录。</string>
+    <string name="help_item_share_export">使用分享可将 PDF 发送到其他应用。使用导出可将 PDF 复制到下载目录，也可在 OCR 审核、文档操作或多选中将已保存的 OCR 文本导出为 TXT。</string>
     <string name="help_section_pdf_edit">编辑 PDF</string>
     <string name="help_section_pdf_pages">页面与结构</string>
     <string name="help_section_pdf_page_changes">页面修改</string>
@@ -113,7 +114,7 @@
     <string name="help_item_reorder">打开三点菜单并选择重新排列页面，即可通过拖放或上下按钮调整顺序。</string>
     <string name="help_item_delete">使用删除可将选中的 PDF 移到回收站。30 天内可以恢复，也可以在回收站中永久删除。</string>
     <string name="help_section_ocr">OCR 与文本提取</string>
-    <string name="help_item_extract_text">文本提取（OCR）会读取全部页面。对于单个文档，它会打开 OCR 审核界面，显示逐页文本、识别语言和质量。对于多个文档，仍会显示一个合并面板，你可以从中复制或分享结果。</string>
+    <string name="help_item_extract_text">文本提取（OCR）会读取全部页面。对于单个文档，它会打开 OCR 审核界面，显示逐页文本、识别语言、质量、复制/分享操作和 TXT 导出。对于多个文档，仍会显示一个合并面板，你可以从中复制或分享结果。</string>
     <string name="help_item_make_searchable">设为可搜索会为 PDF 添加不可见文本层，将提取出的 OCR 文本本地保存用于档案搜索。</string>
     <string name="help_item_ocr_language">OCR 和设为可搜索默认使用自动模式——对拉丁文字可离线使用。印地语、中文、日语和韩语模型首次使用时通过 Google Play Services 下载。CJK 文字不支持可搜索 PDF——请使用"提取文字"来为其建立索引。</string>
     <string name="help_section_navigation">导航</string>
@@ -141,7 +142,7 @@
     <string name="info_repository_label">GitHub 仓库</string>
     <string name="info_section_privacy">隐私</string>
     <string name="info_section_features">功能</string>
-    <string name="info_features_body">本应用可在应用内扫描、导入、创建、追加并查看 PDF，将已删除文档在回收站中保留 30 天，在设备本地执行 OCR，并将 OCR 文本和质量元数据保存在本地，用于文件库搜索和 OCR 审核。同时还提供页面编辑、批注、签名、元数据编辑、灰度转换、保护以及安全遮蔽，并可为遮蔽副本选择性重建 OCR。</string>
+    <string name="info_features_body">本应用可在应用内扫描、导入、创建、追加并查看 PDF，将已删除文档在回收站中保留 30 天，在设备本地执行 OCR，并将 OCR 文本和质量元数据保存在本地，用于文件库搜索、OCR 审核、可选自动标签、标签筛选和 TXT 导出。同时还提供页面编辑、批注、签名、元数据编辑、灰度转换、保护以及安全遮蔽，并可为遮蔽副本选择性重建 OCR。</string>
     <string name="info_feature_print_share">Android 打印、分享和 Open with 集成使用系统对话框。打印会把所选 PDF 发送给 Android Print；共享到本应用或通过本应用打开的传入 PDF 和图片，只会在用户确认后复制到应用归档中。</string>
     <string name="info_privacy_body">无广告、无需账号、没有自有后端。PDF、缩略图、生成的副本、回收站项目、OCR 文本和 OCR 质量元数据都会保留在您设备上的应用存储中，直到您导出、分享或永久删除它们。扫描、OCR 以及模型和字体下载依赖 Google Play 服务；本应用不会上传文档内容。</string>
     <!-- Privacy screen -->
@@ -429,7 +430,7 @@
     <string name="tag_delivery">送货单</string>
     <string name="help_section_search">搜索</string>
     <string name="help_item_search">点击顶部搜索栏，可按文件名或已保存的 OCR 文本查找文档。搜索会在您的设备本地执行，并支持前缀匹配，因此输入“Rec”也可以找到“Receipt”。</string>
-    <string name="help_item_auto_tag">将文档设为可搜索时，应用会根据 OCR 文本和关键词在本地自动分配发票、合同等标签，并显示在文件名下方。</string>
+    <string name="help_item_auto_tag">在设置中启用后，设为可搜索的文档会根据 OCR 文本和加权关键词信号在本地获得发票、合同、保险、证书、银行或送货单等标签。标签显示在文件名下方，可用于文件库筛选，也可在设置中为旧文档补加。</string>
     <string name="privacy_keyword_5">本地智能</string>
     <string name="privacy_point_5">全文搜索、可搜索 PDF 生成、安全遮蔽以及文本对齐高亮都会在您的设备本地运行。新创建的已遮蔽副本会从保存结果中移除 OCR 文本、元数据和交互式 PDF 元素。</string>
     <!-- Annotate PDF -->
@@ -512,16 +513,16 @@
     <string name="pdf_viewer_invalid_page">无法打开此页面。</string>
     <string name="pdf_viewer_out_of_memory">此页面过大，无法在本设备上渲染。</string>
     <string name="pdf_viewer_renderer_failed">PDF 查看器无法渲染此文档。</string>
-    <string name="filter_tag_all">All</string>
-    <string name="filter_tag_invoice">Invoices</string>
-    <string name="filter_tag_contract">Contracts</string>
-    <string name="filter_tag_insurance">Insurance</string>
-    <string name="filter_tag_certificate">Certificates</string>
-    <string name="filter_tag_bank">Bank</string>
-    <string name="filter_tag_delivery">Delivery notes</string>
-    <string name="settings_retro_tag_action">Tag documents automatically</string>
-    <string name="settings_retro_tag_done">%1$d documents tagged</string>
-    <string name="ocr_export_as_file">Save as text file</string>
-    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
-    <string name="ocr_export_error">Text export failed</string>
-    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>
+    <string name="filter_tag_all">全部</string>
+    <string name="filter_tag_invoice">发票</string>
+    <string name="filter_tag_contract">合同</string>
+    <string name="filter_tag_insurance">保险</string>
+    <string name="filter_tag_certificate">证书</string>
+    <string name="filter_tag_bank">银行</string>
+    <string name="filter_tag_delivery">送货单</string>
+    <string name="settings_retro_tag_action">立即为现有文档添加标签</string>
+    <string name="settings_retro_tag_done">已为 %1$d 个文档添加标签</string>
+    <string name="ocr_export_as_file">另存为文本文件</string>
+    <string name="ocr_export_success">已保存到下载目录：%1$s</string>
+    <string name="ocr_export_error">文本导出失败</string>
+    <string name="ocr_export_nothing_to_export">所选文档没有 OCR 文本</string></resources>

@@ -13,6 +13,7 @@
     <string name="settings_m24_animation_label">M24-Icon animieren</string>
     <string name="settings_scan_ocr_title">Scan &amp; OCR</string>
     <string name="settings_default_make_searchable_label">Standard: durchsuchbar machen</string>
+    <string name="settings_auto_tagging_label">Automatische Dokument-Tags</string>
     <string name="settings_default_ocr_language_label">Standard-OCR-Sprache</string>
     <string name="settings_archive_title">Ablage</string>
     <string name="settings_default_sort_order_label">Standard-Sortierung</string>
@@ -97,7 +98,7 @@
     <string name="help_item_select">Checkbox eines Eintrags antippen, um ihn auszuwählen. Die Titelleiste zeigt die Anzahl und ermöglicht das Auswählen aller Einträge.</string>
     <string name="help_item_add_document_scan">Tippe auf + und wähle Dokument scannen, um neue Seiten mit dem Systemscanner zu erfassen. Nach dem Speichern erscheint das PDF wie jedes andere Dokument in der Ablage.</string>
     <string name="help_item_add_document_import">Tippe auf + und wähle PDF importieren, um den System-Dateipicker zu öffnen. Wähle eine vorhandene PDF auf deinem Gerät; nach dem Speichern wird sie in die Ablage kopiert.</string>
-    <string name="help_item_share_export">Mit Teilen sendest du PDFs an andere Apps. Mit Exportieren kopierst du sie in den Downloads-Ordner.</string>
+    <string name="help_item_share_export">Mit Teilen sendest du PDFs an andere Apps. Mit Exportieren kopierst du PDFs in den Downloads-Ordner oder gespeicherten OCR-Text als TXT aus OCR-Prüfung, Dokumentaktionen oder Mehrfachauswahl.</string>
     <string name="help_section_pdf_edit">PDFs bearbeiten</string>
     <string name="help_section_pdf_pages">Seiten und Struktur</string>
     <string name="help_section_pdf_page_changes">Seiten ändern</string>
@@ -115,7 +116,7 @@
     <string name="help_item_reorder">Öffne das Dreipunkt-Menü und wähle Seiten neu anordnen, um Seiten per Drag and Drop oder mit den Auf- und Ab-Tasten umzulegen.</string>
     <string name="help_item_delete">Mit Löschen verschiebst du ausgewählte PDFs in den Papierkorb. Dort kannst du sie 30 Tage lang wiederherstellen oder endgültig löschen.</string>
     <string name="help_section_ocr">OCR und Textextraktion</string>
-    <string name="help_item_extract_text">Textextraktion (OCR) liest alle Seiten. Bei einem einzelnen Dokument öffnet sich die OCR-Prüfung mit seitenweisem Text, erkannter Sprache und Qualitätsanzeige. Bei mehreren Dokumenten erscheint weiterhin ein gemeinsamer Bereich, aus dem du das Ergebnis kopieren oder teilen kannst.</string>
+    <string name="help_item_extract_text">Textextraktion (OCR) liest alle Seiten. Bei einem einzelnen Dokument öffnet sich die OCR-Prüfung mit seitenweisem Text, erkannter Sprache, Qualitätsanzeige, Kopieren/Teilen und TXT-Export. Bei mehreren Dokumenten erscheint weiterhin ein gemeinsamer Bereich, aus dem du das Ergebnis kopieren oder teilen kannst.</string>
     <string name="help_item_make_searchable">Durchsuchbar machen ergänzt eine unsichtbare Textebene im PDF, speichert den erkannten OCR-Text lokal für die Suche in der Ablage.</string>
     <string name="help_item_ocr_language">OCR und Durchsuchbar machen nutzen standardmäßig den Automatikmodus — funktioniert offline für lateinische Schriften. Sprachmodelle für Hindi, Chinesisch, Japanisch und Koreanisch werden beim ersten Einsatz über Google Play Services geladen. CJK-Schriften werden für durchsuchbares PDF nicht unterstützt — nutze „Text extrahieren" zum Indexieren.</string>
     <string name="help_section_navigation">Navigation</string>
@@ -143,7 +144,7 @@
     <string name="info_repository_label">GitHub-Repository</string>
     <string name="info_section_privacy">Datenschutz</string>
     <string name="info_section_features">Funktionen</string>
-    <string name="info_features_body">Die App scannt, importiert, erstellt, ergänzt und betrachtet PDFs direkt in der App, hält gelöschte Dokumente 30 Tage im Papierkorb, führt OCR auf dem Gerät aus, speichert OCR-Text und Qualitätsmetadaten lokal für die Suche in der Ablage und die OCR-Prüfung und bietet Seitenbearbeitung, Beschriftung, Signaturen, Metadatenbearbeitung, Graustufen, Schutz sowie sichere Schwärzung mit optionaler OCR-Rekonstruktion für geschwärzte Kopien.</string>
+    <string name="info_features_body">Die App scannt, importiert, erstellt, ergänzt und betrachtet PDFs direkt in der App, hält gelöschte Dokumente 30 Tage im Papierkorb, führt OCR auf dem Gerät aus, speichert OCR-Text und Qualitätsmetadaten lokal für Ablagesuche, OCR-Prüfung, optionale automatische Tags, Tag-Filter und TXT-Export und bietet Seitenbearbeitung, Beschriftung, Signaturen, Metadatenbearbeitung, Graustufen, Schutz sowie sichere Schwärzung mit optionaler OCR-Rekonstruktion für geschwärzte Kopien.</string>
     <string name="info_feature_print_share">Android-Drucken, Teilen und Öffnen mit nutzen Systemdialoge. Beim Drucken wird das ausgewählte PDF an Android Print übergeben; eingehende PDFs und Bilder, die geteilt oder mit dieser App geöffnet werden, werden erst nach Bestätigung in das App-Archiv kopiert.</string>
     <string name="info_privacy_body">Keine Werbung, kein Konto und kein eigenes Backend. PDFs, Vorschaubilder, erzeugte Kopien, Einträge im Papierkorb, OCR-Text und OCR-Qualitätsmetadaten bleiben lokal im App-Speicher auf Ihrem Gerät, bis Sie sie exportieren, teilen oder endgültig löschen. Scan, OCR sowie herunterladbare Modelle und Schriftarten nutzen Google Play Services; Dokumentinhalte werden von der App selbst nicht hochgeladen.</string>
     <!-- Privacy screen -->
@@ -432,7 +433,7 @@
     <string name="tag_delivery">Lieferschein</string>
     <string name="help_section_search">Suche</string>
     <string name="help_item_search">Tippe oben in das Suchfeld, um Dokumente nach Dateiname oder gespeichertem OCR-Text zu finden. Die Suche läuft lokal auf deinem Gerät und nutzt Präfixabgleich, sodass "Rec" zum Beispiel "Rechnung" finden kann.</string>
-    <string name="help_item_auto_tag">Wenn ein Dokument durchsuchbar gemacht wird, vergibt die App Tags wie Rechnung oder Vertrag lokal aus OCR-Text und Schlüsselwörtern. Tags erscheinen als farbige Etiketten unter dem Dateinamen.</string>
+    <string name="help_item_auto_tag">Wenn automatische Tags in den Einstellungen aktiv sind, erhalten durchsuchbar gemachte Dokumente lokale Tags wie Rechnung, Vertrag, Versicherung, Zertifikat, Bank oder Lieferschein aus OCR-Text und gewichteten Schlüsselwörtern. Tags erscheinen unter dem Dateinamen, dienen als Ablagefilter und können in den Einstellungen nachträglich ergänzt werden.</string>
     <string name="privacy_keyword_5">On-Device-Intelligenz</string>
     <string name="privacy_point_5">Volltextsuche, die Erzeugung durchsuchbarer PDFs, Beschriftungen mit Textausrichtung, sicheres Schwärzen, Graustufen und Seiten-/Bild-Neuaufbau arbeiten lokal auf Ihrem Gerät. Neu erzeugte geschwärzte Kopien entfernen OCR-Text, Metadaten und interaktive PDF-Elemente aus dem gespeicherten Ergebnis.</string>
     <!-- PDF viewer -->
@@ -515,16 +516,16 @@
     <string name="help_item_rename">Wähle PDF umbenennen, um einem Dokument einen neuen Namen zu geben. Der Dateiname muss in der Ablage eindeutig sein. Die Endung .pdf wird automatisch ergänzt.</string>
 
     <!-- Images to PDF -->
-    <string name="filter_tag_all">All</string>
-    <string name="filter_tag_invoice">Invoices</string>
-    <string name="filter_tag_contract">Contracts</string>
-    <string name="filter_tag_insurance">Insurance</string>
-    <string name="filter_tag_certificate">Certificates</string>
+    <string name="filter_tag_all">Alle</string>
+    <string name="filter_tag_invoice">Rechnungen</string>
+    <string name="filter_tag_contract">Verträge</string>
+    <string name="filter_tag_insurance">Versicherungen</string>
+    <string name="filter_tag_certificate">Zertifikate</string>
     <string name="filter_tag_bank">Bank</string>
-    <string name="filter_tag_delivery">Delivery notes</string>
-    <string name="settings_retro_tag_action">Tag documents automatically</string>
-    <string name="settings_retro_tag_done">%1$d documents tagged</string>
-    <string name="ocr_export_as_file">Save as text file</string>
-    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
-    <string name="ocr_export_error">Text export failed</string>
-    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>
+    <string name="filter_tag_delivery">Lieferscheine</string>
+    <string name="settings_retro_tag_action">Vorhandene Dokumente jetzt taggen</string>
+    <string name="settings_retro_tag_done">%1$d Dokumente getaggt</string>
+    <string name="ocr_export_as_file">Als Textdatei speichern</string>
+    <string name="ocr_export_success">In Downloads gespeichert: %1$s</string>
+    <string name="ocr_export_error">Textexport fehlgeschlagen</string>
+    <string name="ocr_export_nothing_to_export">Kein gewähltes Dokument hat OCR-Text</string></resources>

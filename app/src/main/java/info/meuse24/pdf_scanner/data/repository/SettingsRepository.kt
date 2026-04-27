@@ -45,6 +45,14 @@ class SettingsRepository @Inject constructor(
         _settings.value = updated
     }
 
+    override fun updateAutoTaggingEnabled(enabled: Boolean) {
+        val current = _settings.value
+        if (current.autoTaggingEnabled == enabled) return
+        val updated = current.copy(autoTaggingEnabled = enabled)
+        AppSettingsPreferences.save(context, updated)
+        _settings.value = updated
+    }
+
     override fun updateDefaultOcrLanguage(languageCode: String) {
         val current = _settings.value
         if (current.defaultOcrLanguage == languageCode) return

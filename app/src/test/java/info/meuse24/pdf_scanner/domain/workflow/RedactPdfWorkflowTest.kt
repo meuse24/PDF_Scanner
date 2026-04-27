@@ -4,11 +4,13 @@ import android.content.Context
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
+import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactPdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.domain.usecase.SearchableResult
+import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
 import info.meuse24.pdf_scanner.util.OcrPipeline
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.PdfEditor
@@ -74,7 +76,12 @@ class RedactPdfWorkflowTest {
             pdfEditor,
             info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository)
         )
-        val makeSearchableUseCase = MakeSearchableUseCase(searchablePdfBuilder, repository)
+        val makeSearchableUseCase = MakeSearchableUseCase(
+            searchablePdfBuilder,
+            repository,
+            AutoTagUseCase(),
+            FakeSettingsRepository()
+        )
         val makeSearchableWorkflow = MakeSearchableWorkflow(makeSearchableUseCase)
         val deleteScansUseCase = DeleteScansUseCase(repository)
         return RedactPdfWorkflow(

@@ -15,13 +15,16 @@ private fun SettingsScreenPreview() {
             onThemeModeChange = {},
             onM24AnimationEnabledChange = {},
             onDefaultMakeSearchableChange = {},
+            onAutoTaggingEnabledChange = {},
             onDefaultOcrLanguageChange = {},
             onRetroTagDocuments = {},
             onDefaultSortOrderChange = {},
             onTrashUndoSnackbarSecondsChange = {},
             onAppLockEnabledChange = {},
             onAppLockTimeoutSecondsChange = {},
+            transientSuccess = null,
             transientError = null,
+            onTransientSuccessConsumed = {},
             onTransientErrorConsumed = {}
         )
     }
@@ -36,13 +39,16 @@ private fun SettingsScreenDarkPreview() {
             onThemeModeChange = {},
             onM24AnimationEnabledChange = {},
             onDefaultMakeSearchableChange = {},
+            onAutoTaggingEnabledChange = {},
             onDefaultOcrLanguageChange = {},
             onRetroTagDocuments = {},
             onDefaultSortOrderChange = {},
             onTrashUndoSnackbarSecondsChange = {},
             onAppLockEnabledChange = {},
             onAppLockTimeoutSecondsChange = {},
+            transientSuccess = null,
             transientError = null,
+            onTransientSuccessConsumed = {},
             onTransientErrorConsumed = {}
         )
     }

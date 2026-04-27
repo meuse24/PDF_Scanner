@@ -12,6 +12,7 @@ interface AppSettingsRepository {
     fun updateThemeMode(mode: ThemeMode)
     fun updateM24AnimationEnabled(enabled: Boolean)
     fun updateDefaultMakeSearchable(enabled: Boolean)
+    fun updateAutoTaggingEnabled(enabled: Boolean)
     fun updateDefaultOcrLanguage(languageCode: String)
     fun updateDefaultSortOrder(sortOrder: AppSortOrder)
     fun updateTrashUndoSnackbarSeconds(seconds: Int)

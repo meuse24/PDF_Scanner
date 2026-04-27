@@ -13,6 +13,7 @@
     <string name="settings_m24_animation_label">M24 आइकन एनिमेट करें</string>
     <string name="settings_scan_ocr_title">स्कैन और OCR</string>
     <string name="settings_default_make_searchable_label">डिफ़ॉल्ट: खोजयोग्य बनाएं</string>
+    <string name="settings_auto_tagging_label">स्वचालित दस्तावेज़ टैग</string>
     <string name="settings_default_ocr_language_label">डिफ़ॉल्ट OCR भाषा</string>
     <string name="settings_archive_title">संग्रह</string>
     <string name="settings_default_sort_order_label">डिफ़ॉल्ट क्रम</string>
@@ -95,7 +96,7 @@
     <string name="help_item_select">चेकबॉक्स पर टैप करके एक या अधिक प्रविष्टियाँ चुनें। शीर्षक पट्टी संख्या दिखाती है और सभी चुनने की सुविधा देती है।</string>
     <string name="help_item_add_document_scan">+ पर टैप करें और दस्तावेज़ स्कैन करें चुनें, ताकि सिस्टम स्कैनर से नए पेज कैप्चर किए जा सकें। सहेजने के बाद PDF अन्य दस्तावेज़ों की तरह संग्रह में दिखाई देता है।</string>
     <string name="help_item_add_document_import">+ पर टैप करें और PDF आयात करें चुनें, ताकि सिस्टम फ़ाइल पिकर खुले। अपने डिवाइस से मौजूदा PDF चुनें; सहेजने के बाद वह संग्रह में कॉपी हो जाएगी।</string>
-    <string name="help_item_share_export">साझा करें का उपयोग करके PDF अन्य ऐप्स को भेजें। निर्यात का उपयोग करके फ़ाइलों को डाउनलोड्स में कॉपी करें।</string>
+    <string name="help_item_share_export">साझा करें का उपयोग करके PDF अन्य ऐप्स को भेजें। निर्यात से PDF को डाउनलोड्स में कॉपी करें या OCR समीक्षा, दस्तावेज़ कार्रवाइयों या बहु-चयन से सहेजे गए OCR टेक्स्ट को TXT के रूप में सहेजें।</string>
     <string name="help_section_pdf_edit">PDF संपादित करें</string>
     <string name="help_section_pdf_pages">पेज और संरचना</string>
     <string name="help_section_pdf_page_changes">पेज परिवर्तन</string>
@@ -113,7 +114,7 @@
     <string name="help_item_reorder">तीन-बिंदु मेनू खोलें और ड्रैग और ड्रॉप या ऊपर और नीचे बटनों से क्रम बदलने के लिए पृष्ठों को पुनः व्यवस्थित करें चुनें।</string>
     <string name="help_item_delete">चयनित PDF को ट्रैश में ले जाने के लिए हटाएं का उपयोग करें। उन्हें 30 दिनों तक बहाल किया जा सकता है या ट्रैश से स्थायी रूप से हटाया जा सकता है।</string>
     <string name="help_section_ocr">OCR और टेक्स्ट निष्कर्षण</string>
-    <string name="help_item_extract_text">टेक्स्ट निष्कर्षण (OCR) सभी पृष्ठ पढ़ता है। एकल दस्तावेज़ के लिए यह OCR समीक्षा खोलता है, जहाँ पेज-दर-पेज टेक्स्ट, पहचानी गई भाषा और गुणवत्ता दिखाई जाती है। कई दस्तावेज़ों के लिए यह अब भी एक संयुक्त पैनल दिखाता है, जहाँ से आप परिणाम कॉपी या साझा कर सकते हैं।</string>
+    <string name="help_item_extract_text">टेक्स्ट निष्कर्षण (OCR) सभी पृष्ठ पढ़ता है। एकल दस्तावेज़ के लिए यह OCR समीक्षा खोलता है, जहाँ पेज-दर-पेज टेक्स्ट, पहचानी गई भाषा, गुणवत्ता, कॉपी/शेयर और TXT निर्यात दिखाई जाते हैं। कई दस्तावेज़ों के लिए यह अब भी एक संयुक्त पैनल दिखाता है, जहाँ से आप परिणाम कॉपी या साझा कर सकते हैं।</string>
     <string name="help_item_make_searchable">खोज योग्य बनाएं PDF में एक अदृश्य टेक्स्ट लेयर जोड़ता है, निकाले गए OCR टेक्स्ट को आर्काइव खोज के लिए स्थानीय रूप से सहेजता है।</string>
     <string name="help_item_ocr_language">OCR और खोज योग्य बनाएं डिफ़ॉल्ट रूप से स्वचालित मोड का उपयोग करते हैं — लैटिन लिपि के दस्तावेज़ों के लिए ऑफ़लाइन काम करता है। हिंदी, चीनी, जापानी और कोरियाई मॉडल Google Play Services के ज़रिए पहले उपयोग पर डाउनलोड होते हैं। CJK लिपियाँ खोज योग्य PDF के लिए समर्थित नहीं हैं — अनुक्रमण के लिए «टेक्स्ट निकालें» का उपयोग करें।</string>
     <string name="help_section_navigation">नेविगेशन</string>
@@ -141,7 +142,7 @@
     <string name="info_repository_label">GitHub रिपॉजिटरी</string>
     <string name="info_section_privacy">गोपनीयता</string>
     <string name="info_section_features">क्षमताएँ</string>
-    <string name="info_features_body">यह ऐप PDF को स्कैन, आयात, बनाता, जोड़ता और ऐप के अंदर दिखाता है, हटाए गए दस्तावेज़ों को 30 दिनों तक ट्रैश में रखता है, डिवाइस पर OCR चलाता है, और आर्काइव खोज व OCR समीक्षा के लिए OCR टेक्स्ट तथा गुणवत्ता मेटाडेटा को स्थानीय रूप से सहेजता है। साथ ही यह पेज संपादन, एनोटेशन, हस्ताक्षर, मेटाडेटा संपादन, ग्रेस्केल, सुरक्षा और रिडैक्टेड कॉपी के लिए वैकल्पिक OCR पुनर्निर्माण के साथ सुरक्षित रिडैक्शन भी प्रदान करता है।</string>
+    <string name="info_features_body">यह ऐप PDF को स्कैन, आयात, बनाता, जोड़ता और ऐप के अंदर दिखाता है, हटाए गए दस्तावेज़ों को 30 दिनों तक ट्रैश में रखता है, डिवाइस पर OCR चलाता है, और आर्काइव खोज, OCR समीक्षा, वैकल्पिक स्वचालित टैग, टैग फ़िल्टर और TXT निर्यात के लिए OCR टेक्स्ट तथा गुणवत्ता मेटाडेटा को स्थानीय रूप से सहेजता है। साथ ही यह पेज संपादन, एनोटेशन, हस्ताक्षर, मेटाडेटा संपादन, ग्रेस्केल, सुरक्षा और रिडैक्टेड कॉपी के लिए वैकल्पिक OCR पुनर्निर्माण के साथ सुरक्षित रिडैक्शन भी प्रदान करता है।</string>
     <string name="info_feature_print_share">Android Print, Share और Open with एकीकरण सिस्टम डायलॉग का उपयोग करते हैं। प्रिंट चयनित PDF को Android Print में भेजता है; इस ऐप के साथ साझा किए गए या इसमें खोले गए आने वाले PDF और चित्र उपयोगकर्ता पुष्टि के बाद ही ऐप संग्रह में कॉपी होते हैं।</string>
     <string name="info_privacy_body">कोई विज्ञापन नहीं, कोई खाता नहीं और कोई अपना बैकएंड नहीं। PDF, थंबनेल, बनाई गई प्रतियां, ट्रैश आइटम, OCR टेक्स्ट और OCR गुणवत्ता मेटाडेटा आपके डिवाइस पर ऐप स्टोरेज में रहते हैं, जब तक आप उन्हें एक्सपोर्ट, साझा या स्थायी रूप से हटाते नहीं हैं। स्कैन, OCR और मॉडल या फ़ॉन्ट डाउनलोड Google Play Services पर निर्भर करते हैं; यह ऐप दस्तावेज़ सामग्री अपलोड नहीं करता।</string>
     <!-- Privacy screen -->
@@ -429,7 +430,7 @@
     <string name="tag_delivery">डिलीवरी नोट</string>
     <string name="help_section_search">खोज</string>
     <string name="help_item_search">फ़ाइल नाम या संग्रहीत OCR टेक्स्ट से दस्तावेज़ खोजने के लिए ऊपर के खोज फ़ील्ड पर टैप करें। खोज आपके डिवाइस पर स्थानीय रूप से चलती है और प्रीफ़िक्स मिलान का उपयोग करती है, इसलिए "Rec" से "Receipt" मिल सकता है।</string>
-    <string name="help_item_auto_tag">जब कोई दस्तावेज़ खोज योग्य बनाया जाता है, तो ऐप OCR टेक्स्ट और कीवर्ड के आधार पर चालान या अनुबंध जैसे टैग स्थानीय रूप से असाइन करता है। टैग फ़ाइल नाम के नीचे दिखते हैं।</string>
+    <string name="help_item_auto_tag">सेटिंग्स में सक्षम होने पर, खोजयोग्य बनाए गए दस्तावेज़ों को OCR टेक्स्ट और वेटेड कीवर्ड संकेतों के आधार पर चालान, अनुबंध, बीमा, प्रमाणपत्र, बैंक या डिलीवरी जैसे टैग स्थानीय रूप से मिलते हैं। टैग फ़ाइल नाम के नीचे दिखते हैं, आर्काइव फ़िल्टर के रूप में काम करते हैं और सेटिंग्स से पुराने दस्तावेज़ों में भी जोड़े जा सकते हैं।</string>
     <string name="privacy_keyword_5">ऑन-डिवाइस इंटेलिजेंस</string>
     <string name="privacy_point_5">फुल-टेक्स्ट सर्च, खोजयोग्य PDF निर्माण, सुरक्षित रिडैक्शन और टेक्स्ट-अलाइन हाइलाइट आपके डिवाइस पर स्थानीय रूप से चलते हैं। नई रिडैक्टेड कॉपियाँ सहेजे गए परिणाम से OCR टेक्स्ट, मेटाडेटा और इंटरैक्टिव PDF तत्वों को हटा देती हैं।</string>
     <!-- Annotate PDF -->
@@ -512,16 +513,16 @@
     <string name="pdf_viewer_invalid_page">यह पेज खोला नहीं जा सका।</string>
     <string name="pdf_viewer_out_of_memory">यह पेज इस डिवाइस पर रेंडर करने के लिए बहुत बड़ा है।</string>
     <string name="pdf_viewer_renderer_failed">PDF व्यूअर इस दस्तावेज़ को रेंडर नहीं कर सका।</string>
-    <string name="filter_tag_all">All</string>
-    <string name="filter_tag_invoice">Invoices</string>
-    <string name="filter_tag_contract">Contracts</string>
-    <string name="filter_tag_insurance">Insurance</string>
-    <string name="filter_tag_certificate">Certificates</string>
-    <string name="filter_tag_bank">Bank</string>
-    <string name="filter_tag_delivery">Delivery notes</string>
-    <string name="settings_retro_tag_action">Tag documents automatically</string>
-    <string name="settings_retro_tag_done">%1$d documents tagged</string>
-    <string name="ocr_export_as_file">Save as text file</string>
-    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
-    <string name="ocr_export_error">Text export failed</string>
-    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>
+    <string name="filter_tag_all">सभी</string>
+    <string name="filter_tag_invoice">चालान</string>
+    <string name="filter_tag_contract">अनुबंध</string>
+    <string name="filter_tag_insurance">बीमा</string>
+    <string name="filter_tag_certificate">प्रमाणपत्र</string>
+    <string name="filter_tag_bank">बैंक</string>
+    <string name="filter_tag_delivery">डिलीवरी नोट</string>
+    <string name="settings_retro_tag_action">मौजूदा दस्तावेज़ों को अभी टैग करें</string>
+    <string name="settings_retro_tag_done">%1$d दस्तावेज़ टैग किए गए</string>
+    <string name="ocr_export_as_file">टेक्स्ट फ़ाइल के रूप में सहेजें</string>
+    <string name="ocr_export_success">डाउनलोड्स में सहेजा गया: %1$s</string>
+    <string name="ocr_export_error">टेक्स्ट निर्यात विफल</string>
+    <string name="ocr_export_nothing_to_export">चुने गए किसी दस्तावेज़ में OCR टेक्स्ट नहीं है</string></resources>

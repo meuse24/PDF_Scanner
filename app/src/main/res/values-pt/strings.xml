@@ -13,6 +13,7 @@
     <string name="settings_m24_animation_label">Animar ícone M24</string>
     <string name="settings_scan_ocr_title">Scan e OCR</string>
     <string name="settings_default_make_searchable_label">Padrão: tornar pesquisável</string>
+    <string name="settings_auto_tagging_label">Etiquetas automáticas de documentos</string>
     <string name="settings_default_ocr_language_label">Idioma OCR padrão</string>
     <string name="settings_archive_title">Arquivo</string>
     <string name="settings_default_sort_order_label">Ordem padrão</string>
@@ -95,7 +96,7 @@
     <string name="help_item_select">Toque na caixa de seleção para escolher uma ou mais entradas. A barra de título mostra a quantidade e permite selecionar tudo.</string>
     <string name="help_item_add_document_scan">Toque em + e escolha Digitalizar documento para captar novas páginas com o scanner do sistema. Depois de guardar, o PDF aparece no arquivo como qualquer outro documento.</string>
     <string name="help_item_add_document_import">Toque em + e escolha Importar PDF para abrir o seletor de ficheiros do sistema. Escolha um PDF existente do seu dispositivo; depois de guardar, ele será copiado para o arquivo.</string>
-    <string name="help_item_share_export">Use Compartilhar para enviar PDFs para outros apps. Use Exportar para copiar os arquivos para Downloads.</string>
+    <string name="help_item_share_export">Use Compartilhar para enviar PDFs para outros apps. Use Exportar para copiar PDFs para Downloads ou guardar o texto OCR armazenado como TXT a partir da revisão OCR, das ações do documento ou da seleção múltipla.</string>
     <string name="help_section_pdf_edit">Editar PDFs</string>
     <string name="help_section_pdf_pages">Páginas e estrutura</string>
     <string name="help_section_pdf_page_changes">Alterações nas páginas</string>
@@ -113,7 +114,7 @@
     <string name="help_item_reorder">Abra o menu de três pontos e escolha Reordenar páginas para alterar a ordem por arrastar e soltar ou com os botões para cima e para baixo.</string>
     <string name="help_item_delete">Use Excluir para mover PDFs selecionados para a lixeira. Eles podem ser restaurados por 30 dias ou excluídos permanentemente na Lixeira.</string>
     <string name="help_section_ocr">OCR e extração de texto</string>
-    <string name="help_item_extract_text">A Extração de texto (OCR) lê todas as páginas. Para um único documento, abre a revisão OCR com texto por página, idioma reconhecido e qualidade. Para vários documentos, continua a mostrar um painel combinado de onde pode copiar ou partilhar o resultado.</string>
+    <string name="help_item_extract_text">A Extração de texto (OCR) lê todas as páginas. Para um único documento, abre a revisão OCR com texto por página, idioma reconhecido, qualidade, copiar/partilhar e exportação TXT. Para vários documentos, continua a mostrar um painel combinado de onde pode copiar ou partilhar o resultado.</string>
     <string name="help_item_make_searchable">Tornar pesquisável adiciona uma camada de texto invisível ao PDF, guarda localmente o texto OCR extraído para pesquisa no arquivo.</string>
     <string name="help_item_ocr_language">OCR e Tornar pesquisável usam o modo Automático por padrão — funciona offline para scripts latinos. Os modelos para hindi, chinês, japonês e coreano são baixados no primeiro uso via Google Play Services. Scripts CJK não são suportados para PDF pesquisável — use «Extrair texto» para indexá-los.</string>
     <string name="help_section_navigation">Navegação</string>
@@ -141,7 +142,7 @@
     <string name="info_repository_label">Repositório GitHub</string>
     <string name="info_section_privacy">Privacidade</string>
     <string name="info_section_features">Funcionalidades</string>
-    <string name="info_features_body">A app digitaliza, importa, cria, anexa e visualiza PDFs dentro da app, mantém documentos eliminados na lixeira por 30 dias, executa OCR no dispositivo, guarda localmente o texto OCR e os metadados de qualidade para pesquisa no arquivo e revisão OCR, e oferece edição de páginas, anotações, assinaturas, edição de metadados, escala de cinzentos, proteção e redação segura com reconstrução OCR opcional para cópias redigidas.</string>
+    <string name="info_features_body">A app digitaliza, importa, cria, anexa e visualiza PDFs dentro da app, mantém documentos eliminados na lixeira por 30 dias, executa OCR no dispositivo, guarda localmente o texto OCR e os metadados de qualidade para pesquisa no arquivo, revisão OCR, etiquetas automáticas opcionais, filtros por etiqueta e exportação TXT, e oferece edição de páginas, anotações, assinaturas, edição de metadados, escala de cinzentos, proteção e redação segura com reconstrução OCR opcional para cópias redigidas.</string>
     <string name="info_feature_print_share">A impressão, o compartilhamento e o Abrir com do Android usam diálogos do sistema. A impressão envia o PDF selecionado para o Android Print; PDFs e imagens recebidos por compartilhamento ou abertos neste app só são copiados para o arquivo do app após confirmação.</string>
     <string name="info_privacy_body">Sem anúncios, sem conta e sem backend próprio. PDFs, miniaturas, cópias geradas, itens da lixeira, texto OCR e metadados de qualidade OCR permanecem no armazenamento da app no seu dispositivo até os exportar, partilhar ou eliminar permanentemente. A digitalização, o OCR e os downloads de modelos ou fontes dependem dos Google Play Services; esta app não envia o conteúdo dos seus documentos.</string>
     <!-- Privacy screen -->
@@ -429,7 +430,7 @@
     <string name="tag_delivery">Guia de entrega</string>
     <string name="help_section_search">Pesquisa</string>
     <string name="help_item_search">Toque no campo de pesquisa para encontrar documentos pelo nome do ficheiro ou pelo texto OCR guardado. A pesquisa é executada localmente no seu dispositivo e usa correspondência por prefixo, pelo que "Rec" pode encontrar "Recibo".</string>
-    <string name="help_item_auto_tag">Quando um documento é tornado pesquisável, a app atribui localmente etiquetas como Fatura ou Contrato a partir do texto OCR e de palavras-chave. As etiquetas aparecem como rótulos coloridos abaixo do nome do ficheiro.</string>
+    <string name="help_item_auto_tag">Quando está ativado nas Definições, os documentos tornados pesquisáveis recebem localmente etiquetas como Fatura, Contrato, Seguro, Certificado, Banco ou Guia de entrega a partir do texto OCR e de sinais de palavras-chave ponderados. As etiquetas aparecem abaixo do nome do ficheiro, funcionam como filtros do arquivo e podem ser adicionadas retroativamente nas Definições.</string>
     <string name="privacy_keyword_5">Inteligência local</string>
     <string name="privacy_point_5">A pesquisa de texto completo, a criação de PDFs pesquisáveis, a redação segura e os destaques alinhados ao texto funcionam localmente no seu dispositivo. As novas cópias redigidas removem do resultado guardado o texto OCR, os metadados e os elementos PDF interativos.</string>
     <!-- Annotate PDF -->
@@ -512,16 +513,16 @@
     <string name="pdf_viewer_invalid_page">Não foi possível abrir esta página.</string>
     <string name="pdf_viewer_out_of_memory">Esta página é grande demais para ser renderizada neste dispositivo.</string>
     <string name="pdf_viewer_renderer_failed">O visualizador PDF não conseguiu renderizar este documento.</string>
-    <string name="filter_tag_all">All</string>
-    <string name="filter_tag_invoice">Invoices</string>
-    <string name="filter_tag_contract">Contracts</string>
-    <string name="filter_tag_insurance">Insurance</string>
-    <string name="filter_tag_certificate">Certificates</string>
-    <string name="filter_tag_bank">Bank</string>
-    <string name="filter_tag_delivery">Delivery notes</string>
-    <string name="settings_retro_tag_action">Tag documents automatically</string>
-    <string name="settings_retro_tag_done">%1$d documents tagged</string>
-    <string name="ocr_export_as_file">Save as text file</string>
-    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
-    <string name="ocr_export_error">Text export failed</string>
-    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>
+    <string name="filter_tag_all">Todos</string>
+    <string name="filter_tag_invoice">Faturas</string>
+    <string name="filter_tag_contract">Contratos</string>
+    <string name="filter_tag_insurance">Seguros</string>
+    <string name="filter_tag_certificate">Certificados</string>
+    <string name="filter_tag_bank">Banco</string>
+    <string name="filter_tag_delivery">Guias de entrega</string>
+    <string name="settings_retro_tag_action">Etiquetar documentos existentes agora</string>
+    <string name="settings_retro_tag_done">%1$d documentos etiquetados</string>
+    <string name="ocr_export_as_file">Guardar como ficheiro de texto</string>
+    <string name="ocr_export_success">Guardado em Downloads: %1$s</string>
+    <string name="ocr_export_error">Falha ao exportar texto</string>
+    <string name="ocr_export_nothing_to_export">Nenhum documento selecionado tem texto OCR</string></resources>

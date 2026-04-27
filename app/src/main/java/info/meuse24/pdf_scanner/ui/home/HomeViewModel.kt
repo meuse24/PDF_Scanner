@@ -35,8 +35,6 @@ import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.ui.ocr.OCR_LANGUAGE_AUTO
 import info.meuse24.pdf_scanner.util.AppSortOrder
 import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.DownloadEntry
-import info.meuse24.pdf_scanner.util.DownloadsStorage
 import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.OcrResultStats
@@ -69,13 +67,13 @@ class HomeViewModel @Inject constructor(
     private val importFileUseCase: ImportFileUseCase,
     private val exportScanUseCase: ExportScanUseCase,
     private val exportAsJpgUseCase: ExportAsJpgUseCase,
-    private val exportOcrTextUseCase: ExportOcrTextUseCase = defaultExportOcrTextUseCase(),
+    private val exportOcrTextUseCase: ExportOcrTextUseCase,
     private val trashScansUseCase: TrashScansUseCase,
     private val restoreScansUseCase: RestoreScansUseCase,
     private val moveDocumentsUseCase: MoveDocumentsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val extractTextUseCase: ExtractTextUseCase,
-    private val autoTagUseCase: AutoTagUseCase = AutoTagUseCase(),
+    private val autoTagUseCase: AutoTagUseCase,
     private val makeSearchableWorkflow: MakeSearchableWorkflow,
     private val mergePdfsWorkflow: MergePdfsWorkflow,
     private val workflowErrorMapper: WorkflowErrorMapper,
@@ -607,6 +605,7 @@ class HomeViewModel @Inject constructor(
 
         backfillTriggered = true
         viewModelScope.launch(dispatcherProvider.io) {
+            val autoTaggingEnabled = settingsRepository.settings.first().autoTaggingEnabled
             val allScans = withTimeoutOrNull(10_000L) {
                 repository.getAllScans().first()
             } ?: return@launch
@@ -624,7 +623,7 @@ class HomeViewModel @Inject constructor(
                             id = record.id,
                             fileSize = File(record.filepath).length(),
                             text = result.fullText,
-                            tags = autoTagUseCase.extractTags(result.fullText),
+                            tags = if (autoTaggingEnabled) autoTagUseCase.extractTags(result.fullText) else null,
                             confidence = result.stats?.confidence,
                             language = result.stats?.recognizedLanguage,
                             pageTexts = result.pageTexts
@@ -676,9 +675,9 @@ class HomeViewModel @Inject constructor(
     fun exportOcrTexts(records: List<Document>) {
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                val requestedIds = records.map { it.id }.toSet()
-                val fullRecords = repository.getAllScans().first()
-                    .filter { it.id in requestedIds && !it.extractedText.isNullOrBlank() }
+                val requestedIds = records.map { it.id }
+                val fullRecords = repository.getScansByIds(requestedIds)
+                    .filter { !it.extractedText.isNullOrBlank() }
                 if (fullRecords.isEmpty()) {
                     _error.value = resourceProvider.getString(R.string.ocr_export_nothing_to_export)
                     return@launch
@@ -767,16 +766,6 @@ private fun SortOrder.toAppSortOrder(): AppSortOrder = when (this) {
     SortOrder.ByName -> AppSortOrder.BY_NAME
     SortOrder.BySize -> AppSortOrder.BY_SIZE
 }
-
-private fun defaultExportOcrTextUseCase() = ExportOcrTextUseCase(
-    object : DownloadsStorage {
-        override fun writeDownload(
-            displayName: String,
-            mimeType: String,
-            writer: (java.io.OutputStream) -> Unit
-        ): DownloadEntry = error("DownloadsStorage not configured")
-    }
-)
 
 internal fun sortScans(scans: List<Document>, sortOrder: SortOrder): List<Document> {
     val byName = compareBy<Document>(

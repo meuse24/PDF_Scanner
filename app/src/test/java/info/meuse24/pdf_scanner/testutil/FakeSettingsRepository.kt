@@ -27,6 +27,10 @@ class FakeSettingsRepository(
         _settings.value = _settings.value.copy(defaultMakeSearchable = enabled)
     }
 
+    override fun updateAutoTaggingEnabled(enabled: Boolean) {
+        _settings.value = _settings.value.copy(autoTaggingEnabled = enabled)
+    }
+
     override fun updateDefaultOcrLanguage(languageCode: String) {
         _settings.value = _settings.value.copy(defaultOcrLanguage = languageCode)
     }

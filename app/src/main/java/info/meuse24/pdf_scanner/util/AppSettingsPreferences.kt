@@ -15,6 +15,7 @@ object AppSettingsPreferences {
     private const val KEY_M24_ANIMATION_ENABLED = "m24_animation_enabled"
     private const val KEY_KEEP_SCREEN_ON_DURING_SCAN = "keep_screen_on_during_scan"
     private const val KEY_DEFAULT_MAKE_SEARCHABLE = "default_make_searchable"
+    private const val KEY_AUTO_TAGGING_ENABLED = "auto_tagging_enabled"
     private const val KEY_DEFAULT_OCR_LANGUAGE = "default_ocr_language"
     private const val KEY_DEFAULT_SORT_ORDER = "default_sort_order"
     private const val KEY_TRASH_UNDO_SNACKBAR_SECONDS = "trash_undo_snackbar_seconds"
@@ -31,6 +32,7 @@ object AppSettingsPreferences {
             m24AnimationEnabled = prefs.getBoolean(KEY_M24_ANIMATION_ENABLED, true),
             keepScreenOnDuringScan = prefs.getBoolean(KEY_KEEP_SCREEN_ON_DURING_SCAN, false),
             defaultMakeSearchable = prefs.getBoolean(KEY_DEFAULT_MAKE_SEARCHABLE, false),
+            autoTaggingEnabled = prefs.getBoolean(KEY_AUTO_TAGGING_ENABLED, true),
             defaultOcrLanguage = prefs.getString(
                 KEY_DEFAULT_OCR_LANGUAGE,
                 AppSettings.OCR_LANGUAGE_AUTO
@@ -68,6 +70,7 @@ object AppSettingsPreferences {
             putBoolean(KEY_M24_ANIMATION_ENABLED, settings.m24AnimationEnabled)
             putBoolean(KEY_KEEP_SCREEN_ON_DURING_SCAN, settings.keepScreenOnDuringScan)
             putBoolean(KEY_DEFAULT_MAKE_SEARCHABLE, settings.defaultMakeSearchable)
+            putBoolean(KEY_AUTO_TAGGING_ENABLED, settings.autoTaggingEnabled)
             putString(KEY_DEFAULT_OCR_LANGUAGE, settings.defaultOcrLanguage)
             putString(KEY_DEFAULT_SORT_ORDER, settings.defaultSortOrder.storageValue)
             putInt(KEY_TRASH_UNDO_SNACKBAR_SECONDS, settings.trashUndoSnackbarSeconds.coerceAtLeast(1))

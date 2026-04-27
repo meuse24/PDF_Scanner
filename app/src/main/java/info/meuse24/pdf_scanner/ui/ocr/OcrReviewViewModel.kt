@@ -11,8 +11,6 @@ import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
 import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.DownloadEntry
-import info.meuse24.pdf_scanner.util.DownloadsStorage
 import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import info.meuse24.pdf_scanner.util.OcrQuality
 import info.meuse24.pdf_scanner.util.ResourceProvider
@@ -31,7 +29,7 @@ import javax.inject.Inject
 class OcrReviewViewModel @Inject constructor(
     private val repository: DocumentRepository,
     private val extractTextUseCase: ExtractTextUseCase,
-    private val exportOcrTextUseCase: ExportOcrTextUseCase = defaultExportOcrTextUseCase(),
+    private val exportOcrTextUseCase: ExportOcrTextUseCase,
     private val resourceProvider: ResourceProvider,
     private val dispatcherProvider: DispatcherProvider,
     savedStateHandle: SavedStateHandle
@@ -169,13 +167,4 @@ private fun Document?.pageTexts(): List<String> {
     return listOf(fullText)
 }
 
-private fun defaultExportOcrTextUseCase() = ExportOcrTextUseCase(
-    object : DownloadsStorage {
-        override fun writeDownload(
-            displayName: String,
-            mimeType: String,
-            writer: (java.io.OutputStream) -> Unit
-        ): DownloadEntry = error("DownloadsStorage not configured")
-    }
-)
 

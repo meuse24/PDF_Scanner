@@ -38,6 +38,9 @@ interface ScanDao {
     )
     fun searchScansFlow(query: String): Flow<List<ScanRecord>>
 
+    @Query("SELECT * FROM scan_records WHERE deleted_at IS NULL AND id IN (:ids)")
+    suspend fun getScansByIds(ids: List<Long>): List<ScanRecord>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(record: ScanRecord): Long
 

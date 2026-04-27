@@ -10,7 +10,8 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - Accept PDFs and images from other Android apps via Share or Open with
 - View PDFs directly in the app with PdfRenderer, page scrolling, zoom, print, share, export, and external-open fallback
 - Extract OCR text and create searchable PDFs with automatic/manual language selection and on-demand ML Kit model downloads
-- Review OCR text per page with recognized language and quality badges
+- Review OCR text per page with recognized language, quality badges, copy/share actions, and TXT export to Downloads
+- Assign optional on-device automatic document tags from OCR text and filter the archive by invoice, contract, insurance, certificate, bank, or delivery tags
 - Create PDFs from gallery images with A4 layouts:
   - 1 image per page
   - 2 images per page
@@ -33,6 +34,7 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - No cloud upload
 - No account required
 - Files stay in app-internal storage unless you explicitly export them
+- OCR text, OCR quality metadata, and optional automatic document tags are stored locally and can be exported only by explicit user action
 - Incoming shared or opened files are copied into the archive only after user confirmation
 - App Lock is a local UI gate; it does not encrypt PDFs or the database
 - No own backend or document upload; Google Play Services / ML Kit SDKs may declare network permissions for model, compatibility, and diagnostics traffic
@@ -90,6 +92,7 @@ Recent structure work:
 
 - Added app shortcuts, a Quick Settings tile, a home-screen scan widget, and Android Share/Open-with import via a shared `AppEntryAction` bridge
 - Added folders, favorites, app-lock settings, business-card vCard export, and Android Print integration
+- Added optional OCR-based tags, tag filter chips, retroactive tagging from Settings, and OCR text TXT export
 - Added an in-app PdfRenderer viewer with lazy page rendering, local bitmap cache, zoom overlay, and viewer action bar
 - `PdfEditor` split into focused ops files for annotations, overlays, redaction, images, and shared core helpers
 - `HomeScreen` split into archive content, dialogs, sheets, and small screen models
@@ -98,7 +101,7 @@ Recent structure work:
 
 ## Testing
 
-- JVM tests cover use cases, workflows, view models, and `PdfEditor` helpers
+- JVM tests cover AutoTag scoring, the AutoTag settings toggle, retroactive tagging, OCR text TXT export, use cases, workflows, view models, and `PdfEditor` helpers
 - JVM tests also cover external app-entry decoding and navigation guards for Share/Open-with flows
 - Business-card parsing/vCard generation and Room migrations are covered by unit or instrumentation tests where practical
 - Viewer JVM tests cover `PdfViewerViewModel` render-window behavior and the bitmap cache

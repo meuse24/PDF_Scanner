@@ -164,6 +164,7 @@ private fun NavGraphBuilder.infoNavGraph(
         val settingsViewModel: SettingsViewModel = hiltViewModel()
         val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
         val errorMessage by settingsViewModel.error.collectAsStateWithLifecycle()
+        val successMessage by settingsViewModel.success.collectAsStateWithLifecycle()
         val scope = rememberCoroutineScope()
         val context = LocalContext.current
         val appLockUnavailableMessage = stringResource(R.string.app_lock_unavailable)
@@ -174,6 +175,7 @@ private fun NavGraphBuilder.infoNavGraph(
             onThemeModeChange = onThemeModeChange,
             onM24AnimationEnabledChange = settingsViewModel::setM24AnimationEnabled,
             onDefaultMakeSearchableChange = settingsViewModel::setDefaultMakeSearchable,
+            onAutoTaggingEnabledChange = settingsViewModel::setAutoTaggingEnabled,
             onDefaultOcrLanguageChange = settingsViewModel::setDefaultOcrLanguage,
             onRetroTagDocuments = settingsViewModel::retroTagDocuments,
             onDefaultSortOrderChange = settingsViewModel::setDefaultSortOrder,
@@ -210,7 +212,9 @@ private fun NavGraphBuilder.infoNavGraph(
                 }
             },
             onAppLockTimeoutSecondsChange = settingsViewModel::setAppLockTimeoutSeconds,
+            transientSuccess = successMessage,
             transientError = errorMessage,
+            onTransientSuccessConsumed = settingsViewModel::clearSuccess,
             onTransientErrorConsumed = settingsViewModel::clearError
         )
     }

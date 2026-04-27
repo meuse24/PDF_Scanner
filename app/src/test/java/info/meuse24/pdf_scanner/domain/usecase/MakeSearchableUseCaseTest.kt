@@ -3,13 +3,15 @@ package info.meuse24.pdf_scanner.domain.usecase
 import android.content.Context
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
-import info.meuse24.pdf_scanner.domain.usecase.SearchableResult
+import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
+import info.meuse24.pdf_scanner.util.AppSettings
 import info.meuse24.pdf_scanner.util.OcrPipeline
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
 import info.meuse24.pdf_scanner.util.TextRecognizerRunner
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -26,12 +28,19 @@ class MakeSearchableUseCaseTest {
     @get:Rule val tmpFolder = TemporaryFolder()
 
     private fun makeUseCase(
-        onMakeSearchable: (File, String) -> Unit = { _, _ -> }
+        onMakeSearchable: (File, String) -> Unit = { _, _ -> },
+        extractedText: String = "",
+        settings: AppSettings = AppSettings()
     ): Pair<MakeSearchableUseCase, FakeScanDao> {
         val dao        = FakeScanDao()
         val repository = ScanRepository(dao)
-        val builder    = FakeSearchablePdfBuilder(onMakeSearchable)
-        return MakeSearchableUseCase(builder, repository) to dao
+        val builder    = FakeSearchablePdfBuilder(onMakeSearchable, extractedText)
+        return MakeSearchableUseCase(
+            builder,
+            repository,
+            AutoTagUseCase(),
+            FakeSettingsRepository(settings)
+        ) to dao
     }
 
     private fun record(
@@ -60,7 +69,7 @@ class MakeSearchableUseCaseTest {
     @Test
     fun `verarbeitet nur nicht-durchsuchbare Records`() = runTest {
         val processedFiles = mutableListOf<File>()
-        val (useCase, _) = makeUseCase { file, _ -> processedFiles.add(file) }
+        val (useCase, _) = makeUseCase(onMakeSearchable = { file, _ -> processedFiles.add(file) })
 
         // isSearchable=true + extractedText gesetzt → wirklich vollständig verarbeitet → wird übersprungen
         val alreadySearchable = record(1L, isSearchable = true, extractedText = "Rechnung")
@@ -93,7 +102,7 @@ class MakeSearchableUseCaseTest {
     @Test
     fun `isSearchable=true aber extractedText=null wird nachverarbeitet (Backfill v4)`() = runTest {
         val processedFiles = mutableListOf<File>()
-        val (useCase, dao) = makeUseCase { file, _ -> processedFiles.add(file) }
+        val (useCase, dao) = makeUseCase(onMakeSearchable = { file, _ -> processedFiles.add(file) })
 
         // Simuliert v4-Migration: isSearchable=true, aber extractedText noch nicht gespeichert
         val legacyRecord = record(1L, isSearchable = true, extractedText = null)
@@ -119,7 +128,7 @@ class MakeSearchableUseCaseTest {
     @Test
     fun `überspringt Records deren Datei nicht existiert`() = runTest {
         val processedFiles = mutableListOf<File>()
-        val (useCase, dao) = makeUseCase { file, _ -> processedFiles.add(file) }
+        val (useCase, dao) = makeUseCase(onMakeSearchable = { file, _ -> processedFiles.add(file) })
 
         val missing = record(1L, isSearchable = false, exists = false)
         val present = record(2L, isSearchable = false, exists = true)
@@ -129,6 +138,21 @@ class MakeSearchableUseCaseTest {
         assertEquals(1, processedFiles.size)
         assertEquals(1, dao.searchableWithContentUpdates.size)
     }
+
+    @Test
+    fun `speichert keine Auto-Tags wenn Auto-Tagging deaktiviert ist`() = runTest {
+        val (useCase, dao) = makeUseCase(
+            extractedText = "Rechnung Rechnungsnummer Betrag IBAN",
+            settings = AppSettings(autoTaggingEnabled = false)
+        )
+        val rec = record(55L, isSearchable = false)
+
+        useCase(listOf(rec), "de")
+
+        assertEquals(1, dao.searchableWithContentUpdates.size)
+        assertEquals("Rechnung Rechnungsnummer Betrag IBAN", dao.searchableWithContentUpdates.single().text)
+        assertNull(dao.searchableWithContentUpdates.single().tags)
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -136,7 +160,8 @@ class MakeSearchableUseCaseTest {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class FakeSearchablePdfBuilder(
-    private val onMakeSearchable: (File, String) -> Unit
+    private val onMakeSearchable: (File, String) -> Unit,
+    private val extractedText: String = ""
 ) : SearchablePdfBuilder(
     context = mock(Context::class.java),
     ocrPipeline = mock(OcrPipeline::class.java),
@@ -151,7 +176,7 @@ class FakeSearchablePdfBuilder(
     ): SearchableResult {
         onMakeSearchable(pdfFile, languageCode)
         return SearchableResult(
-            extractedText = "",
+            extractedText = extractedText,
             pageTexts = emptyList(),
             stats = null
         )

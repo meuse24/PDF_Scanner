@@ -204,20 +204,21 @@ private fun TagFilterRow(
             FilterChip(
                 selected = currentTagKey == tagKey,
                 onClick = { onTagSelected(tagKey) },
-                label = { Text(stringResource(tagLabelRes(tagKey))) }
+                label = { Text(tagLabel(tagKey)) }
             )
         }
     }
 }
 
-private fun tagLabelRes(tagKey: String): Int = when (tagKey) {
-    "invoice" -> R.string.filter_tag_invoice
-    "contract" -> R.string.filter_tag_contract
-    "insurance" -> R.string.filter_tag_insurance
-    "certificate" -> R.string.filter_tag_certificate
-    "bank" -> R.string.filter_tag_bank
-    "delivery" -> R.string.filter_tag_delivery
-    else -> R.string.filter_tag_all
+@Composable
+private fun tagLabel(tagKey: String): String = when (tagKey) {
+    "invoice" -> stringResource(R.string.filter_tag_invoice)
+    "contract" -> stringResource(R.string.filter_tag_contract)
+    "insurance" -> stringResource(R.string.filter_tag_insurance)
+    "certificate" -> stringResource(R.string.filter_tag_certificate)
+    "bank" -> stringResource(R.string.filter_tag_bank)
+    "delivery" -> stringResource(R.string.filter_tag_delivery)
+    else -> tagKey
 }
 
 @Composable

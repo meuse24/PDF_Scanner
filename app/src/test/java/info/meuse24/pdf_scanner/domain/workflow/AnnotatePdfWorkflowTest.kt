@@ -218,6 +218,7 @@ private class FakeAnnotateScanDao : info.meuse24.pdf_scanner.data.local.ScanDao 
     override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
     override suspend fun moveScans(ids: List<Long>, folderId: Long?) {}
     override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) {}
+    override suspend fun getScansByIds(ids: List<Long>): List<info.meuse24.pdf_scanner.data.local.ScanRecord> = emptyList()
     override fun getScansWithTag(tagKey: String): kotlinx.coroutines.flow.Flow<List<info.meuse24.pdf_scanner.data.local.ScanRecord>> = kotlinx.coroutines.flow.flowOf(emptyList())
     override suspend fun getAllSearchableWithoutTags(): List<info.meuse24.pdf_scanner.data.local.ScanRecord> = emptyList()
     override suspend fun updateTags(id: Long, tags: String) = Unit

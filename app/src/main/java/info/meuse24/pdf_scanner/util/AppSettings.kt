@@ -12,6 +12,7 @@ data class AppSettings(
     val m24AnimationEnabled: Boolean = true,
     val keepScreenOnDuringScan: Boolean = false,
     val defaultMakeSearchable: Boolean = false,
+    val autoTaggingEnabled: Boolean = true,
     val defaultOcrLanguage: String = OCR_LANGUAGE_AUTO,
     val defaultSortOrder: AppSortOrder = AppSortOrder.BY_DATE,
     val trashUndoSnackbarSeconds: Int = DEFAULT_TRASH_UNDO_SNACKBAR_SECONDS,

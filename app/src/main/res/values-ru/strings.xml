@@ -13,6 +13,7 @@
     <string name="settings_m24_animation_label">Анимировать значок M24</string>
     <string name="settings_scan_ocr_title">Сканирование и OCR</string>
     <string name="settings_default_make_searchable_label">По умолчанию: делать PDF с поиском</string>
+    <string name="settings_auto_tagging_label">Автоматические теги документов</string>
     <string name="settings_default_ocr_language_label">Язык OCR по умолчанию</string>
     <string name="settings_archive_title">Архив</string>
     <string name="settings_default_sort_order_label">Сортировка по умолчанию</string>
@@ -95,7 +96,7 @@
     <string name="help_item_select">Нажмите флажок, чтобы выбрать одну или несколько записей. В заголовке отображается количество и доступно выделение всех записей.</string>
     <string name="help_item_add_document_scan">Нажмите + и выберите «Сканировать документ», чтобы снять новые страницы системным сканером. После сохранения PDF появится в архиве как обычный документ.</string>
     <string name="help_item_add_document_import">Нажмите + и выберите «Импортировать PDF», чтобы открыть системный файловый выбор. Выберите существующий PDF на устройстве; после сохранения он будет скопирован в архив.</string>
-    <string name="help_item_share_export">Используйте Поделиться, чтобы отправить PDF в другие приложения. Используйте Экспорт, чтобы скопировать файлы в Загрузки.</string>
+    <string name="help_item_share_export">Используйте Поделиться, чтобы отправить PDF в другие приложения. Используйте Экспорт, чтобы скопировать PDF в Загрузки или сохранить сохранённый OCR-текст как TXT из проверки OCR, действий документа или множественного выбора.</string>
     <string name="help_section_pdf_edit">Редактирование PDF</string>
     <string name="help_section_pdf_pages">Страницы и структура</string>
     <string name="help_section_pdf_page_changes">Изменение страниц</string>
@@ -113,7 +114,7 @@
     <string name="help_item_reorder">Откройте меню с тремя точками и выберите Изменить порядок страниц, чтобы переставить страницы перетаскиванием или кнопками вверх и вниз.</string>
     <string name="help_item_delete">Используйте Удалить, чтобы переместить выбранные PDF в корзину. Их можно восстановить в течение 30 дней или удалить навсегда из корзины.</string>
     <string name="help_section_ocr">OCR и извлечение текста</string>
-    <string name="help_item_extract_text">Извлечение текста (OCR) читает все страницы. Для одного документа открывается экран проверки OCR с текстом по страницам, распознанным языком и качеством. Для нескольких документов по-прежнему показывается общая панель, откуда результат можно скопировать или отправить.</string>
+    <string name="help_item_extract_text">Извлечение текста (OCR) читает все страницы. Для одного документа открывается экран проверки OCR с текстом по страницам, распознанным языком, качеством, копированием/отправкой и экспортом TXT. Для нескольких документов по-прежнему показывается общая панель, откуда результат можно скопировать или отправить.</string>
     <string name="help_item_make_searchable">Сделать PDF доступным для поиска добавляет в PDF невидимый текстовый слой, сохраняет извлечённый OCR-текст локально для поиска по архиву.</string>
     <string name="help_item_ocr_language">OCR и «Сделать доступным для поиска» по умолчанию используют автоматический режим — работает офлайн для латинских письменностей. Модели для хинди, китайского, японского и корейского загружаются при первом использовании через Google Play Services. Сценарии CJK не поддерживаются для доступного для поиска PDF — используйте «Извлечь текст» для индексации.</string>
     <string name="help_section_navigation">Навигация</string>
@@ -141,7 +142,7 @@
     <string name="info_repository_label">Репозиторий GitHub</string>
     <string name="info_section_privacy">Конфиденциальность</string>
     <string name="info_section_features">Возможности</string>
-    <string name="info_features_body">Приложение сканирует, импортирует, создает, дополняет и показывает PDF внутри приложения, хранит удаленные документы в корзине 30 дней, выполняет OCR на устройстве, локально сохраняет OCR-текст и метаданные качества для поиска по архиву и экрана проверки OCR, а также предлагает редактирование страниц, аннотации, подписи, редактирование метаданных, перевод в оттенки серого, защиту и безопасное редактирование с необязательным OCR-восстановлением для отредактированных копий.</string>
+    <string name="info_features_body">Приложение сканирует, импортирует, создает, дополняет и показывает PDF внутри приложения, хранит удаленные документы в корзине 30 дней, выполняет OCR на устройстве, локально сохраняет OCR-текст и метаданные качества для поиска по архиву, проверки OCR, необязательных автоматических тегов, фильтров по тегам и экспорта TXT, а также предлагает редактирование страниц, аннотации, подписи, редактирование метаданных, перевод в оттенки серого, защиту и безопасное редактирование с необязательным OCR-восстановлением для отредактированных копий.</string>
     <string name="info_feature_print_share">Интеграция Android Print, Share и Открыть с помощью использует системные диалоги. Печать отправляет выбранный PDF в Android Print; входящие PDF и изображения, которыми поделились с приложением или открыли в нем, копируются в архив приложения только после подтверждения.</string>
     <string name="info_privacy_body">Без рекламы, без аккаунта и без собственного бэкенда. PDF, миниатюры, созданные копии, элементы корзины, OCR-текст и метаданные качества OCR остаются в хранилище приложения на вашем устройстве, пока вы не экспортируете, не отправите или не удалите их окончательно. Сканирование, OCR и загрузка моделей или шрифтов зависят от Google Play Services; это приложение не загружает содержимое документов.</string>
     <!-- Privacy screen -->
@@ -429,7 +430,7 @@
     <string name="tag_delivery">Накладная</string>
     <string name="help_section_search">Поиск</string>
     <string name="help_item_search">Нажмите на поле поиска, чтобы находить документы по имени файла или сохранённому OCR-тексту. Поиск выполняется локально на устройстве и использует совпадение по префиксу, поэтому «Rec» может найти «Receipt».</string>
-    <string name="help_item_auto_tag">Когда документ становится доступным для поиска, приложение локально назначает теги вроде «Счёт» или «Договор» на основе OCR-текста и ключевых слов. Теги отображаются под именем файла.</string>
+    <string name="help_item_auto_tag">Если функция включена в настройках, документы, сделанные доступными для поиска, локально получают теги вроде «Счёт», «Договор», «Страхование», «Сертификат», «Банк» или «Доставка» на основе OCR-текста и взвешенных ключевых сигналов. Теги отображаются под именем файла, используются как фильтры архива и могут быть добавлены задним числом в настройках.</string>
     <string name="privacy_keyword_5">Локальный ИИ</string>
     <string name="privacy_point_5">Полнотекстовый поиск, создание PDF с поиском, безопасное редактирование и выравнивание выделений по тексту работают локально на вашем устройстве. Новые отредактированные копии удаляют из сохранённого результата OCR-текст, метаданные и интерактивные элементы PDF.</string>
     <!-- Annotate PDF -->
@@ -512,16 +513,16 @@
     <string name="pdf_viewer_invalid_page">Не удалось открыть эту страницу.</string>
     <string name="pdf_viewer_out_of_memory">Эта страница слишком велика для отрисовки на этом устройстве.</string>
     <string name="pdf_viewer_renderer_failed">PDF-просмотрщик не смог отрисовать этот документ.</string>
-    <string name="filter_tag_all">All</string>
-    <string name="filter_tag_invoice">Invoices</string>
-    <string name="filter_tag_contract">Contracts</string>
-    <string name="filter_tag_insurance">Insurance</string>
-    <string name="filter_tag_certificate">Certificates</string>
-    <string name="filter_tag_bank">Bank</string>
-    <string name="filter_tag_delivery">Delivery notes</string>
-    <string name="settings_retro_tag_action">Tag documents automatically</string>
-    <string name="settings_retro_tag_done">%1$d documents tagged</string>
-    <string name="ocr_export_as_file">Save as text file</string>
-    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
-    <string name="ocr_export_error">Text export failed</string>
-    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>
+    <string name="filter_tag_all">Все</string>
+    <string name="filter_tag_invoice">Счета</string>
+    <string name="filter_tag_contract">Договоры</string>
+    <string name="filter_tag_insurance">Страхование</string>
+    <string name="filter_tag_certificate">Сертификаты</string>
+    <string name="filter_tag_bank">Банк</string>
+    <string name="filter_tag_delivery">Накладные</string>
+    <string name="settings_retro_tag_action">Проставить теги существующим документам</string>
+    <string name="settings_retro_tag_done">Документов с тегами: %1$d</string>
+    <string name="ocr_export_as_file">Сохранить как текстовый файл</string>
+    <string name="ocr_export_success">Сохранено в Загрузки: %1$s</string>
+    <string name="ocr_export_error">Не удалось экспортировать текст</string>
+    <string name="ocr_export_nothing_to_export">В выбранных документах нет OCR-текста</string></resources>

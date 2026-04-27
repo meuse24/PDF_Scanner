@@ -1,9 +1,11 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.util.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
+import kotlinx.coroutines.flow.first
 import java.io.File
 import javax.inject.Inject
 
@@ -16,7 +18,8 @@ import javax.inject.Inject
 class MakeSearchableUseCase @Inject constructor(
     private val searchablePdfBuilder: SearchablePdfBuilder,
     private val repository:           DocumentRepository,
-    private val autoTagUseCase:       AutoTagUseCase = AutoTagUseCase()
+    private val autoTagUseCase:       AutoTagUseCase,
+    private val settingsRepository:   AppSettingsRepository
 ) {
     /**
      * @return Pair(processedCount, blankOcrCount) — blankOcrCount zählt Dokumente, bei denen
@@ -30,6 +33,7 @@ class MakeSearchableUseCase @Inject constructor(
         onStatus:     (OcrPipelineStatus) -> Unit = {}
     ): Pair<Int, Int> {
         val pending = records.filter { force || !it.isSearchable || it.extractedText == null }
+        val autoTaggingEnabled = settingsRepository.settings.first().autoTaggingEnabled
         var blankOcrCount = 0
         for (record in pending) {
             val pdfFile = File(record.filepath)
@@ -40,8 +44,11 @@ class MakeSearchableUseCase @Inject constructor(
                 id = record.id,
                 fileSize = pdfFile.length(),
                 text = searchableResult.extractedText.ifBlank { null },
-                tags = searchableResult.extractedText.ifBlank { null }
-                    ?.let(autoTagUseCase::extractTags),
+                tags = if (autoTaggingEnabled) {
+                    searchableResult.extractedText.ifBlank { null }?.let(autoTagUseCase::extractTags)
+                } else {
+                    null
+                },
                 confidence = searchableResult.stats?.confidence,
                 language = searchableResult.stats?.recognizedLanguage,
                 pageTexts = searchableResult.pageTexts

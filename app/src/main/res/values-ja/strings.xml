@@ -13,6 +13,7 @@
     <string name="settings_m24_animation_label">M24アイコンをアニメーション表示</string>
     <string name="settings_scan_ocr_title">スキャンとOCR</string>
     <string name="settings_default_make_searchable_label">既定: 検索可能にする</string>
+    <string name="settings_auto_tagging_label">文書の自動タグ</string>
     <string name="settings_default_ocr_language_label">既定のOCR言語</string>
     <string name="settings_archive_title">アーカイブ</string>
     <string name="settings_default_sort_order_label">既定の並び順</string>
@@ -95,7 +96,7 @@
     <string name="help_item_select">チェックボックスをタップして1件以上の項目を選択します。タイトルバーに件数が表示され、すべて選択もできます。</string>
     <string name="help_item_add_document_scan">＋をタップして「ドキュメントをスキャン」を選ぶと、システムスキャナで新しいページを取り込めます。保存すると、PDF は他の文書と同じようにアーカイブへ追加されます。</string>
     <string name="help_item_add_document_import">＋をタップして「PDF をインポート」を選ぶと、システムのファイルピッカーが開きます。端末内の既存 PDF を選ぶと、保存後にアーカイブへコピーされます。</string>
-    <string name="help_item_share_export">共有を使うとPDFを他のアプリに送れます。エクスポートを使うとファイルをダウンロードにコピーできます。</string>
+    <string name="help_item_share_export">共有を使うと PDF を他のアプリに送れます。エクスポートを使うと PDF をダウンロードにコピーしたり、OCR レビュー、ドキュメント操作、複数選択から保存済み OCR テキストを TXT として保存できます。</string>
     <string name="help_section_pdf_edit">PDFを編集</string>
     <string name="help_section_pdf_pages">ページと構成</string>
     <string name="help_section_pdf_page_changes">ページ変更</string>
@@ -113,7 +114,7 @@
     <string name="help_item_reorder">三点メニューを開いてページを並び替えを選ぶと、ドラッグ＆ドロップまたは上下ボタンで順序を変更できます。</string>
     <string name="help_item_delete">削除を使うと選択したPDFをゴミ箱に移動できます。30日間は復元でき、ゴミ箱から完全に削除することもできます。</string>
     <string name="help_section_ocr">OCRとテキスト抽出</string>
-    <string name="help_item_extract_text">テキスト抽出（OCR）はすべてのページを読み取ります。単一のドキュメントでは、ページごとのテキスト、認識言語、品質を確認できる OCR レビューが開きます。複数ドキュメントでは、結果をコピーまたは共有できる統合パネルが引き続き表示されます。</string>
+    <string name="help_item_extract_text">テキスト抽出（OCR）はすべてのページを読み取ります。単一のドキュメントでは、ページごとのテキスト、認識言語、品質、コピー/共有、TXT エクスポートを確認できる OCR レビューが開きます。複数ドキュメントでは、結果をコピーまたは共有できる統合パネルが引き続き表示されます。</string>
     <string name="help_item_make_searchable">検索可能にするでは、PDF に不可視のテキストレイヤーを追加し、抽出した OCR テキストをアーカイブ検索用にローカル保存。</string>
     <string name="help_item_ocr_language">OCRと検索可能にする機能はデフォルトで自動モードを使用します — ラテン文字の文書でオフラインで動作します。ヒンディー語・中国語・日本語・韓国語のモデルは Google Play Services 経由で初回使用時にダウンロードされます。CJK文字は検索可能PDFに対応していません — インデックス化には「テキストを抽出」をご利用ください。</string>
     <string name="help_section_navigation">ナビゲーション</string>
@@ -141,7 +142,7 @@
     <string name="info_repository_label">GitHub リポジトリ</string>
     <string name="info_section_privacy">プライバシー</string>
     <string name="info_section_features">機能</string>
-    <string name="info_features_body">このアプリは PDF のスキャン、インポート、作成、追記、アプリ内表示に対応し、削除したドキュメントをゴミ箱に 30 日間保持し、端末上で OCR を実行して、アーカイブ検索と OCR レビューのために OCR テキストと品質メタデータをローカル保存します。さらに、ページ編集、注釈、署名、メタデータ編集、グレースケール化、保護、安全な黒塗り、黒塗りコピー向けの任意の OCR 再構築も利用できます。</string>
+    <string name="info_features_body">このアプリは PDF のスキャン、インポート、作成、追記、アプリ内表示に対応し、削除したドキュメントをゴミ箱に 30 日間保持し、端末上で OCR を実行して、アーカイブ検索、OCR レビュー、任意の自動タグ、タグフィルター、TXT エクスポートのために OCR テキストと品質メタデータをローカル保存します。さらに、ページ編集、注釈、署名、メタデータ編集、グレースケール化、保護、安全な黒塗り、黒塗りコピー向けの任意の OCR 再構築も利用できます。</string>
     <string name="info_feature_print_share">Android の印刷、共有、Open with 連携はシステムダイアログを使用します。印刷は選択した PDF を Android Print に送信し、このアプリに共有された、またはこのアプリで開かれた受信 PDF と画像は、ユーザー確認後にのみアプリのアーカイブへコピーされます。</string>
     <string name="info_privacy_body">広告なし、アカウント不要、独自バックエンドなし。PDF、サムネイル、生成されたコピー、ゴミ箱内の項目、OCR テキスト、OCR 品質メタデータは、エクスポート、共有、または完全削除するまで端末内のアプリ保存領域に残ります。スキャン、OCR、モデルやフォントの取得には Google Play Services を利用しますが、このアプリが文書内容をアップロードすることはありません。</string>
     <!-- Privacy screen -->
@@ -429,7 +430,7 @@
     <string name="tag_delivery">納品書</string>
     <string name="help_section_search">検索</string>
     <string name="help_item_search">上部の検索フィールドをタップすると、ファイル名または保存済みの OCR テキストで文書を検索できます。検索は端末内で実行され、前方一致を使うため、「Rec」で「Receipt」を見つけられます。</string>
-    <string name="help_item_auto_tag">文書を検索可能にすると、OCR テキストとキーワードに基づいて請求書や契約書などのタグが端末内で自動付与されます。タグはファイル名の下に色付きラベルで表示されます。</string>
+    <string name="help_item_auto_tag">設定で有効にすると、検索可能にした文書には OCR テキストと重み付きキーワード信号に基づいて、請求書、契約書、保険、証明書、銀行、配送書類などのタグが端末内で付与されます。タグはファイル名の下に表示され、アーカイブの絞り込みに使え、設定から既存文書にも後から追加できます。</string>
     <string name="privacy_keyword_5">オンデバイスAI</string>
     <string name="privacy_point_5">全文検索、検索可能 PDF の生成、安全な黒塗り、テキスト整列ハイライトは端末上でローカル実行されます。新しく作成された黒塗りコピーでは、保存結果から OCR テキスト、メタデータ、インタラクティブな PDF 要素が取り除かれます。</string>
     <!-- Annotate PDF -->
@@ -512,16 +513,16 @@
     <string name="pdf_viewer_invalid_page">このページを開けませんでした。</string>
     <string name="pdf_viewer_out_of_memory">このページは大きすぎるため、この端末で表示できません。</string>
     <string name="pdf_viewer_renderer_failed">PDFビューアでこの文書を表示できませんでした。</string>
-    <string name="filter_tag_all">All</string>
-    <string name="filter_tag_invoice">Invoices</string>
-    <string name="filter_tag_contract">Contracts</string>
-    <string name="filter_tag_insurance">Insurance</string>
-    <string name="filter_tag_certificate">Certificates</string>
-    <string name="filter_tag_bank">Bank</string>
-    <string name="filter_tag_delivery">Delivery notes</string>
-    <string name="settings_retro_tag_action">Tag documents automatically</string>
-    <string name="settings_retro_tag_done">%1$d documents tagged</string>
-    <string name="ocr_export_as_file">Save as text file</string>
-    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
-    <string name="ocr_export_error">Text export failed</string>
-    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>
+    <string name="filter_tag_all">すべて</string>
+    <string name="filter_tag_invoice">請求書</string>
+    <string name="filter_tag_contract">契約書</string>
+    <string name="filter_tag_insurance">保険</string>
+    <string name="filter_tag_certificate">証明書</string>
+    <string name="filter_tag_bank">銀行</string>
+    <string name="filter_tag_delivery">配送書類</string>
+    <string name="settings_retro_tag_action">既存文書に今すぐタグを付ける</string>
+    <string name="settings_retro_tag_done">%1$d 件の文書にタグを付けました</string>
+    <string name="ocr_export_as_file">テキストファイルとして保存</string>
+    <string name="ocr_export_success">ダウンロードに保存しました: %1$s</string>
+    <string name="ocr_export_error">テキストのエクスポートに失敗しました</string>
+    <string name="ocr_export_nothing_to_export">選択した文書に OCR テキストがありません</string></resources>

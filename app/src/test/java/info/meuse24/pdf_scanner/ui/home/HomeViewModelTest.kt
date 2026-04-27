@@ -10,7 +10,9 @@ import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.data.repository.TrashRepository
 import info.meuse24.pdf_scanner.data.repository.SettingsRepository
 import info.meuse24.pdf_scanner.domain.repository.FolderRepository
+import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
@@ -30,6 +32,8 @@ import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
 import info.meuse24.pdf_scanner.util.OcrModelInstallException
 import info.meuse24.pdf_scanner.util.AppSettings
+import info.meuse24.pdf_scanner.util.DownloadEntry
+import info.meuse24.pdf_scanner.util.DownloadsStorage
 import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -419,11 +423,13 @@ class HomeViewModelTest {
             importFileUseCase = importFileUseCase,
             exportScanUseCase = exportScanUseCase,
             exportAsJpgUseCase = exportAsJpgUseCase,
+            exportOcrTextUseCase = testExportOcrTextUseCase(),
             trashScansUseCase = trashScansUseCase,
             restoreScansUseCase = restoreScansUseCase,
             moveDocumentsUseCase = moveDocumentsUseCase,
             toggleFavoriteUseCase = toggleFavoriteUseCase,
             extractTextUseCase = extractTextUseCase,
+            autoTagUseCase = AutoTagUseCase(),
             makeSearchableWorkflow = makeSearchableWorkflow,
             mergePdfsWorkflow = mergePdfsWorkflow,
             workflowErrorMapper = WorkflowErrorMapper(resourceProvider),
@@ -434,6 +440,16 @@ class HomeViewModelTest {
             playReviewPromptManager = playReviewPromptManager
         )
     }
+
+    private fun testExportOcrTextUseCase() = ExportOcrTextUseCase(
+        object : DownloadsStorage {
+            override fun writeDownload(
+                displayName: String,
+                mimeType: String,
+                writer: (java.io.OutputStream) -> Unit
+            ): DownloadEntry = error("DownloadsStorage not configured")
+        }
+    )
 
     /** Erstellt eine anonyme ExtractTextUseCase-Subklasse, die den Block als invoke-Body nutzt. */
     private fun fakeExtract(block: suspend (List<Document>, String) -> List<OcrDocumentResult>): ExtractTextUseCase =

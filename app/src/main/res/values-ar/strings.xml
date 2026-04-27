@@ -13,6 +13,7 @@
     <string name="settings_m24_animation_label">تحريك أيقونة M24</string>
     <string name="settings_scan_ocr_title">المسح الضوئي وOCR</string>
     <string name="settings_default_make_searchable_label">الافتراضي: جعل الملف قابلاً للبحث</string>
+    <string name="settings_auto_tagging_label">وسوم المستندات التلقائية</string>
     <string name="settings_default_ocr_language_label">لغة OCR الافتراضية</string>
     <string name="settings_archive_title">الأرشيف</string>
     <string name="settings_default_sort_order_label">الترتيب الافتراضي</string>
@@ -95,7 +96,7 @@
     <string name="help_item_select">انقر على مربع الاختيار لتحديد عنصر واحد أو عدة عناصر. يعرض شريط العنوان العدد ويتيح تحديد الكل.</string>
     <string name="help_item_add_document_scan">اضغط على + واختر مسح مستند لالتقاط صفحات جديدة باستخدام ماسح النظام. بعد الحفظ يظهر ملف PDF في الأرشيف مثل أي مستند آخر.</string>
     <string name="help_item_add_document_import">اضغط على + واختر استيراد PDF لفتح منتقي الملفات في النظام. اختر ملف PDF موجوداً على جهازك؛ وبعد الحفظ سيتم نسخه إلى الأرشيف.</string>
-    <string name="help_item_share_export">استخدم مشاركة لإرسال ملفات PDF إلى تطبيقات أخرى. واستخدم تصدير لنسخ الملفات إلى مجلد التنزيلات.</string>
+    <string name="help_item_share_export">استخدم مشاركة لإرسال ملفات PDF إلى تطبيقات أخرى. واستخدم تصدير لنسخ ملفات PDF إلى التنزيلات أو حفظ نص OCR المخزن كملف TXT من مراجعة OCR أو إجراءات المستند أو التحديد المتعدد.</string>
     <string name="help_section_pdf_edit">تحرير ملفات PDF</string>
     <string name="help_section_pdf_pages">الصفحات والبنية</string>
     <string name="help_section_pdf_page_changes">تغييرات الصفحات</string>
@@ -113,7 +114,7 @@
     <string name="help_item_reorder">افتح قائمة النقاط الثلاث واختر إعادة ترتيب الصفحات لتغيير الترتيب بالسحب والإفلات أو بأزرار الأعلى والأسفل.</string>
     <string name="help_item_delete">استخدم حذف لنقل ملفات PDF المحددة إلى سلة المهملات. يمكن استعادتها خلال 30 يومًا أو حذفها نهائيًا من سلة المهملات.</string>
     <string name="help_section_ocr">OCR واستخراج النص</string>
-    <string name="help_item_extract_text">يقوم استخراج النص (OCR) بقراءة جميع الصفحات. بالنسبة لمستند واحد، يفتح مراجعة OCR مع نص لكل صفحة واللغة المكتشفة والجودة. وبالنسبة لعدة مستندات، يستمر في عرض لوحة مجمعة يمكنك منها نسخ النتيجة أو مشاركتها.</string>
+    <string name="help_item_extract_text">يقوم استخراج النص (OCR) بقراءة جميع الصفحات. بالنسبة لمستند واحد، يفتح مراجعة OCR مع نص لكل صفحة واللغة المكتشفة والجودة وإجراءات النسخ/المشاركة وتصدير TXT. وبالنسبة لعدة مستندات، يستمر في عرض لوحة مجمعة يمكنك منها نسخ النتيجة أو مشاركتها.</string>
     <string name="help_item_make_searchable">يضيف جعل الملف قابلاً للبحث طبقة نص غير مرئية إلى ملف PDF، ويخزن نص OCR المستخرج محلياً للبحث في الأرشيف.</string>
     <string name="help_item_ocr_language">يستخدم OCR وجعل الملف قابلاً للبحث الوضع التلقائي افتراضياً — يعمل بدون إنترنت للخطوط اللاتينية. يتم تنزيل نماذج الهندية والصينية واليابانية والكورية عند أول استخدام عبر Google Play Services. لا تدعم الخطوط CJK ملفات PDF القابلة للبحث — استخدم «استخراج النص» لفهرستها.</string>
     <string name="help_section_navigation">التنقل</string>
@@ -141,7 +142,7 @@
     <string name="info_repository_label">مستودع GitHub</string>
     <string name="info_section_privacy">الخصوصية</string>
     <string name="info_section_features">الوظائف</string>
-    <string name="info_features_body">يقوم التطبيق بمسح ملفات PDF واستيرادها وإنشائها وإلحاق صفحات بها وعرضها داخل التطبيق، ويحتفظ بالمستندات المحذوفة في سلة المهملات لمدة 30 يومًا، ويجري OCR على الجهاز، ويخزن نص OCR وبيانات الجودة محليًا للبحث في الأرشيف ولمراجعة OCR، ويوفر تحرير الصفحات والتعليقات التوضيحية والتواقيع وتحرير البيانات الوصفية والتدرج الرمادي والحماية والطمس الآمن مع إعادة بناء OCR اختياريًا للنسخ المطموسة.</string>
+    <string name="info_features_body">يقوم التطبيق بمسح ملفات PDF واستيرادها وإنشائها وإلحاق صفحات بها وعرضها داخل التطبيق، ويحتفظ بالمستندات المحذوفة في سلة المهملات لمدة 30 يومًا، ويجري OCR على الجهاز، ويخزن نص OCR وبيانات الجودة محليًا للبحث في الأرشيف ولمراجعة OCR والوسوم التلقائية الاختيارية وفلاتر الوسوم وتصدير TXT، ويوفر تحرير الصفحات والتعليقات التوضيحية والتواقيع وتحرير البيانات الوصفية والتدرج الرمادي والحماية والطمس الآمن مع إعادة بناء OCR اختياريًا للنسخ المطموسة.</string>
     <string name="info_feature_print_share">يستخدم تكامل الطباعة والمشاركة وOpen with في Android مربعات حوار النظام. ترسل الطباعة ملف PDF المحدد إلى Android Print؛ ولا تُنسخ ملفات PDF والصور الواردة التي تمت مشاركتها مع هذا التطبيق أو فتحها فيه إلى أرشيف التطبيق إلا بعد تأكيد المستخدم.</string>
     <string name="info_privacy_body">من دون إعلانات أو حساب أو خادم خلفي خاص. تبقى ملفات PDF والصور المصغرة والنسخ المُنشأة وعناصر سلة المهملات ونص OCR وبيانات جودة OCR داخل مساحة تخزين التطبيق على جهازك إلى أن تقوم بتصديرها أو مشاركتها أو حذفها نهائيًا. يعتمد المسح وOCR وتنزيل النماذج أو الخطوط على خدمات Google Play؛ وهذا التطبيق لا يرفع محتوى مستنداتك.</string>
     <!-- Privacy screen -->
@@ -429,7 +430,7 @@
     <string name="tag_delivery">سند التسليم</string>
     <string name="help_section_search">البحث</string>
     <string name="help_item_search">اضغط على حقل البحث للعثور على المستندات باسم الملف أو بنص OCR المخزن. يعمل البحث محلياً على جهازك ويستخدم مطابقة البادئة، لذلك يمكن أن يجد "Rec" كلمة "Receipt".</string>
-    <string name="help_item_auto_tag">عند جعل المستند قابلاً للبحث، يعيّن التطبيق وسوماً مثل الفاتورة أو العقد محلياً اعتماداً على نص OCR والكلمات المفتاحية. تظهر الوسوم أسفل اسم الملف.</string>
+    <string name="help_item_auto_tag">عند تفعيلها في الإعدادات، تحصل المستندات التي تُجعل قابلة للبحث على وسوم محلية مثل الفاتورة أو العقد أو التأمين أو الشهادة أو البنك أو التسليم اعتماداً على نص OCR وإشارات كلمات مفتاحية موزونة. تظهر الوسوم أسفل اسم الملف، وتعمل كفلاتر للأرشيف، ويمكن إضافتها لاحقاً من الإعدادات.</string>
     <string name="privacy_keyword_5">الذكاء المحلي</string>
     <string name="privacy_point_5">يعمل البحث النصي الكامل وإنشاء ملفات PDF القابلة للبحث والطمس الآمن والتمييزات المحاذية للنص محلياً على جهازك. تزيل النسخ المطموسة الجديدة نص OCR والبيانات الوصفية وعناصر PDF التفاعلية من المخرجات المحفوظة.</string>
     <!-- Annotate PDF -->
@@ -512,16 +513,16 @@
     <string name="pdf_viewer_invalid_page">تعذر فتح هذه الصفحة.</string>
     <string name="pdf_viewer_out_of_memory">هذه الصفحة كبيرة جدًا لعرضها على هذا الجهاز.</string>
     <string name="pdf_viewer_renderer_failed">تعذر على عارض PDF عرض هذا المستند.</string>
-    <string name="filter_tag_all">All</string>
-    <string name="filter_tag_invoice">Invoices</string>
-    <string name="filter_tag_contract">Contracts</string>
-    <string name="filter_tag_insurance">Insurance</string>
-    <string name="filter_tag_certificate">Certificates</string>
-    <string name="filter_tag_bank">Bank</string>
-    <string name="filter_tag_delivery">Delivery notes</string>
-    <string name="settings_retro_tag_action">Tag documents automatically</string>
-    <string name="settings_retro_tag_done">%1$d documents tagged</string>
-    <string name="ocr_export_as_file">Save as text file</string>
-    <string name="ocr_export_success">Saved to Downloads: %1$s</string>
-    <string name="ocr_export_error">Text export failed</string>
-    <string name="ocr_export_nothing_to_export">No selected document has OCR text</string></resources>
+    <string name="filter_tag_all">الكل</string>
+    <string name="filter_tag_invoice">الفواتير</string>
+    <string name="filter_tag_contract">العقود</string>
+    <string name="filter_tag_insurance">التأمين</string>
+    <string name="filter_tag_certificate">الشهادات</string>
+    <string name="filter_tag_bank">البنك</string>
+    <string name="filter_tag_delivery">إشعارات التسليم</string>
+    <string name="settings_retro_tag_action">وسم المستندات الموجودة الآن</string>
+    <string name="settings_retro_tag_done">تم وسم %1$d مستندات</string>
+    <string name="ocr_export_as_file">حفظ كملف نصي</string>
+    <string name="ocr_export_success">تم الحفظ في التنزيلات: %1$s</string>
+    <string name="ocr_export_error">فشل تصدير النص</string>
+    <string name="ocr_export_nothing_to_export">لا يحتوي أي مستند محدد على نص OCR</string></resources>

@@ -15,6 +15,7 @@
     <string name="settings_m24_animation_label">Animate M24 icon</string>
     <string name="settings_scan_ocr_title">Scan &amp; OCR</string>
     <string name="settings_default_make_searchable_label">Default: make searchable</string>
+    <string name="settings_auto_tagging_label">Automatic document tags</string>
     <string name="settings_default_ocr_language_label">Default OCR language</string>
     <string name="settings_archive_title">Archive</string>
     <string name="settings_default_sort_order_label">Default sort order</string>
@@ -117,7 +118,7 @@
     <string name="help_item_select">Tap the checkbox to select one or more entries. The title bar shows the count and lets you select all.</string>
     <string name="help_item_add_document_scan">Tap + and choose Scan document to capture new pages with the system scanner. After saving, the PDF appears in your archive like any other document.</string>
     <string name="help_item_add_document_import">Tap + and choose Import PDF to open the system file picker. Select an existing PDF from your device; after saving, it is copied into the archive.</string>
-    <string name="help_item_share_export">Use Share to send PDFs to other apps. Use Export to copy them to Downloads.</string>
+    <string name="help_item_share_export">Use Share to send PDFs to other apps. Use Export to copy PDFs to Downloads, or export stored OCR text as TXT from OCR Review, document actions, or multi-select.</string>
     <string name="help_section_pdf_edit">Edit PDFs</string>
     <string name="help_section_pdf_pages">Pages and structure</string>
     <string name="help_section_pdf_page_changes">Page changes</string>
@@ -135,7 +136,7 @@
     <string name="help_item_reorder">Open the three-dot menu and choose Reorder pages to rearrange pages via drag and drop or the up and down buttons.</string>
     <string name="help_item_delete">Use Delete to move selected PDFs to trash. They can be restored for 30 days or deleted permanently from Trash.</string>
     <string name="help_section_ocr">OCR and Text Extraction</string>
-    <string name="help_item_extract_text">Text Extraction (OCR) reads all pages. For a single document it opens OCR Review with per-page text, recognized language, and quality. For multiple documents it shows a combined panel where you can copy or share the result.</string>
+    <string name="help_item_extract_text">Text Extraction (OCR) reads all pages. For a single document it opens OCR Review with per-page text, recognized language, quality, copy/share actions, and TXT export. For multiple documents it shows a combined panel where you can copy or share the result.</string>
     <string name="help_item_make_searchable">Make Searchable adds an invisible text layer to the PDF, stores the extracted OCR text locally for archive search.</string>
     <string name="help_item_ocr_language">OCR and Make Searchable use Automatic mode by default — works offline for Latin-script documents. Hindi, Chinese, Japanese, and Korean models are downloaded on first use via Google Play Services. Chinese, Japanese, and Korean are not supported for searchable PDF — use Extract Text to index them for search.</string>
     <string name="help_section_navigation">Navigation</string>
@@ -165,7 +166,7 @@
     <string name="info_repository_label">GitHub Repository</string>
     <string name="info_section_privacy">Privacy</string>
     <string name="info_section_features">Capabilities</string>
-    <string name="info_features_body">The app scans, imports, creates, appends, and views PDFs in-app, keeps deleted documents in trash for 30 days, performs on-device OCR, stores OCR text and quality metadata locally for archive search and OCR review, and offers page editing, annotations, signatures, metadata updates, grayscale conversion, protection, and secure redaction with optional OCR rebuild for redacted copies.</string>
+    <string name="info_features_body">The app scans, imports, creates, appends, and views PDFs in-app, keeps deleted documents in trash for 30 days, performs on-device OCR, stores OCR text and quality metadata locally for archive search, OCR review, optional automatic tags, tag filters, and TXT export, and offers page editing, annotations, signatures, metadata updates, grayscale conversion, protection, and secure redaction with optional OCR rebuild for redacted copies.</string>
     <string name="info_feature_print_share">Android Print, Share, and Open with integration use system dialogs. Printing sends the selected PDF to Android Print; incoming PDFs and images shared to or opened in this app are copied into the app archive only after user confirmation.</string>
     <string name="info_privacy_body">No ads, no account, and no own backend. PDFs, thumbnails, generated copies, deleted items in trash, OCR text, and OCR quality metadata stay in app storage on your device until you export, share, or permanently delete them. Scanning, OCR, and downloadable models or fonts rely on Google Play Services; this app does not upload document content itself.</string>
     <!-- Privacy screen -->
@@ -461,7 +462,7 @@
     <string name="filter_tag_certificate">Certificates</string>
     <string name="filter_tag_bank">Bank</string>
     <string name="filter_tag_delivery">Delivery notes</string>
-    <string name="settings_retro_tag_action">Tag documents automatically</string>
+    <string name="settings_retro_tag_action">Tag existing documents now</string>
     <string name="settings_retro_tag_done">%1$d documents tagged</string>
     <string name="ocr_export_as_file">Save as text file</string>
     <string name="ocr_export_success">Saved to Downloads: %1$s</string>
@@ -470,7 +471,7 @@
     <!-- Help: Search & Auto-Tags -->
     <string name="help_section_search">Search</string>
     <string name="help_item_search">Tap the search field at the top to find documents by filename or stored OCR text. Search runs locally on your device and uses prefix matching, so "Rec" can find "Receipt".</string>
-    <string name="help_item_auto_tag">When a document is made searchable, tags such as Invoice or Contract are assigned locally from OCR text and keywords. Tags appear as coloured labels below the file name.</string>
+    <string name="help_item_auto_tag">When enabled in Settings, documents made searchable receive local tags such as Invoice, Contract, Insurance, Certificate, Bank, or Delivery from OCR text and scored keyword signals. Tags appear below the file name, can be used as archive filters, and can be added retroactively from Settings.</string>
     <!-- Privacy: On-Device Intelligence -->
     <string name="privacy_keyword_5">On-Device Intelligence</string>
     <string name="privacy_point_5">Full-text search, searchable PDF generation, annotations with text snapping, secure redaction, grayscale conversion, and page/image rebuilds operate locally on your device. Newly created redacted copies strip OCR text, metadata, and interactive PDF elements from the saved output.</string>

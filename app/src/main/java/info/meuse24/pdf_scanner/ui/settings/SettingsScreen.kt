@@ -65,13 +65,16 @@ fun SettingsScreen(
     onThemeModeChange: (ThemeMode) -> Unit,
     onM24AnimationEnabledChange: (Boolean) -> Unit,
     onDefaultMakeSearchableChange: (Boolean) -> Unit,
+    onAutoTaggingEnabledChange: (Boolean) -> Unit,
     onDefaultOcrLanguageChange: (String) -> Unit,
     onRetroTagDocuments: () -> Unit,
     onDefaultSortOrderChange: (AppSortOrder) -> Unit,
     onTrashUndoSnackbarSecondsChange: (Int) -> Unit,
     onAppLockEnabledChange: (Boolean) -> Unit,
     onAppLockTimeoutSecondsChange: (Int) -> Unit,
+    transientSuccess: String?,
     transientError: String?,
+    onTransientSuccessConsumed: () -> Unit,
     onTransientErrorConsumed: () -> Unit
 ) {
     val snackbarHostState = LocalAppSnackbarHostState.current
@@ -89,6 +92,13 @@ fun SettingsScreen(
     }
     val timeoutOptions = remember {
         listOf(0, 15, 30, 60, 300)
+    }
+
+    LaunchedEffect(transientSuccess) {
+        if (transientSuccess != null) {
+            snackbarHostState?.showSnackbar(transientSuccess)
+            onTransientSuccessConsumed()
+        }
     }
 
     LaunchedEffect(transientError) {
@@ -165,6 +175,22 @@ fun SettingsScreen(
                     Switch(
                         checked = settings.defaultMakeSearchable,
                         onCheckedChange = onDefaultMakeSearchableChange
+                    )
+                }
+
+                Spacer(Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.settings_auto_tagging_label),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Switch(
+                        checked = settings.autoTaggingEnabled,
+                        onCheckedChange = onAutoTaggingEnabledChange
                     )
                 }
 
@@ -278,7 +304,10 @@ fun SettingsScreen(
                     }
                 }
                 Spacer(Modifier.height(12.dp))
-                Button(onClick = onRetroTagDocuments) {
+                Button(
+                    onClick = onRetroTagDocuments,
+                    enabled = settings.autoTaggingEnabled
+                ) {
                     Text(stringResource(R.string.settings_retro_tag_action))
                 }
             }

@@ -23,9 +23,11 @@ class SettingsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
+    private val _success = MutableStateFlow<String?>(null)
 
     val settings: StateFlow<AppSettings> = settingsRepository.settings
     val error: StateFlow<String?> = _error.asStateFlow()
+    val success: StateFlow<String?> = _success.asStateFlow()
 
     fun setThemeMode(mode: ThemeMode) {
         settingsRepository.updateThemeMode(mode)
@@ -39,6 +41,10 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.updateDefaultMakeSearchable(enabled)
     }
 
+    fun setAutoTaggingEnabled(enabled: Boolean) {
+        settingsRepository.updateAutoTaggingEnabled(enabled)
+    }
+
     fun setDefaultOcrLanguage(languageCode: String) {
         settingsRepository.updateDefaultOcrLanguage(languageCode)
     }
@@ -47,7 +53,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val count = retroTagUseCase()
-                _error.value = resourceProvider.getString(R.string.settings_retro_tag_done, count)
+                _success.value = resourceProvider.getString(R.string.settings_retro_tag_done, count)
             } catch (_: Exception) {
                 _error.value = resourceProvider.getString(R.string.ocr_export_error)
             }
@@ -76,6 +82,10 @@ class SettingsViewModel @Inject constructor(
 
     fun clearError() {
         _error.value = null
+    }
+
+    fun clearSuccess() {
+        _success.value = null
     }
 }
 

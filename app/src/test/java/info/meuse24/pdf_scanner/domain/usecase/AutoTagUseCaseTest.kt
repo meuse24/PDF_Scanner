@@ -63,6 +63,29 @@ class AutoTagUseCaseTest {
     }
 
     @Test
+    fun `weak invoice indicator below threshold does not tag`() {
+        assertNull(useCase.extractTags("Betrag"))
+    }
+
+    @Test
+    fun `score three stays below threshold but four tags`() {
+        assertNull(useCase.extractTags("Rechnungsnummer 2026-001"))
+
+        val tags = useCase.extractTags("Rechnungsnummer 2026-001 Betrag")
+
+        assertNotNull(tags)
+        assertTrue(tags!!.split(",").contains("invoice"))
+    }
+
+    @Test
+    fun `normalizes OCR hyphenated line breaks before matching`() {
+        val tags = useCase.extractTags("Rechnungs-\nnummer 2026-001 Betrag")
+
+        assertNotNull(tags)
+        assertTrue(tags!!.split(",").contains("invoice"))
+    }
+
+    @Test
     fun `tags are comma separated and sorted`() {
         val tags = useCase.extractTags(
             "Mietvertrag mit Vertragspartner, Versicherungsschein mit Versicherungsnummer, " +

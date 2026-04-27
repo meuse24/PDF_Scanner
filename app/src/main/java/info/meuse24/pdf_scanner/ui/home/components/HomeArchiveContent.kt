@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,10 +25,12 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -188,24 +191,28 @@ private fun TagFilterRow(
     onTagSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyRow(
-        modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item {
-            FilterChip(
-                selected = currentTagKey == null,
-                onClick = onShowAllDocuments,
-                label = { Text(stringResource(R.string.filter_tag_all)) }
-            )
-        }
-        items(availableTagKeys) { tagKey ->
-            FilterChip(
-                selected = currentTagKey == tagKey,
-                onClick = { onTagSelected(tagKey) },
-                label = { Text(tagLabel(tagKey)) }
-            )
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+        LazyRow(
+            modifier = modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 1.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                FilterChip(
+                    selected = currentTagKey == null,
+                    onClick = onShowAllDocuments,
+                    label = { Text(stringResource(R.string.filter_tag_all)) },
+                    modifier = Modifier.height(32.dp)
+                )
+            }
+            items(availableTagKeys) { tagKey ->
+                FilterChip(
+                    selected = currentTagKey == tagKey,
+                    onClick = { onTagSelected(tagKey) },
+                    label = { Text(tagLabel(tagKey)) },
+                    modifier = Modifier.height(32.dp)
+                )
+            }
         }
     }
 }

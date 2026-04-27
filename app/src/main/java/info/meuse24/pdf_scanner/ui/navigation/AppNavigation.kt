@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -36,8 +38,7 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.rememberDrawerState
@@ -204,15 +205,17 @@ fun AppNavigation(
             ),
             topBar = {
                 if (!(isLandscapeCompact && isSelectionMode && isHomeRoute)) {
-                    TopAppBar(
-                        title = {
-                            AppBarTitle(
-                                currentRoute = currentRoute,
-                                isHomeRoute = isHomeRoute,
-                                m24AnimationEnabled = m24AnimationEnabled
-                            )
-                        },
-                        navigationIcon = {
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .statusBarsPadding()
+                                .height(48.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             if (canNavigateBack) {
                                 IconButton(onClick = { navController.navigateUp() }) {
                                     Icon(
@@ -225,13 +228,13 @@ fun AppNavigation(
                                     Icon(Icons.Default.Menu, stringResource(R.string.cd_open_menu))
                                 }
                             }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            titleContentColor = MaterialTheme.colorScheme.onSurface,
-                            navigationIconContentColor = MaterialTheme.colorScheme.onSurface
-                        )
-                    )
+                            AppBarTitle(
+                                currentRoute = currentRoute,
+                                isHomeRoute = isHomeRoute,
+                                m24AnimationEnabled = m24AnimationEnabled
+                            )
+                        }
+                    }
                 }
             },
             floatingActionButton = {

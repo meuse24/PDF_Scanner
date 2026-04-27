@@ -41,6 +41,8 @@ import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -100,7 +102,8 @@ fun DocumentEditSheet(
     onAction: (ScanAction) -> Unit,
     showRenameAction: Boolean = true,
     showPrintAction: Boolean = true,
-    showExportAsJpgAction: Boolean = true
+    showExportAsJpgAction: Boolean = true,
+    onToggleFavorite: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     val notEncrypted = !record.isEncrypted
@@ -113,6 +116,7 @@ fun DocumentEditSheet(
     val maxSheetHeight = (windowHeight * 0.78f)
         .coerceIn(360.dp, 640.dp)
     val showMetadata = true
+    val showFavorite = onToggleFavorite != null
     val showRename = showRenameAction
     val showPrint = showPrintAction && notEncrypted
     val showExportAsJpg = showExportAsJpgAction && notEncrypted
@@ -139,7 +143,7 @@ fun DocumentEditSheet(
     val showUnlock = record.isEncrypted
     val showRemovePassword = record.isEncrypted
 
-    val showQuickSection = showRename || showMetadata || showPrint || showExportAsJpg
+    val showQuickSection = showFavorite || showRename || showMetadata || showPrint || showExportAsJpg
     val showPagesSection = showReorder || showRotate || showAppend || showExtractPages ||
         showDuplicatePages || showSplit || showDeletePages
     val showEditSection = showAnnotate || showSignature || showPageNumbers || showTextWatermark || showRedact
@@ -164,6 +168,17 @@ fun DocumentEditSheet(
         if (showQuickSection) {
             item {
                 SheetSection(R.string.sheet_section_document)
+            }
+        }
+        if (showFavorite) {
+            item {
+                SheetItem(
+                    icon = if (record.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
+                    textRes = if (record.isFavorite) R.string.cd_remove_favorite else R.string.cd_add_favorite,
+                    enabled = true
+                ) {
+                    onToggleFavorite?.invoke()
+                }
             }
         }
         if (showRename) {

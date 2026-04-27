@@ -85,11 +85,7 @@ internal fun AppBarTitle(
             Spacer(Modifier.width(8.dp))
             Text(
                 text = routeTitle,
-                style = if (isHomeRoute) {
-                    MaterialTheme.typography.headlineSmall.copy(letterSpacing = (-0.4).sp)
-                } else {
-                    MaterialTheme.typography.titleLarge
-                },
+                style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -131,12 +127,12 @@ internal fun AnimatedM24Badge(
                 color = MaterialTheme.colorScheme.tertiary,
                 shape = RoundedCornerShape(10.dp)
             )
-            .padding(horizontal = 8.dp, vertical = 3.dp),
+            .padding(horizontal = 8.dp, vertical = 2.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.titleMedium.copy(letterSpacing = (-0.2).sp),
+            style = MaterialTheme.typography.titleSmall.copy(letterSpacing = (-0.2).sp),
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onTertiary,
             maxLines = 1

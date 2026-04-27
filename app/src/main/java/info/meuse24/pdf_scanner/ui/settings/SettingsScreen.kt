@@ -1,10 +1,9 @@
 package info.meuse24.pdf_scanner.ui.settings
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,20 +19,22 @@ import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,11 +45,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
@@ -87,12 +88,8 @@ fun SettingsScreen(
     var languageMenuExpanded by remember { mutableStateOf(false) }
     var trashUndoSnackbarExpanded by remember { mutableStateOf(false) }
     var appLockTimeoutExpanded by remember { mutableStateOf(false) }
-    val trashUndoSnackbarOptions = remember {
-        listOf(5, 10, 15, 30, 60)
-    }
-    val timeoutOptions = remember {
-        listOf(0, 15, 30, 60, 300)
-    }
+    val trashUndoSnackbarOptions = remember { listOf(5, 10, 15, 30, 60) }
+    val timeoutOptions = remember { listOf(0, 15, 30, 60, 300) }
 
     LaunchedEffect(transientSuccess) {
         if (transientSuccess != null) {
@@ -109,270 +106,133 @@ fun SettingsScreen(
     }
 
     LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
         item {
-            SettingsSectionCard(
+            SettingsGroup(
                 icon = Icons.Default.Palette,
                 title = stringResource(R.string.settings_appearance_title)
             ) {
-                Text(
-                    text = stringResource(R.string.settings_theme_mode_label),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold
+                SegmentedPreference(
+                    title = stringResource(R.string.settings_theme_mode_label),
+                    options = listOf(
+                        ThemeMode.SYSTEM to stringResource(R.string.theme_mode_system),
+                        ThemeMode.LIGHT to stringResource(R.string.theme_mode_light),
+                        ThemeMode.DARK to stringResource(R.string.theme_mode_dark)
+                    ),
+                    selected = settings.themeMode,
+                    onSelected = onThemeModeChange
                 )
-                Spacer(Modifier.height(8.dp))
-                ThemeModeOptionRow(
-                    label = stringResource(R.string.theme_mode_system),
-                    selected = settings.themeMode == ThemeMode.SYSTEM,
-                    onClick = { onThemeModeChange(ThemeMode.SYSTEM) }
+                SettingsDivider()
+                SettingsSwitchRow(
+                    title = stringResource(R.string.settings_m24_animation_label),
+                    checked = settings.m24AnimationEnabled,
+                    onCheckedChange = onM24AnimationEnabledChange
                 )
-                ThemeModeOptionRow(
-                    label = stringResource(R.string.theme_mode_light),
-                    selected = settings.themeMode == ThemeMode.LIGHT,
-                    onClick = { onThemeModeChange(ThemeMode.LIGHT) }
-                )
-                ThemeModeOptionRow(
-                    label = stringResource(R.string.theme_mode_dark),
-                    selected = settings.themeMode == ThemeMode.DARK,
-                    onClick = { onThemeModeChange(ThemeMode.DARK) }
-                )
-                Spacer(Modifier.height(12.dp))
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.settings_m24_animation_label),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Switch(
-                        checked = settings.m24AnimationEnabled,
-                        onCheckedChange = onM24AnimationEnabledChange
-                    )
-                }
             }
         }
 
         item {
-            SettingsSectionCard(
+            SettingsGroup(
                 icon = Icons.Default.Search,
                 title = stringResource(R.string.settings_scan_ocr_title)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.settings_default_make_searchable_label),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Switch(
-                        checked = settings.defaultMakeSearchable,
-                        onCheckedChange = onDefaultMakeSearchableChange
-                    )
-                }
-
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.settings_auto_tagging_label),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Switch(
-                        checked = settings.autoTaggingEnabled,
-                        onCheckedChange = onAutoTaggingEnabledChange
-                    )
-                }
-
-                Spacer(Modifier.height(12.dp))
-                Text(
-                    text = stringResource(R.string.settings_default_ocr_language_label),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold
+                SettingsSwitchRow(
+                    title = stringResource(R.string.settings_default_make_searchable_label),
+                    checked = settings.defaultMakeSearchable,
+                    onCheckedChange = onDefaultMakeSearchableChange
                 )
-                Spacer(Modifier.height(8.dp))
-                ExposedDropdownMenuBox(
+                SettingsDivider()
+                SettingsSwitchRow(
+                    title = stringResource(R.string.settings_auto_tagging_label),
+                    checked = settings.autoTaggingEnabled,
+                    onCheckedChange = onAutoTaggingEnabledChange
+                )
+                SettingsDivider()
+                DropdownPreference(
+                    title = stringResource(R.string.settings_default_ocr_language_label),
+                    value = ocrLanguages.find { it.first == settings.defaultOcrLanguage }?.second
+                        ?: settings.defaultOcrLanguage.uppercase(displayLocale),
                     expanded = languageMenuExpanded,
-                    onExpandedChange = { languageMenuExpanded = it }
-                ) {
-                    OutlinedTextField(
-                        value = ocrLanguages.find { it.first == settings.defaultOcrLanguage }?.second
-                            ?: settings.defaultOcrLanguage.uppercase(displayLocale),
-                        onValueChange = {},
-                        readOnly = true,
-                        singleLine = true,
-                        label = { Text(stringResource(R.string.dialog_ocr_language)) },
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = languageMenuExpanded)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                    )
-                    DropdownMenu(
-                        expanded = languageMenuExpanded,
-                        onDismissRequest = { languageMenuExpanded = false }
-                    ) {
-                        ocrLanguages.forEach { (code, label) ->
-                            DropdownMenuItem(
-                                text = { Text(label) },
-                                onClick = {
-                                    onDefaultOcrLanguageChange(code)
-                                    languageMenuExpanded = false
-                                }
-                            )
-                        }
+                    onExpandedChange = { languageMenuExpanded = it },
+                    options = ocrLanguages.map { it.first to it.second },
+                    onOptionSelected = { code ->
+                        onDefaultOcrLanguageChange(code)
+                        languageMenuExpanded = false
                     }
-                }
+                )
             }
         }
 
         item {
-            SettingsSectionCard(
+            SettingsGroup(
                 icon = Icons.AutoMirrored.Filled.Sort,
                 title = stringResource(R.string.settings_archive_title)
             ) {
-                Text(
-                    text = stringResource(R.string.settings_default_sort_order_label),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold
+                SegmentedPreference(
+                    title = stringResource(R.string.settings_default_sort_order_label),
+                    options = listOf(
+                        AppSortOrder.BY_DATE to stringResource(R.string.sort_by_date),
+                        AppSortOrder.BY_NAME to stringResource(R.string.sort_by_name),
+                        AppSortOrder.BY_SIZE to stringResource(R.string.sort_by_size)
+                    ),
+                    selected = settings.defaultSortOrder,
+                    onSelected = onDefaultSortOrderChange
                 )
-                Spacer(Modifier.height(8.dp))
-                SortOrderOptionRow(
-                    label = stringResource(R.string.sort_by_date),
-                    selected = settings.defaultSortOrder == AppSortOrder.BY_DATE,
-                    onClick = { onDefaultSortOrderChange(AppSortOrder.BY_DATE) }
-                )
-                SortOrderOptionRow(
-                    label = stringResource(R.string.sort_by_name),
-                    selected = settings.defaultSortOrder == AppSortOrder.BY_NAME,
-                    onClick = { onDefaultSortOrderChange(AppSortOrder.BY_NAME) }
-                )
-                SortOrderOptionRow(
-                    label = stringResource(R.string.sort_by_size),
-                    selected = settings.defaultSortOrder == AppSortOrder.BY_SIZE,
-                    onClick = { onDefaultSortOrderChange(AppSortOrder.BY_SIZE) }
-                )
-
-                Spacer(Modifier.height(12.dp))
-                Text(
-                    text = stringResource(R.string.settings_trash_undo_duration_label),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(Modifier.height(8.dp))
-                ExposedDropdownMenuBox(
+                SettingsDivider()
+                DropdownPreference(
+                    title = stringResource(R.string.settings_trash_undo_duration_label),
+                    value = formatTrashUndoDurationLabel(settings.trashUndoSnackbarSeconds),
                     expanded = trashUndoSnackbarExpanded,
-                    onExpandedChange = { trashUndoSnackbarExpanded = it }
-                ) {
-                    OutlinedTextField(
-                        value = formatTrashUndoDurationLabel(settings.trashUndoSnackbarSeconds),
-                        onValueChange = {},
-                        readOnly = true,
-                        singleLine = true,
-                        label = { Text(stringResource(R.string.settings_trash_undo_duration_label)) },
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = trashUndoSnackbarExpanded)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                    )
-                    DropdownMenu(
-                        expanded = trashUndoSnackbarExpanded,
-                        onDismissRequest = { trashUndoSnackbarExpanded = false }
-                    ) {
-                        trashUndoSnackbarOptions.forEach { seconds ->
-                            DropdownMenuItem(
-                                text = { Text(formatTrashUndoDurationLabel(seconds)) },
-                                onClick = {
-                                    onTrashUndoSnackbarSecondsChange(seconds)
-                                    trashUndoSnackbarExpanded = false
-                                }
-                            )
-                        }
+                    onExpandedChange = { trashUndoSnackbarExpanded = it },
+                    options = trashUndoSnackbarOptions.map { it to formatTrashUndoDurationLabel(it) },
+                    onOptionSelected = { seconds ->
+                        onTrashUndoSnackbarSecondsChange(seconds)
+                        trashUndoSnackbarExpanded = false
                     }
-                }
-                Spacer(Modifier.height(12.dp))
-                Button(
-                    onClick = onRetroTagDocuments,
-                    enabled = settings.autoTaggingEnabled
-                ) {
-                    Text(stringResource(R.string.settings_retro_tag_action))
+                )
+                SettingsDivider()
+                PreferenceActionRow {
+                    FilledTonalButton(
+                        onClick = onRetroTagDocuments,
+                        enabled = settings.autoTaggingEnabled,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.settings_retro_tag_action),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
         }
 
         item {
-            SettingsSectionCard(
+            SettingsGroup(
                 icon = Icons.Default.Lock,
                 title = stringResource(R.string.settings_security_title)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.settings_app_lock_label),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Switch(
-                        checked = settings.appLockEnabled,
-                        onCheckedChange = onAppLockEnabledChange
-                    )
-                }
+                SettingsSwitchRow(
+                    title = stringResource(R.string.settings_app_lock_label),
+                    checked = settings.appLockEnabled,
+                    onCheckedChange = onAppLockEnabledChange
+                )
 
                 if (settings.appLockEnabled) {
-                    Spacer(Modifier.height(12.dp))
-                    Text(
-                        text = stringResource(R.string.settings_app_lock_timeout_label),
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    ExposedDropdownMenuBox(
+                    SettingsDivider()
+                    DropdownPreference(
+                        title = stringResource(R.string.settings_app_lock_timeout_label),
+                        value = formatTimeoutLabel(settings.appLockTimeoutSeconds),
                         expanded = appLockTimeoutExpanded,
-                        onExpandedChange = { appLockTimeoutExpanded = it }
-                    ) {
-                        OutlinedTextField(
-                            value = formatTimeoutLabel(settings.appLockTimeoutSeconds),
-                            onValueChange = {},
-                            readOnly = true,
-                            singleLine = true,
-                            label = { Text(stringResource(R.string.settings_app_lock_timeout_label)) },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = appLockTimeoutExpanded)
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                        )
-                        DropdownMenu(
-                            expanded = appLockTimeoutExpanded,
-                            onDismissRequest = { appLockTimeoutExpanded = false }
-                        ) {
-                            timeoutOptions.forEach { seconds ->
-                                DropdownMenuItem(
-                                    text = { Text(formatTimeoutLabel(seconds)) },
-                                    onClick = {
-                                        onAppLockTimeoutSecondsChange(seconds)
-                                        appLockTimeoutExpanded = false
-                                    }
-                                )
-                            }
+                        onExpandedChange = { appLockTimeoutExpanded = it },
+                        options = timeoutOptions.map { it to formatTimeoutLabel(it) },
+                        onOptionSelected = { seconds ->
+                            onAppLockTimeoutSecondsChange(seconds)
+                            appLockTimeoutExpanded = false
                         }
-                    }
+                    )
                 }
             }
         }
@@ -394,93 +254,179 @@ private fun formatTrashUndoDurationLabel(seconds: Int): String =
     stringResource(R.string.settings_trash_undo_duration_seconds, seconds)
 
 @Composable
-private fun ThemeModeOptionRow(
-    label: String,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 2.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        RadioButton(
-            selected = selected,
-            onClick = onClick
-        )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Composable
-private fun SortOrderOptionRow(
-    label: String,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 2.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        RadioButton(
-            selected = selected,
-            onClick = onClick
-        )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Composable
-private fun SettingsSectionCard(
+private fun SettingsGroup(
     icon: ImageVector,
     title: String,
-    content: @Composable () -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-                Spacer(Modifier.width(14.dp))
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-            Spacer(Modifier.height(12.dp))
-            content()
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(icon = icon, title = title)
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            tonalElevation = 1.dp
+        ) {
+            Column(content = content)
         }
     }
+}
+
+@Composable
+private fun SectionHeader(
+    icon: ImageVector,
+    title: String
+) {
+    Row(
+        modifier = Modifier.padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+private fun SettingsSwitchRow(
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    ListItem(
+        headlineContent = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        },
+        trailingContent = {
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
+    )
+}
+
+@Composable
+private fun <T> SegmentedPreference(
+    title: String,
+    options: List<Pair<T, String>>,
+    selected: T,
+    onSelected: (T) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 14.dp)
+    ) {
+        PreferenceTitle(title)
+        Spacer(Modifier.height(10.dp))
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            options.forEachIndexed { index, option ->
+                SegmentedButton(
+                    selected = option.first == selected,
+                    onClick = { onSelected(option.first) },
+                    shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size)
+                ) {
+                    Text(
+                        text = option.second,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun <T> DropdownPreference(
+    title: String,
+    value: String,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    options: List<Pair<T, String>>,
+    onOptionSelected: (T) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 14.dp)
+    ) {
+        PreferenceTitle(title)
+        Spacer(Modifier.height(8.dp))
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = onExpandedChange
+        ) {
+            OutlinedTextField(
+                value = value,
+                onValueChange = {},
+                readOnly = true,
+                singleLine = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { onExpandedChange(false) }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option.second) },
+                        onClick = { onOptionSelected(option.first) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PreferenceActionRow(content: @Composable () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 14.dp)
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun PreferenceTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.labelLarge,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.onSurface
+    )
+}
+
+@Composable
+private fun SettingsDivider() {
+    HorizontalDivider(
+        modifier = Modifier.padding(start = 16.dp),
+        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.65f)
+    )
 }

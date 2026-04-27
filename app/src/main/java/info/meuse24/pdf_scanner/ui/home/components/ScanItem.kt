@@ -26,8 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PictureAsPdf
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -104,9 +102,7 @@ internal fun ScanItem(
         Formatter.formatShortFileSize(context, record.fileSize.coerceAtLeast(0L))
     }
     val subtitle = stringResource(R.string.scan_item_subtitle, dateStr, record.pageCount, sizeStr)
-    val favoriteDescription = stringResource(
-        if (record.isFavorite) R.string.cd_remove_favorite else R.string.cd_add_favorite
-    )
+        .replaceFirst(" · ", "\n")
     val actionsDescription = stringResource(R.string.cd_document_actions)
     val selectDescription = stringResource(R.string.cd_select_document, record.filename)
 
@@ -198,26 +194,23 @@ internal fun ScanItem(
                         subtitle,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.outline,
-                        maxLines = 1,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                    if (record.isSearchable) {
+                    if (hasBadges(record, folderLabel)) {
                         Spacer(Modifier.height(2.dp))
-                        SearchableBadges(record = record)
+                        DocumentBadges(record = record, folderLabel = folderLabel)
                     }
                 }
 
                 Spacer(Modifier.width(4.dp))
 
                 ScanItemActions(
-                    isFavorite = record.isFavorite,
-                    showDocumentActions = record.pageCount >= 1,
+                    showDocumentActions = true,
                     inSelectionMode = inSelectionMode,
                     isSelected = isSelected,
-                    favoriteDescription = favoriteDescription,
                     actionsDescription = actionsDescription,
                     selectDescription = selectDescription,
-                    onToggleFavorite = onToggleFavorite,
                     onShowActions = { sheetVisible = true },
                     onCheckboxToggle = onCheckboxToggle
                 )
@@ -234,7 +227,7 @@ internal fun ScanItem(
                 modifier   = Modifier.fillMaxWidth()
             )
             Spacer(Modifier.height(2.dp))
-            // Thumbnail · Metadaten · Badge · Aktionen
+            // Thumbnail · Metadaten · Aktionen
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val thumb = thumbnail
                 if (thumb != null) {
@@ -261,53 +254,30 @@ internal fun ScanItem(
                     Text(
                         subtitle,
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.outline
+                        color = MaterialTheme.colorScheme.outline,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    if (record.isSearchable) {
-                        Spacer(Modifier.height(2.dp))
-                        SearchableBadges(record = record)
-                    }
-                    if (folderLabel != null) {
-                        Spacer(Modifier.height(3.dp))
-                        Badge(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ) {
-                            Text(folderLabel, style = MaterialTheme.typography.labelSmall)
-                        }
-                    }
-                    val tagList = record.tags
-                        ?.split(",")
-                        ?.filter { it.isNotBlank() }
-                        ?.take(3)
-                    if (!tagList.isNullOrEmpty()) {
-                        Spacer(Modifier.height(3.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            tagList.forEach { tagKey ->
-                                Badge(
-                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                    contentColor   = MaterialTheme.colorScheme.onTertiaryContainer
-                                ) {
-                                    Text(tagLabel(tagKey), style = MaterialTheme.typography.labelSmall)
-                                }
-                            }
-                        }
-                    }
                 }
 
                 ScanItemActions(
-                    isFavorite = record.isFavorite,
-                    showDocumentActions = record.pageCount >= 1,
+                    showDocumentActions = true,
                     inSelectionMode = inSelectionMode,
                     isSelected = isSelected,
-                    favoriteDescription = favoriteDescription,
                     actionsDescription = actionsDescription,
                     selectDescription = selectDescription,
-                    onToggleFavorite = onToggleFavorite,
                     onShowActions = { sheetVisible = true },
                     onCheckboxToggle = onCheckboxToggle
                 )
             } // Row
+            if (hasBadges(record, folderLabel)) {
+                Spacer(Modifier.height(6.dp))
+                DocumentBadges(
+                    record = record,
+                    folderLabel = folderLabel,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         } // Column
         }
     } // Card
@@ -320,6 +290,10 @@ internal fun ScanItem(
         ) {
             DocumentEditSheet(
                 record   = record,
+                onToggleFavorite = {
+                    sheetVisible = false
+                    onToggleFavorite()
+                },
                 onAction = { action ->
                     sheetVisible = false
                     onAction(action)
@@ -331,39 +305,15 @@ internal fun ScanItem(
 
 @Composable
 private fun ScanItemActions(
-    isFavorite: Boolean,
     showDocumentActions: Boolean,
     inSelectionMode: Boolean,
     isSelected: Boolean,
-    favoriteDescription: String,
     actionsDescription: String,
     selectDescription: String,
-    onToggleFavorite: () -> Unit,
     onShowActions: () -> Unit,
     onCheckboxToggle: () -> Unit
 ) {
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides ScanItemActionWidth) {
-        if (!inSelectionMode) {
-            IconButton(
-                onClick = onToggleFavorite,
-                modifier = Modifier.size(
-                    width = ScanItemActionWidth,
-                    height = ScanItemActionHeight
-                )
-            ) {
-                Icon(
-                    imageVector = if (isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
-                    contentDescription = favoriteDescription,
-                    tint = if (isFavorite) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-        }
-
         if (!inSelectionMode && showDocumentActions) {
             IconButton(
                 onClick = onShowActions,
@@ -395,29 +345,61 @@ private val ScanItemActionHeight = 48.dp
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SearchableBadges(record: Document) {
+private fun DocumentBadges(
+    record: Document,
+    folderLabel: String?,
+    modifier: Modifier = Modifier
+) {
+    val tagList = record.tags
+        ?.split(",")
+        ?.filter { it.isNotBlank() }
+        ?.take(3)
+
     FlowRow(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(3.dp)
     ) {
-        Badge(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-        ) {
-            Text(
-                stringResource(R.string.searchable_badge),
-                style = MaterialTheme.typography.labelSmall,
-                maxLines = 1,
-                overflow = TextOverflow.Clip,
-                softWrap = false
+        if (record.isSearchable) {
+            OcrQualityBadge(
+                quality = record.ocrConfidence.toQuality(),
+                percent = record.ocrConfidence.toQualityPercent()
             )
         }
-        OcrQualityBadge(
-            quality = record.ocrConfidence.toQuality(),
-            percent = record.ocrConfidence.toQualityPercent()
-        )
+        if (folderLabel != null) {
+            Badge(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
+                BadgeText(folderLabel)
+            }
+        }
+        tagList?.forEach { tagKey ->
+            Badge(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+            ) {
+                BadgeText(tagLabel(tagKey))
+            }
+        }
     }
 }
+
+@Composable
+private fun BadgeText(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.labelSmall,
+        maxLines = 1,
+        overflow = TextOverflow.Clip,
+        softWrap = false
+    )
+}
+
+private fun hasBadges(record: Document, folderLabel: String?): Boolean =
+    record.isSearchable ||
+        folderLabel != null ||
+        record.tags?.split(",")?.any { it.isNotBlank() } == true
 
 @Composable
 private fun tagLabel(tagKey: String): String = when (tagKey) {

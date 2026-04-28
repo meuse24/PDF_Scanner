@@ -74,10 +74,12 @@ If Hilt-generated classes go missing after an incremental install, force a fresh
 - `ui/` Jetpack Compose screens and view models
 - `ui/entry/`, `ui/tile/`, and `ui/widget/` external app-entry bridges
 - `domain/usecase/` business logic
-- `domain/model/` and `domain/repository/` clean domain contracts
+- `domain/model/` app/domain models including settings, theme, OCR status/result metadata, and PDF metadata
+- `domain/repository/`, `domain/gateway/`, and `domain/pdf/` clean domain contracts
+- `domain/common/` pure Kotlin helpers shared by workflows and use cases
 - `domain/workflow/` orchestration and error mapping
 - `data/` Room entities, DAO, database, repository
-- `util/` PdfEditor, OCR, storage, file helpers
+- `util/` Android/PdfBox/ML Kit implementations behind domain ports
 
 Main editor flows:
 
@@ -90,6 +92,9 @@ Main editor flows:
 
 Recent structure work:
 
+- Clean Architecture package boundaries: `domain` no longer imports Android, UI, data, or util implementation types
+- Extracted domain gateways for storage, downloads, resource mapping, file access, OCR text extraction, searchable PDF generation, QR scanning, and review-prompt policy
+- Moved persistent settings, theme mode, OCR quality/status/result models, and pure page-range/filename helpers into `domain`
 - Added app shortcuts, a Quick Settings tile, a home-screen scan widget, and Android Share/Open-with import via a shared `AppEntryAction` bridge
 - Added folders, favorites, app-lock settings, business-card vCard export, and Android Print integration
 - Added optional OCR-based tags, tag filter chips, retroactive tagging from Settings, and OCR text TXT export

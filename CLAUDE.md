@@ -36,15 +36,21 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 
 ### Schichtübersicht
 
+**`domain/model/`** — führende, frameworkfreie Modelle: `Document`, `Folder`, `BusinessCard`, `PdfMetadata`, `PdfPageSetup`, persistente Settings (`AppSettings`, `AppSortOrder`, `ThemeMode`) und OCR-Domain-Typen (`OcrPipelineStatus`, `OcrResultStats`, `OcrUsage`, `OcrScript`, `OcrThresholds`, `OcrQuality`).
+
+**`domain/gateway/`** — frameworkfreie Ports für externe Dienste und Plattformzugriff: Dispatcher, Resources, Storage, Downloads, Dokumentdateien, Searchable-PDF, OCR-Text-Extraktion, QR-Scanning und Review-Prompt-Policy. Implementierungen liegen außerhalb der Domain.
+
+**`domain/common/`** — pure Kotlin-Helper wie Page-Range-Normalisierung und eindeutige Dateinamen.
+
 **`domain/usecase/`** — alle fachlichen Operationen (Import/Export, OCR-TXT-Export, Trash/Restore/Purge, OCR/Searchable, AutoTags/RetroTag, Merge/Split/Reorder/Rotate/Delete/Duplicate, Redact/Highlight/Annotate, Grayscale, Folders, Favorites, BusinessCard/vCard, ImagesToPdf, Append).
 `AutoTagUseCase` ist aktiv und über `AppSettings.autoTaggingEnabled` abschaltbar: `MakeSearchableUseCase` und der stille OCR-Backfill speichern Tags nur bei aktivierter Option; `RetroTagUseCase` ergänzt Tags für vorhandene OCR-Dokumente.
 
 **`domain/workflow/`** — dünne Workflow-Guards um UseCases: prüfen Datei-Existenz, Verschlüsselung, leere Inputs; mappen Fehler via `WorkflowErrorMapper`.
 
-**`domain/pdf/`** — Clean-Architecture-Ports: `PdfStructureOps`, `PdfRenderingOps`, `PdfSecurityOps`, `PdfTextOps`, `PdfAnnotationOps`, `PdfMetadataOps`, `PdfExceptions`.
+**`domain/pdf/`** — Clean-Architecture-Ports: `PdfStructureOps`, `PdfRenderingOps`, `PdfSecurityOps`, `PdfTextOps`, `PdfAnnotationOps`, `PdfMetadataOps`, `PdfImageRenderer`, `PdfExceptions`.
 
-**`util/PdfEditor.kt`** + `PdfEditorCore/Annotation/Overlay/Redaction/ImageOps` — zentrale PdfBox-Implementierung aller Ports.
-`SearchablePdfBuilder`: Phase1 PdfRenderer+OCR, Phase2 PdfBox. ZH/JA/KO: OCR-Text ja, Searchable-PDF-Textlayer **nein** (TTC/OTC-Font-Problem).
+**`util/PdfEditor.kt`** + `PdfEditorCore/Annotation/Overlay/Redaction/ImageOps` — zentrale PdfBox-Implementierung der PDF-Ports.
+`SearchablePdfBuilder` implementiert `SearchablePdfGenerator`: Phase1 PdfRenderer+OCR, Phase2 PdfBox. ZH/JA/KO: OCR-Text ja, Searchable-PDF-Textlayer **nein** (TTC/OTC-Font-Problem).
 
 **`data/local/`** — Room DB v9 (`pdf_scanner_db`), `ScanRecord` + `FolderEntity` + FTS4, Migrationen 1–9.
 `ScanRecord`-Felder: `extracted_text`, `ocr_confidence`, `ocr_language`, `ocr_page_text_json`, `deleted_at`, `folder_id`, `is_favorite`.
@@ -53,16 +59,18 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 
 **`ui/navigation/`** — `AppNavigation` (Shell + Gradient), `AppNavHost` (zerlegte NavGraphs), `AppDrawerContent`, `AppBarTitle`, `Screen`.
 
-**`di/`** — Hilt-Module: `DatabaseModule`, `RepositoryModule`, `PdfOperationsModule`.
+**`di/`** — Hilt-Module: `DatabaseModule`, `RepositoryModule`, `PdfOperationsModule`, `AppProvidersModule`.
 
-**`util/`** — `OcrPipeline`, `OcrManager` (ML-Kit, unbundled für HI/ZH/JA/KO), `OcrModelInstaller`, `PdfPageBitmapRenderer` (Mutex, OOM-Fallback), `PdfPageBitmapCache` (Byte-Budget), `AppLockManager` (ProcessLifecycle-Gate, BiometricPrompt), `PdfDocumentIntents`, `PdfPrintHelper`.
+**`util/`** — Android-/PdfBox-/ML-Kit-Implementierungen hinter Domain-Ports: `OcrPipeline`, `OcrManager` (ML-Kit, unbundled für HI/ZH/JA/KO), `OcrModelInstaller`, `MlKitOcrDocumentTextExtractor`, `QrCodeScanner`, `FileUtil`, `PlayReviewPromptManager`, `PdfPageBitmapRenderer` (Mutex, OOM-Fallback), `PdfPageBitmapCache` (Byte-Budget), `AppLockManager` (ProcessLifecycle-Gate, BiometricPrompt), `PdfDocumentIntents`, `PdfPrintHelper`.
 
 `PDFBoxResourceLoader.init(this)` muss in `PdfScannerApp.onCreate()` aufgerufen werden.
 
 ## Architektur-Regeln
 
 - **Schichten:** ViewModel → UseCase/Workflow → Repository; keine Fachlogik in `MainActivity`.
-- **Clean-Architecture-Status:** `domain/model/Document`, `OcrInfo`, `PdfMetadata` sind führende Modelle. `ScanArtifactPersister` für Datei-/Thumbnail-/DB-Persistenz; `DocumentWorkflowGuard` für Single-Document-Guards. Neue UseCases sollen diesen Boilerplate nicht duplizieren.
+- **Domain-Grenze:** `domain/` darf keine Android-/AndroidX-, UI-, Data- oder Util-Implementierungstypen importieren. Plattformzugriff läuft über `domain/gateway`-Ports; PDF-Operationen über `domain/pdf`.
+- **Clean-Architecture-Status:** `domain/model/Document`, `OcrInfo`, `PdfMetadata`, Settings- und OCR-Modelle sind führend. `ScanArtifactPersister` für Datei-/Thumbnail-/DB-Persistenz; `DocumentWorkflowGuard` für Single-Document-Guards. Neue UseCases sollen diesen Boilerplate nicht duplizieren.
+- **ML Kit:** Interfaces mit ML-Kit-Signaturen bleiben außerhalb von `domain` in `util`; Domain sieht nur frameworkfreie OCR-Ports und Modelle.
 - **Externe Einstiegspunkte** (Shortcuts, QS-Tile, Widget, `ACTION_SEND`, `ACTION_SEND_MULTIPLE`, `ACTION_VIEW`) ausschließlich über `AppEntryActionViewModel`.
 - **App-Lock** = UI-Gate (puffert Actions, umgeht sie nicht). Nicht als DB-/PDF-Verschlüsselung darstellen.
 - **Keine Literal-Strings** in Kotlin — nur `context.getString(R.string.*)` / `stringResource()`.
@@ -81,11 +89,11 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 - Share-/Open-Intents (`ACTION_SEND`/`ACTION_SEND_MULTIPLE`/`ACTION_VIEW`) → `AppEntryAction.SharePdf`/`ShareImages` → normale Import-UX.
 - Decoder-Reihenfolge: `EXTRA_STREAM` (Liste) → `EXTRA_STREAM` (einzeln) → `ClipData` → `intent.data`; MIME aus Intent, `ClipData.Description`, bei `content://` zusätzlich `ContentResolver.getType(uri)`.
 - `ACTION_SEND_MULTIPLE` unterstützt absichtlich nur Bilder; mehrere PDFs werden nicht implizit gemerged.
-- Doppelte Dateinamen: `resolveUniqueFilename()` (`_2`, `_3`, …).
+- Doppelte Dateinamen: `domain/common/resolveUniqueFilename()` (`_2`, `_3`, …).
 - Export: `MediaStore.Downloads` IS_PENDING-Pattern; bei Fehler `resolver.delete()`.
 - OCR-TXT-Export: `ExportOcrTextUseCase` schreibt gespeicherten OCR-Text via `DownloadsStorage`; Home-Bulk-Export lädt vollständige Records gezielt per `DocumentRepository.getScansByIds()`, nicht über `ScanListItem`.
 - Backup: `allowBackup=false`; `backup_rules.xml` + `data_extraction_rules.xml` schließen `filesDir/scans/` und DB-Dateien aus.
-- **OCR:** `OcrPipeline`, Auto-Default, manuelle Sprache möglich, unbundled Modelle via `ModuleInstallClient`.
+- **OCR:** Domain nutzt `OcrDocumentTextExtractor`/`SearchablePdfGenerator`; ML-Kit-Implementierungen nutzen `OcrPipeline`, Auto-Default, manuelle Sprache und unbundled Modelle via `ModuleInstallClient`.
 - **AutoTags:** Scoring-basiertes lokales Keyword-Matching mit vorkompilierten Regexen; Tags als kommaseparierte Keys (`invoice`, `contract`, `insurance`, `certificate`, `bank`, `delivery`). Listenqueries laden nur `tags`, nicht `extracted_text`; automatische Vergabe respektiert `AppSettings.autoTaggingEnabled`.
 - **Viewer:** `PdfPageBitmapRenderer` (Mutex, ±1 Seiten rendern); Fit-width-Cache byte-budgetiert; Zoom-Renderings nicht gecacht; `CancellationException` nicht schlucken; `onCleared()` schließt File-Descriptors.
 
@@ -110,7 +118,8 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 - `ui/`: HomeViewModel, SplitVM, ReorderVM, AppendVM, DocumentEditVM, TrashVM, ImagesToPdfVM, OcrReviewVM, QrScanVM, PdfViewerVM, AnnotateInteractionHelpers, PdfViewportMath
 - `ui/entry/`: `AppEntryActionCodecTest`
 - `ui/navigation/`: `AppNavigationTest`
-- `util/`: PdfEditorTest (buildRanges, resolveUniqueFilename, mapDisplayToPdfCoord), PdfEditorRealIntegrationTest (echte PDFs), BusinessCardParser, VCardBuilder, OcrQuality, PdfPageBitmapCache
+- `util/`: PdfEditorTest (PDF-Core-Helper und echte PdfBox-Pfade), PdfEditorRealIntegrationTest (echte PDFs), BusinessCardParser, VCardBuilder, PdfPageBitmapCache
+- `domain/common` und `domain/model`: Page-/Filename-Helper und OCR-/Settings-Modelle
 
 **Instrumentation-Tests (`androidTest/`):**
 - `ImportAndPdfEditorInstrumentedTest`: PdfRenderer-Pfade, content://-Import, Highlight/Annotate/RemoveTextLayer/Grayscale/Redact

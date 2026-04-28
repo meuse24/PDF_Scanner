@@ -40,7 +40,7 @@ open class AppendToPdfUseCase @Inject constructor(
         source: AppendSource
     ): AppendResult {
         val targetFile = File(target.filepath)
-        if (!targetFile.exists()) {
+        if (!fileUtil.exists(target.filepath)) {
             throw AppendTargetMissingException()
         }
         if (target.isEncrypted || pdfSecurityOps.isPdfEncrypted(targetFile)) {

@@ -141,7 +141,15 @@ class QrScanViewModelTest {
     ): QrScanViewModel {
         val dao = SingleRecordScanDao(record)
         val repository = ScanRepository(dao)
-        val useCase = ScanQrCodesUseCase(scanner)
+        val useCase = ScanQrCodesUseCase(
+            scanner,
+            object : info.meuse24.pdf_scanner.domain.gateway.DocumentFileStore {
+                override fun savePdf(source: Any, filename: String): File = error("not used")
+                override fun saveThumbnail(source: Any, filename: String): File? = error("not used")
+                override fun copyToTemp(source: Any, suffix: String): File = error("not used")
+                override fun exists(path: String): Boolean = File(path).exists()
+            }
+        )
 
         return QrScanViewModel(
             repository = repository,

@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.gateway.DocumentFileStore
 import info.meuse24.pdf_scanner.util.OcrModelInstaller
 import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.QrCodeScanner
@@ -22,7 +23,7 @@ class ScanQrCodesUseCaseTest {
     @Test
     fun `verschluesselte PDFs werden nicht gescannt`() = runTest {
         val scanner = FakeQrCodeScanner()
-        val useCase = ScanQrCodesUseCase(scanner)
+        val useCase = ScanQrCodesUseCase(scanner, TestDocumentFileStore())
         val pdfFile = tmpFolder.newFile("encrypted.pdf")
         val record = record(pdfFile, isEncrypted = true)
 
@@ -35,7 +36,7 @@ class ScanQrCodesUseCaseTest {
     @Test
     fun `fehlende Datei wird als leeres Ergebnis behandelt`() = runTest {
         val scanner = FakeQrCodeScanner()
-        val useCase = ScanQrCodesUseCase(scanner)
+        val useCase = ScanQrCodesUseCase(scanner, TestDocumentFileStore())
         val record = record(File(tmpFolder.root, "missing.pdf"), isEncrypted = false)
 
         val result = useCase(record)
@@ -58,7 +59,7 @@ class ScanQrCodesUseCaseTest {
             )
         )
         val scanner = FakeQrCodeScanner(results = expected)
-        val useCase = ScanQrCodesUseCase(scanner)
+        val useCase = ScanQrCodesUseCase(scanner, TestDocumentFileStore())
 
         val result = useCase(record(pdfFile, isEncrypted = false))
 
@@ -76,7 +77,7 @@ class ScanQrCodesUseCaseTest {
                 onProgress(2, 3)
             }
         )
-        val useCase = ScanQrCodesUseCase(scanner)
+        val useCase = ScanQrCodesUseCase(scanner, TestDocumentFileStore())
         val progressEvents = mutableListOf<Pair<Int, Int>>()
 
         useCase(record(pdfFile, isEncrypted = false)) { page, total ->
@@ -96,6 +97,13 @@ class ScanQrCodesUseCaseTest {
         fileSize = 0L,
         isEncrypted = isEncrypted
     )
+}
+
+private class TestDocumentFileStore : DocumentFileStore {
+    override fun savePdf(source: Any, filename: String): File = error("not used")
+    override fun saveThumbnail(source: Any, filename: String): File? = error("not used")
+    override fun copyToTemp(source: Any, suffix: String): File = error("not used")
+    override fun exists(path: String): Boolean = File(path).exists()
 }
 
 private class FakeQrCodeScanner(

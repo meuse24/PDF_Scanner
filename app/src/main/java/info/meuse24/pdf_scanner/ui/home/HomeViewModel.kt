@@ -18,6 +18,7 @@ import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
+import info.meuse24.pdf_scanner.domain.usecase.FindOcrExtractableDocumentsUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.MoveDocumentsUseCase
@@ -57,7 +58,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.io.File
 import java.util.Locale
 import javax.inject.Inject
 
@@ -76,6 +76,7 @@ class HomeViewModel @Inject constructor(
     private val moveDocumentsUseCase: MoveDocumentsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val extractTextUseCase: ExtractTextUseCase,
+    private val findOcrExtractableDocumentsUseCase: FindOcrExtractableDocumentsUseCase,
     private val ocrBackfillUseCase: OcrBackfillUseCase,
     private val renameDocumentUseCase: RenameDocumentUseCase,
     private val buildScanSearchQueryUseCase: BuildScanSearchQueryUseCase,
@@ -370,7 +371,7 @@ class HomeViewModel @Inject constructor(
     fun extractTexts(records: List<Document>, languageCode: String = Locale.getDefault().language) {
         if (_ocrLoading.value) return
 
-        val validRecords = records.filter { File(it.filepath).exists() || it.thumbnailPath != null }
+        val validRecords = findOcrExtractableDocumentsUseCase(records)
         if (validRecords.isEmpty()) {
             _error.value = resourceProvider.getString(R.string.ocr_no_image)
             return

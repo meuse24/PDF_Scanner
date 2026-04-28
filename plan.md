@@ -118,6 +118,28 @@ data -> domain
 domain -> keine Android-Abhaengigkeit
 ```
 
+## Aktueller Umsetzungsstand nach Review
+
+Stand: 2026-04-28
+
+Erledigt:
+
+- `domain/model` enthaelt `AppSettings`, `AppSortOrder`, `ThemeMode`, `OcrQuality` und OCR-Domain-Typen.
+- `domain/common` enthaelt pure Helper wie `buildRanges`, `normalizeSplitPoints`, `normalizePageIndexes` und `resolveUniqueFilename`.
+- `domain/gateway` enthaelt die domain-neutralen Ports fuer Dispatcher, Resources, Storage, Downloads, Dokumentdateien, Searchable-PDF, QR, OCR-Text-Extraktion und Review-Prompt.
+- `domain` importiert keine Android-/AndroidX-, UI-, Data- oder Util-Implementierungstypen mehr.
+- Android-`Uri`, Android-`Bitmap` und direkte `R`-Imports wurden aus `domain` entfernt.
+- `HomeViewModel` delegiert Rename, FTS-Query-Building, OCR-Backfill, OCR-Extraktionsfaehigkeitspruefung und Review-Prompt an UseCases/Ports.
+
+Bewusst nicht geaendert:
+
+- `TextRecognizerRunner` und `OcrInputImageLoader` bleiben in `util`, weil ihre Signaturen ML-Kit-Typen enthalten. Ein Verschieben nach `domain/gateway` wuerde MLKit in die Domain tragen.
+- `java.io.File` bleibt in den PDF-Ports und PDF-UseCases, weil die bestehenden PDF-Vertraege dateibasiert sind und `File` kein Android-Framework-Typ ist.
+
+Optionaler Restpunkt:
+
+- Weitere reine Existenzpruefungen in filebasierten UseCases koennen bei Gelegenheit auf `DocumentFileStore.exists(path)` vereinheitlicht werden. Das ist kein Architekturblocker, solange keine Android-/Implementierungsimports in `domain` entstehen.
+
 ## Phase 1: Domain-Modelle aus `util` und `ui` herausziehen
 
 Ziel: Fachliche Settings- und OCR-Typen liegen nicht mehr in `util`/`ui`.

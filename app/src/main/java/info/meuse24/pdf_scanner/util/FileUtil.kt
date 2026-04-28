@@ -80,6 +80,8 @@ open class FileUtil @Inject constructor(
         }
     }
 
+    override fun exists(path: String): Boolean = File(path).exists()
+
     private fun copySourceToFile(source: Any, destFile: File) {
         val sourceUri = source as? Uri
             ?: throw IllegalArgumentException("Unsupported document source: ${source::class.java.name}")

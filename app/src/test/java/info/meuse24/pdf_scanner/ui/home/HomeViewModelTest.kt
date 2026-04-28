@@ -17,6 +17,7 @@ import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
+import info.meuse24.pdf_scanner.domain.usecase.FindOcrExtractableDocumentsUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.MoveDocumentsUseCase
@@ -435,6 +436,14 @@ class HomeViewModelTest {
             moveDocumentsUseCase = moveDocumentsUseCase,
             toggleFavoriteUseCase = toggleFavoriteUseCase,
             extractTextUseCase = extractTextUseCase,
+            findOcrExtractableDocumentsUseCase = FindOcrExtractableDocumentsUseCase(
+                object : info.meuse24.pdf_scanner.domain.gateway.DocumentFileStore {
+                    override fun savePdf(source: Any, filename: String): File = error("not used")
+                    override fun saveThumbnail(source: Any, filename: String): File? = error("not used")
+                    override fun copyToTemp(source: Any, suffix: String): File = error("not used")
+                    override fun exists(path: String): Boolean = File(path).exists()
+                }
+            ),
             ocrBackfillUseCase = OcrBackfillUseCase(
                 repository = repository,
                 settingsRepository = settingsRepository,

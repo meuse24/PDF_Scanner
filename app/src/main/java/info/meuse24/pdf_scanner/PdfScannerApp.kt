@@ -6,7 +6,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import dagger.hilt.android.HiltAndroidApp
 import info.meuse24.pdf_scanner.domain.usecase.PurgeTrashUseCase
 import info.meuse24.pdf_scanner.util.AppLockManager
-import info.meuse24.pdf_scanner.util.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
 import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
 import info.meuse24.pdf_scanner.util.TrashConstants
 import kotlinx.coroutines.CoroutineScope

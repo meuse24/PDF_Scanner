@@ -106,6 +106,8 @@ private class FakeFileUtil(
     storageProvider = TestStorageProvider(rootDir),
     resourceProvider = FakeResourceProvider()
 ) {
+    override fun savePdf(source: Any, filename: String): File = savedFile
+
     override fun savePdfFromUri(sourceUri: Uri, filename: String): File = savedFile
 }
 

@@ -2,11 +2,13 @@ package info.meuse24.pdf_scanner.util
 
 import android.content.Context
 import androidx.core.content.edit
+import info.meuse24.pdf_scanner.domain.model.AppSettings
+import info.meuse24.pdf_scanner.domain.model.AppSortOrder
 import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
 import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
 import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
 import info.meuse24.pdf_scanner.domain.model.PdfPageSizePreset
-import info.meuse24.pdf_scanner.ui.theme.ThemeMode
+import info.meuse24.pdf_scanner.domain.model.ThemeMode
 
 object AppSettingsPreferences {
     private const val PREFS_NAME = "app_settings"

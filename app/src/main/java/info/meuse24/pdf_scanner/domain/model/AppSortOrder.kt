@@ -1,4 +1,4 @@
-package info.meuse24.pdf_scanner.util
+package info.meuse24.pdf_scanner.domain.model
 
 enum class AppSortOrder(val storageValue: String) {
     BY_DATE("date"),

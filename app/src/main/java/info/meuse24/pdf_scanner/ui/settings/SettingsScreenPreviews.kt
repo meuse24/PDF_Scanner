@@ -3,8 +3,8 @@ package info.meuse24.pdf_scanner.ui.settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import info.meuse24.pdf_scanner.ui.theme.PDF_ScannerTheme
-import info.meuse24.pdf_scanner.ui.theme.ThemeMode
-import info.meuse24.pdf_scanner.util.AppSettings
+import info.meuse24.pdf_scanner.domain.model.ThemeMode
+import info.meuse24.pdf_scanner.domain.model.AppSettings
 
 @Preview(showBackground = true, widthDp = 360)
 @Composable

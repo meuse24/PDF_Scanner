@@ -12,11 +12,11 @@ import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.util.OcrInputImageLoader
 import info.meuse24.pdf_scanner.util.OcrPipeline
-import info.meuse24.pdf_scanner.util.OcrResultStats
+import info.meuse24.pdf_scanner.domain.model.OcrResultStats
 import info.meuse24.pdf_scanner.util.PdfPageInputImageLoader
 import info.meuse24.pdf_scanner.util.TextRecognizerRunner
-import info.meuse24.pdf_scanner.util.DownloadEntry
-import info.meuse24.pdf_scanner.util.DownloadsStorage
+import info.meuse24.pdf_scanner.domain.gateway.DownloadEntry
+import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -85,7 +85,7 @@ class OcrReviewViewModelTest {
         assertEquals("First page\n\nSecond page", state.text)
         assertEquals(0.78f, state.confidence)
         assertEquals("en", state.recognizedLanguage)
-        assertEquals(info.meuse24.pdf_scanner.util.OcrQuality.HIGH, state.quality)
+        assertEquals(info.meuse24.pdf_scanner.domain.model.OcrQuality.HIGH, state.quality)
         assertTrue(extractTextUseCase.invocations.isEmpty())
         collection.cancel()
     }
@@ -255,17 +255,20 @@ class OcrReviewViewModelTest {
 private class RecordingExtractTextUseCase(
     private val handler: suspend (List<Document>, String) -> List<OcrDocumentResult> = { _, _ -> emptyList() }
 ) : ExtractTextUseCase(
-    ocrPipeline = mock(OcrPipeline::class.java),
-    inputImageLoader = mock(OcrInputImageLoader::class.java),
-    dispatcherProvider = TestDispatcherProvider(StandardTestDispatcher()),
-    textRecognizerRunner = mock(TextRecognizerRunner::class.java)
+    ocrDocumentTextExtractor = object : info.meuse24.pdf_scanner.domain.gateway.OcrDocumentTextExtractor {
+        override suspend fun extract(
+            records: List<Document>,
+            languageCode: String,
+            onStatus: (info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus) -> Unit
+        ): List<OcrDocumentResult> = emptyList()
+    }
 ) {
     val invocations = mutableListOf<Pair<List<Document>, String>>()
 
     override suspend fun invoke(
         records: List<Document>,
         languageCode: String,
-        onStatus: (info.meuse24.pdf_scanner.util.OcrPipelineStatus) -> Unit
+        onStatus: (info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus) -> Unit
     ): List<OcrDocumentResult> {
         invocations += records to languageCode
         return handler(records, languageCode)

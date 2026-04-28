@@ -9,8 +9,8 @@ import info.meuse24.pdf_scanner.domain.repository.TrashDocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.PurgeTrashUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RestoreMissingFileException
 import info.meuse24.pdf_scanner.domain.usecase.RestoreScansUseCase
-import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.ResourceProvider
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import info.meuse24.pdf_scanner.util.TrashConstants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

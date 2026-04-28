@@ -5,7 +5,7 @@ import info.meuse24.pdf_scanner.domain.pdf.PdfSecurityOps
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactPdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
-import info.meuse24.pdf_scanner.util.OcrPipelineStatus
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import kotlinx.coroutines.CancellationException
 import java.io.File
 import java.io.IOException

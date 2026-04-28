@@ -6,10 +6,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.usecase.RetroTagUseCase
-import info.meuse24.pdf_scanner.ui.theme.ThemeMode
-import info.meuse24.pdf_scanner.util.AppSortOrder
-import info.meuse24.pdf_scanner.util.AppSettings
-import info.meuse24.pdf_scanner.util.ResourceProvider
+import info.meuse24.pdf_scanner.domain.model.ThemeMode
+import info.meuse24.pdf_scanner.domain.model.AppSortOrder
+import info.meuse24.pdf_scanner.domain.model.AppSettings
+import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

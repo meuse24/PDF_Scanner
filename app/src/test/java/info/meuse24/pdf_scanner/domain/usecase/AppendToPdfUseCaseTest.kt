@@ -199,7 +199,7 @@ private class StubFileUtil(
     storageProvider = TestStorageProvider(rootDir),
     resourceProvider = FakeResourceProvider()
 ) {
-    override fun copyToTemp(sourceUri: Uri, suffix: String): File = tempFile
+    override fun copyToTemp(source: Any, suffix: String): File = tempFile
 }
 
 private class StubImagePdfBuilder(

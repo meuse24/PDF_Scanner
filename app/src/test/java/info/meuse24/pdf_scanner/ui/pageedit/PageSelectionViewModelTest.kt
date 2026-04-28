@@ -16,7 +16,7 @@ import info.meuse24.pdf_scanner.domain.workflow.RotatePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
-import info.meuse24.pdf_scanner.util.StorageProvider
+import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
 import info.meuse24.pdf_scanner.util.PdfEditor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

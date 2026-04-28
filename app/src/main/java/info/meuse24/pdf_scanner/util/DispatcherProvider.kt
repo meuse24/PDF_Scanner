@@ -1,14 +1,9 @@
 package info.meuse24.pdf_scanner.util
 
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
-
-interface DispatcherProvider {
-    val main: CoroutineDispatcher
-    val io: CoroutineDispatcher
-    val default: CoroutineDispatcher
-}
 
 class DefaultDispatcherProvider @Inject constructor() : DispatcherProvider {
     override val main: CoroutineDispatcher = Dispatchers.Main

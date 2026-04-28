@@ -1,6 +1,5 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
-import android.graphics.Bitmap
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.ApplySignatureStampUseCase
 import java.io.File
@@ -16,7 +15,7 @@ class SignatureStampWorkflow @Inject constructor(
 ) {
     suspend operator fun invoke(
         record: Document,
-        signatureBitmap: Bitmap?,
+        signatureBitmap: Any?,
         pageIndex: Int,
         scaleFraction: Float,
         scansDir: File

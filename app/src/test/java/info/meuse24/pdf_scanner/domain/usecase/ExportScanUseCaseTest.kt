@@ -1,8 +1,8 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.util.DownloadEntry
+import info.meuse24.pdf_scanner.domain.gateway.DownloadEntry
 import info.meuse24.pdf_scanner.domain.model.Document
-import info.meuse24.pdf_scanner.util.DownloadsStorage
+import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals

@@ -8,6 +8,9 @@ import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
 import com.google.android.gms.common.moduleinstall.ModuleInstallStatusUpdate
 import com.google.mlkit.vision.text.TextRecognizer
 import dagger.hilt.android.qualifiers.ApplicationContext
+import info.meuse24.pdf_scanner.domain.model.OcrModelInstallException
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
+import info.meuse24.pdf_scanner.domain.model.OcrScript
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
@@ -26,11 +29,6 @@ interface OcrModelInstaller {
         onStatus: (OcrPipelineStatus) -> Unit = {}
     )
 }
-
-class OcrModelInstallException(
-    message: String,
-    cause: Throwable? = null
-) : Exception(message, cause)
 
 @Singleton
 class AndroidOcrModelInstaller @Inject constructor(

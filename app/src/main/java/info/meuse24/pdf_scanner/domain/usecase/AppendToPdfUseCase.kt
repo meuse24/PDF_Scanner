@@ -1,19 +1,18 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import android.net.Uri
+import info.meuse24.pdf_scanner.domain.gateway.DocumentFileStore
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfSecurityOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfStructureOps
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
-import info.meuse24.pdf_scanner.util.FileUtil
 import java.io.File
 import javax.inject.Inject
 
 sealed interface AppendSource {
-    data class Scan(val pdfUri: Uri, val pageCount: Int) : AppendSource
-    data class Pdf(val pdfUri: Uri) : AppendSource
-    data class Images(val uris: List<Uri>, val options: ImagePdfOptions) : AppendSource
+    data class Scan(val pdfUri: Any, val pageCount: Int) : AppendSource
+    data class Pdf(val pdfUri: Any) : AppendSource
+    data class Images(val uris: List<Any>, val options: ImagePdfOptions) : AppendSource
 }
 
 data class AppendResult(
@@ -29,7 +28,7 @@ class AppendTargetEncryptedException : IllegalStateException()
 class AppendSourceEncryptedException : IllegalStateException()
 
 open class AppendToPdfUseCase @Inject constructor(
-    private val fileUtil: FileUtil,
+    private val fileUtil: DocumentFileStore,
     private val pdfEditor: PdfStructureOps,
     private val repository: DocumentRepository,
     private val imagePdfBuilder: ImagePdfBuilder,

@@ -12,7 +12,7 @@ import info.meuse24.pdf_scanner.domain.usecase.ScanQrCodesUseCase
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.util.OcrModelInstaller
-import info.meuse24.pdf_scanner.util.OcrPipelineStatus
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.QrCodeScanner
 import org.mockito.Mockito.mock
 import kotlinx.coroutines.CompletableDeferred

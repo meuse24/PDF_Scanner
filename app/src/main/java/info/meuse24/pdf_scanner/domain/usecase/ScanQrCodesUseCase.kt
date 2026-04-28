@@ -1,12 +1,12 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
+import info.meuse24.pdf_scanner.domain.gateway.QrCodeReader
 import info.meuse24.pdf_scanner.domain.model.Document
-import info.meuse24.pdf_scanner.util.QrCodeScanner
 import java.io.File
 import javax.inject.Inject
 
 class ScanQrCodesUseCase @Inject constructor(
-    private val scanner: QrCodeScanner
+    private val scanner: QrCodeReader
 ) {
     suspend operator fun invoke(
         record: Document,

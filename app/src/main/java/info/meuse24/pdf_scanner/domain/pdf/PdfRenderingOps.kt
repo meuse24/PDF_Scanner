@@ -1,6 +1,5 @@
 package info.meuse24.pdf_scanner.domain.pdf
 
-import android.graphics.Bitmap
 import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import java.io.File
@@ -16,5 +15,5 @@ interface PdfRenderingOps {
 
     fun getPageCount(pdfFile: File): Int
     fun generateThumbnail(pdfFile: File, outputFile: File): Boolean
-    fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int): Bitmap?
+    fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int): Any?
 }

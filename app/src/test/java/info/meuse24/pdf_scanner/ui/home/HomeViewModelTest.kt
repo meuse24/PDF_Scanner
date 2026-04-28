@@ -10,7 +10,9 @@ import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.data.repository.TrashRepository
 import info.meuse24.pdf_scanner.data.repository.SettingsRepository
 import info.meuse24.pdf_scanner.domain.repository.FolderRepository
+import info.meuse24.pdf_scanner.domain.gateway.ReviewPromptPolicy
 import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
+import info.meuse24.pdf_scanner.domain.usecase.BuildScanSearchQueryUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
@@ -18,8 +20,11 @@ import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.MoveDocumentsUseCase
+import info.meuse24.pdf_scanner.domain.usecase.OcrBackfillUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
+import info.meuse24.pdf_scanner.domain.usecase.RecordReviewPromptActionUseCase
+import info.meuse24.pdf_scanner.domain.usecase.RenameDocumentUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RestoreScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ToggleFavoriteUseCase
 import info.meuse24.pdf_scanner.domain.usecase.TrashScansUseCase
@@ -30,10 +35,10 @@ import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
-import info.meuse24.pdf_scanner.util.OcrModelInstallException
-import info.meuse24.pdf_scanner.util.AppSettings
-import info.meuse24.pdf_scanner.util.DownloadEntry
-import info.meuse24.pdf_scanner.util.DownloadsStorage
+import info.meuse24.pdf_scanner.domain.model.OcrModelInstallException
+import info.meuse24.pdf_scanner.domain.model.AppSettings
+import info.meuse24.pdf_scanner.domain.gateway.DownloadEntry
+import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
 import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -148,9 +153,10 @@ class HomeViewModelTest {
 
     @Test
     fun `buildFtsQuery tokenizes and adds prefix operators`() {
-        assertEquals("foo* bar*", buildFtsQuery("foo bar"))
-        assertEquals("invoice* 2026* final*", buildFtsQuery("invoice:2026/final"))
-        assertEquals("", buildFtsQuery(" - "))
+        val useCase = BuildScanSearchQueryUseCase()
+        assertEquals("foo* bar*", useCase("foo bar"))
+        assertEquals("invoice* 2026* final*", useCase("invoice:2026/final"))
+        assertEquals("", useCase(" - "))
     }
 
     @Test
@@ -216,7 +222,7 @@ class HomeViewModelTest {
         val record = Document(id = 1L, filename = "low_quality", filepath = pdf.absolutePath,
             timestamp = 0L, pageCount = 1, fileSize = 0L)
 
-        val stats = info.meuse24.pdf_scanner.util.OcrResultStats(0.25f, "en", 0f)
+        val stats = info.meuse24.pdf_scanner.domain.model.OcrResultStats(0.25f, "en", 0f)
         val viewModel = buildViewModel(
             extractTextUseCase = fakeExtract { records, _ ->
                 listOf(
@@ -273,7 +279,7 @@ class HomeViewModelTest {
         val record = Document(id = 4L, filename = "doc4", filepath = pdf.absolutePath,
             timestamp = 0L, pageCount = 1, fileSize = 0L)
 
-        val stats = info.meuse24.pdf_scanner.util.OcrResultStats(0.55f, null, 0f)
+        val stats = info.meuse24.pdf_scanner.domain.model.OcrResultStats(0.55f, null, 0f)
         val viewModel = buildViewModel(
             extractTextUseCase = fakeExtract { records, _ ->
                 listOf(
@@ -429,7 +435,19 @@ class HomeViewModelTest {
             moveDocumentsUseCase = moveDocumentsUseCase,
             toggleFavoriteUseCase = toggleFavoriteUseCase,
             extractTextUseCase = extractTextUseCase,
-            autoTagUseCase = AutoTagUseCase(),
+            ocrBackfillUseCase = OcrBackfillUseCase(
+                repository = repository,
+                settingsRepository = settingsRepository,
+                extractTextUseCase = extractTextUseCase,
+                autoTagUseCase = AutoTagUseCase()
+            ),
+            renameDocumentUseCase = RenameDocumentUseCase(repository, storageProvider),
+            buildScanSearchQueryUseCase = BuildScanSearchQueryUseCase(),
+            recordReviewPromptActionUseCase = RecordReviewPromptActionUseCase(
+                object : ReviewPromptPolicy {
+                    override fun recordSuccessfulDocumentActionAndCheckEligibility(): Boolean = false
+                }
+            ),
             makeSearchableWorkflow = makeSearchableWorkflow,
             mergePdfsWorkflow = mergePdfsWorkflow,
             workflowErrorMapper = WorkflowErrorMapper(resourceProvider),
@@ -454,15 +472,18 @@ class HomeViewModelTest {
     /** Erstellt eine anonyme ExtractTextUseCase-Subklasse, die den Block als invoke-Body nutzt. */
     private fun fakeExtract(block: suspend (List<Document>, String) -> List<OcrDocumentResult>): ExtractTextUseCase =
         object : ExtractTextUseCase(
-            ocrPipeline = mock(info.meuse24.pdf_scanner.util.OcrPipeline::class.java),
-            inputImageLoader = mock(info.meuse24.pdf_scanner.util.OcrInputImageLoader::class.java),
-            dispatcherProvider = TestDispatcherProvider(testDispatcher),
-            textRecognizerRunner = mock(info.meuse24.pdf_scanner.util.TextRecognizerRunner::class.java)
+            ocrDocumentTextExtractor = object : info.meuse24.pdf_scanner.domain.gateway.OcrDocumentTextExtractor {
+                override suspend fun extract(
+                    records: List<Document>,
+                    languageCode: String,
+                    onStatus: (info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus) -> Unit
+                ): List<OcrDocumentResult> = emptyList()
+            }
         ) {
             override suspend fun invoke(
                 records: List<Document>,
                 languageCode: String,
-                onStatus: (info.meuse24.pdf_scanner.util.OcrPipelineStatus) -> Unit
+                onStatus: (info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus) -> Unit
             ): List<OcrDocumentResult> =
                 block(records, languageCode)
         }

@@ -50,8 +50,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
-import info.meuse24.pdf_scanner.util.OcrQuality
-import info.meuse24.pdf_scanner.util.toQualityPercent
+import info.meuse24.pdf_scanner.domain.model.OcrQuality
+import info.meuse24.pdf_scanner.domain.model.toQualityPercent
 import java.util.Locale
 import kotlinx.coroutines.launch
 

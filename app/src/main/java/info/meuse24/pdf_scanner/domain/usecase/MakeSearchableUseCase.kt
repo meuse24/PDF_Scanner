@@ -1,10 +1,10 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
+import info.meuse24.pdf_scanner.domain.gateway.SearchablePdfGenerator
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
-import info.meuse24.pdf_scanner.util.OcrPipelineStatus
-import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import kotlinx.coroutines.flow.first
 import java.io.File
 import javax.inject.Inject
@@ -16,7 +16,7 @@ import javax.inject.Inject
  * @return Anzahl der tatsächlich verarbeiteten Records
  */
 class MakeSearchableUseCase @Inject constructor(
-    private val searchablePdfBuilder: SearchablePdfBuilder,
+    private val searchablePdfBuilder: SearchablePdfGenerator,
     private val repository:           DocumentRepository,
     private val autoTagUseCase:       AutoTagUseCase,
     private val settingsRepository:   AppSettingsRepository

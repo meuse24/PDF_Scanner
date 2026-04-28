@@ -145,10 +145,10 @@ private class FakeSignaturePdfEditor(
     override fun applySignatureStamp(
         input: File,
         outputDir: File,
-        signatureBitmap: Bitmap,
+        signatureBitmap: Any,
         pageIndex: Int,
         scaleFraction: Float
-    ): File = onApply(input, outputDir, signatureBitmap, pageIndex, scaleFraction)
+    ): File = onApply(input, outputDir, signatureBitmap as Bitmap, pageIndex, scaleFraction)
 
     override fun generateThumbnail(pdfFile: File, outputFile: File): Boolean {
         outputFile.writeText("thumb")

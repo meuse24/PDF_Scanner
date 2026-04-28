@@ -3,7 +3,7 @@ package info.meuse24.pdf_scanner.domain.usecase
 import info.meuse24.pdf_scanner.domain.model.BusinessCard
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.service.BusinessCardParser
-import info.meuse24.pdf_scanner.util.AppSettings
+import info.meuse24.pdf_scanner.domain.model.AppSettings
 import javax.inject.Inject
 
 class ScanBusinessCardUseCase @Inject constructor(

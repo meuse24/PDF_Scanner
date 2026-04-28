@@ -170,7 +170,7 @@ private class StubSuccessUseCase(private val skipped: Int = 0) : CreatePdfFromIm
     var callCount = 0
     var lastOptions: ImagePdfOptions? = null
     override suspend fun invoke(
-        imageUris: List<Uri>,
+        imageUris: List<Any>,
         filename: String,
         options: ImagePdfOptions,
         scansDir: File
@@ -189,7 +189,7 @@ private class StubFailUseCase(private val message: String) : CreatePdfFromImages
     )
 ) {
     override suspend fun invoke(
-        imageUris: List<Uri>,
+        imageUris: List<Any>,
         filename: String,
         options: ImagePdfOptions,
         scansDir: File

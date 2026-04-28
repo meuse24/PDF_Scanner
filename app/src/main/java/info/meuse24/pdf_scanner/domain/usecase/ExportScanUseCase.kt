@@ -1,7 +1,7 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.domain.model.Document
-import info.meuse24.pdf_scanner.util.DownloadsStorage
+import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
 import java.io.File
 import javax.inject.Inject
 

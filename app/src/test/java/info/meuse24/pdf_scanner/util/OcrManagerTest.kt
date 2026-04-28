@@ -1,5 +1,7 @@
 package info.meuse24.pdf_scanner.util
 
+import info.meuse24.pdf_scanner.domain.model.OcrScript
+import info.meuse24.pdf_scanner.domain.model.OcrUsage
 import java.util.Locale
 import org.junit.Assert.assertEquals
 import org.junit.Test

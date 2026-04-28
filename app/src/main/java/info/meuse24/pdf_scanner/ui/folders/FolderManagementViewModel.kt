@@ -10,8 +10,8 @@ import info.meuse24.pdf_scanner.domain.usecase.DeleteFolderUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RenameFolderUseCase
 import info.meuse24.pdf_scanner.ui.home.ArchiveFilter
 import info.meuse24.pdf_scanner.ui.home.ArchiveFilterStore
-import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.ResourceProvider
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -6,31 +6,21 @@ import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import androidx.core.graphics.createBitmap
+import info.meuse24.pdf_scanner.domain.gateway.PdfPageJpgRenderer
 import java.io.File
 import java.io.OutputStream
 import javax.inject.Inject
 
-interface PdfPageJpgRenderer {
-    fun renderPages(
-        sourceFile: File,
-        onPageRendered: (
-            pageIndex: Int,
-            pageCount: Int,
-            writeJpeg: (OutputStream) -> Unit
-        ) -> Unit
-    )
-}
-
 class AndroidPdfPageJpgRenderer @Inject constructor() : PdfPageJpgRenderer {
     override fun renderPages(
-        sourceFile: File,
-        onPageRendered: (
+        pdfFile: File,
+        onPage: (
             pageIndex: Int,
             pageCount: Int,
             writeJpeg: (OutputStream) -> Unit
         ) -> Unit
     ) {
-        ParcelFileDescriptor.open(sourceFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+        ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
             PdfRenderer(pfd).use { renderer ->
                 val pageCount = renderer.pageCount
                 repeat(pageCount) { pageIndex ->
@@ -42,7 +32,7 @@ class AndroidPdfPageJpgRenderer @Inject constructor() : PdfPageJpgRenderer {
                         try {
                             Canvas(bitmap).drawColor(Color.WHITE)
                             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT)
-                            onPageRendered(pageIndex, pageCount) { output ->
+                            onPage(pageIndex, pageCount) { output ->
                                 val ok = bitmap.compress(Bitmap.CompressFormat.JPEG, 90, output)
                                 if (!ok) {
                                     error("JPEG-Komprimierung fehlgeschlagen für Seite ${pageIndex + 1}")

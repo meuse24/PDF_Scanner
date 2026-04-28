@@ -34,7 +34,7 @@ internal fun HomeImportOverlays(
     onSelectedLangChange: (String) -> Unit,
     langMenuExpanded: Boolean,
     onLangMenuExpandedChange: (Boolean) -> Unit,
-    settings: info.meuse24.pdf_scanner.util.AppSettings,
+    settings: info.meuse24.pdf_scanner.domain.model.AppSettings,
     ocrLanguages: List<Pair<String, String>>,
     ocrText: String?,
     clipboard: Clipboard,

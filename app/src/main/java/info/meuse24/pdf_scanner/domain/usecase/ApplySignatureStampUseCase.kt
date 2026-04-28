@@ -1,6 +1,5 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import android.graphics.Bitmap
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
 import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
@@ -13,7 +12,7 @@ class ApplySignatureStampUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         record: Document,
-        signatureBitmap: Bitmap,
+        signatureBitmap: Any,
         pageIndex: Int,
         scaleFraction: Float,
         scansDir: File

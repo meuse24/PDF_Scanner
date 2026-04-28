@@ -12,16 +12,26 @@ import info.meuse24.pdf_scanner.util.AndroidPdfPageInputImageLoader
 import info.meuse24.pdf_scanner.util.AndroidPdfPageJpgRenderer
 import info.meuse24.pdf_scanner.util.AndroidPdfPageBitmapRenderer
 import info.meuse24.pdf_scanner.util.DefaultDispatcherProvider
-import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.DownloadsStorage
+import info.meuse24.pdf_scanner.domain.gateway.DocumentFileStore
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
+import info.meuse24.pdf_scanner.domain.gateway.OcrDocumentTextExtractor
+import info.meuse24.pdf_scanner.domain.gateway.PdfPageJpgRenderer
+import info.meuse24.pdf_scanner.domain.gateway.QrCodeReader
+import info.meuse24.pdf_scanner.domain.gateway.ReviewPromptPolicy
 import info.meuse24.pdf_scanner.util.OcrInputImageLoader
 import info.meuse24.pdf_scanner.util.OcrModelInstaller
 import info.meuse24.pdf_scanner.util.PdfPageInputImageLoader
-import info.meuse24.pdf_scanner.util.PdfPageJpgRenderer
 import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderer
-import info.meuse24.pdf_scanner.util.ResourceProvider
-import info.meuse24.pdf_scanner.util.StorageProvider
+import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
+import info.meuse24.pdf_scanner.domain.gateway.SearchablePdfGenerator
+import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
+import info.meuse24.pdf_scanner.util.FileUtil
+import info.meuse24.pdf_scanner.util.MlKitOcrDocumentTextExtractor
 import info.meuse24.pdf_scanner.util.MlKitTextRecognizerRunner
+import info.meuse24.pdf_scanner.util.QrCodeScanner
+import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
+import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
 import info.meuse24.pdf_scanner.util.TextRecognizerRunner
 import info.meuse24.pdf_scanner.util.AndroidOcrModelInstaller
 import info.meuse24.pdf_scanner.domain.pdf.PdfImageRenderer
@@ -49,6 +59,12 @@ abstract class AppProvidersModule {
     abstract fun bindDownloadsStorage(
         impl: AndroidDownloadsStorage
     ): DownloadsStorage
+
+    @Binds
+    @Singleton
+    abstract fun bindDocumentFileStore(
+        impl: FileUtil
+    ): DocumentFileStore
 
     @Binds
     @Singleton
@@ -85,6 +101,30 @@ abstract class AppProvidersModule {
     abstract fun bindOcrModelInstaller(
         impl: AndroidOcrModelInstaller
     ): OcrModelInstaller
+
+    @Binds
+    @Singleton
+    abstract fun bindSearchablePdfGenerator(
+        impl: SearchablePdfBuilder
+    ): SearchablePdfGenerator
+
+    @Binds
+    @Singleton
+    abstract fun bindQrCodeReader(
+        impl: QrCodeScanner
+    ): QrCodeReader
+
+    @Binds
+    @Singleton
+    abstract fun bindOcrDocumentTextExtractor(
+        impl: MlKitOcrDocumentTextExtractor
+    ): OcrDocumentTextExtractor
+
+    @Binds
+    @Singleton
+    abstract fun bindReviewPromptPolicy(
+        impl: PlayReviewPromptManager
+    ): ReviewPromptPolicy
 
     @Binds
     @Singleton

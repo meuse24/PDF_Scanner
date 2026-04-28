@@ -32,6 +32,9 @@ import com.tom_roush.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.text.TextPosition
 import com.tom_roush.pdfbox.util.Matrix
+import info.meuse24.pdf_scanner.domain.common.buildRanges
+import info.meuse24.pdf_scanner.domain.common.normalizePageIndexes
+import info.meuse24.pdf_scanner.domain.common.normalizeSplitPoints
 import info.meuse24.pdf_scanner.domain.model.PdfMetadata
 import info.meuse24.pdf_scanner.domain.pdf.PdfAnnotationOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
@@ -713,10 +716,12 @@ open class PdfEditor @Inject constructor() :
     override open fun applySignatureStamp(
         input: File,
         outputDir: File,
-        signatureBitmap: Bitmap,
+        signatureBitmap: Any,
         pageIndex: Int,
         scaleFraction: Float
     ): File {
+        val bitmap = signatureBitmap as? Bitmap
+            ?: throw IllegalArgumentException("Signature stamp requires an Android Bitmap")
         require(scaleFraction > 0f) { "Signaturgroesse muss groesser als 0 sein" }
         return writeDerivedPdf(input, outputDir, "_Signiert", "Signature") { source, signed ->
             repeat(source.numberOfPages) { currentPageIndex ->
@@ -725,7 +730,7 @@ open class PdfEditor @Inject constructor() :
                     appendSignatureStamp(
                         page = page,
                         document = signed,
-                        signatureBitmap = signatureBitmap,
+                        signatureBitmap = bitmap,
                         scaleFraction = scaleFraction
                     )
                 }
@@ -916,7 +921,7 @@ open class PdfEditor @Inject constructor() :
      */
     override open fun generateThumbnail(pdfFile: File, outputFile: File): Boolean {
         return try {
-            val bitmap = renderPageThumbnail(pdfFile, 0, 200) ?: return false
+            val bitmap = renderPageThumbnail(pdfFile, 0, 200) as? Bitmap ?: return false
             outputFile.outputStream().use { out ->
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
             }
@@ -932,7 +937,7 @@ open class PdfEditor @Inject constructor() :
      * Das originale Seitenverhältnis wird beibehalten.
      * Gibt null bei Fehler zurück. Muss auf Dispatchers.IO aufgerufen werden.
      */
-    override open fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int): Bitmap? {
+    override open fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int): Any? {
         return try {
             ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
                 PdfRenderer(pfd).use { renderer ->

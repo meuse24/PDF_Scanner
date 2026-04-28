@@ -8,7 +8,7 @@ import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
-import info.meuse24.pdf_scanner.util.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
 import info.meuse24.pdf_scanner.util.PdfDocumentBitmapHandle
 import info.meuse24.pdf_scanner.util.PdfPageBitmapCache
 import info.meuse24.pdf_scanner.util.PdfPageBitmapCacheKey
@@ -16,7 +16,7 @@ import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderException
 import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderFailure
 import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderer
 import info.meuse24.pdf_scanner.util.RenderedPdfPage
-import info.meuse24.pdf_scanner.util.ResourceProvider
+import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

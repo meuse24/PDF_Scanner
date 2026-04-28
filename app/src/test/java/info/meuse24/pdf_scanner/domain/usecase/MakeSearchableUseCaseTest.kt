@@ -4,9 +4,9 @@ import android.content.Context
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
-import info.meuse24.pdf_scanner.util.AppSettings
+import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.util.OcrPipeline
-import info.meuse24.pdf_scanner.util.OcrPipelineStatus
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
 import info.meuse24.pdf_scanner.util.TextRecognizerRunner
 import kotlinx.coroutines.test.runTest

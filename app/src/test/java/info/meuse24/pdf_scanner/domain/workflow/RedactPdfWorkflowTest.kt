@@ -12,7 +12,7 @@ import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.domain.usecase.SearchableResult
 import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
 import info.meuse24.pdf_scanner.util.OcrPipeline
-import info.meuse24.pdf_scanner.util.OcrPipelineStatus
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.PdfEditor
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
 import info.meuse24.pdf_scanner.util.TextRecognizerRunner

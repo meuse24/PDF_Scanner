@@ -11,8 +11,8 @@ import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.workflow.ReorderPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
-import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.StorageProvider
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -92,7 +92,7 @@ class ReorderViewModel @Inject constructor(
                 return@launch
             }
             for (i in 0 until count) {
-                val bmp = pdfEditor.renderPageThumbnail(pdfFile, i, 120)
+                val bmp = pdfEditor.renderPageThumbnail(pdfFile, i, 120) as? Bitmap
                 val current = _pages.value.toMutableList()
                 if (i < current.size) {
                     current[i] = ReorderPage(i, bmp, isLoaded = true)

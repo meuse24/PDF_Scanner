@@ -10,7 +10,7 @@ import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.ui.components.DocumentEditSheet
 import info.meuse24.pdf_scanner.ui.home.LandscapeSelectionTopBar
 import info.meuse24.pdf_scanner.ui.theme.PDF_ScannerTheme
-import info.meuse24.pdf_scanner.ui.theme.ThemeMode
+import info.meuse24.pdf_scanner.domain.model.ThemeMode
 
 @Preview(showBackground = true, widthDp = 360)
 @Composable

@@ -4,21 +4,10 @@ import android.content.ContentValues
 import android.content.Context
 import android.provider.MediaStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import info.meuse24.pdf_scanner.domain.gateway.DownloadEntry
+import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
 import java.io.OutputStream
 import javax.inject.Inject
-
-interface DownloadEntry {
-    val displayName: String
-    fun delete()
-}
-
-interface DownloadsStorage {
-    fun writeDownload(
-        displayName: String,
-        mimeType: String,
-        writer: (OutputStream) -> Unit
-    ): DownloadEntry
-}
 
 class AndroidDownloadsStorage @Inject constructor(
     @param:ApplicationContext private val context: Context

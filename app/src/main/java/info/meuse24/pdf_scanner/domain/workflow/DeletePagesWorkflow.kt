@@ -2,7 +2,7 @@ package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.DeletePdfPagesUseCase
-import info.meuse24.pdf_scanner.util.normalizePageIndexes
+import info.meuse24.pdf_scanner.domain.common.normalizePageIndexes
 import java.io.File
 import javax.inject.Inject
 

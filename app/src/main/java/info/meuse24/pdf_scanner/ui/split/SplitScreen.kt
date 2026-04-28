@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.util.normalizeSplitPoints
+import info.meuse24.pdf_scanner.domain.common.normalizeSplitPoints
 
 @Composable
 fun SplitScreen(

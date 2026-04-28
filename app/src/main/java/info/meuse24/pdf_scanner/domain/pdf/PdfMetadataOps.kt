@@ -1,6 +1,5 @@
 package info.meuse24.pdf_scanner.domain.pdf
 
-import android.graphics.Bitmap
 import info.meuse24.pdf_scanner.domain.model.PdfMetadata
 import java.io.File
 
@@ -12,7 +11,7 @@ interface PdfMetadataOps {
     fun applySignatureStamp(
         input: File,
         outputDir: File,
-        signatureBitmap: Bitmap,
+        signatureBitmap: Any,
         pageIndex: Int,
         scaleFraction: Float
     ): File

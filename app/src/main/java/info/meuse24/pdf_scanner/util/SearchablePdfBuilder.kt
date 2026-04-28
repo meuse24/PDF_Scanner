@@ -8,6 +8,12 @@ import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.core.graphics.createBitmap
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.gateway.SearchablePdfGenerator
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
+import info.meuse24.pdf_scanner.domain.model.OcrResultStats
+import info.meuse24.pdf_scanner.domain.model.OcrThresholds
+import info.meuse24.pdf_scanner.domain.model.OcrUsage
 import info.meuse24.pdf_scanner.domain.usecase.SearchableResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.tom_roush.pdfbox.pdmodel.PDDocument
@@ -43,7 +49,7 @@ open class SearchablePdfBuilder @Inject constructor(
     private val ocrPipeline: OcrPipeline,
     private val textRecognizerRunner: TextRecognizerRunner,
     private val dispatcherProvider: DispatcherProvider
-) {
+) : SearchablePdfGenerator {
     // Renderparameter: PDF_OCR_RENDER_SCALE + PDF_OCR_MAX_BITMAP_SIDE aus PdfPageInputImageLoader.kt
 
     /** Ein OCR-Wort (Element-Ebene) mit seiner Bounding Box, Winkel und erkannter Sprache. */
@@ -54,13 +60,14 @@ open class SearchablePdfBuilder @Inject constructor(
         val words: List<WordData>
     )
 
-    open suspend fun makeSearchable(
-        pdfFile: File,
+    override suspend fun makeSearchable(
+        inputFile: File,
         languageCode: String,
         onProgress: (current: Int, total: Int) -> Unit,
-        onStatus: (OcrPipelineStatus) -> Unit = {}
+        onStatus: (OcrPipelineStatus) -> Unit
     ): SearchableResult = withContext(dispatcherProvider.io) {
 
+        val pdfFile = inputFile
         val result = ocrPipeline.runWithFallback(
             languageCode = languageCode,
             usage = OcrUsage.SEARCHABLE_PDF,

@@ -14,9 +14,9 @@ import info.meuse24.pdf_scanner.domain.workflow.ExtractPagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.RotatePagesWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
-import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.StorageProvider
-import info.meuse24.pdf_scanner.util.normalizePageIndexes
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
+import info.meuse24.pdf_scanner.domain.common.normalizePageIndexes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -102,7 +102,7 @@ class PageSelectionViewModel @Inject constructor(
                 return@launch
             }
             repeat(count) { pageIndex ->
-                val bitmap = pdfEditor.renderPageThumbnail(pdfFile, pageIndex, 120)
+                val bitmap = pdfEditor.renderPageThumbnail(pdfFile, pageIndex, 120) as? Bitmap
                 val current = _pages.value.toMutableList()
                 if (pageIndex < current.size) {
                     current[pageIndex] = SelectablePage(pageIndex, bitmap, isLoaded = true)

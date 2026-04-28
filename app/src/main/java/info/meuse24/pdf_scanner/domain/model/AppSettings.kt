@@ -1,11 +1,8 @@
-package info.meuse24.pdf_scanner.util
-
-import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
-import info.meuse24.pdf_scanner.ui.theme.ThemeMode
+package info.meuse24.pdf_scanner.domain.model
 
 /**
  * Zentrale, persistente App-Einstellungen.
- * Neue Settings können hier ergänzt werden, ohne die UI sofort zu erweitern.
+ * Neue Settings koennen hier ergaenzt werden, ohne die UI sofort zu erweitern.
  */
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,

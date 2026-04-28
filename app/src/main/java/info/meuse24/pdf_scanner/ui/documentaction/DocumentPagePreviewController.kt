@@ -1,10 +1,11 @@
 package info.meuse24.pdf_scanner.ui.documentaction
 
+import android.graphics.Bitmap
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfTextOps
 import info.meuse24.pdf_scanner.domain.usecase.TextLine
-import info.meuse24.pdf_scanner.util.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +38,7 @@ internal class DocumentPagePreviewController(
 
         pagePreviewJob = scope.launch(dispatcherProvider.io) {
             val inputFile = File(record.filepath)
-            val pageBitmap = pdfRenderingOps.renderPageThumbnail(inputFile, pageIndex, 1024)
+            val pageBitmap = pdfRenderingOps.renderPageThumbnail(inputFile, pageIndex, 1024) as? Bitmap
             if (!record.isSearchable) {
                 _uiState.value = DocumentPagePreviewUiState(pageBitmap = pageBitmap)
                 return@launch

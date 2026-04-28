@@ -2,7 +2,7 @@ package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.domain.pdf.PdfImageRenderer
 import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
-import info.meuse24.pdf_scanner.util.StorageProvider
+import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton

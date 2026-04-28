@@ -1,8 +1,7 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import android.net.Uri
+import info.meuse24.pdf_scanner.domain.common.resolveUniqueFilename
 import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
-import info.meuse24.pdf_scanner.util.resolveUniqueFilename
 import java.io.File
 import javax.inject.Inject
 
@@ -25,7 +24,7 @@ open class CreatePdfFromImagesUseCase @Inject constructor(
     private val persister: ScanArtifactPersister
 ) {
     open suspend operator fun invoke(
-        imageUris: List<Uri>,
+        imageUris: List<Any>,
         filename: String,
         options: ImagePdfOptions,
         scansDir: File

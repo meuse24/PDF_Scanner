@@ -1,4 +1,4 @@
-package info.meuse24.pdf_scanner.ui.theme
+package info.meuse24.pdf_scanner.domain.model
 
 enum class ThemeMode(val storageValue: String) {
     SYSTEM("system"),

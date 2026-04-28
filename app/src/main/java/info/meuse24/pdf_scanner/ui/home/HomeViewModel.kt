@@ -13,16 +13,20 @@ import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.repository.FolderRepository
-import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
-import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
+import info.meuse24.pdf_scanner.domain.usecase.BuildScanSearchQueryUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.MoveDocumentsUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
+import info.meuse24.pdf_scanner.domain.usecase.OcrBackfillUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
+import info.meuse24.pdf_scanner.domain.usecase.RecordReviewPromptActionUseCase
+import info.meuse24.pdf_scanner.domain.usecase.RenameDocumentResult
+import info.meuse24.pdf_scanner.domain.usecase.RenameDocumentUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RestoreMissingFileException
 import info.meuse24.pdf_scanner.domain.usecase.RestoreScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ToggleFavoriteUseCase
@@ -33,15 +37,15 @@ import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.ui.ocr.OCR_LANGUAGE_AUTO
-import info.meuse24.pdf_scanner.util.AppSortOrder
-import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.OcrModelInstallException
-import info.meuse24.pdf_scanner.util.OcrPipelineStatus
-import info.meuse24.pdf_scanner.util.OcrResultStats
-import info.meuse24.pdf_scanner.util.OcrThresholds
+import info.meuse24.pdf_scanner.domain.model.AppSortOrder
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.model.OcrModelInstallException
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
+import info.meuse24.pdf_scanner.domain.model.OcrResultStats
+import info.meuse24.pdf_scanner.domain.model.OcrThresholds
 import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
-import info.meuse24.pdf_scanner.util.ResourceProvider
-import info.meuse24.pdf_scanner.util.StorageProvider
+import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
+import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -53,7 +57,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 import java.util.Locale
 import javax.inject.Inject
@@ -73,7 +76,10 @@ class HomeViewModel @Inject constructor(
     private val moveDocumentsUseCase: MoveDocumentsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val extractTextUseCase: ExtractTextUseCase,
-    private val autoTagUseCase: AutoTagUseCase,
+    private val ocrBackfillUseCase: OcrBackfillUseCase,
+    private val renameDocumentUseCase: RenameDocumentUseCase,
+    private val buildScanSearchQueryUseCase: BuildScanSearchQueryUseCase,
+    private val recordReviewPromptActionUseCase: RecordReviewPromptActionUseCase,
     private val makeSearchableWorkflow: MakeSearchableWorkflow,
     private val mergePdfsWorkflow: MergePdfsWorkflow,
     private val workflowErrorMapper: WorkflowErrorMapper,
@@ -109,7 +115,7 @@ class HomeViewModel @Inject constructor(
         val source = if (query.isBlank()) {
             listScansFor(request.filter)
         } else {
-            val ftsQuery = buildFtsQuery(query)
+            val ftsQuery = buildScanSearchQueryUseCase(query)
             if (ftsQuery.isBlank()) {
                 flowOf(emptyList())
             } else {
@@ -475,32 +481,19 @@ class HomeViewModel @Inject constructor(
     }
 
     fun renameScan(record: Document, newName: String) {
-        val trimmed = newName.trim()
-        if (trimmed.isBlank()) return
-
         viewModelScope.launch(dispatcherProvider.io) {
-            val targetScansDir = storageProvider.scansDir()
-            val newFile = File(targetScansDir, "$trimmed.pdf")
-            if (newFile.exists()) {
-                _error.value = resourceProvider.getString(R.string.rename_error_exists)
-                return@launch
+            when (val result = renameDocumentUseCase(record, newName)) {
+                RenameDocumentResult.BlankName -> Unit
+                RenameDocumentResult.TargetExists -> {
+                    _error.value = resourceProvider.getString(R.string.rename_error_exists)
+                }
+                RenameDocumentResult.RenameFailed -> {
+                    _error.value = resourceProvider.getString(R.string.rename_error_failed)
+                }
+                is RenameDocumentResult.Success -> {
+                    _success.value = resourceProvider.getString(R.string.rename_success, result.filename)
+                }
             }
-
-            val oldFile = File(record.filepath)
-            if (!oldFile.renameTo(newFile)) {
-                _error.value = resourceProvider.getString(R.string.rename_error_failed)
-                return@launch
-            }
-
-            val newThumbPath = record.thumbnailPath?.let { oldThumb ->
-                val thumbFile = File(oldThumb)
-                val newThumb = File(targetScansDir, "$trimmed.jpg")
-                val renamed = !thumbFile.exists() || thumbFile.renameTo(newThumb)
-                if (renamed) newThumb.absolutePath else oldThumb
-            }
-
-            repository.updateFilenameAndPath(record.id, trimmed, newFile.absolutePath, newThumbPath)
-            _success.value = resourceProvider.getString(R.string.rename_success, trimmed)
         }
     }
 
@@ -605,35 +598,13 @@ class HomeViewModel @Inject constructor(
 
         backfillTriggered = true
         viewModelScope.launch(dispatcherProvider.io) {
-            val autoTaggingEnabled = settingsRepository.settings.first().autoTaggingEnabled
-            val allScans = withTimeoutOrNull(10_000L) {
-                repository.getAllScans().first()
-            } ?: return@launch
-
-            val candidates = allScans
-                .filter { it.isSearchable && it.extractedText == null && File(it.filepath).exists() }
-                .take(10)
-            if (candidates.isEmpty()) return@launch
-
-            for (record in candidates) {
-                runCatching {
-                    val result = extractTextUseCase(listOf(record), OCR_LANGUAGE_AUTO).singleOrNull()
-                    if (result != null && result.fullText.isNotBlank()) {
-                        repository.markSearchableWithContent(
-                            id = record.id,
-                            fileSize = File(record.filepath).length(),
-                            text = result.fullText,
-                            tags = if (autoTaggingEnabled) autoTagUseCase.extractTags(result.fullText) else null,
-                            confidence = result.stats?.confidence,
-                            language = result.stats?.recognizedLanguage,
-                            pageTexts = result.pageTexts
-                        )
-                        Log.d("Backfill", "Text nacherfasst: ${record.filename}")
-                    }
-                }.onFailure { exception ->
-                    Log.w("Backfill", "Nacherfassung fehlgeschlagen: ${record.filename}", exception)
+            ocrBackfillUseCase(
+                languageCode = OCR_LANGUAGE_AUTO,
+                onBackfilled = { filename -> Log.d("Backfill", "Text nacherfasst: $filename") },
+                onFailure = { filename, exception ->
+                    Log.w("Backfill", "Nacherfassung fehlgeschlagen: $filename", exception)
                 }
-            }
+            )
         }
     }
 
@@ -652,7 +623,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun maybeRequestPlayReview() {
-        if (playReviewPromptManager.recordSuccessfulDocumentActionAndCheckEligibility()) {
+        if (recordReviewPromptActionUseCase()) {
             _playReviewRequestId.value = System.currentTimeMillis()
         }
     }
@@ -730,13 +701,6 @@ private data class ScanArchiveData(
     val filteredScans: List<Document>,
     val allScans: List<Document>
 )
-
-internal fun buildFtsQuery(rawQuery: String): String {
-    return Regex("[\\p{L}\\p{N}_]+")
-        .findAll(rawQuery.trim())
-        .map { match -> "${match.value}*" }
-        .joinToString(" ")
-}
 
 private fun buildCombinedOcrText(
     records: List<Document>,

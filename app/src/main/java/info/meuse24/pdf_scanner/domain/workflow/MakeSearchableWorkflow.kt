@@ -2,7 +2,7 @@ package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
-import info.meuse24.pdf_scanner.util.OcrPipelineStatus
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import kotlinx.coroutines.CancellationException
 import java.io.File
 import java.io.IOException

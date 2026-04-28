@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
-import info.meuse24.pdf_scanner.util.OcrQuality
+import info.meuse24.pdf_scanner.domain.model.OcrQuality
 
 @Composable
 fun OcrQualityBadge(

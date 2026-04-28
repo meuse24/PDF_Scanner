@@ -10,6 +10,8 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import info.meuse24.pdf_scanner.domain.gateway.QrCodeReader
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import info.meuse24.pdf_scanner.domain.usecase.QrCodeResult
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
@@ -48,7 +50,7 @@ private class MlKitQrProcessor(
 
 open class QrCodeScanner @Inject constructor(
     private val ocrModelInstaller: OcrModelInstaller
-) {
+) : QrCodeReader {
 
     companion object {
         private const val RENDER_DPI = 150f // Höhere DPI für bessere Barcode-Erkennung
@@ -56,10 +58,10 @@ open class QrCodeScanner @Inject constructor(
         private val RENDER_SCALE = RENDER_DPI / POINTS_PER_INCH
     }
 
-    open suspend fun scan(
+    override suspend fun scan(
         pdfFile: File,
-        onProgress: (page: Int, total: Int) -> Unit = { _, _ -> },
-        onStatus: (OcrPipelineStatus) -> Unit = {}
+        onProgress: (page: Int, total: Int) -> Unit,
+        onStatus: (OcrPipelineStatus) -> Unit
     ): List<QrCodeResult> {
         val options = BarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)

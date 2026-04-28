@@ -2,7 +2,7 @@ package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
-import info.meuse24.pdf_scanner.util.OcrModelInstallException
+import info.meuse24.pdf_scanner.domain.model.OcrModelInstallException
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

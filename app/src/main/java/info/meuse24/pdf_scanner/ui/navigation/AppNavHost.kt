@@ -53,7 +53,7 @@ import info.meuse24.pdf_scanner.ui.settings.SettingsScreen
 import info.meuse24.pdf_scanner.ui.settings.SettingsViewModel
 import info.meuse24.pdf_scanner.ui.signature.SignatureScreen
 import info.meuse24.pdf_scanner.ui.split.SplitScreen
-import info.meuse24.pdf_scanner.ui.theme.ThemeMode
+import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.ui.trash.TrashScreen
 import info.meuse24.pdf_scanner.ui.viewer.PdfViewerScreen
 import info.meuse24.pdf_scanner.util.AppLockAuthResult

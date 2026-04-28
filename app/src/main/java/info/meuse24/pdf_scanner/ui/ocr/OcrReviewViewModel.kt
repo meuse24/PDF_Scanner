@@ -10,11 +10,11 @@ import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
-import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.OcrModelInstallException
-import info.meuse24.pdf_scanner.util.OcrQuality
-import info.meuse24.pdf_scanner.util.ResourceProvider
-import info.meuse24.pdf_scanner.util.toQuality
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.model.OcrModelInstallException
+import info.meuse24.pdf_scanner.domain.model.OcrQuality
+import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
+import info.meuse24.pdf_scanner.domain.model.toQuality
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

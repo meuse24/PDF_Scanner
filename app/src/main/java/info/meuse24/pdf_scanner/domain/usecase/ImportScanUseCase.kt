@@ -1,11 +1,10 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import android.net.Uri
+import info.meuse24.pdf_scanner.domain.gateway.DocumentFileStore
+import info.meuse24.pdf_scanner.domain.gateway.SearchablePdfGenerator
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
-import info.meuse24.pdf_scanner.util.FileUtil
-import info.meuse24.pdf_scanner.util.OcrPipelineStatus
-import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
 import java.util.Locale
 import javax.inject.Inject
 
@@ -14,24 +13,24 @@ import javax.inject.Inject
  * Wirft eine Exception bei Fehler; das ViewModel übersetzt sie in UI-Strings.
  */
 class ImportScanUseCase @Inject constructor(
-    private val fileUtil:             FileUtil,
-    private val searchablePdfBuilder: SearchablePdfBuilder,
+    private val fileStore:            DocumentFileStore,
+    private val searchablePdfBuilder: SearchablePdfGenerator,
     private val repository:           DocumentRepository
 ) {
     suspend operator fun invoke(
-        pdfUri:         Uri,
+        pdfUri:         Any,
         pageCount:      Int,
         filename:       String,
-        thumbnailUri:   Uri?    = null,
+        thumbnailUri:   Any?    = null,
         makeSearchable: Boolean = false,
         languageCode:   String  = Locale.getDefault().language,
         onProgress:     (Int, Int) -> Unit = { _, _ -> },
         onStatus:       (OcrPipelineStatus) -> Unit = {}
     ): Document {
-        val savedFile     = fileUtil.savePdfFromUri(pdfUri, filename)
+        val savedFile     = fileStore.savePdf(pdfUri, filename)
         val baseName      = savedFile.nameWithoutExtension
         val thumbnailPath = thumbnailUri?.let {
-            fileUtil.saveThumbnailFromUri(it, baseName)?.absolutePath
+            fileStore.saveThumbnail(it, baseName)?.absolutePath
         }
 
         var isSearchable  = false

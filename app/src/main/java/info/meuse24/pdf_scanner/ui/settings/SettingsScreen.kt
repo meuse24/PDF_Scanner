@@ -54,9 +54,9 @@ import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
-import info.meuse24.pdf_scanner.ui.theme.ThemeMode
-import info.meuse24.pdf_scanner.util.AppSettings
-import info.meuse24.pdf_scanner.util.AppSortOrder
+import info.meuse24.pdf_scanner.domain.model.ThemeMode
+import info.meuse24.pdf_scanner.domain.model.AppSettings
+import info.meuse24.pdf_scanner.domain.model.AppSortOrder
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)

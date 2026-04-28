@@ -1,389 +1,331 @@
-# Umsetzungsvorschlag: Auto-Tags & OCR-Text-Export
+# Clean Architecture Refactoring Plan
 
-## Feature 1: Automatische Dokument-Tags aus OCR reaktivieren
+Stand: 2026-04-27 (re-verifiziert)
 
-### Ausgangslage & Diagnose
+Ziel ist nicht ein Big-Bang-Umbau, sondern eine schrittweise Entkopplung mit
+laufend baubarem Projektzustand.
 
-`AutoTagUseCase` existiert und ist vollständig implementiert, wird aber nie aufgerufen.
-In `MakeSearchableUseCase:42` steht `tags = null` — hartkodiert.
+## Leitlinien
 
-Das Keyword-Matching hatte früher Zuverlässigkeitsprobleme:
-- Viele Begriffe wurden aus Angst vor False Positives entfernt (Kommentare belegen das: "Rechnung removed — too common", "Police removed — matches English texts")
-- Nur Word-Start-Anker (`(?<!\p{L})kw`), kein Word-End-Anker → "Rechnungslegung" triggert kein "invoice", aber "Bruttobetrag123" schon
-- Einzelner Keyword-Treffer reicht für Tag → sehr fehleranfällig bei kurzen Texten
-- Kein Score-Schwellenwert: alles oder nichts
-- Kein OCR-Text-Normalisierung vor dem Matching
-- Keine Muster für strukturelle Signale (Geldbeträge, Datumsformate)
+- `domain` bleibt pure Kotlin: keine Android-, UI-, Room-, MLKit- oder Storage-Implementierungstypen.
+- `domain` enthaelt Modelle, Repository-Interfaces, UseCases, Workflows, Ports (`domain/pdf/`, `domain/gateway/`) und fachliche Fehler/Result-Typen.
+- `data` implementiert Repository-Interfaces und kapselt Room, Preferences, Dateien, Android Storage und Mapper.
+- `ui` enthaelt Compose Screens, ViewModels, UI State, Navigation und UI-spezifische Mapper.
+- `di` verdrahtet Implementierungen gegen Domain-Interfaces.
+- Der bestehende Single-Module-Aufbau kann vorerst bleiben; zuerst werden Package-Grenzen sauber gezogen.
 
-### Lösungsansatz: Scoring-basiertes Matching mit erweitertem Keyword-Set
+## Verifizierte Findings (Stand 2026-04-27)
 
-Statt binäres Treffer/Kein-Treffer: Jeder Keyword-Treffer gibt Punkte, Tag wird nur gesetzt wenn Mindestpunktzahl erreicht. Hochwertige Signale (z. B. "Rechnungsnummer") geben mehr Punkte als allgemeine Begriffe ("Betrag").
+### 1. `util` ist ein Mischbereich ✓ bestaetigt
 
----
+`util/` enthaelt aktuell ca. 36 Dateien mit stark gemischten Verantwortlichkeiten:
 
-### Schritt 1: `AutoTagUseCase.kt` überarbeiten
+**Domain-nah (gehoert nach `domain/model`):**
+- `AppSettings.kt`, `AppSortOrder.kt`, `OcrQuality.kt`
 
-**Neue Datenstruktur:**
+**Port-Interfaces (gehoert nach `domain/gateway`):**
+- `DispatcherProvider.kt`, `StorageProvider.kt`, `DownloadsStorage.kt`, `ResourceProvider.kt`
+- `OcrInputImageLoader.kt`, `TextRecognizerRunner.kt`, `QrCodeScanner.kt`
 
-```kotlin
-data class TagRule(
-    val keyword: String,
-    val score: Int   // 1–3: 3 = eindeutiges Signal, 1 = schwaches Indiz
-)
+**Implementierungen (gehoert nach `data/*` oder `platform/`):**
+- PDF: `PdfEditor.kt`, `PdfEditorCore/Annotation/Overlay/Redaction/ImageOps`, `SearchablePdfBuilder.kt`, `PdfPageBitmapRenderer/Cache`, `PdfPrintHelper/Adapter`
+- OCR: `OcrManager.kt`, `OcrModelInstaller.kt`, `OcrPipeline.kt`, `OcrPageTextJson.kt`
+- Android-Plattform: `AppLockManager.kt`, `PlayReviewPromptManager.kt`, `FileUtil.kt`, `PdfDocumentIntents.kt`
 
-// Minimale Score-Schwelle pro Tag, damit dieser gesetzt wird
-const val TAG_THRESHOLD = 4
+### 2. `domain` importiert aus `util` und `ui` ~ teils bestaetigt
+
+**Bestaetigt:**
+- `domain/repository/AppSettingsRepository.kt` importiert `util.AppSettings`, `util.AppSortOrder` und `ui.theme.ThemeMode`.
+
+**Nicht bestaetigt (Pruefung 2026-04-27):**
+- Aktuell keine `android.*`- oder `androidx.*`-Imports in `domain/` gefunden.
+- Die im urspruenglichen Plan genannten Imports von `android.net.Uri` (ImportScanUseCase, AppendToPdfUseCase, CreatePdfFromImagesUseCase) und `android.graphics.Bitmap` (PdfRenderingOps, PdfMetadataOps) konnten nicht bestaetigt werden. Vor Phase 4 manuell gegenprufen:
+  ```powershell
+  rg "^import android" app/src/main/java/info/meuse24/pdf_scanner/domain
+  ```
+
+### 3. `HomeViewModel` ist zu breit ✓ bestaetigt
+
+`ui/home/HomeViewModel.kt` hat ~792 Zeilen und buendelt:
+- Listen-/Suchzustand
+- Import und Export
+- OCR-Extraktion und OCR-Backfill
+- Make-searchable Workflow
+- Datei- und Thumbnail-Rename
+- Review-Prompt
+- Fehler- und Snackbar-Mapping
+
+### 4. Settings-Typen liegen in `util` ✓ bestaetigt
+
+`AppSettings`, `AppSortOrder` und `OcrQuality` werden von Domain, Data und UI genutzt, liegen aber in `util`.
+Guter Kandidat fuer `domain/model`.
+
+**Sonderfall `ThemeMode`:** Liegt in `ui/theme/ThemeMode.kt`. Da Theme-Praeferenz fachlich ist (gespeichert, nicht nur UI-Zustand), soll sie nach `domain/model/ThemeMode.kt` verschoben und UI-seitig gemappt werden.
+
+### 5. OCR-Domain-Typen existieren noch nicht als eigene Klassen ~ neu
+
+Die im Plan genannten Typen (`OcrPipelineStatus`, `OcrResultStats`, `OcrUsage`, `OcrScript`, `OcrThresholds`) sind **nicht als eigenstaendige Dateien vorhanden**. Sie sind vermutlich in `OcrManager.kt` oder `OcrPipeline.kt` eingebettet. Phase 3/OCR bedeutet daher, diese Typen erst **zu extrahieren** und dann in `domain/model` zu platzieren.
+
+### 6. Bereits vorhandene Domain-Strukturen (neu erganzt)
+
+- `domain/pdf/` existiert mit 8 Port-Interfaces: `PdfAnnotationOps`, `PdfExceptions`, `PdfImageRenderer`, `PdfMetadataOps`, `PdfRenderingOps`, `PdfSecurityOps`, `PdfStructureOps`, `PdfTextOps`. Gute Grundlage fuer Phase 6.
+- `domain/service/` existiert mit `BusinessCardParser.kt`, `ScanArtifactPersister.kt`, `VCardBuilder.kt`.
+- `domain/gateway/` existiert **nicht** — muss angelegt werden.
+- `domain/common/` existiert **nicht** — muss bei Bedarf angelegt werden.
+
+### 7. `data/` fehlen Ziel-Unterverzeichnisse (neu erganzt)
+
+Aktuell hat `data/` nur: `export/`, `local/`, `mapper/`, `repository/`.
+Fuer die Zielstruktur muessen angelegt werden: `data/storage/`, `data/ocr/`, `data/pdf/`, `data/settings/`, `data/platform/`.
+
+## Zielstruktur im bestehenden Modul
+
+Solange kein Multi-Module-Umbau gemacht wird:
+
+```text
+info.meuse24.pdf_scanner
+├── data
+│   ├── export          (bereits vorhanden)
+│   ├── local           (bereits vorhanden)
+│   ├── mapper          (bereits vorhanden)
+│   ├── repository      (bereits vorhanden)
+│   ├── ocr             (neu: MLKit-Implementierungen)
+│   ├── pdf             (neu: PdfBox-Implementierungen)
+│   ├── platform        (neu: Android-Helper wie ResourceProvider-Impl, PlayReview)
+│   ├── settings        (neu: DataStore/SharedPrefs-Implementierung)
+│   └── storage         (neu: StorageProvider-Impl, DownloadsStorage-Impl)
+├── di
+├── domain
+│   ├── common          (neu: pure fachliche Helper-Funktionen)
+│   ├── gateway         (neu: Port-Interfaces fuer externe Dienste)
+│   ├── model           (neu: AppSettings, AppSortOrder, ThemeMode, OCR-Typen)
+│   ├── pdf             (bereits vorhanden: 8 Ops-Interfaces)
+│   ├── repository
+│   ├── service         (bereits vorhanden: BusinessCardParser, ScanArtifactPersister, VCardBuilder)
+│   ├── usecase
+│   └── workflow
+└── ui
+    ├── ...
+    └── theme
 ```
 
-**Erweiterte Keyword-Liste pro Kategorie:**
+Spaeter optional als echte Gradle-Module:
 
-```
-"invoice":
-  Score 3: "Rechnungsnummer", "Rechnungsdatum", "Rechnungsbetrag", "Nettobetrag",
-           "Bruttobetrag", "Zahlungsziel", "Invoice No", "Invoice Date", "Faktura"
-  Score 2: "Rechnung", "MwSt.-Betrag", "Mehrwertsteuer", "Umsatzsteuer", "USt.",
-           "Fälligkeitsdatum", "Zahlbar bis", "Due date", "Total amount", "Subtotal",
-           "Net amount", "Gross amount", "Steuernummer", "Tax number"
-  Score 1: "Betrag", "Amount", "Summe", "EUR", "inkl. MwSt", "zzgl. MwSt"
-  Regex-Bonus (+2): Geldbetragsformat €/EUR mit Dezimalzahl: `\d+[.,]\d{2}\s*(?:€|EUR)`
-
-"contract":
-  Score 3: "Mietvertrag", "Arbeitsvertrag", "Kaufvertrag", "Dienstleistungsvertrag",
-           "Rahmenvertrag", "Werkvertrag", "Darlehensvertrag"
-  Score 2: "Vertrag", "Contract", "Vereinbarung", "Agreement", "Auftragsbestätigung",
-           "Leistungsvereinbarung", "Allgemeine Geschäftsbedingungen", "AGB",
-           "Kündigung", "Laufzeit", "§", "Vertragspartner"
-  Score 1: "Datum des Vertrags", "Vertragsschluss", "unterzeichnet"
-
-"insurance":
-  Score 3: "Versicherungsschein", "Versicherungsnummer", "Versicherungspolice",
-           "Schadensfall", "Schadensnummer"
-  Score 2: "Versicherungsbeitrag", "Versicherungsschutz", "Prämie", "Insurance",
-           "Deckungssumme", "Selbstbehalt", "Leistungsfall", "Versicherungsnehmer"
-  Score 1: "Versicherung", "versichert", "Policeninhaber"
-
-"certificate":
-  Score 3: "Zeugnis", "Certificate", "Diplom", "Diploma", "Abschlusszeugnis",
-           "Hochschulzeugnis", "Zertifikat", "Urkunde"
-  Score 2: "Bescheinigung", "Nachweis", "Teilnahmebescheinigung", "Ausbildungszeugnis",
-           "Führungszeugnis", "Bestätigung"
-  Score 1: "hiermit bestätigt", "hereby certify"
-
-"bank":
-  Score 3: "Kontoauszug", "IBAN", "Kontonummer", "Bank statement", "Girokonto"
-  Score 2: "Sparkasse", "Volksbank", "Commerzbank", "Deutsche Bank", "ING-DiBa",
-           "DKB", "Postbank", "Comdirect", "Buchungsdatum", "Wertstellung",
-           "Haben", "Soll", "Saldo", "Kontostand", "BIC", "SWIFT"
-  Score 1: "Lastschrift", "Überweisung", "Dauerauftrag"
-  Regex-Bonus (+3): IBAN-Format (verbessert, siehe unten)
-
-"delivery":
-  Score 3: "Lieferschein", "Frachtbrief", "Lieferscheinnummer"
-  Score 2: "Delivery note", "Sendungsnummer", "Trackingnummer", "Wareneingang",
-           "Lieferadresse", "Empfänger", "Paketscheinnummer", "DHL", "UPS", "DPD",
-           "GLS", "Hermes", "FedEx"
-  Score 1: "Lieferung", "Versand", "Paket"
+```text
+app -> ui, data, domain
+ui -> domain
+data -> domain
+domain -> keine Android-Abhaengigkeit
 ```
 
-**Verbesserter IBAN-Regex:**
-```kotlin
-// Strikter: mindestens 15, maximal 34 Zeichen nach Länderkennzeichen
-private val IBAN_REGEX = Regex(
-    """(?<!\p{L})[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){3,7}(?!\p{L})"""
-)
+## Phase 1: Domain-Modelle aus `util` und `ui` herausziehen
+
+Ziel: Fachliche Settings- und OCR-Typen liegen nicht mehr in `util`/`ui`.
+
+Aufgaben:
+
+- `AppSettings` nach `domain/model/AppSettings.kt` verschieben.
+- `AppSortOrder` nach `domain/model/AppSortOrder.kt` verschieben.
+- `OcrQuality` nach `domain/model/OcrQuality.kt` verschieben.
+- `ThemeMode` nach `domain/model/ThemeMode.kt` verschieben; UI mappt nur noch den Domain-Typ.
+- Imports in `data`, `ui`, `domain` aktualisieren.
+
+Akzeptanzkriterien:
+
+- `domain/repository/AppSettingsRepository.kt` importiert nichts aus `util` oder `ui`.
+- Settings-Tests laufen weiter.
+- `./gradlew.bat :app:assembleDebug` ist erfolgreich.
+
+## Phase 2: Pure Helper in `domain/common` verschieben
+
+Ziel: Kleine fachliche Funktionen werden explizit Domain-Code.
+
+Aufgaben:
+
+- `normalizePageIndexes`, `normalizeSplitPoints`, `buildRanges` und verwandte pure Funktionen aus `util` in `domain/common` verschieben.
+- UI- und Workflow-Imports aktualisieren.
+- Falls Funktionen UI-spezifisch sind, in `ui/shared` lassen oder dorthin verschieben.
+
+Akzeptanzkriterien:
+
+- `domain/workflow/*` importiert keine Helper mehr aus `util`.
+- Bestehende Page-/Split-/Reorder-Tests laufen weiter.
+
+## Phase 3: Ports sauber benennen und platzieren
+
+Ziel: Domain kennt nur Interfaces, Implementierungen liegen ausserhalb.
+
+Aufgaben:
+
+- `domain/gateway/` Verzeichnis anlegen.
+- Domain-Ports dorthin verschieben:
+  - `DispatcherProvider`
+  - `ResourceProvider`, falls Workflows weiterhin Text-Mapping brauchen
+  - `StorageProvider`
+  - `DownloadsStorage`
+  - `OcrInputImageLoader`
+  - `TextRecognizerRunner`
+  - `SearchablePdfBuilder` als Interface (Implementierung bleibt in `data/pdf`)
+  - `QrCodeScanner`
+- `data/*` Unterverzeichnisse anlegen: `storage/`, `ocr/`, `pdf/`, `settings/`, `platform/`.
+- Android-Implementierungen in neue Data-Pakete verschieben:
+  - `AndroidStorageProvider` -> `data/storage`
+  - `AndroidDownloadsStorage` -> `data/storage`
+  - `AndroidResourceProvider` -> `data/platform`
+  - `PlayReviewPromptManager/Policy` -> `data/platform`
+  - MLKit/OCR-Implementierungen (`OcrManager`, `OcrModelInstaller`, `OcrPipeline`) -> `data/ocr`
+  - PDF-Implementierungen (`PdfEditor*`, `SearchablePdfBuilder`) -> `data/pdf`
+- Hilt-Bindings in `di/` aktualisieren.
+
+Akzeptanzkriterien:
+
+- `domain` importiert keine Implementierungsklassen aus `util`.
+- DI bindet Implementierungen gegen Domain-Ports.
+- OCR-, PDF- und QR-UseCases bleiben von UI/API unveraendert nutzbar.
+
+## Phase 4: Android-Typen aus UseCases entfernen (vor Beginn pruefen)
+
+Ziel: UseCases verwenden fachliche Inputs statt `Uri` und `Bitmap`.
+
+**Vor Beginn manuell verifizieren**, ob noch Android-Typen in `domain/` vorhanden:
+```powershell
+rg "^import android|^import androidx" app/src/main/java/info/meuse24/pdf_scanner/domain
+```
+Falls keine Treffer: Phase ueberspringen oder als erledigt markieren.
+
+Aufgaben (falls Treffer vorhanden):
+
+- `ImportedFileSource` oder `DocumentInput` einfuehren:
+  - `displayName: String`
+  - `mimeType: String?`
+  - Domain-Port fuer Content-Zugriff statt `Uri`
+- `ImportScanUseCase`, `ImportFileUseCase`, `AppendToPdfUseCase`, `CreatePdfFromImagesUseCase` auf abstrahierte Inputs umstellen.
+- Android-`Uri` nur in UI/ViewModel oder Data-Storage-Adaptern aufloesen.
+- Fuer Bilder ein Domain-neutrales Modell einfuehren: `ImageBytes` oder `ImageSource`.
+- `Bitmap` aus `domain/pdf/*Ops`-Signaturen entfernen oder in einen Android-spezifischen Renderer verschieben.
+
+Akzeptanzkriterien:
+
+- `rg "^import android" app/src/main/java/info/meuse24/pdf_scanner/domain` liefert keine Treffer.
+- Domain-UseCase-Tests brauchen keine Android-Framework-Typen.
+
+## Phase 5: OCR-Domain-Typen extrahieren
+
+Ziel: Fachliche OCR-Konzepte sind explizit im Domain-Layer sichtbar.
+
+Hinweis: Diese Typen existieren noch nicht als eigenstaendige Klassen. Sie muessen aus `OcrManager.kt` und `OcrPipeline.kt` extrahiert werden.
+
+Aufgaben:
+
+- Domain-Typen in `domain/model/` anlegen:
+  - `OcrPipelineStatus` (idle, running, done, error)
+  - `OcrResultStats` (confidence, pageCount, language)
+  - `OcrUsage` (requestCount, modelInfo)
+  - `OcrScript` (Latin, CJK, Devanagari, …)
+  - `OcrThresholds` (Konfidenzgrenzen)
+- `OcrManager` und `OcrPipeline` verwenden die Domain-Typen statt eigener Datenstrukturen.
+- OCR-Pipeline fachlich aufteilen:
+  - Domain: Status, Result, Plan/UseCase-Entscheidung
+  - Data: MLKit Recognizer, Model-Installation, Android InputImage
+
+Akzeptanzkriterien:
+
+- Domain-Modelle fuer OCR sind reine Kotlin-Datenklassen ohne Android-Imports.
+- OCR-bezogene UI-States referenzieren nur noch Domain-Typen.
+
+## Phase 6: `HomeViewModel` entlasten
+
+Ziel: ViewModel wird zum UI-State- und Event-Orchestrator (~300-400 Zeilen).
+
+Aufgaben:
+
+- `RenameDocumentUseCase` erstellen:
+  - prueft Zielnamen
+  - verschiebt/benennt PDF und Thumbnail
+  - aktualisiert Repository
+  - liefert fachliche Fehler statt UI-Strings
+- `BuildScanSearchQueryUseCase` oder `HomeSearchController` erstellen:
+  - kapselt `buildFtsQuery`
+  - macht Suchlogik isoliert testbar
+- `OcrBackfillUseCase` erstellen:
+  - findet searchable Dokumente ohne extrahierten Text
+  - extrahiert OCR-Text
+  - aktualisiert Repository
+- Review-Prompt hinter kleinen Port/UseCase setzen (Domain-Port: `ReviewPromptPolicy`), damit `HomeViewModel` nicht direkt `PlayReviewPromptManager` kennt.
+- Snackbar-/Fehlertexte in UI-Mapping-Funktionen buendeln.
+
+Akzeptanzkriterien:
+
+- `HomeViewModel` verliert direkte `java.io.File`-Operationen.
+- `HomeViewModel` hat keine direkten Abhaengigkeiten zu Android-Implementierungsklassen ausserhalb DI.
+- Bestehende `HomeViewModelTest`-Faelle bleiben erhalten oder werden auf neue UseCase-Tests verteilt.
+
+## Phase 7: PDF/OCR-Abstraktionen abrunden
+
+Ziel: PDF- und OCR-Domain-Vertraege sind stabil und Implementierungen austauschbar.
+
+Hinweis: `domain/pdf/` hat bereits 8 gute Port-Interfaces. Diese Phase prueft und verfeinert sie.
+
+Aufgaben:
+
+- `PdfRenderingOps`, `PdfMetadataOps`, `PdfTextOps`, `PdfSecurityOps`, `PdfStructureOps` auf Domain-neutrale Signaturen pruefen (kein `Bitmap`, kein `Uri`).
+- `SearchablePdfBuilder` als formalen Domain-Port in `domain/gateway/` definieren; PDFBox-Impl bleibt in `data/pdf`.
+- Fehler-Typen fuer OCR/PDF fachlich modellieren (statt generischer Exceptions); UI-Mapping aus Domain herausloesen.
+
+Akzeptanzkriterien:
+
+- PDF/OCR-UseCases koennen in Unit-Tests mit Fake-Ports laufen.
+- Android-/MLKit-Klassen kommen nur noch in `data/`, `platform/` oder `ui/` vor.
+
+## Phase 8: Optionaler Multi-Module-Umbau
+
+Diese Phase erst angehen, wenn Package-Grenzen sauber sind und die Architekturchecks gruen sind.
+
+Aufgaben:
+
+- Gradle-Module `:domain`, `:data`, `:ui` oder Feature-Module einfuehren.
+- Domain als Android-freies Kotlin/JVM-Modul bauen.
+- Data als Android-Library mit Room, Storage, MLKit, PDFBox bauen.
+- App-Modul enthaelt Application, MainActivity und Hilt-Wiring.
+
+Akzeptanzkriterien:
+
+- Gradle verhindert Architekturverletzungen technisch.
+- `:domain:test` laeuft ohne Android Gradle Plugin.
+
+## Empfohlene Reihenfolge fuer Umsetzung
+
+1. Phase 1: `AppSettings`, `AppSortOrder`, `OcrQuality`, `ThemeMode` nach `domain/model`.
+2. Phase 2: Pure Helper aus `util` nach `domain/common`.
+3. Phase 3: Ports nach `domain/gateway`; Implementierungen in neue `data/*`-Unterverzeichnisse.
+4. Phase 4: Android-Typen in `domain` pruefen — bei keinen Treffern ueberspringen.
+5. Phase 5: OCR-Domain-Typen aus `OcrManager`/`OcrPipeline` extrahieren.
+6. Phase 6: `HomeViewModel` durch neue UseCases entlasten.
+7. Phase 7: PDF/OCR-Ports verfeinern.
+8. Phase 8 (optional): Echte Gradle-Module einfuehren.
+
+## Kontrollkommandos
+
+Nach jedem Schritt:
+
+```powershell
+./gradlew.bat :app:assembleDebug
 ```
 
-**Verbessertes Word-Boundary-Pattern:**
-```kotlin
-// Bisher nur Word-Start. Neu: auch Word-End absichern
-private fun wordPattern(kw: String) =
-    Regex("""(?<!\p{L})${Regex.escape(kw)}(?!\p{L})""", RegexOption.IGNORE_CASE)
+Architekturchecks:
+
+```powershell
+# Android-Imports in domain (Ziel: keine Treffer)
+rg "^import android|^import androidx" app/src/main/java/info/meuse24/pdf_scanner/domain
+
+# ui/util/data-Imports in domain (Ziel: keine Treffer)
+rg "^import info\.meuse24\.pdf_scanner\.(ui|data|util)" app/src/main/java/info/meuse24/pdf_scanner/domain
+
+# Implementierungen in domain (Ziel: keine Treffer)
+rg "^import info\.meuse24\.pdf_scanner\.(util\.PdfEditor|util\.OcrManager|util\.OcrPipeline)" app/src/main/java/info/meuse24/pdf_scanner/domain
 ```
 
-**Text-Normalisierung:**
-```kotlin
-private fun normalizeText(raw: String): String =
-    raw.replace(Regex("""\s+"""), " ")           // Whitespace normalisieren
-       .replace(Regex("""(\w)-\n(\w)"""), "$1$2") // OCR-Zeilentrennung in Wörtern aufheben
-       .trim()
-```
+Zielzustand:
 
-**Neue `extractTags()`-Logik:**
-```kotlin
-fun extractTags(text: String): String? {
-    if (text.isBlank()) return null
-    val normalized = normalizeText(text)
-    val found = mutableSetOf<String>()
-
-    for ((tagKey, rules) in TAG_RULES) {
-        var score = 0
-        for (rule in rules) {
-            if (wordPattern(rule.keyword).containsMatchIn(normalized)) {
-                score += rule.score
-            }
-        }
-        score += extraScore(tagKey, normalized)
-        if (score >= TAG_THRESHOLD) found.add(tagKey)
-    }
-
-    return if (found.isEmpty()) null else found.sorted().joinToString(",")
-}
-
-private fun extraScore(tagKey: String, text: String): Int = when (tagKey) {
-    "invoice" -> if (AMOUNT_REGEX.containsMatchIn(text)) 2 else 0
-    "bank"    -> if (IBAN_REGEX.containsMatchIn(text)) 3 else 0
-    else      -> 0
-}
-```
-
----
-
-### Schritt 2: Integration in `MakeSearchableUseCase.kt`
-
-```kotlin
-class MakeSearchableUseCase @Inject constructor(
-    private val searchablePdfBuilder: SearchablePdfBuilder,
-    private val repository:           DocumentRepository,
-    private val autoTagUseCase:       AutoTagUseCase          // NEU
-) {
-    ...
-    repository.markSearchableWithContent(
-        id         = record.id,
-        fileSize   = pdfFile.length(),
-        text       = searchableResult.extractedText.ifBlank { null },
-        tags       = searchableResult.extractedText.ifBlank { null }
-                         ?.let { autoTagUseCase.extractTags(it) },  // NEU
-        confidence = searchableResult.stats?.confidence,
-        language   = searchableResult.stats?.recognizedLanguage,
-        pageTexts  = searchableResult.pageTexts
-    )
-```
-
----
-
-### Schritt 3: Rückwirkende Tagging-Aktion für vorhandene Dokumente
-
-Neues `RetroTagUseCase` (einfach):
-```kotlin
-class RetroTagUseCase @Inject constructor(
-    private val repository:     DocumentRepository,
-    private val autoTagUseCase: AutoTagUseCase
-) {
-    suspend operator fun invoke(): Int {
-        val candidates = repository.getAllSearchableWithoutTags()
-        candidates.forEach { doc ->
-            val tags = doc.extractedText?.let { autoTagUseCase.extractTags(it) }
-            if (tags != null) repository.updateTags(doc.id, tags)
-        }
-        return candidates.size
-    }
-}
-```
-
-Neues `ScanDao`-Query:
-```sql
-SELECT * FROM scan_records
-WHERE extracted_text IS NOT NULL AND (tags IS NULL OR tags = '')
-AND deleted_at IS NULL
-```
-
----
-
-### Schritt 4: Tag-Filter in der Home-Liste
-
-**`ArchiveFilter` erweitern:**
-```kotlin
-sealed class ArchiveFilter {
-    object AllDocuments : ArchiveFilter()
-    object Favorites    : ArchiveFilter()
-    data class Folder(val id: Long, val name: String) : ArchiveFilter()
-    data class Tag(val key: String)                   : ArchiveFilter()  // NEU
-}
-```
-
-**Filter-Chips in HomeScreen** (unterhalb der Suchleiste, horizontal scrollbar):
-- „Alle" · „Rechnungen" · „Verträge" · „Versicherungen" · „Zertifikate" · „Bank" · „Lieferscheine"
-- Nur Chips anzeigen, für die mindestens 1 Dokument existiert
-
-**DAO-Query für Tag-Filter:**
-```sql
-SELECT * FROM scan_records
-WHERE (tags LIKE '%' || :tagKey || '%')
-  AND deleted_at IS NULL
-ORDER BY timestamp DESC
-```
-
----
-
-### Schritt 5: Rückwirkende Tagging-Aktion in den Einstellungen
-
-In den Einstellungen: Schaltfläche „Dokumente automatisch taggen" → ruft `RetroTagUseCase` auf → Toast mit Anzahl getaggter Dokumente.
-
----
-
-### Tests
-
-- `AutoTagUseCaseTest`: JVM-Unit-Test mit Texten aus echten Dokumenten (Rechnung, Kontoauszug, Zertifikat, Lieferschein) — mindestens 10 Testfälle pro Kategorie; auch Falsch-Positiv-Tests (z. B. generischer Brief ohne Rechnungsmerkmale → kein "invoice"-Tag)
-- `MakeSearchableUseCaseTest`: Mock für `AutoTagUseCase`, prüft dass Tag nicht null ist wenn Text vorhanden
-- Bestehenden `AutoTagUseCaseTest` erweitern
-
----
-
-### Strings
-
-Neue Strings in alle 10 Locales:
-- `filter_tag_all`, `filter_tag_invoice`, `filter_tag_contract`, `filter_tag_insurance`, `filter_tag_certificate`, `filter_tag_bank`, `filter_tag_delivery`
-- `settings_retro_tag_action`, `settings_retro_tag_done` (mit `%d`-Platzhalter)
-
----
-
-### Aufwand-Schätzung Feature 1
-
-| Schritt | Aufwand |
-|---------|---------|
-| AutoTagUseCase überarbeiten (Scoring + Keywords) | 2–3 h |
-| MakeSearchableUseCase integrieren | 0,5 h |
-| RetroTagUseCase + DAO-Query | 1 h |
-| Tag-Filter UI + ArchiveFilter | 2–3 h |
-| Settings-Schaltfläche | 0,5 h |
-| Strings (10 Locales) | 1 h |
-| Tests | 2 h |
-| **Gesamt** | **~9–11 h** |
-
----
-
----
-
-## Feature 2: OCR-Text als Datei exportieren (TXT)
-
-### Ausgangslage
-
-OCR-Text liegt in `ScanRecord.extractedText` (vollständig) und `ocrPageTextJson` (seitenweise) vor.
-Die App kann Text kopieren und teilen (`OcrReviewScreen:228ff`), hat aber keinen Datei-Export.
-`ExportScanUseCase` zeigt das MediaStore-Muster (`DownloadsStorage`), das direkt wiederverwendet werden kann.
-
----
-
-### Schritt 1: `ExportOcrTextUseCase.kt`
-
-```kotlin
-class ExportOcrTextUseCase @Inject constructor(
-    private val downloadsStorage: DownloadsStorage
-) {
-    suspend operator fun invoke(documents: List<Document>): String {
-        require(documents.isNotEmpty())
-        val text = buildExportText(documents)
-        val filename = if (documents.size == 1)
-            "${documents.first().filename}_ocr.txt"
-        else
-            "ocr_export_${System.currentTimeMillis()}.txt"
-
-        val entry = downloadsStorage.writeDownload(
-            displayName = filename,
-            mimeType    = "text/plain"
-        ) { output ->
-            output.writer(Charsets.UTF_8).use { it.write(text) }
-        }
-        return entry.displayName
-    }
-
-    private fun buildExportText(documents: List<Document>): String = buildString {
-        documents.forEachIndexed { idx, doc ->
-            if (documents.size > 1) {
-                appendLine("=== ${doc.filename} ===")
-                appendLine()
-            }
-            val text = doc.extractedText
-            if (text.isNullOrBlank()) {
-                appendLine("[Kein OCR-Text vorhanden]")
-            } else {
-                append(text)
-            }
-            if (idx < documents.lastIndex) {
-                appendLine()
-                appendLine()
-            }
-        }
-    }
-}
-```
-
----
-
-### Schritt 2: Einstiegspunkt 1 — `OcrReviewScreen`
-
-Neben den bestehenden Icons (Kopieren, Teilen) ein drittes Icon „Als Datei speichern" (Symbol: `Download` oder `SaveAlt`).
-
-Im `OcrReviewViewModel`:
-```kotlin
-fun exportAsText() {
-    viewModelScope.launch {
-        _isExporting.value = true
-        try {
-            val filename = exportOcrTextUseCase(listOf(currentDocument))
-            _success.value = context.getString(R.string.ocr_export_success, filename)
-        } catch (e: Exception) {
-            _error.value = context.getString(R.string.ocr_export_error)
-        } finally {
-            _isExporting.value = false
-        }
-    }
-}
-```
-
----
-
-### Schritt 3: Einstiegspunkt 2 — `DocumentEditSheet`
-
-Neue `ScanAction.ExportOcrText` in der Aktionsliste, sichtbar nur wenn `document.extractedText != null`.
-
----
-
-### Schritt 4: Mehrfachauswahl — `BulkActionBar`
-
-Neues Icon „Text exportieren" in der BulkActionBar (nach dem OCR-Button).
-- Nur Dokumente mit `extractedText != null` werden exportiert
-- Alle leer → `reportError(R.string.ocr_export_nothing_to_export)`
-
----
-
-### Schritt 5: Strings
-
-Neue Strings in alle 10 Locales:
-- `ocr_export_as_file` (Button-Label)
-- `ocr_export_success` (mit `%s` für Dateinamen)
-- `ocr_export_error`
-- `ocr_export_nothing_to_export`
-
----
-
-### Tests
-
-- `ExportOcrTextUseCaseTest`: Mock `DownloadsStorage`; prüft Dateinamen-Logik, Fallback-Text, Multi-Dokument-Trenner
-- `OcrReviewViewModelTest`: prüft `_success` / `_error` Flow nach Export
-
----
-
-### Aufwand-Schätzung Feature 2
-
-| Schritt | Aufwand |
-|---------|---------|
-| ExportOcrTextUseCase | 1 h |
-| OcrReviewScreen + ViewModel | 1,5 h |
-| DocumentEditSheet (ScanAction) | 0,5 h |
-| BulkActionBar | 1 h |
-| Strings (10 Locales) | 0,5 h |
-| Tests | 1 h |
-| **Gesamt** | **~5,5 h** |
-
----
-
----
-
-## Empfohlene Reihenfolge
-
-1. **Feature 1, Schritt 1–2** (AutoTagUseCase + Integration): Kern der Funktionalität, sofort testbar
-2. **Feature 2** (OCR-Text-Export): unabhängig, schnell umsetzbar, gutes sichtbares Ergebnis
-3. **Feature 1, Schritt 3–5** (RetroTag + Filter-UI): Polishing, erhöht Nutzwert der Tags erheblich
-
-Gesamtaufwand: **~15–17 Stunden** für beide Features vollständig.
+- Alle drei Checks liefern keine Treffer in `domain`.
+- `./gradlew.bat test` ist gruен.

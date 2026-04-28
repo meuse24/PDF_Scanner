@@ -63,7 +63,7 @@ import info.meuse24.pdf_scanner.domain.model.Folder
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.ui.entry.AppEntryAction
 import info.meuse24.pdf_scanner.ui.home.ArchiveFilter
-import info.meuse24.pdf_scanner.ui.theme.ThemeMode
+import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.util.AppLockManager
 import kotlinx.coroutines.launch
 

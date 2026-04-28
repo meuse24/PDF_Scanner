@@ -65,8 +65,8 @@ import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.ui.components.DocumentEditSheet
 import info.meuse24.pdf_scanner.ui.components.ScanAction
 import info.meuse24.pdf_scanner.ui.ocr.OcrQualityBadge
-import info.meuse24.pdf_scanner.util.toQuality
-import info.meuse24.pdf_scanner.util.toQualityPercent
+import info.meuse24.pdf_scanner.domain.model.toQuality
+import info.meuse24.pdf_scanner.domain.model.toQualityPercent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File

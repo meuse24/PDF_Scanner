@@ -1,9 +1,9 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
+import info.meuse24.pdf_scanner.domain.common.resolveUniqueFilename
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.pdf.PdfStructureOps
 import info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister
-import info.meuse24.pdf_scanner.util.resolveUniqueFilename
 import java.io.File
 import javax.inject.Inject
 

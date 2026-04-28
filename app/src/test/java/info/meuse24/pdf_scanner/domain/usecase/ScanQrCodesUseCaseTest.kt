@@ -2,7 +2,7 @@ package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.util.OcrModelInstaller
-import info.meuse24.pdf_scanner.util.OcrPipelineStatus
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import info.meuse24.pdf_scanner.util.QrCodeScanner
 import org.mockito.Mockito.mock
 import kotlinx.coroutines.test.runTest

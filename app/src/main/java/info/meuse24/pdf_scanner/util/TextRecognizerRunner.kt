@@ -3,6 +3,7 @@ package info.meuse24.pdf_scanner.util
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognizer
+import info.meuse24.pdf_scanner.domain.model.OcrResultStats
 import java.io.File
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject

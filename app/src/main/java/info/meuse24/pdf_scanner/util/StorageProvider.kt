@@ -2,13 +2,9 @@ package info.meuse24.pdf_scanner.util
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
 import java.io.File
 import javax.inject.Inject
-
-interface StorageProvider {
-    fun scansDir(): File
-    fun tempDir(): File
-}
 
 class AndroidStorageProvider @Inject constructor(
     @param:ApplicationContext private val context: Context

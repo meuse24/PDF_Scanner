@@ -1,5 +1,8 @@
 package info.meuse24.pdf_scanner.util
 
+import info.meuse24.pdf_scanner.domain.model.OcrQuality
+import info.meuse24.pdf_scanner.domain.model.toQuality
+import info.meuse24.pdf_scanner.domain.model.toQualityPercent
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

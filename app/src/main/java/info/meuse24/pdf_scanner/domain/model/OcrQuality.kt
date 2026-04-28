@@ -1,4 +1,4 @@
-package info.meuse24.pdf_scanner.util
+package info.meuse24.pdf_scanner.domain.model
 
 import kotlin.math.roundToInt
 

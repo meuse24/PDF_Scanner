@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.compose.runtime.Immutable
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.model.Folder
-import info.meuse24.pdf_scanner.util.AppSettings
+import info.meuse24.pdf_scanner.domain.model.AppSettings
 
 @Immutable
 data class HomeArchiveUiState(

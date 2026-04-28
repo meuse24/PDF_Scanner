@@ -1,9 +1,9 @@
 package info.meuse24.pdf_scanner.domain.repository
 
 import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
-import info.meuse24.pdf_scanner.util.AppSettings
-import info.meuse24.pdf_scanner.util.AppSortOrder
-import info.meuse24.pdf_scanner.ui.theme.ThemeMode
+import info.meuse24.pdf_scanner.domain.model.AppSettings
+import info.meuse24.pdf_scanner.domain.model.AppSortOrder
+import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import kotlinx.coroutines.flow.StateFlow
 
 interface AppSettingsRepository {

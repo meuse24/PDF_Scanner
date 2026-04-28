@@ -9,8 +9,8 @@ import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.usecase.CreatePdfFromImagesUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
-import info.meuse24.pdf_scanner.util.DispatcherProvider
-import info.meuse24.pdf_scanner.util.StorageProvider
+import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

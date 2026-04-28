@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
 import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
 import info.meuse24.pdf_scanner.domain.model.PdfPageSizePreset

@@ -2,6 +2,8 @@ package info.meuse24.pdf_scanner.util
 
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
+import info.meuse24.pdf_scanner.domain.common.buildRanges
+import info.meuse24.pdf_scanner.domain.common.normalizeSplitPoints
 import info.meuse24.pdf_scanner.domain.model.PdfMetadata
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull

@@ -5,13 +5,14 @@ import android.content.Context
 import androidx.core.content.edit
 import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
+import info.meuse24.pdf_scanner.domain.gateway.ReviewPromptPolicy
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class PlayReviewPromptManager @Inject constructor(
     @ApplicationContext context: Context
-) {
+) : ReviewPromptPolicy {
     private val appContext = context.applicationContext
     private val prefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     private val lock = Any()
@@ -26,6 +27,9 @@ class PlayReviewPromptManager @Inject constructor(
             }
         }
     }
+
+    override fun recordSuccessfulDocumentActionAndCheckEligibility(): Boolean =
+        recordSuccessfulDocumentActionAndCheckEligibility(System.currentTimeMillis())
 
     fun recordSuccessfulDocumentActionAndCheckEligibility(
         nowMillis: Long = System.currentTimeMillis()

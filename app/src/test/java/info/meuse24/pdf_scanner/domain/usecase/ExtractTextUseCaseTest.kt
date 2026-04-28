@@ -8,11 +8,12 @@ import info.meuse24.pdf_scanner.util.OcrInputImageLoader
 import info.meuse24.pdf_scanner.util.OcrModelInstaller
 import info.meuse24.pdf_scanner.util.OcrManager
 import info.meuse24.pdf_scanner.util.OcrPipeline
-import info.meuse24.pdf_scanner.util.OcrPipelineResult
-import info.meuse24.pdf_scanner.util.OcrPipelineStatus
-import info.meuse24.pdf_scanner.util.OcrUsage
-import info.meuse24.pdf_scanner.util.OcrResultStats
-import info.meuse24.pdf_scanner.util.OcrScript
+import info.meuse24.pdf_scanner.util.MlKitOcrDocumentTextExtractor
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineResult
+import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
+import info.meuse24.pdf_scanner.domain.model.OcrUsage
+import info.meuse24.pdf_scanner.domain.model.OcrResultStats
+import info.meuse24.pdf_scanner.domain.model.OcrScript
 import info.meuse24.pdf_scanner.util.TextRecognizerRunner
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -60,10 +61,12 @@ class ExtractTextUseCaseTest {
         )
 
         val useCase = ExtractTextUseCase(
-            ocrPipeline = ocrPipeline,
-            inputImageLoader = inputImageLoader,
-            dispatcherProvider = TestDispatcherProvider(testDispatcher),
-            textRecognizerRunner = textRecognizerRunner
+            ocrDocumentTextExtractor = MlKitOcrDocumentTextExtractor(
+                ocrPipeline = ocrPipeline,
+                inputImageLoader = inputImageLoader,
+                dispatcherProvider = TestDispatcherProvider(testDispatcher),
+                textRecognizerRunner = textRecognizerRunner
+            )
         )
 
         val result = useCase(
@@ -102,10 +105,12 @@ class ExtractTextUseCaseTest {
         )
 
         val useCase = ExtractTextUseCase(
-            ocrPipeline = ocrPipeline,
-            inputImageLoader = inputImageLoader,
-            dispatcherProvider = TestDispatcherProvider(testDispatcher),
-            textRecognizerRunner = textRecognizerRunner
+            ocrDocumentTextExtractor = MlKitOcrDocumentTextExtractor(
+                ocrPipeline = ocrPipeline,
+                inputImageLoader = inputImageLoader,
+                dispatcherProvider = TestDispatcherProvider(testDispatcher),
+                textRecognizerRunner = textRecognizerRunner
+            )
         )
 
         val error = runCatching {
@@ -143,10 +148,12 @@ class ExtractTextUseCaseTest {
         val thumb = thumbnailFile("document.jpg")
 
         val useCase = ExtractTextUseCase(
-            ocrPipeline = ocrPipeline,
-            inputImageLoader = inputImageLoader,
-            dispatcherProvider = TestDispatcherProvider(testDispatcher),
-            textRecognizerRunner = textRecognizerRunner
+            ocrDocumentTextExtractor = MlKitOcrDocumentTextExtractor(
+                ocrPipeline = ocrPipeline,
+                inputImageLoader = inputImageLoader,
+                dispatcherProvider = TestDispatcherProvider(testDispatcher),
+                textRecognizerRunner = textRecognizerRunner
+            )
         )
 
         val result = useCase(
@@ -225,7 +232,7 @@ private class FailingOcrInputImageLoader : OcrInputImageLoader {
 }
 
 private class FakeTextRecognizerRunner(
-    private val results: Map<InputImage, Pair<com.google.mlkit.vision.text.Text, info.meuse24.pdf_scanner.util.OcrResultStats>>,
+    private val results: Map<InputImage, Pair<com.google.mlkit.vision.text.Text, info.meuse24.pdf_scanner.domain.model.OcrResultStats>>,
     private val pageImages: List<InputImage> = emptyList()
 ) : TextRecognizerRunner {
     val sourceFiles = mutableListOf<File>()
@@ -240,14 +247,14 @@ private class FakeTextRecognizerRunner(
     override suspend fun recognizeWithStats(
         recognizer: TextRecognizer,
         image: InputImage
-    ): Pair<com.google.mlkit.vision.text.Text, info.meuse24.pdf_scanner.util.OcrResultStats> {
+    ): Pair<com.google.mlkit.vision.text.Text, info.meuse24.pdf_scanner.domain.model.OcrResultStats> {
         return results.getValue(image)
     }
 
     override suspend fun processPages(
         pdfFile: File,
         recognizer: TextRecognizer,
-        onPage: suspend (text: String, stats: info.meuse24.pdf_scanner.util.OcrResultStats?) -> Unit
+        onPage: suspend (text: String, stats: info.meuse24.pdf_scanner.domain.model.OcrResultStats?) -> Unit
     ) {
         sourceFiles += pdfFile
         pageImages.forEach { image ->

@@ -41,7 +41,7 @@ class AppSettingsPreferencesTest {
     }
 
     @Test
-    fun `load falls back to ten second trash undo snackbar duration`() {
+    fun `load falls back to five second trash undo snackbar duration`() {
         val context = mock(Context::class.java)
         val prefs = mock(SharedPreferences::class.java)
         `when`(context.applicationContext).thenReturn(context)
@@ -59,6 +59,6 @@ class AppSettingsPreferencesTest {
 
         val settings = AppSettingsPreferences.load(context)
 
-        assertEquals(10, settings.trashUndoSnackbarSeconds)
+        assertEquals(5, settings.trashUndoSnackbarSeconds)
     }
 }

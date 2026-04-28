@@ -44,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -166,7 +167,10 @@ fun SplitScreen(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(stringResource(R.string.split_confirm))
+            Text(
+                text = stringResource(R.string.split_confirm),
+                textAlign = TextAlign.Center
+            )
         }
     }
 

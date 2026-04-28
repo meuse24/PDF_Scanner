@@ -157,7 +157,11 @@ internal fun RedactFooter(
                             modifier = Modifier.weight(1f),
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
                         ) {
-                            Text(stringResource(R.string.signature_page_previous), maxLines = 1)
+                            Text(
+                                text = stringResource(R.string.signature_page_previous),
+                                textAlign = TextAlign.Center,
+                                maxLines = 1
+                            )
                         }
                         OutlinedButton(
                             onClick = onNextPage,
@@ -165,7 +169,11 @@ internal fun RedactFooter(
                             modifier = Modifier.weight(1f),
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
                         ) {
-                            Text(stringResource(R.string.signature_page_next), maxLines = 1)
+                            Text(
+                                text = stringResource(R.string.signature_page_next),
+                                textAlign = TextAlign.Center,
+                                maxLines = 1
+                            )
                         }
                     }
                 }
@@ -176,7 +184,10 @@ internal fun RedactFooter(
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
                     ) {
-                        Text(stringResource(R.string.highlight_zoom_reset_button))
+                        Text(
+                            text = stringResource(R.string.highlight_zoom_reset_button),
+                            textAlign = TextAlign.Center
+                        )
                     }
                 } else {
                     Text(
@@ -239,7 +250,10 @@ internal fun RedactFooter(
             enabled = hasAnyRects && !editLoading,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(R.string.redact_apply))
+            Text(
+                text = stringResource(R.string.redact_apply),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }

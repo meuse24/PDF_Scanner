@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
@@ -157,7 +158,10 @@ fun ImagesPdfOptionsContent(
                             )
                             Spacer(Modifier.width(8.dp))
                         }
-                        Text(actionLabel)
+                        Text(
+                            text = actionLabel,
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }

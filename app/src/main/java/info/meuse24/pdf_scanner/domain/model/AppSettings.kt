@@ -8,7 +8,7 @@ data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val m24AnimationEnabled: Boolean = true,
     val keepScreenOnDuringScan: Boolean = false,
-    val defaultMakeSearchable: Boolean = false,
+    val defaultMakeSearchable: Boolean = true,
     val autoTaggingEnabled: Boolean = true,
     val defaultOcrLanguage: String = OCR_LANGUAGE_AUTO,
     val defaultSortOrder: AppSortOrder = AppSortOrder.BY_DATE,
@@ -19,6 +19,6 @@ data class AppSettings(
 ) {
     companion object {
         const val OCR_LANGUAGE_AUTO = "auto"
-        const val DEFAULT_TRASH_UNDO_SNACKBAR_SECONDS = 10
+        const val DEFAULT_TRASH_UNDO_SNACKBAR_SECONDS = 5
     }
 }

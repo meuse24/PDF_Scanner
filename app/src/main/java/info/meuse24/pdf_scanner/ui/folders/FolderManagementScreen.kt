@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,7 +55,10 @@ fun FolderManagementScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(R.string.folder_create))
+            Text(
+                text = stringResource(R.string.folder_create),
+                textAlign = TextAlign.Center
+            )
         }
 
         LazyColumn(
@@ -99,7 +103,10 @@ fun FolderManagementScreen(
             onClick = onNavigateBack,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(R.string.action_cancel))
+            Text(
+                text = stringResource(R.string.action_cancel),
+                textAlign = TextAlign.Center
+            )
         }
     }
 

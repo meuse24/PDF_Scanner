@@ -33,7 +33,7 @@ object AppSettingsPreferences {
             themeMode = ThemeMode.fromStorageValue(prefs.getString(KEY_THEME_MODE, null)),
             m24AnimationEnabled = prefs.getBoolean(KEY_M24_ANIMATION_ENABLED, true),
             keepScreenOnDuringScan = prefs.getBoolean(KEY_KEEP_SCREEN_ON_DURING_SCAN, false),
-            defaultMakeSearchable = prefs.getBoolean(KEY_DEFAULT_MAKE_SEARCHABLE, false),
+            defaultMakeSearchable = prefs.getBoolean(KEY_DEFAULT_MAKE_SEARCHABLE, true),
             autoTaggingEnabled = prefs.getBoolean(KEY_AUTO_TAGGING_ENABLED, true),
             defaultOcrLanguage = prefs.getString(
                 KEY_DEFAULT_OCR_LANGUAGE,

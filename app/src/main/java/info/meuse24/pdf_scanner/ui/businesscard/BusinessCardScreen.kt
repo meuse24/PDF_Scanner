@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -140,20 +141,29 @@ fun BusinessCardScreen(
                 enabled = !uiState.loading,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.business_card_add_to_contacts))
+                Text(
+                    text = stringResource(R.string.business_card_add_to_contacts),
+                    textAlign = TextAlign.Center
+                )
             }
             TextButton(
                 onClick = viewModel::shareVCard,
                 enabled = !uiState.loading,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.business_card_share_vcard))
+                Text(
+                    text = stringResource(R.string.business_card_share_vcard),
+                    textAlign = TextAlign.Center
+                )
             }
             TextButton(
                 onClick = onNavigateBack,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.action_cancel))
+                Text(
+                    text = stringResource(R.string.action_cancel),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }

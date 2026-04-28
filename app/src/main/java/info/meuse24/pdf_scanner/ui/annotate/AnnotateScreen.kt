@@ -541,7 +541,12 @@ fun AnnotateScreen(
             },
             enabled = hasAnyAnnotations && !editLoading,
             modifier = Modifier.fillMaxWidth()
-        ) { Text(stringResource(R.string.annotate_apply)) }
+        ) {
+            Text(
+                text = stringResource(R.string.annotate_apply),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 
     AnnotateDialogs(
@@ -845,7 +850,13 @@ private fun PageNavigationBar(
             enabled = selectedPageIndex > 0,
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
-        ) { Text(stringResource(R.string.annotate_page_previous_short), maxLines = 1) }
+        ) {
+            Text(
+                text = stringResource(R.string.annotate_page_previous_short),
+                textAlign = TextAlign.Center,
+                maxLines = 1
+            )
+        }
         Text(
             text = stringResource(R.string.annotate_page_indicator, selectedPageIndex + 1, pageCount),
             modifier = Modifier.weight(0.8f),
@@ -857,7 +868,13 @@ private fun PageNavigationBar(
             enabled = selectedPageIndex < pageCount - 1,
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
-        ) { Text(stringResource(R.string.annotate_page_next_short), maxLines = 1) }
+        ) {
+            Text(
+                text = stringResource(R.string.annotate_page_next_short),
+                textAlign = TextAlign.Center,
+                maxLines = 1
+            )
+        }
     }
 }
 

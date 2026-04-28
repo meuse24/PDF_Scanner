@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import info.meuse24.pdf_scanner.R
@@ -201,8 +202,8 @@ fun SettingsScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.settings_retro_tag_action),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            maxLines = 2,
+                            textAlign = TextAlign.Center
                         )
                     }
                 }

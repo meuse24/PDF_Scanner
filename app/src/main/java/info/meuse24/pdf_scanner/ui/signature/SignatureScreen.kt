@@ -52,6 +52,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -199,12 +200,12 @@ fun SignatureScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.signature_target_page, selectedPageIndex + 1, currentRecord.pageCount),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
+                    Text(
+                        text = stringResource(R.string.signature_target_page, selectedPageIndex + 1, currentRecord.pageCount),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -262,7 +263,10 @@ fun SignatureScreen(
                     !editLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.signature_apply))
+                Text(
+                    text = stringResource(R.string.signature_apply),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }

@@ -226,14 +226,14 @@ private fun TrashActionRow(
     onPurgeSelected: () -> Unit,
     onEmptyTrash: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (selectedCount > 0) {
+    if (selectedCount > 0) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
                 text = stringResource(R.string.selection_count_fraction, selectedCount, totalCount),
                 style = MaterialTheme.typography.labelLarge,
@@ -248,21 +248,32 @@ private fun TrashActionRow(
             IconButton(onClick = onPurgeSelected) {
                 Icon(Icons.Default.DeleteForever, stringResource(R.string.action_delete_forever))
             }
-        } else {
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
             Text(
                 text = stringResource(R.string.trash_retention_hint, TrashConstants.RETENTION_DAYS),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxWidth()
             )
-            TextButton(onClick = onSelectAll) {
-                Text(stringResource(R.string.action_select_all))
-            }
-            TextButton(onClick = onEmptyTrash) {
-                Text(
-                    stringResource(R.string.action_empty_trash),
-                    color = MaterialTheme.colorScheme.error
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = onSelectAll) {
+                    Text(stringResource(R.string.action_select_all))
+                }
+                TextButton(onClick = onEmptyTrash) {
+                    Text(
+                        stringResource(R.string.action_empty_trash),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }

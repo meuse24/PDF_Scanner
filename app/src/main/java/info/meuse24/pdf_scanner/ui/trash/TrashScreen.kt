@@ -57,6 +57,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -259,6 +260,7 @@ private fun TrashActionRow(
                 text = stringResource(R.string.trash_retention_hint, TrashConstants.RETENTION_DAYS),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
             Row(

@@ -438,7 +438,8 @@ private fun TrashEmptyState() {
             Text(
                 text = stringResource(R.string.trash_empty_body),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.outline
+                color = MaterialTheme.colorScheme.outline,
+                textAlign = TextAlign.Center
             )
         }
     }

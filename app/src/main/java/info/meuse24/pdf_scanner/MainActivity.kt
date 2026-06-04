@@ -58,7 +58,10 @@ class MainActivity : FragmentActivity() {
             var isAuthenticating by remember { mutableStateOf(false) }
             val windowSizeClass = calculateWindowSizeClass(this)
 
-            PDF_ScannerTheme(themeMode = settings.themeMode) {
+            PDF_ScannerTheme(
+                themeMode = settings.themeMode,
+                dynamicColor = settings.dynamicColorEnabled
+            ) {
                 Box {
                     AppNavigation(
                         m24AnimationEnabled = settings.m24AnimationEnabled,

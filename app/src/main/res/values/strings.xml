@@ -12,6 +12,7 @@
     <string name="nav_settings">Settings</string>
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_theme_mode_label">Theme mode</string>
+    <string name="settings_dynamic_color_label">Use dynamic colors</string>
     <string name="settings_m24_animation_label">Animate M24 icon</string>
     <string name="settings_scan_ocr_title">Scan &amp; OCR</string>
     <string name="settings_default_make_searchable_label">Default: make searchable</string>
@@ -67,6 +68,9 @@
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_ok">OK</string>
+    <string name="print_custom_page_size_title">Print photo or custom sizes?</string>
+    <string name="print_custom_page_size_message">This PDF contains photo or custom page sizes. In the print dialog, choose Fit for normal paper output; Actual size may crop pages if the paper is smaller.</string>
+    <string name="print_custom_page_size_confirm">Print</string>
 
     <!-- Delete confirmation -->
     <string name="confirm_delete_title">Delete?</string>

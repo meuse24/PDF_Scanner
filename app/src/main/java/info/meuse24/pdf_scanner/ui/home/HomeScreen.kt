@@ -13,6 +13,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.ui.components.ScanAction
+import info.meuse24.pdf_scanner.ui.components.PrintPageSizeWarningDialog
 import info.meuse24.pdf_scanner.ui.entry.AppEntryAction
 import info.meuse24.pdf_scanner.ui.home.components.HomeArchiveContent
 import info.meuse24.pdf_scanner.ui.home.components.HomeErrorDialog
@@ -60,6 +62,7 @@ fun HomeScreen(
     val operationUiState by viewModel.operationUiState.collectAsStateWithLifecycle()
     val messageUiState by viewModel.messageUiState.collectAsStateWithLifecycle()
     val selectedIds by viewModel.selectedIds.collectAsStateWithLifecycle()
+    val pendingPrintDocument by viewModel.pendingPrintDocument.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -76,6 +79,26 @@ fun HomeScreen(
     val ocrAutoLabel = stringResource(R.string.ocr_language_auto)
     val ocrLanguages = remember(displayLocale, ocrAutoLabel) {
         buildOcrLanguageOptions(ocrAutoLabel, displayLocale)
+    }
+
+    fun printRecord(record: Document) {
+        PdfPrintHelper.print(
+            context = context,
+            pdf = File(record.filepath),
+            jobName = record.filename,
+            pageCount = record.pageCount
+        )
+    }
+
+    LaunchedEffect(viewModel) {
+        viewModel.printRequests.collect(::printRecord)
+    }
+
+    if (pendingPrintDocument != null) {
+        PrintPageSizeWarningDialog(
+            onConfirm = viewModel::confirmPrintWarning,
+            onDismiss = viewModel::dismissPrintWarning
+        )
     }
 
     var pendingImport by remember { mutableStateOf<PendingImport?>(null) }
@@ -174,14 +197,7 @@ fun HomeScreen(
         onBusinessCard = navigation.onBusinessCard,
         onExportAsJpg = viewModel::exportAsJpg,
         onExportOcrText = viewModel::exportOcrText,
-        onPrint = { record ->
-            PdfPrintHelper.print(
-                context = context,
-                pdf = File(record.filepath),
-                jobName = record.filename,
-                pageCount = record.pageCount
-            )
-        },
+        onPrint = viewModel::requestPrint,
         onRename = { record ->
             renameInput = record.filename
             recordToRename = record

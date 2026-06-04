@@ -14,6 +14,7 @@ object AppSettingsPreferences {
     private const val PREFS_NAME = "app_settings"
 
     private const val KEY_THEME_MODE = "theme_mode"
+    private const val KEY_DYNAMIC_COLOR_ENABLED = "dynamic_color_enabled"
     private const val KEY_M24_ANIMATION_ENABLED = "m24_animation_enabled"
     private const val KEY_KEEP_SCREEN_ON_DURING_SCAN = "keep_screen_on_during_scan"
     private const val KEY_DEFAULT_MAKE_SEARCHABLE = "default_make_searchable"
@@ -31,6 +32,7 @@ object AppSettingsPreferences {
         val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return AppSettings(
             themeMode = ThemeMode.fromStorageValue(prefs.getString(KEY_THEME_MODE, null)),
+            dynamicColorEnabled = prefs.getBoolean(KEY_DYNAMIC_COLOR_ENABLED, true),
             m24AnimationEnabled = prefs.getBoolean(KEY_M24_ANIMATION_ENABLED, true),
             keepScreenOnDuringScan = prefs.getBoolean(KEY_KEEP_SCREEN_ON_DURING_SCAN, false),
             defaultMakeSearchable = prefs.getBoolean(KEY_DEFAULT_MAKE_SEARCHABLE, true),
@@ -69,6 +71,7 @@ object AppSettingsPreferences {
         val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit {
             putString(KEY_THEME_MODE, settings.themeMode.storageValue)
+            putBoolean(KEY_DYNAMIC_COLOR_ENABLED, settings.dynamicColorEnabled)
             putBoolean(KEY_M24_ANIMATION_ENABLED, settings.m24AnimationEnabled)
             putBoolean(KEY_KEEP_SCREEN_ON_DURING_SCAN, settings.keepScreenOnDuringScan)
             putBoolean(KEY_DEFAULT_MAKE_SEARCHABLE, settings.defaultMakeSearchable)

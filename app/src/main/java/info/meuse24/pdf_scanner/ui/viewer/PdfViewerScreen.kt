@@ -81,6 +81,7 @@ import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.ui.components.DocumentEditSheet
+import info.meuse24.pdf_scanner.ui.components.PrintPageSizeWarningDialog
 import info.meuse24.pdf_scanner.ui.components.ScanAction
 import info.meuse24.pdf_scanner.ui.shared.clampPanOffset
 import info.meuse24.pdf_scanner.util.PdfPrintHelper
@@ -124,6 +125,7 @@ fun PdfViewerScreen(
     val context = LocalContext.current
     val snackbarHostState = LocalAppSnackbarHostState.current
     val scope = rememberCoroutineScope()
+    val pendingPrintDocument by viewModel.pendingPrintDocument.collectAsStateWithLifecycle()
     val errorNoPdfViewer = stringResource(R.string.error_no_pdf_viewer)
     val shareTitle = stringResource(R.string.share_pdf_title)
     val listState = rememberLazyListState()
@@ -133,6 +135,26 @@ fun PdfViewerScreen(
     fun showMessage(message: String) {
         val hostState = snackbarHostState ?: return
         scope.launch { hostState.showSnackbar(message) }
+    }
+
+    fun printRecord(record: Document) {
+        PdfPrintHelper.print(
+            context = context,
+            pdf = File(record.filepath),
+            jobName = record.filename,
+            pageCount = record.pageCount
+        )
+    }
+
+    LaunchedEffect(viewModel) {
+        viewModel.printRequests.collect(::printRecord)
+    }
+
+    if (pendingPrintDocument != null) {
+        PrintPageSizeWarningDialog(
+            onConfirm = viewModel::confirmPrintWarning,
+            onDismiss = viewModel::dismissPrintWarning
+        )
     }
 
     LaunchedEffect(state.transientMessage) {
@@ -217,14 +239,7 @@ fun PdfViewerScreen(
                             }
                         },
                         onExport = viewModel::exportCurrentPdf,
-                        onPrint = {
-                            PdfPrintHelper.print(
-                                context = context,
-                                pdf = java.io.File(record.filepath),
-                                jobName = record.filename,
-                                pageCount = record.pageCount
-                            )
-                        },
+                        onPrint = { viewModel.requestPrint(record) },
                         onOpenExternal = {
                             if (!openPdfExternally(context, record)) {
                                 showMessage(errorNoPdfViewer)

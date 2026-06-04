@@ -141,6 +141,26 @@ class CreatePdfFromImagesUseCaseTest {
     }
 
     @Test
+    fun `PHOTO_PAGE pageCount entspricht lesbaren Bildern`() = runTest {
+        val goodUris = (1..3).map { okUri("photo$it") }
+        val badUris = listOf(badUri("photo_bad"))
+        val editor = FakeImagesPdfEditor(tmpFolder)
+
+        buildUseCase(goodUris.toSet(), editor)
+            .invoke(
+                goodUris + badUris,
+                "photos",
+                ImagePdfOptions(
+                    layout = ImagePageLayout.TWO_PER_PAGE,
+                    pageMode = ImagePdfPageMode.PHOTO_PAGE
+                ),
+                tmpFolder.root
+            )
+
+        assertEquals(3, editor.lastPageCount)
+    }
+
+    @Test
     fun `Dateiname wird eindeutig aufgeloest bei Konflikt`() = runTest {
         val scansDir = tmpFolder.newFolder("scans")
         File(scansDir, "mein_pdf.pdf").writeText("x")
@@ -192,7 +212,11 @@ private class FakeImagesPdfEditor(
         options: ImagePdfOptions,
         outputFile: File
     ): File {
-        lastPageCount = (imageBytes.size + options.layout.imagesPerPage - 1) / options.layout.imagesPerPage
+        lastPageCount = if (options.pageMode == ImagePdfPageMode.PHOTO_PAGE) {
+            imageBytes.count { it != null }
+        } else {
+            (imageBytes.size + options.layout.imagesPerPage - 1) / options.layout.imagesPerPage
+        }
         outputFile.writeText("fake-pdf")
         return outputFile
     }

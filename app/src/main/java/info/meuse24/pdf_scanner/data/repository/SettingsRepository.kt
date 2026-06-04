@@ -29,6 +29,14 @@ class SettingsRepository @Inject constructor(
         _settings.value = updated
     }
 
+    override fun updateDynamicColorEnabled(enabled: Boolean) {
+        val current = _settings.value
+        if (current.dynamicColorEnabled == enabled) return
+        val updated = current.copy(dynamicColorEnabled = enabled)
+        AppSettingsPreferences.save(context, updated)
+        _settings.value = updated
+    }
+
     override fun updateM24AnimationEnabled(enabled: Boolean) {
         val current = _settings.value
         if (current.m24AnimationEnabled == enabled) return

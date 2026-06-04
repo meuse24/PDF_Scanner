@@ -10,6 +10,7 @@
     <string name="nav_settings">Einstellungen</string>
     <string name="settings_appearance_title">Darstellung</string>
     <string name="settings_theme_mode_label">Designmodus</string>
+    <string name="settings_dynamic_color_label">Dynamische Farben verwenden</string>
     <string name="settings_m24_animation_label">M24-Icon animieren</string>
     <string name="settings_scan_ocr_title">Scan &amp; OCR</string>
     <string name="settings_default_make_searchable_label">Standard: durchsuchbar machen</string>

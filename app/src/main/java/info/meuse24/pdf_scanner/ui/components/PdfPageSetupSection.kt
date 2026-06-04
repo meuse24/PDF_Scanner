@@ -16,7 +16,6 @@ import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
 import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
 import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
-import info.meuse24.pdf_scanner.domain.model.PdfPageSizePreset
 
 @Composable
 fun PdfPageSetupSection(
@@ -33,7 +32,7 @@ fun PdfPageSetupSection(
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        PageSizeRow(
+        PdfPageSizeSegmentedRow(
             selected = setup.sizePreset,
             onSelected = { onSetupChange(setup.copy(sizePreset = it)) }
         )
@@ -45,38 +44,6 @@ fun PdfPageSetupSection(
             selected = setup.marginPreset,
             onSelected = { onSetupChange(setup.copy(marginPreset = it)) }
         )
-    }
-}
-
-@Composable
-private fun PageSizeRow(
-    selected: PdfPageSizePreset,
-    onSelected: (PdfPageSizePreset) -> Unit
-) {
-    val options = listOf(
-        PdfPageSizePreset.ISO_A5,
-        PdfPageSizePreset.ISO_A4,
-        PdfPageSizePreset.ISO_A3,
-        PdfPageSizePreset.NA_LETTER
-    )
-    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-        options.forEachIndexed { index, option ->
-            SegmentedButton(
-                selected = selected == option,
-                onClick = { onSelected(option) },
-                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                label = {
-                    Text(
-                        text = when (option) {
-                            PdfPageSizePreset.ISO_A5 -> stringResource(R.string.images_to_pdf_page_size_a5)
-                            PdfPageSizePreset.ISO_A4 -> stringResource(R.string.images_to_pdf_page_size_a4)
-                            PdfPageSizePreset.ISO_A3 -> stringResource(R.string.images_to_pdf_page_size_a3)
-                            PdfPageSizePreset.NA_LETTER -> stringResource(R.string.images_to_pdf_page_size_letter)
-                        }
-                    )
-                }
-            )
-        }
     }
 }
 

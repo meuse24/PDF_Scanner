@@ -68,6 +68,37 @@ class PdfEditorImageOpsTest {
         }
     }
 
+    @Test
+    fun `photoPageRectangle keeps landscape photo inside max page`() {
+        val rect = photoPageRectangle(4000f, 3000f, PdfPageSetup(PdfPageSizePreset.ISO_A4))
+        val expectedScale = PDRectangle.A4.width / 3000f
+
+        assertEquals(4000f * expectedScale, rect.width, DELTA)
+        assertEquals(PDRectangle.A4.width, rect.height, DELTA)
+    }
+
+    @Test
+    fun `photoPageRectangle keeps portrait photo inside max page`() {
+        val rect = photoPageRectangle(3000f, 4000f, PdfPageSetup(PdfPageSizePreset.ISO_A4))
+        val expectedScale = PDRectangle.A4.width / 3000f
+
+        assertEquals(PDRectangle.A4.width, rect.width, DELTA)
+        assertEquals(4000f * expectedScale, rect.height, DELTA)
+    }
+
+    @Test
+    fun `photoPageRectangle treats square image as square page`() {
+        val rect = photoPageRectangle(2000f, 2000f, PdfPageSetup(PdfPageSizePreset.ISO_A4))
+
+        assertEquals(PDRectangle.A4.width, rect.width, DELTA)
+        assertEquals(PDRectangle.A4.width, rect.height, DELTA)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `photoPageRectangle rejects invalid image dimensions`() {
+        photoPageRectangle(0f, 100f, PdfPageSetup())
+    }
+
     private fun assertRectangle(expected: PDRectangle, actual: PDRectangle) {
         assertEquals(expected.width, actual.width, DELTA)
         assertEquals(expected.height, actual.height, DELTA)

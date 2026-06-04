@@ -14,6 +14,7 @@ import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.repository.FolderRepository
 import info.meuse24.pdf_scanner.domain.usecase.BuildScanSearchQueryUseCase
+import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
@@ -47,8 +48,10 @@ import info.meuse24.pdf_scanner.domain.model.OcrThresholds
 import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
 import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
+import info.meuse24.pdf_scanner.ui.print.PrintRequestCoordinator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -58,6 +61,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.Locale
 import javax.inject.Inject
 
@@ -71,6 +76,7 @@ class HomeViewModel @Inject constructor(
     private val exportScanUseCase: ExportScanUseCase,
     private val exportAsJpgUseCase: ExportAsJpgUseCase,
     private val exportOcrTextUseCase: ExportOcrTextUseCase,
+    checkPrintPageSizeWarningUseCase: CheckPrintPageSizeWarningUseCase,
     private val trashScansUseCase: TrashScansUseCase,
     private val restoreScansUseCase: RestoreScansUseCase,
     private val moveDocumentsUseCase: MoveDocumentsUseCase,
@@ -108,6 +114,9 @@ class HomeViewModel @Inject constructor(
     private val _sortOrder = MutableStateFlow(SortOrder.ByDate)
     private val _selectedIds = MutableStateFlow<Set<Long>>(emptySet())
     val selectedIds: StateFlow<Set<Long>> = _selectedIds.asStateFlow()
+    private val printRequestCoordinator = PrintRequestCoordinator(checkPrintPageSizeWarningUseCase)
+    val pendingPrintDocument: StateFlow<Document?> = printRequestCoordinator.pendingPrintDocument
+    val printRequests: SharedFlow<Document> = printRequestCoordinator.printRequests
 
     private val filteredScansFlow = combine(archiveFilterFlow, _searchQuery, _sortOrder) { filter, rawQuery, sortOrder ->
         SearchListRequest(filter, rawQuery.trim(), sortOrder)
@@ -660,6 +669,18 @@ class HomeViewModel @Inject constructor(
                 _error.value = resourceProvider.getString(R.string.ocr_export_error)
             }
         }
+    }
+
+    fun requestPrint(record: Document) {
+        printRequestCoordinator.requestPrint(viewModelScope, record)
+    }
+
+    fun confirmPrintWarning() {
+        printRequestCoordinator.confirmPrintWarning(viewModelScope)
+    }
+
+    fun dismissPrintWarning() {
+        printRequestCoordinator.dismissPrintWarning()
     }
 
     private fun listScansFor(filter: ArchiveFilter) = when (filter) {

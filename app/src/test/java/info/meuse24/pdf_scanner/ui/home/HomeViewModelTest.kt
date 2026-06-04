@@ -5,6 +5,9 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.mapper.toEntity
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.model.Folder
+import info.meuse24.pdf_scanner.domain.model.PdfMetadata
+import info.meuse24.pdf_scanner.domain.model.PdfPageSizeCategory
+import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
 import info.meuse24.pdf_scanner.data.local.TrashDao
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.data.repository.TrashRepository
@@ -13,6 +16,7 @@ import info.meuse24.pdf_scanner.domain.repository.FolderRepository
 import info.meuse24.pdf_scanner.domain.gateway.ReviewPromptPolicy
 import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
 import info.meuse24.pdf_scanner.domain.usecase.BuildScanSearchQueryUseCase
+import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
@@ -41,10 +45,12 @@ import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.gateway.DownloadEntry
 import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
 import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
+import kotlinx.coroutines.async
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -66,6 +72,7 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import java.io.File
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
@@ -416,11 +423,55 @@ class HomeViewModelTest {
         assertNull(viewModel.messageUiState.value.success)
     }
 
+    @Test
+    fun `requestPrint emits print request for standard page sizes`() = runTest(testDispatcher) {
+        val viewModel = buildViewModel(
+            pdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD }
+        )
+        val record = printRecord("standard.pdf")
+        val printEvent = async { viewModel.printRequests.first() }
+
+        viewModel.requestPrint(record)
+        advanceUntilIdle()
+
+        assertEquals(record, printEvent.await())
+        assertNull(viewModel.pendingPrintDocument.value)
+    }
+
+    @Test
+    fun `requestPrint stores pending warning for custom page sizes`() = runTest(testDispatcher) {
+        val viewModel = buildViewModel(
+            pdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_CUSTOM }
+        )
+        val record = printRecord("custom.pdf")
+
+        viewModel.requestPrint(record)
+        advanceUntilIdle()
+
+        assertEquals(record, viewModel.pendingPrintDocument.value)
+    }
+
+    @Test
+    fun `requestPrint emits print request when page size classification fails`() = runTest(testDispatcher) {
+        val viewModel = buildViewModel(
+            pdfMetadataOps = testPdfMetadataOps { throw IOException("missing") }
+        )
+        val record = printRecord("missing.pdf")
+        val printEvent = async { viewModel.printRequests.first() }
+
+        viewModel.requestPrint(record)
+        advanceUntilIdle()
+
+        assertEquals(record, printEvent.await())
+        assertNull(viewModel.pendingPrintDocument.value)
+    }
+
     private fun buildViewModel(
         extractTextUseCase: ExtractTextUseCase = this.extractTextUseCase,
         trashScansUseCase: TrashScansUseCase = this.trashScansUseCase,
         restoreScansUseCase: RestoreScansUseCase = this.restoreScansUseCase,
-        archiveFilterStore: ArchiveFilterStore = ArchiveFilterStore()
+        archiveFilterStore: ArchiveFilterStore = ArchiveFilterStore(),
+        pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD }
     ): HomeViewModel {
         return HomeViewModel(
             repository = repository,
@@ -431,6 +482,10 @@ class HomeViewModelTest {
             exportScanUseCase = exportScanUseCase,
             exportAsJpgUseCase = exportAsJpgUseCase,
             exportOcrTextUseCase = testExportOcrTextUseCase(),
+            checkPrintPageSizeWarningUseCase = CheckPrintPageSizeWarningUseCase(
+                pdfMetadataOps = pdfMetadataOps,
+                dispatcherProvider = TestDispatcherProvider(testDispatcher)
+            ),
             trashScansUseCase = trashScansUseCase,
             restoreScansUseCase = restoreScansUseCase,
             moveDocumentsUseCase = moveDocumentsUseCase,
@@ -477,6 +532,35 @@ class HomeViewModelTest {
             ): DownloadEntry = error("DownloadsStorage not configured")
         }
     )
+
+    private fun testPdfMetadataOps(classifier: () -> PdfPageSizeCategory): PdfMetadataOps =
+        object : PdfMetadataOps {
+            override fun addPageNumbers(input: File, outputDir: File): File = input
+            override fun applyTextWatermark(input: File, outputDir: File, text: String): File = input
+            override fun readMetadata(input: File): PdfMetadata =
+                PdfMetadata(null, null, null, null, null, null, null)
+            override fun classifyPageSizes(pdfFile: File): PdfPageSizeCategory = classifier()
+            override fun updateMetadata(input: File, metadata: PdfMetadata): File = input
+            override fun applySignatureStamp(
+                input: File,
+                outputDir: File,
+                signatureBitmap: Any,
+                pageIndex: Int,
+                scaleFraction: Float
+            ): File = input
+        }
+
+    private fun printRecord(filename: String): Document {
+        val file = File(tmpFolder.root, filename)
+        return Document(
+            id = filename.hashCode().toLong(),
+            filename = filename.removeSuffix(".pdf"),
+            filepath = file.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = 0L
+        )
+    }
 
     /** Erstellt eine anonyme ExtractTextUseCase-Subklasse, die den Block als invoke-Body nutzt. */
     private fun fakeExtract(block: suspend (List<Document>, String) -> List<OcrDocumentResult>): ExtractTextUseCase =

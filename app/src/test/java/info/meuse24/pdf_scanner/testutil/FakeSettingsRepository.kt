@@ -19,6 +19,10 @@ class FakeSettingsRepository(
         _settings.value = _settings.value.copy(themeMode = mode)
     }
 
+    override fun updateDynamicColorEnabled(enabled: Boolean) {
+        _settings.value = _settings.value.copy(dynamicColorEnabled = enabled)
+    }
+
     override fun updateM24AnimationEnabled(enabled: Boolean) {
         _settings.value = _settings.value.copy(m24AnimationEnabled = enabled)
     }

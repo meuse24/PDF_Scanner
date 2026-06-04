@@ -10,6 +10,7 @@
     <string name="nav_settings">設定</string>
     <string name="settings_appearance_title">外観</string>
     <string name="settings_theme_mode_label">テーマモード</string>
+    <string name="settings_dynamic_color_label">動的カラーを使用</string>
     <string name="settings_m24_animation_label">M24アイコンをアニメーション表示</string>
     <string name="settings_scan_ocr_title">スキャンとOCR</string>
     <string name="settings_default_make_searchable_label">既定: 検索可能にする</string>

@@ -10,6 +10,8 @@ import info.meuse24.pdf_scanner.domain.usecase.AppendResult
 import info.meuse24.pdf_scanner.domain.usecase.AppendSource
 import info.meuse24.pdf_scanner.domain.usecase.AppendToPdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImagePdfBuilder
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfPageMode
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.domain.workflow.AppendToPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
@@ -111,7 +113,7 @@ class AppendViewModelTest {
         runCurrent()
         viewModel.setPendingImageUris(listOf(mock(android.net.Uri::class.java)))
 
-        viewModel.appendImages(ImagePageLayout.SINGLE)
+        viewModel.appendImages(ImagePdfOptions(ImagePageLayout.SINGLE))
         advanceUntilIdle()
 
         assertTrue(viewModel.pendingImageUris.value.isEmpty())
@@ -128,12 +130,19 @@ class AppendViewModelTest {
         viewModel.setPendingImageUris(listOf(mock(android.net.Uri::class.java)))
 
         viewModel.updatePageSetup(setup)
-        viewModel.appendImages(ImagePageLayout.TWO_PER_PAGE)
+        viewModel.appendImages(
+            ImagePdfOptions(
+                layout = ImagePageLayout.TWO_PER_PAGE,
+                pageSetup = setup,
+                pageMode = ImagePdfPageMode.PHOTO_PAGE
+            )
+        )
         advanceUntilIdle()
 
         val source = appendUseCase.invocations.single().second as AppendSource.Images
         assertEquals(ImagePageLayout.TWO_PER_PAGE, source.options.layout)
         assertEquals(setup, source.options.pageSetup)
+        assertEquals(ImagePdfPageMode.PHOTO_PAGE, source.options.pageMode)
         recordObserver.cancel()
     }
 

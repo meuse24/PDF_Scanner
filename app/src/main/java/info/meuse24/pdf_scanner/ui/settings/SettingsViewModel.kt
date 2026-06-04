@@ -33,6 +33,10 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.updateThemeMode(mode)
     }
 
+    fun setDynamicColorEnabled(enabled: Boolean) {
+        settingsRepository.updateDynamicColorEnabled(enabled)
+    }
+
     fun setM24AnimationEnabled(enabled: Boolean) {
         settingsRepository.updateM24AnimationEnabled(enabled)
     }

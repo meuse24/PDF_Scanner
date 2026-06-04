@@ -7,6 +7,7 @@ import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
 import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
 import info.meuse24.pdf_scanner.domain.model.PdfPageSizePreset
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
@@ -20,6 +21,7 @@ class AppSettingsPreferencesTest {
         `when`(context.applicationContext).thenReturn(context)
         `when`(context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)).thenReturn(prefs)
         `when`(prefs.getString("theme_mode", null)).thenReturn(null)
+        `when`(prefs.getBoolean("dynamic_color_enabled", true)).thenReturn(true)
         `when`(prefs.getString("default_sort_order", null)).thenReturn(null)
         `when`(prefs.getString("default_ocr_language", AppSettings.OCR_LANGUAGE_AUTO))
             .thenReturn(AppSettings.OCR_LANGUAGE_AUTO)
@@ -38,6 +40,7 @@ class AppSettingsPreferencesTest {
         assertEquals(PdfPageSizePreset.ISO_A4, settings.defaultImagePdfPageSetup.sizePreset)
         assertEquals(PdfPageOrientation.PORTRAIT, settings.defaultImagePdfPageSetup.orientation)
         assertEquals(PdfMarginPreset.MEDIUM, settings.defaultImagePdfPageSetup.marginPreset)
+        assertTrue(settings.dynamicColorEnabled)
     }
 
     @Test
@@ -47,6 +50,7 @@ class AppSettingsPreferencesTest {
         `when`(context.applicationContext).thenReturn(context)
         `when`(context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)).thenReturn(prefs)
         `when`(prefs.getString("theme_mode", null)).thenReturn(null)
+        `when`(prefs.getBoolean("dynamic_color_enabled", true)).thenReturn(true)
         `when`(prefs.getString("default_sort_order", null)).thenReturn(null)
         `when`(prefs.getString("default_ocr_language", AppSettings.OCR_LANGUAGE_AUTO))
             .thenReturn(AppSettings.OCR_LANGUAGE_AUTO)

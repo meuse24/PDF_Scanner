@@ -12,6 +12,7 @@ import info.meuse24.pdf_scanner.domain.usecase.CreatePdfFromImagesResult
 import info.meuse24.pdf_scanner.domain.usecase.CreatePdfFromImagesUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImagePdfBuilder
 import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfPageMode
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
@@ -68,7 +69,7 @@ class ImagesToPdfViewModelTest {
     @Test
     fun `editLoading ist true direkt nach createPdf-Aufruf`() = runTest(testDispatcher) {
         val vm = buildVm(StubSuccessUseCase())
-        vm.createPdf(listOf(fakeUri()), "test", ImagePageLayout.SINGLE)
+        vm.createPdf(listOf(fakeUri()), "test", options(ImagePageLayout.SINGLE))
 
         assertTrue(vm.editLoading.value)
     }
@@ -76,7 +77,7 @@ class ImagesToPdfViewModelTest {
     @Test
     fun `success nach erfolgreichem createPdf`() = runTest(testDispatcher) {
         val vm = buildVm(StubSuccessUseCase(skipped = 0))
-        vm.createPdf(listOf(fakeUri()), "test", ImagePageLayout.SINGLE)
+        vm.createPdf(listOf(fakeUri()), "test", options(ImagePageLayout.SINGLE))
         advanceUntilIdle()
 
         assertTrue(vm.success.value)
@@ -88,7 +89,7 @@ class ImagesToPdfViewModelTest {
     @Test
     fun `skippedCount wird korrekt weitergeleitet`() = runTest(testDispatcher) {
         val vm = buildVm(StubSuccessUseCase(skipped = 3))
-        vm.createPdf(listOf(fakeUri()), "test", ImagePageLayout.SINGLE)
+        vm.createPdf(listOf(fakeUri()), "test", options(ImagePageLayout.SINGLE))
         advanceUntilIdle()
 
         assertEquals(3, vm.skippedCount.value)
@@ -98,7 +99,7 @@ class ImagesToPdfViewModelTest {
     @Test
     fun `error bei fehlgeschlagenem createPdf`() = runTest(testDispatcher) {
         val vm = buildVm(StubFailUseCase("disk full"))
-        vm.createPdf(listOf(fakeUri()), "test", ImagePageLayout.SINGLE)
+        vm.createPdf(listOf(fakeUri()), "test", options(ImagePageLayout.SINGLE))
         advanceUntilIdle()
 
         assertNotNull(vm.error.value)
@@ -111,8 +112,8 @@ class ImagesToPdfViewModelTest {
         val useCase = StubSuccessUseCase()
         val vm = buildVm(useCase)
 
-        vm.createPdf(listOf(fakeUri()), "test", ImagePageLayout.SINGLE)
-        vm.createPdf(listOf(fakeUri()), "test", ImagePageLayout.SINGLE) // ignoriert
+        vm.createPdf(listOf(fakeUri()), "test", options(ImagePageLayout.SINGLE))
+        vm.createPdf(listOf(fakeUri()), "test", options(ImagePageLayout.SINGLE)) // ignoriert
         advanceUntilIdle()
 
         assertTrue(vm.success.value)
@@ -122,7 +123,7 @@ class ImagesToPdfViewModelTest {
     @Test
     fun `clearError loescht Fehlerzustand`() = runTest(testDispatcher) {
         val vm = buildVm(StubFailUseCase("err"))
-        vm.createPdf(listOf(fakeUri()), "test", ImagePageLayout.SINGLE)
+        vm.createPdf(listOf(fakeUri()), "test", options(ImagePageLayout.SINGLE))
         advanceUntilIdle()
         assertNotNull(vm.error.value)
 
@@ -150,12 +151,42 @@ class ImagesToPdfViewModelTest {
         val vm = buildVm(useCase)
         vm.updatePageSetup(setup)
 
-        vm.createPdf(listOf(fakeUri()), "test", ImagePageLayout.FOUR_PER_PAGE)
+        vm.createPdf(
+            listOf(fakeUri()),
+            "test",
+            ImagePdfOptions(
+                layout = ImagePageLayout.FOUR_PER_PAGE,
+                pageSetup = setup
+            )
+        )
         advanceUntilIdle()
 
         assertEquals(ImagePageLayout.FOUR_PER_PAGE, useCase.lastOptions?.layout)
         assertEquals(setup, useCase.lastOptions?.pageSetup)
+        assertEquals(ImagePdfPageMode.FIXED_PAGE, useCase.lastOptions?.pageMode)
     }
+
+    @Test
+    fun `createPdf reicht PHOTO_PAGE als Optionen weiter`() = runTest(testDispatcher) {
+        val useCase = StubSuccessUseCase()
+        val vm = buildVm(useCase)
+
+        vm.createPdf(
+            listOf(fakeUri()),
+            "test",
+            ImagePdfOptions(
+                layout = ImagePageLayout.TWO_PER_PAGE,
+                pageMode = ImagePdfPageMode.PHOTO_PAGE
+            )
+        )
+        advanceUntilIdle()
+
+        assertEquals(ImagePageLayout.TWO_PER_PAGE, useCase.lastOptions?.layout)
+        assertEquals(ImagePdfPageMode.PHOTO_PAGE, useCase.lastOptions?.pageMode)
+    }
+
+    private fun options(layout: ImagePageLayout): ImagePdfOptions =
+        ImagePdfOptions(layout = layout)
 }
 
 // ── Stub-UseCases ─────────────────────────────────────────────────────────────

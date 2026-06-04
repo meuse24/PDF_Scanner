@@ -13,6 +13,7 @@ private fun SettingsScreenPreview() {
         SettingsScreen(
             settings = AppSettings(),
             onThemeModeChange = {},
+            onDynamicColorEnabledChange = {},
             onM24AnimationEnabledChange = {},
             onDefaultMakeSearchableChange = {},
             onAutoTaggingEnabledChange = {},
@@ -37,6 +38,7 @@ private fun SettingsScreenDarkPreview() {
         SettingsScreen(
             settings = AppSettings(themeMode = ThemeMode.DARK, appLockEnabled = true),
             onThemeModeChange = {},
+            onDynamicColorEnabledChange = {},
             onM24AnimationEnabledChange = {},
             onDefaultMakeSearchableChange = {},
             onAutoTaggingEnabledChange = {},

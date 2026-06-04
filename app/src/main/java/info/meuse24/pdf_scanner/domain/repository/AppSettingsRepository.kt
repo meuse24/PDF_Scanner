@@ -10,6 +10,7 @@ interface AppSettingsRepository {
     val settings: StateFlow<AppSettings>
 
     fun updateThemeMode(mode: ThemeMode)
+    fun updateDynamicColorEnabled(enabled: Boolean)
     fun updateM24AnimationEnabled(enabled: Boolean)
     fun updateDefaultMakeSearchable(enabled: Boolean)
     fun updateAutoTaggingEnabled(enabled: Boolean)

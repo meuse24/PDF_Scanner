@@ -174,6 +174,7 @@ private fun NavGraphBuilder.infoNavGraph(
         SettingsScreen(
             settings = settings,
             onThemeModeChange = onThemeModeChange,
+            onDynamicColorEnabledChange = settingsViewModel::setDynamicColorEnabled,
             onM24AnimationEnabledChange = settingsViewModel::setM24AnimationEnabled,
             onDefaultMakeSearchableChange = settingsViewModel::setDefaultMakeSearchable,
             onAutoTaggingEnabledChange = settingsViewModel::setAutoTaggingEnabled,

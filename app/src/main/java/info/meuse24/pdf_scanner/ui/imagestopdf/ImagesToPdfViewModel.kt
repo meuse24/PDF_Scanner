@@ -8,7 +8,6 @@ import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.usecase.CreatePdfFromImagesUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
-import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
 import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,15 +45,11 @@ class ImagesToPdfViewModel @Inject constructor(
         settingsRepository.updateDefaultImagePdfPageSetup(setup)
     }
 
-    fun createPdf(imageUris: List<Uri>, filename: String, layout: ImagePageLayout) {
+    fun createPdf(imageUris: List<Uri>, filename: String, options: ImagePdfOptions) {
         if (_editLoading.value) return
         _editLoading.value = true
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                val options = ImagePdfOptions(
-                    layout = layout,
-                    pageSetup = _pageSetup.value
-                )
                 val result = createPdfFromImagesUseCase(
                     imageUris, filename, options, storageProvider.scansDir()
                 )

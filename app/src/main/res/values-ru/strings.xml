@@ -10,6 +10,7 @@
     <string name="nav_settings">Настройки</string>
     <string name="settings_appearance_title">Внешний вид</string>
     <string name="settings_theme_mode_label">Режим темы</string>
+    <string name="settings_dynamic_color_label">Использовать динамические цвета</string>
     <string name="settings_m24_animation_label">Анимировать значок M24</string>
     <string name="settings_scan_ocr_title">Сканирование и OCR</string>
     <string name="settings_default_make_searchable_label">По умолчанию: делать PDF с поиском</string>

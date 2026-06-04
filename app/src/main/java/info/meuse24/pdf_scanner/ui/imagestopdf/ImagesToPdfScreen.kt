@@ -19,6 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfPageMode
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import java.text.SimpleDateFormat
@@ -51,6 +53,7 @@ fun ImagesToPdfScreen(
         mutableStateOf(defaultFilename)
     }
     var selectedLayout by rememberSaveable { mutableStateOf(ImagePageLayout.TWO_PER_PAGE) }
+    var pageMode by rememberSaveable { mutableStateOf(ImagePdfPageMode.FIXED_PAGE) }
 
     LaunchedEffect(success) {
         if (success) {
@@ -74,6 +77,8 @@ fun ImagesToPdfScreen(
             imageUris = imageUris,
             selectedLayout = selectedLayout,
             onLayoutSelected = { selectedLayout = it },
+            pageMode = pageMode,
+            onPageModeSelected = { pageMode = it },
             pageSetup = pageSetup,
             onPageSetupChange = viewModel::updatePageSetup,
             actionLabel = stringResource(R.string.images_to_pdf_action),
@@ -83,7 +88,15 @@ fun ImagesToPdfScreen(
                 val effectiveName = filename.trim().ifBlank {
                     defaultFilename
                 }
-                viewModel.createPdf(imageUris, effectiveName, selectedLayout)
+                viewModel.createPdf(
+                    imageUris,
+                    effectiveName,
+                    ImagePdfOptions(
+                        layout = selectedLayout,
+                        pageSetup = pageSetup,
+                        pageMode = pageMode
+                    )
+                )
             },
             modifier = Modifier.fillMaxSize(),
             topContent = {

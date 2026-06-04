@@ -48,6 +48,8 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfPageMode
 import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.ui.components.ScanPreviewCard
@@ -73,6 +75,7 @@ fun AppendScreen(
     val errorScannerUnavailable = stringResource(R.string.error_scanner_unavailable)
 
     var selectedLayout by rememberSaveable { mutableStateOf(ImagePageLayout.TWO_PER_PAGE) }
+    var pageMode by rememberSaveable { mutableStateOf(ImagePdfPageMode.FIXED_PAGE) }
 
     fun showMessage(message: String) {
         val hostState = snackbarHostState ?: return
@@ -172,12 +175,22 @@ fun AppendScreen(
             imageUris = pendingImageUris,
             selectedLayout = selectedLayout,
             onLayoutSelected = { selectedLayout = it },
+            pageMode = pageMode,
+            onPageModeSelected = { pageMode = it },
             pageSetup = pageSetup,
             onPageSetupChange = viewModel::updatePageSetup,
             actionLabel = stringResource(R.string.action_append_pages),
             actionEnabled = true,
             actionInProgress = false,
-            onAction = { viewModel.appendImages(selectedLayout) },
+            onAction = {
+                viewModel.appendImages(
+                    ImagePdfOptions(
+                        layout = selectedLayout,
+                        pageSetup = pageSetup,
+                        pageMode = pageMode
+                    )
+                )
+            },
             modifier = Modifier.fillMaxSize(),
             topContent = {
                 Text(

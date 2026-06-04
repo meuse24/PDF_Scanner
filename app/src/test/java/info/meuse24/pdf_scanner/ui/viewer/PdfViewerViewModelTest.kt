@@ -4,7 +4,11 @@ import android.graphics.Bitmap
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.PdfMetadata
+import info.meuse24.pdf_scanner.domain.model.PdfPageSizeCategory
+import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
@@ -13,11 +17,13 @@ import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderException
 import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderFailure
 import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderer
 import info.meuse24.pdf_scanner.util.RenderedPdfPage
+import kotlinx.coroutines.async
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -35,6 +41,7 @@ import org.junit.rules.TemporaryFolder
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import java.io.File
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PdfViewerViewModelTest {
@@ -230,22 +237,77 @@ class PdfViewerViewModelTest {
         assertNotNull(pages[4]?.bitmap)
     }
 
+    @Test
+    fun `requestPrint emits print request for standard page sizes`() = runTest(testDispatcher) {
+        val record = scanRecord()
+        val viewModel = buildViewModel(
+            recordsFlow = flowOf(listOf(record)),
+            renderer = FakePdfPageBitmapRenderer(FakePdfDocumentBitmapHandle(pageCount = 1)),
+            pdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD }
+        )
+        val printEvent = async { viewModel.printRequests.first() }
+        advanceUntilIdle()
+
+        viewModel.requestPrint(record)
+        advanceUntilIdle()
+
+        assertEquals(record, printEvent.await())
+        assertEquals(null, viewModel.pendingPrintDocument.value)
+    }
+
+    @Test
+    fun `requestPrint stores pending warning for mixed page sizes`() = runTest(testDispatcher) {
+        val record = scanRecord()
+        val viewModel = buildViewModel(
+            recordsFlow = flowOf(listOf(record)),
+            renderer = FakePdfPageBitmapRenderer(FakePdfDocumentBitmapHandle(pageCount = 1)),
+            pdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.MIXED }
+        )
+        advanceUntilIdle()
+
+        viewModel.requestPrint(record)
+        advanceUntilIdle()
+
+        assertEquals(record, viewModel.pendingPrintDocument.value)
+    }
+
+    @Test
+    fun `requestPrint emits print request when page size classification fails`() = runTest(testDispatcher) {
+        val record = scanRecord()
+        val viewModel = buildViewModel(
+            recordsFlow = flowOf(listOf(record)),
+            renderer = FakePdfPageBitmapRenderer(FakePdfDocumentBitmapHandle(pageCount = 1)),
+            pdfMetadataOps = testPdfMetadataOps { throw IOException("missing") }
+        )
+        val printEvent = async { viewModel.printRequests.first() }
+        advanceUntilIdle()
+
+        viewModel.requestPrint(record)
+        advanceUntilIdle()
+
+        assertEquals(record, printEvent.await())
+        assertEquals(null, viewModel.pendingPrintDocument.value)
+    }
+
     private fun buildViewModel(
         records: List<Document>,
         renderer: PdfPageBitmapRenderer,
         scanId: Long = 1L,
-        savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("scanId" to scanId))
+        savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("scanId" to scanId)),
+        pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD }
     ): PdfViewerViewModel = buildViewModel(
         recordsFlow = flowOf(records),
         renderer = renderer,
-        savedStateHandle = savedStateHandle
+        savedStateHandle = savedStateHandle,
+        pdfMetadataOps = pdfMetadataOps
     )
 
     private fun buildViewModel(
         recordsFlow: Flow<List<Document>>,
         renderer: PdfPageBitmapRenderer,
         scanId: Long = 1L,
-        savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("scanId" to scanId))
+        savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("scanId" to scanId)),
+        pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD }
     ): PdfViewerViewModel {
         val repository = mock(ScanRepository::class.java)
         `when`(repository.getAllScans()).thenReturn(recordsFlow)
@@ -254,11 +316,32 @@ class PdfViewerViewModelTest {
             repository = repository,
             pageBitmapRenderer = renderer,
             exportScanUseCase = mock(ExportScanUseCase::class.java),
+            checkPrintPageSizeWarningUseCase = CheckPrintPageSizeWarningUseCase(
+                pdfMetadataOps = pdfMetadataOps,
+                dispatcherProvider = TestDispatcherProvider(testDispatcher)
+            ),
             resourceProvider = resourceProvider,
             dispatcherProvider = TestDispatcherProvider(testDispatcher),
             savedStateHandle = savedStateHandle
         )
     }
+
+    private fun testPdfMetadataOps(classifier: () -> PdfPageSizeCategory): PdfMetadataOps =
+        object : PdfMetadataOps {
+            override fun addPageNumbers(input: File, outputDir: File): File = input
+            override fun applyTextWatermark(input: File, outputDir: File, text: String): File = input
+            override fun readMetadata(input: File): PdfMetadata =
+                PdfMetadata(null, null, null, null, null, null, null)
+            override fun classifyPageSizes(pdfFile: File): PdfPageSizeCategory = classifier()
+            override fun updateMetadata(input: File, metadata: PdfMetadata): File = input
+            override fun applySignatureStamp(
+                input: File,
+                outputDir: File,
+                signatureBitmap: Any,
+                pageIndex: Int,
+                scaleFraction: Float
+            ): File = input
+        }
 
     private fun scanRecord(
         filepath: String = File(tmpFolder.root, "scan.pdf").absolutePath,

@@ -7,8 +7,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
+import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import info.meuse24.pdf_scanner.ui.print.PrintRequestCoordinator
 import info.meuse24.pdf_scanner.util.PdfDocumentBitmapHandle
 import info.meuse24.pdf_scanner.util.PdfPageBitmapCache
 import info.meuse24.pdf_scanner.util.PdfPageBitmapCacheKey
@@ -19,11 +21,13 @@ import info.meuse24.pdf_scanner.util.RenderedPdfPage
 import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
@@ -40,6 +44,7 @@ class PdfViewerViewModel @Inject constructor(
     private val repository: DocumentRepository,
     private val pageBitmapRenderer: PdfPageBitmapRenderer,
     private val exportScanUseCase: ExportScanUseCase,
+    checkPrintPageSizeWarningUseCase: CheckPrintPageSizeWarningUseCase,
     private val resourceProvider: ResourceProvider,
     private val dispatcherProvider: DispatcherProvider,
     private val savedStateHandle: SavedStateHandle
@@ -65,6 +70,21 @@ class PdfViewerViewModel @Inject constructor(
         )
     )
     val uiState: StateFlow<PdfViewerUiState> = _uiState.asStateFlow()
+    private val printRequestCoordinator = PrintRequestCoordinator(checkPrintPageSizeWarningUseCase)
+    val pendingPrintDocument: StateFlow<Document?> = printRequestCoordinator.pendingPrintDocument
+    val printRequests: SharedFlow<Document> = printRequestCoordinator.printRequests
+
+    fun requestPrint(record: Document) {
+        printRequestCoordinator.requestPrint(viewModelScope, record)
+    }
+
+    fun confirmPrintWarning() {
+        printRequestCoordinator.confirmPrintWarning(viewModelScope)
+    }
+
+    fun dismissPrintWarning() {
+        printRequestCoordinator.dismissPrintWarning()
+    }
 
     init {
         viewModelScope.launch {

@@ -36,6 +36,7 @@ import info.meuse24.pdf_scanner.domain.common.buildRanges
 import info.meuse24.pdf_scanner.domain.common.normalizePageIndexes
 import info.meuse24.pdf_scanner.domain.common.normalizeSplitPoints
 import info.meuse24.pdf_scanner.domain.model.PdfMetadata
+import info.meuse24.pdf_scanner.domain.model.PdfPageSizeCategory
 import info.meuse24.pdf_scanner.domain.pdf.PdfAnnotationOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfPasswordRequiredException
@@ -56,6 +57,7 @@ import info.meuse24.pdf_scanner.domain.usecase.HIGHLIGHT_COLOR_RED
 import info.meuse24.pdf_scanner.domain.usecase.HighlightRect
 import info.meuse24.pdf_scanner.domain.usecase.HighlightStroke
 import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
+import info.meuse24.pdf_scanner.domain.usecase.ImagePdfPageMode
 import info.meuse24.pdf_scanner.domain.usecase.PdfCompressionPreset
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.domain.usecase.TextLine
@@ -444,36 +446,73 @@ open class PdfEditor @Inject constructor() :
         require(imageBytes.isNotEmpty()) { "Bildliste darf nicht leer sein" }
         return writePdf("CreatePdfFromImages", outputFile) { target ->
             PDDocument().use { doc ->
-                val cells = layoutCells(options)
-                val pageRectangle = pageRectangle(options.pageSetup)
-                imageBytes.chunked(options.layout.imagesPerPage).forEach { chunk ->
-                    val page = PDPage(pageRectangle)
-                    doc.addPage(page)
-                    // Einen einzigen Content-Stream pro Seite öffnen, damit alle Bilder
-                    // erhalten bleiben. Mehrere Streams ohne APPEND überschreiben sich.
-                    PDPageContentStream(doc, page).use { cs ->
-                        chunk.forEachIndexed { slotIndex, bytes ->
-                            if (bytes != null) {
-                                try {
-                                    val image = PDImageXObject.createFromByteArray(
-                                        doc, bytes, "img$slotIndex"
-                                    )
-                                    val cell = cells[slotIndex]
-                                    val draw = fitInsideCell(
-                                        image.width.toFloat(), image.height.toFloat(), cell
-                                    )
-                                    cs.drawImage(image, draw.x, draw.y, draw.w, draw.h)
-                                } catch (_: Exception) {
-                                    // Nicht lesbares Bild → leere Zelle, kein Abbruch
-                                }
-                            }
-                        }
-                    }
+                when (options.pageMode) {
+                    ImagePdfPageMode.FIXED_PAGE -> addFixedImagePages(doc, imageBytes, options)
+                    ImagePdfPageMode.PHOTO_PAGE -> addPhotoImagePages(doc, imageBytes, options)
                 }
                 if (doc.numberOfPages == 0) {
                     throw IOException("CreatePdfFromImages erzeugte keine Seiten")
                 }
                 doc.save(target)
+            }
+        }
+    }
+
+    private fun addFixedImagePages(
+        doc: PDDocument,
+        imageBytes: List<ByteArray?>,
+        options: ImagePdfOptions
+    ) {
+        val cells = layoutCells(options)
+        val pageRectangle = pageRectangle(options.pageSetup)
+        imageBytes.chunked(options.layout.imagesPerPage).forEach { chunk ->
+            val page = PDPage(pageRectangle)
+            doc.addPage(page)
+            // Einen einzigen Content-Stream pro Seite öffnen, damit alle Bilder
+            // erhalten bleiben. Mehrere Streams ohne APPEND überschreiben sich.
+            PDPageContentStream(doc, page).use { cs ->
+                chunk.forEachIndexed { slotIndex, bytes ->
+                    if (bytes != null) {
+                        try {
+                            val image = PDImageXObject.createFromByteArray(
+                                doc, bytes, "img$slotIndex"
+                            )
+                            val cell = cells[slotIndex]
+                            val draw = fitInsideCell(
+                                image.width.toFloat(), image.height.toFloat(), cell
+                            )
+                            cs.drawImage(image, draw.x, draw.y, draw.w, draw.h)
+                        } catch (_: Exception) {
+                            // Nicht lesbares Bild → leere Zelle, kein Abbruch
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun addPhotoImagePages(
+        doc: PDDocument,
+        imageBytes: List<ByteArray?>,
+        options: ImagePdfOptions
+    ) {
+        imageBytes.forEachIndexed { index, bytes ->
+            if (bytes != null) {
+                try {
+                    val image = PDImageXObject.createFromByteArray(doc, bytes, "photo$index")
+                    val pageRectangle = photoPageRectangle(
+                        imgW = image.width.toFloat(),
+                        imgH = image.height.toFloat(),
+                        maxSetup = options.pageSetup
+                    )
+                    val page = PDPage(pageRectangle)
+                    doc.addPage(page)
+                    PDPageContentStream(doc, page).use { cs ->
+                        cs.drawImage(image, 0f, 0f, pageRectangle.width, pageRectangle.height)
+                    }
+                } catch (_: Exception) {
+                    // Nicht lesbares Bild → im Fotoformat keine leere Seite erzeugen.
+                }
             }
         }
     }
@@ -583,6 +622,26 @@ open class PdfEditor @Inject constructor() :
             }
         } catch (_: Exception) {
             PdfMetadata(null, null, null, null, null, null, null)
+        }
+    }
+
+    override fun classifyPageSizes(pdfFile: File): PdfPageSizeCategory {
+        PDDocument.load(pdfFile).use { doc ->
+            if (doc.numberOfPages == 0) return PdfPageSizeCategory.UNIFORM_STANDARD
+            val sizes = (0 until doc.numberOfPages).map { index ->
+                val mediaBox = doc.getPage(index).mediaBox
+                PageSize(mediaBox.width, mediaBox.height)
+            }
+            val first = sizes.first()
+            return if (sizes.all { it.sameSizeAs(first) }) {
+                if (first.isStandardPageSize()) {
+                    PdfPageSizeCategory.UNIFORM_STANDARD
+                } else {
+                    PdfPageSizeCategory.UNIFORM_CUSTOM
+                }
+            } else {
+                PdfPageSizeCategory.MIXED
+            }
         }
     }
 
@@ -960,6 +1019,30 @@ open class PdfEditor @Inject constructor() :
         } catch (_: Exception) {
             null
         }
+    }
+}
+
+private const val PAGE_SIZE_TOLERANCE_POINTS = 2f
+
+private data class PageSize(val width: Float, val height: Float) {
+    fun sameSizeAs(other: PageSize): Boolean =
+        sameDimension(width, other.width) && sameDimension(height, other.height)
+
+    fun isStandardPageSize(): Boolean = standardPageSizes.any { standard ->
+        sameSizeAs(standard) ||
+            sameDimension(width, standard.height) && sameDimension(height, standard.width)
+    }
+
+    private fun sameDimension(left: Float, right: Float): Boolean =
+        abs(left - right) <= PAGE_SIZE_TOLERANCE_POINTS
+
+    private companion object {
+        val standardPageSizes = listOf(
+            PageSize(PDRectangle.A5.width, PDRectangle.A5.height),
+            PageSize(PDRectangle.A4.width, PDRectangle.A4.height),
+            PageSize(PDRectangle.A3.width, PDRectangle.A3.height),
+            PageSize(PDRectangle.LETTER.width, PDRectangle.LETTER.height)
+        )
     }
 }
 

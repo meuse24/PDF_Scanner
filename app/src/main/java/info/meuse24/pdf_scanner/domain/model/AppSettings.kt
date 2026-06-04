@@ -6,6 +6,7 @@ package info.meuse24.pdf_scanner.domain.model
  */
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val dynamicColorEnabled: Boolean = true,
     val m24AnimationEnabled: Boolean = true,
     val keepScreenOnDuringScan: Boolean = false,
     val defaultMakeSearchable: Boolean = true,

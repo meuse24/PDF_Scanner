@@ -12,7 +12,6 @@ import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.usecase.AppendSource
 import info.meuse24.pdf_scanner.domain.usecase.ImagePdfOptions
-import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.domain.workflow.AppendToPdfWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
@@ -80,13 +79,9 @@ class AppendViewModel @Inject constructor(
         runAppend(AppendSource.Pdf(pdfUri))
     }
 
-    fun appendImages(layout: ImagePageLayout) {
+    fun appendImages(options: ImagePdfOptions) {
         val uris = pendingImageUris.value
         if (uris.isEmpty()) return
-        val options = ImagePdfOptions(
-            layout = layout,
-            pageSetup = _pageSetup.value
-        )
         runAppend(AppendSource.Images(uris, options)) {
             clearPendingImageUris()
         }

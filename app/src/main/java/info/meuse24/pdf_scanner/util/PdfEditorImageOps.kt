@@ -25,6 +25,24 @@ internal fun pageRectangle(setup: PdfPageSetup): PDRectangle {
     }
 }
 
+internal fun photoPageRectangle(imgW: Float, imgH: Float, maxSetup: PdfPageSetup): PDRectangle {
+    require(imgW > 0f && imgH > 0f) { "Bildmasse muessen positiv sein" }
+    val base = pageRectangle(maxSetup.copy(orientation = PdfPageOrientation.PORTRAIT))
+    val maxLong = maxOf(base.width, base.height)
+    val maxShort = minOf(base.width, base.height)
+    val imgLong = maxOf(imgW, imgH)
+    val imgShort = minOf(imgW, imgH)
+    val scale = minOf(maxLong / imgLong, maxShort / imgShort)
+    val pageLong = imgLong * scale
+    val pageShort = imgShort * scale
+
+    return when {
+        imgW == imgH -> PDRectangle(pageLong, pageLong)
+        imgW > imgH -> PDRectangle(pageLong, pageShort)
+        else -> PDRectangle(pageShort, pageLong)
+    }
+}
+
 internal fun marginPoints(setup: PdfPageSetup): Float = when (setup.marginPreset) {
     PdfMarginPreset.SMALL -> 10f
     PdfMarginPreset.MEDIUM -> 20f

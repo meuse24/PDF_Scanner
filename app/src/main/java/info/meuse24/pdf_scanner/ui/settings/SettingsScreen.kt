@@ -65,6 +65,7 @@ import java.util.Locale
 fun SettingsScreen(
     settings: AppSettings,
     onThemeModeChange: (ThemeMode) -> Unit,
+    onDynamicColorEnabledChange: (Boolean) -> Unit,
     onM24AnimationEnabledChange: (Boolean) -> Unit,
     onDefaultMakeSearchableChange: (Boolean) -> Unit,
     onAutoTaggingEnabledChange: (Boolean) -> Unit,
@@ -125,6 +126,12 @@ fun SettingsScreen(
                     ),
                     selected = settings.themeMode,
                     onSelected = onThemeModeChange
+                )
+                SettingsDivider()
+                SettingsSwitchRow(
+                    title = stringResource(R.string.settings_dynamic_color_label),
+                    checked = settings.dynamicColorEnabled,
+                    onCheckedChange = onDynamicColorEnabledChange
                 )
                 SettingsDivider()
                 SettingsSwitchRow(

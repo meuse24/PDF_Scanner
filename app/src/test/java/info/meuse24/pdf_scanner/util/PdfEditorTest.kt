@@ -2,9 +2,11 @@ package info.meuse24.pdf_scanner.util
 
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
+import com.tom_roush.pdfbox.pdmodel.common.PDRectangle
 import info.meuse24.pdf_scanner.domain.common.buildRanges
 import info.meuse24.pdf_scanner.domain.common.normalizeSplitPoints
 import info.meuse24.pdf_scanner.domain.model.PdfMetadata
+import info.meuse24.pdf_scanner.domain.model.PdfPageSizeCategory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -325,6 +327,70 @@ class PdfEditorTest {
         assertNull(metadata.subject)
         assertNull(metadata.keywords)
         assertNotNull(metadata.modificationDate)
+    }
+
+    @Test
+    fun `classifyPageSizes returns standard for A4 portrait`() {
+        val pdfFile = TestPdfFactory.createPdf(
+            File(tmpFolder.root, "a4.pdf"),
+            listOf(TestPdfPage(PDRectangle.A4.width, PDRectangle.A4.height))
+        )
+
+        assertEquals(PdfPageSizeCategory.UNIFORM_STANDARD, PdfEditor().classifyPageSizes(pdfFile))
+    }
+
+    @Test
+    fun `classifyPageSizes returns standard for A4 landscape`() {
+        val pdfFile = TestPdfFactory.createPdf(
+            File(tmpFolder.root, "a4_landscape.pdf"),
+            listOf(TestPdfPage(PDRectangle.A4.height, PDRectangle.A4.width))
+        )
+
+        assertEquals(PdfPageSizeCategory.UNIFORM_STANDARD, PdfEditor().classifyPageSizes(pdfFile))
+    }
+
+    @Test
+    fun `classifyPageSizes returns custom for uniform non standard size`() {
+        val pdfFile = TestPdfFactory.createPdf(
+            File(tmpFolder.root, "custom.pdf"),
+            listOf(TestPdfPage(400f, 600f), TestPdfPage(400f, 600f))
+        )
+
+        assertEquals(PdfPageSizeCategory.UNIFORM_CUSTOM, PdfEditor().classifyPageSizes(pdfFile))
+    }
+
+    @Test
+    fun `classifyPageSizes tolerates small rounding differences`() {
+        val pdfFile = TestPdfFactory.createPdf(
+            File(tmpFolder.root, "tolerated.pdf"),
+            listOf(
+                TestPdfPage(PDRectangle.A4.width, PDRectangle.A4.height),
+                TestPdfPage(PDRectangle.A4.width + 1f, PDRectangle.A4.height + 1f)
+            )
+        )
+
+        assertEquals(PdfPageSizeCategory.UNIFORM_STANDARD, PdfEditor().classifyPageSizes(pdfFile))
+    }
+
+    @Test
+    fun `classifyPageSizes returns mixed for different page sizes`() {
+        val pdfFile = TestPdfFactory.createPdf(
+            File(tmpFolder.root, "mixed.pdf"),
+            listOf(
+                TestPdfPage(PDRectangle.A4.width, PDRectangle.A4.height),
+                TestPdfPage(400f, 600f)
+            )
+        )
+
+        assertEquals(PdfPageSizeCategory.MIXED, PdfEditor().classifyPageSizes(pdfFile))
+    }
+
+    @Test
+    fun `classifyPageSizes returns standard for empty pdf`() {
+        val pdfFile = File(tmpFolder.root, "empty.pdf")
+        PDDocument().use { document -> document.save(pdfFile) }
+
+        assertEquals(PdfPageSizeCategory.UNIFORM_STANDARD, PdfEditor().classifyPageSizes(pdfFile))
     }
 }
 

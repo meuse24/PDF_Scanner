@@ -10,6 +10,7 @@
     <string name="nav_settings">Paramètres</string>
     <string name="settings_appearance_title">Apparence</string>
     <string name="settings_theme_mode_label">Mode de thème</string>
+    <string name="settings_dynamic_color_label">Utiliser les couleurs dynamiques</string>
     <string name="settings_m24_animation_label">Animer le logo M24</string>
     <string name="settings_scan_ocr_title">Scan et OCR</string>
     <string name="settings_default_make_searchable_label">Par défaut : rendre consultable</string>

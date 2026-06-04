@@ -33,7 +33,7 @@ android {
         applicationId = "info.meuse24.pdf_scanner"
         minSdk = 29
         targetSdk = 36
-        versionCode = 8
+        versionCode = 9
         versionName = "2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

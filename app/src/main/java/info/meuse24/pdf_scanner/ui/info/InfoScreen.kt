@@ -51,6 +51,7 @@ fun InfoScreen() {
         contentPadding      = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        item { PdfHeroAnimation() }
         item {
             SectionCard(Icons.Default.Gavel, stringResource(R.string.info_section_copyright)) {
                 Text(stringResource(R.string.info_copyright),

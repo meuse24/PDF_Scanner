@@ -10,6 +10,9 @@ interface FolderDao {
     @Query("SELECT * FROM folders ORDER BY name COLLATE NOCASE ASC, id ASC")
     fun observeFolders(): Flow<List<FolderEntity>>
 
+    @Query("SELECT * FROM folders ORDER BY name COLLATE NOCASE ASC, id ASC")
+    suspend fun getFoldersOnce(): List<FolderEntity>
+
     @Insert
     suspend fun insert(folder: FolderEntity): Long
 

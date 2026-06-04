@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="backup_group_title">نسخة احتياطية مشفّرة</string>
+    <string name="backup_hint">ملفات النسخ الاحتياطي محمية بكلمة مرور. لا يمكن استرداد كلمة المرور. هذا لا يشفّر بيانات التطبيق المحلية بشكل إضافي.</string>
+    <string name="backup_create_action">إنشاء نسخة احتياطية مشفّرة</string>
+    <string name="backup_restore_action">استعادة النسخة الاحتياطية</string>
+    <string name="help_item_encrypted_backup">استخدم النسخ الاحتياطي المشفر في الإعدادات لإنشاء ملف .m24backup محمي بكلمة مرور أو استعادته. لا يمكن استرداد كلمة المرور. تُخزَّن المستندات المستعادة من جديد في أرشيف التطبيق المحلي العادي.</string>
+    <string name="privacy_keyword_8">نسخ احتياطي مشفر</string>
+    <string name="privacy_point_8">لا تُنشأ النسخ الاحتياطية المشفرة إلا عندما تختار ملفًا هدفًا. لا يمكن استرداد كلمة مرور النسخة الاحتياطية. يحمي النسخ الاحتياطي الملف المصدّر؛ وبعد الاستعادة تُخزَّن المستندات والبيانات الوصفية من جديد في أرشيف التطبيق المحلي العادي.</string>
+
+    <string name="backup_options_title">خيارات النسخ الاحتياطي</string>
+    <string name="backup_option_include_ocr">تضمين نص OCR</string>
+    <string name="backup_option_include_thumbnails">تضمين الصور المصغّرة</string>
+    <string name="backup_option_include_trash">تضمين سلة المهملات</string>
+    <string name="backup_options_continue">متابعة</string>
+    <string name="backup_dialog_cancel">إلغاء</string>
+
+    <string name="backup_export_passphrase_title">تعيين كلمة مرور النسخة الاحتياطية</string>
+    <string name="backup_export_passphrase_message">لا يمكن استرداد كلمة المرور. بدونها لا يمكن استعادة النسخة الاحتياطية.</string>
+    <string name="backup_passphrase_label">كلمة المرور</string>
+    <string name="backup_passphrase_repeat_label">إعادة إدخال كلمة المرور</string>
+    <string name="backup_passphrase_show">إظهار كلمة المرور</string>
+    <string name="backup_passphrase_hide">إخفاء كلمة المرور</string>
+    <string name="backup_export_passphrase_confirm">إنشاء نسخة احتياطية</string>
+    <string name="backup_restore_passphrase_title">إدخال كلمة مرور النسخة الاحتياطية</string>
+    <string name="backup_restore_passphrase_confirm">متابعة</string>
+
+    <string name="backup_summary_title">استعادة النسخة الاحتياطية</string>
+    <string name="backup_summary_documents" tools:ignore="PluralsCandidate">المستندات: %1$d</string>
+    <string name="backup_summary_folders" tools:ignore="PluralsCandidate">المجلدات: %1$d</string>
+    <string name="backup_summary_size">الحجم: %1$s</string>
+    <string name="backup_summary_created">تاريخ الإنشاء: %1$s</string>
+    <string name="backup_summary_app_version">إصدار التطبيق: %1$s</string>
+    <string name="backup_summary_app_version_unknown">غير معروف</string>
+    <string name="backup_summary_includes_trash">يتضمّن مستندات سلة المهملات</string>
+    <string name="backup_summary_merge_note">الاستعادة تضيف المستندات (دمج) وقد تنشئ نسخًا مكررة من المستندات الموجودة لديك بالفعل.</string>
+    <string name="backup_summary_confirm">استعادة</string>
+
+    <string name="backup_progress_export_title">جارٍ إنشاء النسخة الاحتياطية…</string>
+    <string name="backup_progress_restore_prepare_title">جارٍ قراءة النسخة الاحتياطية…</string>
+    <string name="backup_progress_restore_title">جارٍ الاستعادة…</string>
+    <string name="backup_progress_counter">%1$d / %2$d</string>
+
+    <string name="backup_export_success" tools:ignore="PluralsCandidate">تم إنشاء النسخة الاحتياطية (%1$d مستندات)</string>
+    <string name="backup_export_error_leftover">%1$s قد يبقى ملف نسخة احتياطية غير مكتمل في المجلد الهدف.</string>
+    <string name="backup_restore_success">تمت استعادة %1$d مستندات (%2$d مجلدات جديدة، %3$d أُعيد استخدامها)</string>
+    <string name="backup_cancelled">أُلغي</string>
+
+    <string name="backup_error_passphrase_too_short">استخدم 8 أحرف على الأقل</string>
+    <string name="backup_error_passphrase_mismatch">كلمتا المرور غير متطابقتين</string>
+    <string name="backup_error_passphrase_empty">يرجى إدخال كلمة المرور</string>
+    <string name="backup_error_wrong_passphrase">كلمة مرور النسخة الاحتياطية غير صحيحة</string>
+    <string name="backup_error_corrupt">النسخة الاحتياطية تالفة أو غير مكتملة</string>
+    <string name="backup_error_unsupported_format">ليست نسخة احتياطية M24 صالحة</string>
+    <string name="backup_error_future_version">تتطلّب هذه النسخة الاحتياطية إصدارًا أحدث من التطبيق</string>
+    <string name="backup_error_invalid_manifest">محتوى النسخة الاحتياطية غير صالح</string>
+    <string name="backup_error_missing_document">ملف مستند مفقود من النسخة الاحتياطية</string>
+    <string name="backup_error_insufficient_storage">لا توجد مساحة تخزين كافية لهذه النسخة الاحتياطية</string>
+    <string name="backup_error_io">فشل النسخ الاحتياطي (خطأ في التخزين أو الوصول)</string>
+</resources>

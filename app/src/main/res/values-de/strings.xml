@@ -156,7 +156,7 @@
     <string name="privacy_point_2">Dokumente oder Inhalte werden nicht automatisch hochgeladen. Teilen, Drucken oder Exportieren erfolgt nur, wenn Sie es ausdrücklich auslösen. Sicheres Schwärzen erzeugt eine neue Kopie; das Original bleibt erhalten, bis Sie es löschen.</string>
     <string name="privacy_point_3">Scan- und OCR-Funktionen nutzen Google Play Services. Für die Fehleranalyse können technische Diagnosedaten übertragen werden. Der automatische Modus verwendet ein integriertes Lateinerkenner-Modell, das offline funktioniert. Die Sprachmodelle für Hindi, Chinesisch, Japanisch und Koreanisch können beim ersten manuellen Einsatz über Play Services geladen werden; Dokumentinhalte werden von der App nicht gesendet.</string>
     <string name="privacy_point_4">Die App selbst erhebt keine personenbezogenen Daten und nutzt weder eigenes Analytics noch ein eigenes Backend. Google Play Services / ML Kit können Netzwerkberechtigungen für Modelle, Kompatibilität und Diagnosen einbringen.</string>
-    <string name="privacy_footer">Stand: 24. April 2026</string>
+    <string name="privacy_footer">Stand: 4. Juni 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Text extrahieren</string>

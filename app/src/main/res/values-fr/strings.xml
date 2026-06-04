@@ -154,7 +154,7 @@
     <string name="privacy_point_2">Aucun document ni contenu n’est téléversé automatiquement. Le partage ou l’export n’ont lieu que lorsque vous les déclenchez explicitement. Le caviardage sécurisé crée une nouvelle copie ; l’original reste présent jusqu’à sa suppression.</string>
     <string name="privacy_point_3">Les fonctions de numérisation et d’OCR utilisent Google Play Services. Des données techniques de diagnostic peuvent être transmises pour l’analyse d’erreurs. Le mode automatique utilise un reconnaisseur de texte latin intégré fonctionnant hors ligne. Les modèles de langue pour le hindi, le chinois, le japonais et le coréen peuvent être récupérés via Play Services lors de la première utilisation manuelle ; le contenu de vos documents n\’est pas envoyé par cette app.</string>
     <string name="privacy_point_4">L’app ne collecte aucune donnée personnelle et n’utilise ni analytique ni backend propres. Google Play Services / ML Kit peuvent ajouter des autorisations réseau pour les modèles, la compatibilité et les diagnostics.</string>
-    <string name="privacy_footer">Mise à jour : 24 avril 2026</string>
+    <string name="privacy_footer">Mise à jour : 4 juin 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Extraire le texte</string>

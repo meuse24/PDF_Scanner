@@ -17,6 +17,10 @@ app/release/
 
 # Temporary plan files
 plan-*.txt
+
+# Local UIAutomator window dumps
+/window*.xml
+
 .kotlin/
 .claude/
 .gradle-user/

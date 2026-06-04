@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="backup_group_title">Copia de seguridad cifrada</string>
+    <string name="backup_hint">Los archivos de copia de seguridad están protegidos con contraseña. La contraseña no se puede recuperar. Esto no cifra adicionalmente los datos locales de la aplicación.</string>
+    <string name="backup_create_action">Crear copia de seguridad cifrada</string>
+    <string name="backup_restore_action">Restaurar copia de seguridad</string>
+    <string name="help_item_encrypted_backup">Usa Copia de seguridad cifrada en Ajustes para crear o restaurar un archivo .m24backup protegido con contraseña. La contraseña no se puede recuperar. Los documentos restaurados se guardan de nuevo en el archivo local normal de la app.</string>
+    <string name="privacy_keyword_8">Copia cifrada</string>
+    <string name="privacy_point_8">Las copias cifradas solo se crean cuando eliges un archivo de destino. La contraseña no se puede recuperar. La copia protege el archivo exportado; tras restaurar, documentos y metadatos vuelven al archivo local normal de la app.</string>
+
+    <string name="backup_options_title">Opciones de copia de seguridad</string>
+    <string name="backup_option_include_ocr">Incluir texto OCR</string>
+    <string name="backup_option_include_thumbnails">Incluir miniaturas</string>
+    <string name="backup_option_include_trash">Incluir papelera</string>
+    <string name="backup_options_continue">Continuar</string>
+    <string name="backup_dialog_cancel">Cancelar</string>
+
+    <string name="backup_export_passphrase_title">Establecer contraseña de la copia</string>
+    <string name="backup_export_passphrase_message">La contraseña no se puede recuperar. Sin ella, la copia no se puede restaurar.</string>
+    <string name="backup_passphrase_label">Contraseña</string>
+    <string name="backup_passphrase_repeat_label">Repetir contraseña</string>
+    <string name="backup_passphrase_show">Mostrar contraseña</string>
+    <string name="backup_passphrase_hide">Ocultar contraseña</string>
+    <string name="backup_export_passphrase_confirm">Crear copia</string>
+    <string name="backup_restore_passphrase_title">Introducir contraseña de la copia</string>
+    <string name="backup_restore_passphrase_confirm">Continuar</string>
+
+    <string name="backup_summary_title">Restaurar copia de seguridad</string>
+    <string name="backup_summary_documents" tools:ignore="PluralsCandidate">Documentos: %1$d</string>
+    <string name="backup_summary_folders" tools:ignore="PluralsCandidate">Carpetas: %1$d</string>
+    <string name="backup_summary_size">Tamaño: %1$s</string>
+    <string name="backup_summary_created">Creada: %1$s</string>
+    <string name="backup_summary_app_version">Versión de la app: %1$s</string>
+    <string name="backup_summary_app_version_unknown">desconocida</string>
+    <string name="backup_summary_includes_trash">Incluye documentos en la papelera</string>
+    <string name="backup_summary_merge_note">La restauración añade documentos (combinación) y puede crear duplicados de documentos que ya tienes.</string>
+    <string name="backup_summary_confirm">Restaurar</string>
+
+    <string name="backup_progress_export_title">Creando copia de seguridad…</string>
+    <string name="backup_progress_restore_prepare_title">Leyendo copia de seguridad…</string>
+    <string name="backup_progress_restore_title">Restaurando…</string>
+    <string name="backup_progress_counter">%1$d / %2$d</string>
+
+    <string name="backup_export_success" tools:ignore="PluralsCandidate">Copia creada (%1$d documentos)</string>
+    <string name="backup_export_error_leftover">%1$s Puede quedar un archivo de copia incompleto en la carpeta de destino.</string>
+    <string name="backup_restore_success">%1$d documentos restaurados (%2$d carpetas nuevas, %3$d reutilizadas)</string>
+    <string name="backup_cancelled">Cancelado</string>
+
+    <string name="backup_error_passphrase_too_short">Usa al menos 8 caracteres</string>
+    <string name="backup_error_passphrase_mismatch">Las contraseñas no coinciden</string>
+    <string name="backup_error_passphrase_empty">Introduce la contraseña</string>
+    <string name="backup_error_wrong_passphrase">Contraseña de copia incorrecta</string>
+    <string name="backup_error_corrupt">La copia está dañada o incompleta</string>
+    <string name="backup_error_unsupported_format">No es una copia de seguridad M24 válida</string>
+    <string name="backup_error_future_version">Esta copia necesita una versión más reciente de la app</string>
+    <string name="backup_error_invalid_manifest">El contenido de la copia no es válido</string>
+    <string name="backup_error_missing_document">Falta un archivo de documento en la copia</string>
+    <string name="backup_error_insufficient_storage">No hay suficiente almacenamiento libre para esta copia de seguridad</string>
+    <string name="backup_error_io">Error de copia de seguridad (almacenamiento o acceso)</string>
+</resources>

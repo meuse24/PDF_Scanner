@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="backup_group_title">Sauvegarde chiffrée</string>
+    <string name="backup_hint">Les fichiers de sauvegarde sont protégés par mot de passe. Le mot de passe ne peut pas être récupéré. Cela ne chiffre pas en plus les données locales de l\'application.</string>
+    <string name="backup_create_action">Créer une sauvegarde chiffrée</string>
+    <string name="backup_restore_action">Restaurer une sauvegarde</string>
+    <string name="help_item_encrypted_backup">Utilisez Sauvegarde chiffrée dans les paramètres pour créer ou restaurer un fichier .m24backup protégé par mot de passe. Le mot de passe ne peut pas être récupéré. Les documents restaurés sont de nouveau stockés dans l\'archive locale normale de l\'app.</string>
+    <string name="privacy_keyword_8">Sauvegarde chiffrée</string>
+    <string name="privacy_point_8">Les sauvegardes chiffrées ne sont créées que lorsque vous choisissez un fichier cible. Le mot de passe ne peut pas être récupéré. La sauvegarde protège le fichier exporté ; après restauration, documents et métadonnées sont de nouveau stockés localement dans l\'app.</string>
+
+    <string name="backup_options_title">Options de sauvegarde</string>
+    <string name="backup_option_include_ocr">Inclure le texte OCR</string>
+    <string name="backup_option_include_thumbnails">Inclure les miniatures</string>
+    <string name="backup_option_include_trash">Inclure la corbeille</string>
+    <string name="backup_options_continue">Continuer</string>
+    <string name="backup_dialog_cancel">Annuler</string>
+
+    <string name="backup_export_passphrase_title">Définir le mot de passe de sauvegarde</string>
+    <string name="backup_export_passphrase_message">Le mot de passe ne peut pas être récupéré. Sans lui, la sauvegarde ne peut pas être restaurée.</string>
+    <string name="backup_passphrase_label">Mot de passe</string>
+    <string name="backup_passphrase_repeat_label">Confirmer le mot de passe</string>
+    <string name="backup_passphrase_show">Afficher le mot de passe</string>
+    <string name="backup_passphrase_hide">Masquer le mot de passe</string>
+    <string name="backup_export_passphrase_confirm">Créer la sauvegarde</string>
+    <string name="backup_restore_passphrase_title">Saisir le mot de passe de sauvegarde</string>
+    <string name="backup_restore_passphrase_confirm">Continuer</string>
+
+    <string name="backup_summary_title">Restaurer une sauvegarde</string>
+    <string name="backup_summary_documents" tools:ignore="PluralsCandidate">Documents : %1$d</string>
+    <string name="backup_summary_folders" tools:ignore="PluralsCandidate">Dossiers : %1$d</string>
+    <string name="backup_summary_size">Taille : %1$s</string>
+    <string name="backup_summary_created">Créée : %1$s</string>
+    <string name="backup_summary_app_version">Version de l\'app : %1$s</string>
+    <string name="backup_summary_app_version_unknown">inconnue</string>
+    <string name="backup_summary_includes_trash">Inclut les documents de la corbeille</string>
+    <string name="backup_summary_merge_note">La restauration ajoute des documents (fusion) et peut créer des doublons de documents déjà présents.</string>
+    <string name="backup_summary_confirm">Restaurer</string>
+
+    <string name="backup_progress_export_title">Création de la sauvegarde…</string>
+    <string name="backup_progress_restore_prepare_title">Lecture de la sauvegarde…</string>
+    <string name="backup_progress_restore_title">Restauration…</string>
+    <string name="backup_progress_counter">%1$d / %2$d</string>
+
+    <string name="backup_export_success" tools:ignore="PluralsCandidate">Sauvegarde créée (%1$d documents)</string>
+    <string name="backup_export_error_leftover">%1$s Un fichier de sauvegarde incomplet peut subsister dans le dossier de destination.</string>
+    <string name="backup_restore_success">%1$d documents restaurés (%2$d nouveaux dossiers, %3$d réutilisés)</string>
+    <string name="backup_cancelled">Annulé</string>
+
+    <string name="backup_error_passphrase_too_short">Utilisez au moins 8 caractères</string>
+    <string name="backup_error_passphrase_mismatch">Les mots de passe ne correspondent pas</string>
+    <string name="backup_error_passphrase_empty">Veuillez saisir le mot de passe</string>
+    <string name="backup_error_wrong_passphrase">Mot de passe de sauvegarde incorrect</string>
+    <string name="backup_error_corrupt">La sauvegarde est endommagée ou incomplète</string>
+    <string name="backup_error_unsupported_format">Sauvegarde M24 non valide</string>
+    <string name="backup_error_future_version">Cette sauvegarde nécessite une version plus récente de l\'app</string>
+    <string name="backup_error_invalid_manifest">Le contenu de la sauvegarde n\'est pas valide</string>
+    <string name="backup_error_missing_document">Un fichier de document manque dans la sauvegarde</string>
+    <string name="backup_error_insufficient_storage">Espace libre insuffisant pour cette sauvegarde</string>
+    <string name="backup_error_io">Échec de la sauvegarde (erreur de stockage ou d\'accès)</string>
+</resources>

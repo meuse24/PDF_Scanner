@@ -1,6 +1,6 @@
 # Datenschutzerklaerung fuer PDF Scanner
 
-Stand: 23. April 2026
+Stand: 4. Juni 2026
 
 Diese Datenschutzerklaerung gilt fuer die Android-App **PDF Scanner** mit dem Paketnamen `info.meuse24.pdf_scanner`.
 
@@ -14,6 +14,8 @@ Die App speichert gescannte Dokumente grundsaetzlich lokal auf dem Geraet. Es gi
 
 Fuer die Scan-Funktion wird der **Google ML Kit Document Scanner** ueber **Google Play Services** verwendet. Laut Google erfolgt die Verarbeitung der Eingabedaten und der Scan-Ergebnisse auf dem Geraet. Google weist jedoch darauf hin, dass ML Kit gelegentlich Server fuer Updates und Kompatibilitaetsinformationen kontaktieren und Leistungs- bzw. Nutzungsmetriken an Google uebermitteln kann.
 
+Die App kann auf ausdrueckliche Aktion des Nutzers passwortgeschuetzte Backup-Dateien erstellen und wiederherstellen. Diese Backups verlassen die App nur, wenn der Nutzer ein Ziel ueber den Android-Systemdialog auswaehlt. Ohne das vom Nutzer gewaehlte Backup-Passwort ist eine Wiederherstellung technisch nicht moeglich.
+
 ## 2. Welche Daten in der App verarbeitet werden
 
 Die App verarbeitet ausschliesslich Daten, die fuer die Dokumentenverwaltung auf dem Geraet erforderlich sind. Dazu gehoeren insbesondere:
@@ -25,6 +27,8 @@ Die App verarbeitet ausschliesslich Daten, die fuer die Dokumentenverwaltung auf
 - Erstellungszeitpunkt
 - Seitenanzahl
 - Dateigroesse
+- optional OCR-Text, OCR-Qualitaetsdaten, OCR-Sprache und seitenbezogene OCR-Daten
+- optionale Tags, Ordnerzuordnung, Favoritenstatus und Papierkorbstatus
 
 Diese Informationen werden lokal im App-Speicher und in einer lokalen Datenbank auf dem Geraet abgelegt, damit die Ablage, Vorschau, Freigabe, der Export und das Loeschen von Scans funktionieren.
 
@@ -67,18 +71,32 @@ Die App kann Scans auf ausdrueckliche Aktion des Nutzers an andere Apps weiterge
 
 Ab diesem Zeitpunkt richtet sich die weitere Verarbeitung nach der Datenschutzerklaerung der jeweils genutzten Ziel-App, des Dienstes oder des Geraeteherstellers.
 
-## 7. Speicherdauer
+## 7. Verschluesselte Backups
+
+Die App kann auf ausdrueckliche Aktion des Nutzers eine verschluesselte Backup-Datei mit der Endung `.m24backup` erstellen. Der Nutzer waehlt dabei selbst den Speicherort ueber den Android-Systemdialog und vergibt ein Backup-Passwort.
+
+Das Backup enthaelt je nach gewaehlten Optionen Dokumentdateien, Vorschaubilder, OCR-Text, OCR-Metadaten, Tags, Ordner, Favoritenstatus und optional Papierkorb-Dokumente. Diese Inhalte liegen im Backup nur im verschluesselten Payload. Der unverschluesselte Header enthaelt technische Format- und Schluesselableitungsdaten, aber keine Dokumentnamen, OCR-Texte, Tags oder Ordnernamen.
+
+Das Backup-Passwort kann nicht wiederhergestellt oder zurueckgesetzt werden. Wenn es verloren geht, kann die Backup-Datei technisch nicht entschluesselt werden. Die App nutzt Standard-Kryptografie fuer Datei- und Backup-Schutz: Argon2id fuer die passwortbasierte Schluesselableitung, AES-256-GCM fuer das Wrapping des zufaelligen Backup-Keysets und Tink StreamingAead fuer den verschluesselten Payload. Dies ist nutzergesteuerter Datei- und Backup-Schutz; die App bietet keinen allgemeinen Kryptografie-Dienst.
+
+Beim Wiederherstellen wird das Backup zunaechst in ein temporaeres App-Cache-Verzeichnis entschluesselt und validiert. Dieses Staging-Verzeichnis wird bei Fehlern, Abbruch und nach erfolgreichem Import geloescht. Nach erfolgreicher Wiederherstellung liegen die Dokumente wieder in der normalen lokalen App-Ablage; das Backup schuetzt also die exportierte Datei, nicht automatisch die wiederhergestellten lokalen App-Daten.
+
+Per-Datei-Checksummen im Backup dienen der Fehlererkennung bei Kopie, ZIP-Verarbeitung und Implementierungsfehlern. Die kryptografische Integritaet wird durch die authentifizierte Verschluesselung bereitgestellt.
+
+## 8. Speicherdauer
 
 Lokal gespeicherte Scans, Vorschaubilder und Metadaten bleiben auf dem Geraet, bis sie durch den Nutzer in der App geloescht oder die App deinstalliert wird. Beim Loeschen in der App werden Dokumente zunaechst lokal in den Papierkorb verschoben und dort bis zu 30 Tage aufbewahrt. Sie werden frueher entfernt, wenn der Nutzer sie endgueltig loescht oder den Papierkorb leert. Exportierte oder geteilte Kopien koennen ausserhalb der App weiter bestehen.
 
-## 8. Rechtsgrundlagen nach DSGVO
+Temporaere entschluesselte Restore-Dateien werden nach Fehlern, Abbruch oder erfolgreichem Restore geloescht. Bereits exportierte Backup-Dateien bleiben an dem vom Nutzer gewaehlten Speicherort bestehen, bis der Nutzer sie dort loescht.
+
+## 9. Rechtsgrundlagen nach DSGVO
 
 Soweit personenbezogene Daten verarbeitet werden, erfolgt dies zur Bereitstellung der vom Nutzer angeforderten App-Funktionen gemaess Art. 6 Abs. 1 lit. b DSGVO sowie auf Grundlage des berechtigten Interesses an einer stabilen, sicheren und kompatiblen Bereitstellung der App gemaess Art. 6 Abs. 1 lit. f DSGVO.
 
-## 9. Rechte betroffener Personen
+## 10. Rechte betroffener Personen
 
 Sofern die Voraussetzungen der DSGVO vorliegen, bestehen insbesondere Rechte auf Auskunft, Berichtigung, Loeschung, Einschraenkung der Verarbeitung, Widerspruch sowie Datenuebertragbarkeit. Anfragen koennen an die oben genannte Kontaktadresse gerichtet werden.
 
-## 10. Aenderungen dieser Datenschutzerklaerung
+## 11. Aenderungen dieser Datenschutzerklaerung
 
 Diese Datenschutzerklaerung kann angepasst werden, wenn sich die App, ihre Funktionen oder die rechtlichen Anforderungen aendern. Massgeblich ist die jeweils veroeffentlichte Fassung.

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="backup_group_title">Verschlüsseltes Backup</string>
+    <string name="backup_hint">Backup-Dateien sind passwortgeschützt. Das Passwort kann nicht wiederhergestellt werden. Die lokalen App-Daten werden dadurch nicht zusätzlich verschlüsselt.</string>
+    <string name="backup_create_action">Verschlüsseltes Backup erstellen</string>
+    <string name="backup_restore_action">Backup wiederherstellen</string>
+    <string name="help_item_encrypted_backup">Nutze Verschlüsseltes Backup in den Einstellungen, um eine passwortgeschützte .m24backup-Datei zu erstellen oder wiederherzustellen. Das Passwort kann nicht wiederhergestellt werden. Wiederhergestellte Dokumente liegen wieder in der normalen lokalen App-Ablage.</string>
+    <string name="privacy_keyword_8">Verschlüsseltes Backup</string>
+    <string name="privacy_point_8">Verschlüsselte Backups werden nur erstellt, wenn du eine Zieldatei auswählst. Das Backup-Passwort kann nicht wiederhergestellt werden. Das Backup schützt die exportierte Datei; nach dem Restore liegen Dokumente und Metadaten wieder in der normalen lokalen App-Ablage.</string>
+
+    <string name="backup_options_title">Backup-Optionen</string>
+    <string name="backup_option_include_ocr">OCR-Text einschließen</string>
+    <string name="backup_option_include_thumbnails">Vorschaubilder einschließen</string>
+    <string name="backup_option_include_trash">Papierkorb einschließen</string>
+    <string name="backup_options_continue">Weiter</string>
+    <string name="backup_dialog_cancel">Abbrechen</string>
+
+    <string name="backup_export_passphrase_title">Backup-Passwort festlegen</string>
+    <string name="backup_export_passphrase_message">Das Passwort kann nicht wiederhergestellt werden. Ohne Passwort ist keine Wiederherstellung möglich.</string>
+    <string name="backup_passphrase_label">Passwort</string>
+    <string name="backup_passphrase_repeat_label">Passwort wiederholen</string>
+    <string name="backup_passphrase_show">Passwort anzeigen</string>
+    <string name="backup_passphrase_hide">Passwort verbergen</string>
+    <string name="backup_export_passphrase_confirm">Backup erstellen</string>
+    <string name="backup_restore_passphrase_title">Backup-Passwort eingeben</string>
+    <string name="backup_restore_passphrase_confirm">Weiter</string>
+
+    <string name="backup_summary_title">Backup wiederherstellen</string>
+    <string name="backup_summary_documents" tools:ignore="PluralsCandidate">Dokumente: %1$d</string>
+    <string name="backup_summary_folders" tools:ignore="PluralsCandidate">Ordner: %1$d</string>
+    <string name="backup_summary_size">Größe: %1$s</string>
+    <string name="backup_summary_created">Erstellt: %1$s</string>
+    <string name="backup_summary_app_version">App-Version: %1$s</string>
+    <string name="backup_summary_app_version_unknown">unbekannt</string>
+    <string name="backup_summary_includes_trash">Inklusive Dokumente im Papierkorb</string>
+    <string name="backup_summary_merge_note">Die Wiederherstellung fügt Dokumente hinzu (Merge) und kann Duplikate bereits vorhandener Dokumente erzeugen.</string>
+    <string name="backup_summary_confirm">Wiederherstellen</string>
+
+    <string name="backup_progress_export_title">Backup wird erstellt…</string>
+    <string name="backup_progress_restore_prepare_title">Backup wird gelesen…</string>
+    <string name="backup_progress_restore_title">Wird wiederhergestellt…</string>
+    <string name="backup_progress_counter">%1$d / %2$d</string>
+
+    <string name="backup_export_success" tools:ignore="PluralsCandidate">Backup erstellt (%1$d Dokumente)</string>
+    <string name="backup_export_error_leftover">%1$s Eine unvollständige Backup-Datei kann im Zielordner verbleiben.</string>
+    <string name="backup_restore_success">%1$d Dokumente wiederhergestellt (%2$d neue Ordner, %3$d wiederverwendet)</string>
+    <string name="backup_cancelled">Abgebrochen</string>
+
+    <string name="backup_error_passphrase_too_short">Mindestens 8 Zeichen verwenden</string>
+    <string name="backup_error_passphrase_mismatch">Passwörter stimmen nicht überein</string>
+    <string name="backup_error_passphrase_empty">Bitte das Passwort eingeben</string>
+    <string name="backup_error_wrong_passphrase">Falsches Backup-Passwort</string>
+    <string name="backup_error_corrupt">Das Backup ist beschädigt oder unvollständig</string>
+    <string name="backup_error_unsupported_format">Kein gültiges M24-Backup</string>
+    <string name="backup_error_future_version">Dieses Backup benötigt eine neuere App-Version</string>
+    <string name="backup_error_invalid_manifest">Der Backup-Inhalt ist ungültig</string>
+    <string name="backup_error_missing_document">Im Backup fehlt eine Dokumentdatei</string>
+    <string name="backup_error_insufficient_storage">Nicht genug freier Speicher für dieses Backup</string>
+    <string name="backup_error_io">Backup fehlgeschlagen (Speicher- oder Zugriffsfehler)</string>
+</resources>

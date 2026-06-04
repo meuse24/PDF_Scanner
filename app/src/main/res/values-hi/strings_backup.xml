@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="backup_group_title">एन्क्रिप्टेड बैकअप</string>
+    <string name="backup_hint">बैकअप फ़ाइलें पासवर्ड से सुरक्षित होती हैं। पासवर्ड पुनः प्राप्त नहीं किया जा सकता। इससे ऐप का स्थानीय डेटा अतिरिक्त रूप से एन्क्रिप्ट नहीं होता।</string>
+    <string name="backup_create_action">एन्क्रिप्टेड बैकअप बनाएँ</string>
+    <string name="backup_restore_action">बैकअप पुनर्स्थापित करें</string>
+    <string name="help_item_encrypted_backup">सेटिंग्स में एन्क्रिप्टेड बैकअप का उपयोग करके पासवर्ड-सुरक्षित .m24backup फ़ाइल बनाएं या पुनर्स्थापित करें। पासवर्ड वापस नहीं पाया जा सकता। पुनर्स्थापित दस्तावेज़ फिर से ऐप के सामान्य स्थानीय संग्रह में रखे जाते हैं।</string>
+    <string name="privacy_keyword_8">एन्क्रिप्टेड बैकअप</string>
+    <string name="privacy_point_8">एन्क्रिप्टेड बैकअप तभी बनते हैं जब आप लक्ष्य फ़ाइल चुनते हैं। बैकअप पासवर्ड वापस नहीं पाया जा सकता। बैकअप निर्यात की गई फ़ाइल की रक्षा करता है; पुनर्स्थापना के बाद दस्तावेज़ और मेटाडेटा फिर से ऐप के सामान्य स्थानीय संग्रह में रखे जाते हैं।</string>
+
+    <string name="backup_options_title">बैकअप विकल्प</string>
+    <string name="backup_option_include_ocr">OCR टेक्स्ट शामिल करें</string>
+    <string name="backup_option_include_thumbnails">थंबनेल शामिल करें</string>
+    <string name="backup_option_include_trash">ट्रैश शामिल करें</string>
+    <string name="backup_options_continue">जारी रखें</string>
+    <string name="backup_dialog_cancel">रद्द करें</string>
+
+    <string name="backup_export_passphrase_title">बैकअप पासवर्ड सेट करें</string>
+    <string name="backup_export_passphrase_message">पासवर्ड पुनः प्राप्त नहीं किया जा सकता। इसके बिना बैकअप पुनर्स्थापित नहीं किया जा सकता।</string>
+    <string name="backup_passphrase_label">पासवर्ड</string>
+    <string name="backup_passphrase_repeat_label">पासवर्ड दोहराएँ</string>
+    <string name="backup_passphrase_show">पासवर्ड दिखाएँ</string>
+    <string name="backup_passphrase_hide">पासवर्ड छिपाएँ</string>
+    <string name="backup_export_passphrase_confirm">बैकअप बनाएँ</string>
+    <string name="backup_restore_passphrase_title">बैकअप पासवर्ड दर्ज करें</string>
+    <string name="backup_restore_passphrase_confirm">जारी रखें</string>
+
+    <string name="backup_summary_title">बैकअप पुनर्स्थापित करें</string>
+    <string name="backup_summary_documents" tools:ignore="PluralsCandidate">दस्तावेज़: %1$d</string>
+    <string name="backup_summary_folders" tools:ignore="PluralsCandidate">फ़ोल्डर: %1$d</string>
+    <string name="backup_summary_size">आकार: %1$s</string>
+    <string name="backup_summary_created">बनाया गया: %1$s</string>
+    <string name="backup_summary_app_version">ऐप संस्करण: %1$s</string>
+    <string name="backup_summary_app_version_unknown">अज्ञात</string>
+    <string name="backup_summary_includes_trash">ट्रैश के दस्तावेज़ शामिल हैं</string>
+    <string name="backup_summary_merge_note">पुनर्स्थापना दस्तावेज़ जोड़ती है (मर्ज) और पहले से मौजूद दस्तावेज़ों की डुप्लिकेट बना सकती है।</string>
+    <string name="backup_summary_confirm">पुनर्स्थापित करें</string>
+
+    <string name="backup_progress_export_title">बैकअप बनाया जा रहा है…</string>
+    <string name="backup_progress_restore_prepare_title">बैकअप पढ़ा जा रहा है…</string>
+    <string name="backup_progress_restore_title">पुनर्स्थापित किया जा रहा है…</string>
+    <string name="backup_progress_counter">%1$d / %2$d</string>
+
+    <string name="backup_export_success" tools:ignore="PluralsCandidate">बैकअप बनाया गया (%1$d दस्तावेज़)</string>
+    <string name="backup_export_error_leftover">%1$s लक्ष्य फ़ोल्डर में एक अधूरी बैकअप फ़ाइल रह सकती है।</string>
+    <string name="backup_restore_success">%1$d दस्तावेज़ पुनर्स्थापित (%2$d नए फ़ोल्डर, %3$d पुनः उपयोग)</string>
+    <string name="backup_cancelled">रद्द किया गया</string>
+
+    <string name="backup_error_passphrase_too_short">कम से कम 8 अक्षर उपयोग करें</string>
+    <string name="backup_error_passphrase_mismatch">पासवर्ड मेल नहीं खाते</string>
+    <string name="backup_error_passphrase_empty">कृपया पासवर्ड दर्ज करें</string>
+    <string name="backup_error_wrong_passphrase">गलत बैकअप पासवर्ड</string>
+    <string name="backup_error_corrupt">बैकअप क्षतिग्रस्त या अधूरा है</string>
+    <string name="backup_error_unsupported_format">मान्य M24 बैकअप नहीं है</string>
+    <string name="backup_error_future_version">इस बैकअप के लिए नए ऐप संस्करण की आवश्यकता है</string>
+    <string name="backup_error_invalid_manifest">बैकअप सामग्री अमान्य है</string>
+    <string name="backup_error_missing_document">बैकअप में एक दस्तावेज़ फ़ाइल अनुपस्थित है</string>
+    <string name="backup_error_insufficient_storage">इस बैकअप के लिए पर्याप्त खाली संग्रहण नहीं है</string>
+    <string name="backup_error_io">बैकअप विफल (संग्रहण या एक्सेस त्रुटि)</string>
+</resources>

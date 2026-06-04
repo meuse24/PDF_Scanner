@@ -4,6 +4,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
 }
@@ -130,6 +131,10 @@ dependencies {
     implementation(libs.androidx.biometric)
     implementation(libs.play.review)
     implementation(libs.play.review.ktx)
+    implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.tink.android)
+    implementation(libs.argon2kt)
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

@@ -230,7 +230,7 @@
                 </div>
                 <div class="card">
                     <strong>Last updated</strong>
-                    April 24, 2026
+                    June 4, 2026
                 </div>
             </div>
         </div>
@@ -255,7 +255,7 @@
                 </div>
                 <div class="card">
                     <strong>Stand</strong>
-                    24. April 2026
+                    4. Juni 2026
                 </div>
             </div>
         </div>
@@ -306,6 +306,12 @@
                 The app includes a dedicated <strong>Privacy screen</strong> summarising these points
                 in-app.
             </p>
+            <p>
+                The app can create and restore password-protected <strong>.m24backup</strong> files
+                only after explicit user action. The backup password cannot be recovered. A backup
+                protects the exported file outside the app sandbox; restored documents are stored
+                again in the app's normal local archive.
+            </p>
         </div>
         <div data-lang-content="de">
             <h2>1. Kurzfassung</h2>
@@ -353,6 +359,13 @@
                 Die App enthaelt einen eigenen <strong>Datenschutz-Screen</strong>, der diese Punkte
                 zusammenfasst.
             </p>
+            <p>
+                Die App kann nur nach ausdruecklicher Nutzeraktion passwortgeschuetzte
+                <strong>.m24backup</strong>-Dateien erstellen und wiederherstellen. Das Backup-Passwort
+                kann nicht wiederhergestellt werden. Ein Backup schuetzt die exportierte Datei ausserhalb
+                der App-Sandbox; wiederhergestellte Dokumente liegen wieder in der normalen lokalen
+                App-Ablage.
+            </p>
         </div>
     </section>
 
@@ -371,6 +384,7 @@
                 <li>optional extracted OCR text for searchable PDFs</li>
                 <li>optional automatically derived local tags</li>
                 <li>optional folder assignment and favorite status</li>
+                <li>optional encrypted backup files created by the user</li>
                 <li>optional redacted PDF copies created by the user</li>
                 <li>optional business-card contact fields and generated vCard files</li>
                 <li>optional app-lock setting and timeout</li>
@@ -404,6 +418,7 @@
                 <li>optional erkannter OCR-Text bei durchsuchbaren PDFs</li>
                 <li>optional automatisch abgeleitete lokale Tags</li>
                 <li>optionale Ordnerzuordnung und Favoritenstatus</li>
+                <li>optional vom Nutzer erzeugte verschluesselte Backup-Dateien</li>
                 <li>optional vom Nutzer erzeugte geschwaerzte PDF-Kopien</li>
                 <li>optionale Visitenkarten-Kontaktfelder und erzeugte vCard-Dateien</li>
                 <li>optionale App-Sperren-Einstellung und Timeout</li>
@@ -626,6 +641,7 @@
                 <li>When <strong>exporting</strong>, a copy of the file is written to the device's Downloads area.</li>
                 <li>When <strong>printing</strong>, the file is passed to the Android system print dialog.</li>
                 <li>When another app <strong>shares into</strong> this app, the file is copied into the archive only after user confirmation.</li>
+                <li>When creating an <strong>encrypted backup</strong>, the app writes a password-protected .m24backup file to the user-selected location.</li>
             </ul>
             <p>
                 For secure redaction this means the user should share or export the redacted copy,
@@ -647,6 +663,7 @@
                 <li>Beim <strong>Export</strong> wird eine Kopie der Datei in den Download-Bereich des Geraets geschrieben.</li>
                 <li>Beim <strong>Drucken</strong> wird die Datei an den Android-Systemdialog fuer Drucken uebergeben.</li>
                 <li>Wenn eine andere App eine Datei <strong>an diese App teilt</strong>, wird sie erst nach Bestaetigung in die Ablage kopiert.</li>
+                <li>Beim Erstellen eines <strong>verschluesselten Backups</strong> schreibt die App eine passwortgeschuetzte .m24backup-Datei an den vom Nutzer gewaehlten Speicherort.</li>
             </ul>
             <p>
                 Bei sicherer Schwaerzung bedeutet das: Der Nutzer sollte die geschwaerzte Kopie teilen
@@ -662,7 +679,45 @@
 
     <section class="section">
         <div data-lang-content="en">
-            <h2>7. Storage duration</h2>
+            <h2>7. Encrypted backups</h2>
+            <p>
+                Backup files use standard cryptography for file and backup protection: Argon2id for
+                password-based key derivation, AES-256-GCM to wrap a random backup keyset, and Tink
+                StreamingAead for the encrypted payload. Document names, OCR text, tags, folders,
+                thumbnails, and PDF files are stored only inside the encrypted payload. This is
+                user-controlled file and backup protection; the app does not provide a general-purpose
+                cryptographic service.
+            </p>
+            <p>
+                During restore, the app decrypts and validates the backup in a temporary app-cache
+                staging directory. This staging directory is deleted after errors, cancellation, and
+                successful restore. Per-file checksums are used for error detection; cryptographic
+                integrity comes from authenticated encryption.
+            </p>
+        </div>
+        <div data-lang-content="de">
+            <h2>7. Verschluesselte Backups</h2>
+            <p>
+                Backup-Dateien nutzen Standard-Kryptografie fuer Datei- und Backup-Schutz: Argon2id
+                fuer die passwortbasierte Schluesselableitung, AES-256-GCM fuer das Wrapping eines
+                zufaelligen Backup-Keysets und Tink StreamingAead fuer den verschluesselten Payload.
+                Dokumentnamen, OCR-Text, Tags, Ordner, Vorschaubilder und PDF-Dateien liegen nur im
+                verschluesselten Payload. Dies ist nutzergesteuerter Datei- und Backup-Schutz; die App
+                bietet keinen allgemeinen Kryptografie-Dienst.
+            </p>
+            <p>
+                Beim Restore entschluesselt und validiert die App das Backup zunaechst in einem
+                temporaeren App-Cache-Staging-Verzeichnis. Dieses Verzeichnis wird bei Fehlern,
+                Abbruch und erfolgreichem Restore geloescht. Per-Datei-Checksummen dienen der
+                Fehlererkennung; die kryptografische Integritaet kommt von authentifizierter
+                Verschluesselung.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div data-lang-content="en">
+            <h2>8. Storage duration</h2>
             <p>
                 Locally stored scans, preview images, and metadata remain on the device until the user
                 deletes them in the app or uninstalls the app. Exported or shared copies may continue
@@ -679,7 +734,7 @@
             </p>
         </div>
         <div data-lang-content="de">
-            <h2>7. Speicherdauer</h2>
+            <h2>8. Speicherdauer</h2>
             <p>
                 Lokal gespeicherte Scans, Vorschaubilder und Metadaten bleiben auf dem Geraet,
                 bis sie durch den Nutzer in der App geloescht oder die App deinstalliert wird.
@@ -699,7 +754,7 @@
 
     <section class="section">
         <div data-lang-content="en">
-            <h2>8. Legal basis under GDPR</h2>
+            <h2>9. Legal basis under GDPR</h2>
             <p>
                 To the extent personal data is processed, this is done to provide the app functions
                 requested by the user in accordance with Art. 6(1)(b) GDPR and based on the legitimate
@@ -708,7 +763,7 @@
             </p>
         </div>
         <div data-lang-content="de">
-            <h2>8. Rechtsgrundlagen nach DSGVO</h2>
+            <h2>9. Rechtsgrundlagen nach DSGVO</h2>
             <p>
                 Soweit personenbezogene Daten verarbeitet werden, erfolgt dies zur Bereitstellung der
                 vom Nutzer angeforderten App-Funktionen gemaess Art. 6 Abs. 1 lit. b DSGVO sowie
@@ -720,7 +775,7 @@
 
     <section class="section">
         <div data-lang-content="en">
-            <h2>9. Data subject rights</h2>
+            <h2>10. Data subject rights</h2>
             <p>
                 If the legal requirements under the GDPR are met, data subjects may in particular have
                 rights to access, rectification, erasure, restriction of processing, objection, and data
@@ -728,7 +783,7 @@
             </p>
         </div>
         <div data-lang-content="de">
-            <h2>9. Rechte betroffener Personen</h2>
+            <h2>10. Rechte betroffener Personen</h2>
             <p>
                 Sofern die Voraussetzungen der DSGVO vorliegen, bestehen insbesondere Rechte auf
                 Auskunft, Berichtigung, Loeschung, Einschraenkung der Verarbeitung, Widerspruch
@@ -740,14 +795,14 @@
 
     <section class="section">
         <div data-lang-content="en">
-            <h2>10. Changes to this Privacy Policy</h2>
+            <h2>11. Changes to this Privacy Policy</h2>
             <p>
                 This Privacy Policy may be updated if the app, its functions, or legal requirements change.
                 The version published on this page is authoritative.
             </p>
         </div>
         <div data-lang-content="de">
-            <h2>10. Aenderungen dieser Datenschutzerklaerung</h2>
+            <h2>11. Aenderungen dieser Datenschutzerklaerung</h2>
             <p>
                 Diese Datenschutzerklaerung kann angepasst werden, wenn sich die App, ihre
                 Funktionen oder die rechtlichen Anforderungen aendern. Massgeblich ist die jeweils
@@ -757,8 +812,8 @@
     </section>
 
     <footer>
-        <span data-lang-content="en">M24 PDF-Scanner Privacy Policy, last updated April 24, 2026.</span>
-        <span data-lang-content="de">M24 PDF-Scanner Datenschutzerklaerung, Stand 24. April 2026.</span>
+        <span data-lang-content="en">M24 PDF-Scanner Privacy Policy, last updated June 4, 2026.</span>
+        <span data-lang-content="de">M24 PDF-Scanner Datenschutzerklaerung, Stand 4. Juni 2026.</span>
     </footer>
 </main>
 

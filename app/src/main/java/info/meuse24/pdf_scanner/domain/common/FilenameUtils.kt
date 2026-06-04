@@ -2,9 +2,21 @@ package info.meuse24.pdf_scanner.domain.common
 
 import java.io.File
 
-fun resolveUniqueFilename(dir: File, name: String): String {
-    if (!File(dir, "$name.pdf").exists()) return name
+fun resolveUniqueFilename(
+    dir: File,
+    name: String,
+    conflictingExtensions: Set<String> = setOf("pdf")
+): String {
+    if (conflictingExtensions.none { extension -> File(dir, "$name.$extension").exists() }) return name
     var counter = 2
-    while (File(dir, "${name}_$counter.pdf").exists()) counter++
+    while (conflictingExtensions.any { extension -> File(dir, "${name}_$counter.$extension").exists() }) counter++
     return "${name}_$counter"
+}
+
+fun sanitizeFilename(name: String, fallback: String = "Document"): String {
+    val sanitized = name
+        .replace(Regex("""[\\/:*?"<>|\p{Cntrl}]"""), "_")
+        .trim()
+        .trim('.')
+    return sanitized.ifBlank { fallback }
 }

@@ -37,6 +37,7 @@ import info.meuse24.pdf_scanner.ui.home.HomeScreen
 import info.meuse24.pdf_scanner.ui.home.HomeViewModel
 import info.meuse24.pdf_scanner.ui.home.HomeNavigationCallbacks
 import info.meuse24.pdf_scanner.ui.imagestopdf.ImagesToPdfScreen
+import info.meuse24.pdf_scanner.ui.backup.BackupSettingsSection
 import info.meuse24.pdf_scanner.ui.info.InfoScreen
 import info.meuse24.pdf_scanner.ui.ocr.OcrReviewScreen
 import info.meuse24.pdf_scanner.ui.overlay.PageNumbersScreen
@@ -215,7 +216,8 @@ private fun NavGraphBuilder.infoNavGraph(
             transientSuccess = successMessage,
             transientError = errorMessage,
             onTransientSuccessConsumed = settingsViewModel::clearSuccess,
-            onTransientErrorConsumed = settingsViewModel::clearError
+            onTransientErrorConsumed = settingsViewModel::clearError,
+            backupSection = { BackupSettingsSection() }
         )
     }
     composable(Screen.Info.route) { InfoScreen() }

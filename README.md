@@ -19,6 +19,7 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - Append scanned pages, gallery images, or another PDF to an existing document
 - Search by filename and stored OCR text
 - Organize documents with folders and favorites
+- Create and restore encrypted `.m24backup` archives through Android's system file picker
 - Scan PDFs for QR codes and inspect URLs, Wi-Fi credentials, and raw payloads locally
 - Extract business-card contact data with OCR and export vCard 3.0 files
 - Merge, split, reorder, rotate, extract, duplicate, and delete pages
@@ -34,11 +35,27 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - No cloud upload
 - No account required
 - Files stay in app-internal storage unless you explicitly export them
+- Encrypted backups are created only by explicit user action and are protected with the password chosen for that backup
+- Backup passwords cannot be recovered; restored documents are stored again in the normal local app archive
 - OCR text, OCR quality metadata, and optional automatic document tags are stored locally and can be exported only by explicit user action
 - Incoming shared or opened files are copied into the archive only after user confirmation
 - App Lock is a local UI gate; it does not encrypt PDFs or the database
 - No own backend or document upload; Google Play Services / ML Kit SDKs may declare network permissions for model, compatibility, and diagnostics traffic
 - Backup/export of internal app data is disabled
+
+## Encrypted backups
+
+- Backup files use the `.m24backup` extension and the MIME type `application/vnd.info.meuse24.pdf-scanner.backup`.
+- The backup payload is encrypted with Tink StreamingAead. The streaming keyset is wrapped with a key derived from the user password via Argon2id.
+- The cleartext header contains only format and KDF metadata plus the wrapped keyset. Document names, OCR text, tags, folder names, thumbnails, and PDFs are inside the encrypted payload.
+- Per-file checksums detect copy, ZIP, and implementation errors. Cryptographic integrity comes from authenticated encryption, not from the checksums alone.
+- Restore is merge-only: documents are added with unique file names; existing documents are not deleted. Re-importing the same backup may create duplicate documents.
+- If OCR text was excluded during export, restored documents cannot rebuild the local full-text search index from that backup.
+- The exported backup protects the file outside the app sandbox. After restore, files and metadata are stored in the app's normal local archive again.
+
+## Play Console encryption note
+
+The app uses standard cryptography for user-initiated file and backup protection, including password-protected PDFs and encrypted `.m24backup` files. It does not provide a general-purpose cryptographic service; document this as standard file/backup protection in the Play Console encryption declaration.
 
 ## Requirements
 
@@ -53,6 +70,7 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 ./gradlew --no-configuration-cache testDebugUnitTest
 ./gradlew --no-configuration-cache lint
 ./gradlew --no-configuration-cache assembleDebug
+./gradlew --no-configuration-cache assembleRelease
 ./gradlew --no-configuration-cache bundleRelease
 ```
 
@@ -108,6 +126,7 @@ Recent structure work:
 
 - JVM tests cover AutoTag scoring, the AutoTag settings toggle, retroactive tagging, OCR text TXT export, use cases, workflows, view models, and `PdfEditor` helpers
 - JVM tests also cover external app-entry decoding and navigation guards for Share/Open-with flows
+- JVM tests cover the encrypted backup codec, ZIP payload/staging validation, merge restore, SAF orchestration use cases, and Backup UI state machine
 - Business-card parsing/vCard generation and Room migrations are covered by unit or instrumentation tests where practical
 - Viewer JVM tests cover `PdfViewerViewModel` render-window behavior and the bitmap cache
 - Instrumentation tests cover Android-specific paths such as `PdfRenderer`, URI import, MediaStore export, annotation rendering, redaction, and image-to-PDF generation

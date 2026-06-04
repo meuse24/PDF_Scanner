@@ -5,4 +5,5 @@ import java.io.File
 interface StorageProvider {
     fun scansDir(): File
     fun tempDir(): File
+    fun usableSpace(directory: File): Long = directory.usableSpace
 }

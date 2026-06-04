@@ -77,7 +77,8 @@ fun SettingsScreen(
     transientSuccess: String?,
     transientError: String?,
     onTransientSuccessConsumed: () -> Unit,
-    onTransientErrorConsumed: () -> Unit
+    onTransientErrorConsumed: () -> Unit,
+    backupSection: @Composable () -> Unit = {}
 ) {
     val snackbarHostState = LocalAppSnackbarHostState.current
     val resources = LocalResources.current
@@ -236,6 +237,10 @@ fun SettingsScreen(
                     )
                 }
             }
+        }
+
+        item {
+            backupSection()
         }
     }
 }

@@ -154,7 +154,7 @@
     <string name="privacy_point_2">文書や内容が自動的にアップロードされることはありません。共有やエクスポートは、ユーザーが明示的に実行した場合にのみ行われます。安全な黒塗りでは新しいコピーが作成され、元ファイルは削除するまで残ります。</string>
     <string name="privacy_point_3">スキャンおよび OCR 機能は Google Play Services を使用します。エラー解析のために技術的な診断データが送信される場合があります。自動モードはオフラインで動作する組み込みのラテン文字認識モデルを使用します。ヒンディー語・中国語・日本語・韓国語の言語モデルは初回の手動使用時に Play Services 経由で取得されることがありますが、文書の内容がこのアプリから送信されることはありません。</string>
     <string name="privacy_point_4">アプリ自体は個人データを収集せず、独自の分析やバックエンドも使用しません。Google Play Services / ML Kit は、モデル、互換性、診断のためにネットワーク権限を追加する場合があります。</string>
-    <string name="privacy_footer">最終更新：2026年4月24日</string>
+    <string name="privacy_footer">最終更新：2026年6月4日</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">テキストを抽出</string>

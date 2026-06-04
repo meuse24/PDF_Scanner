@@ -200,6 +200,7 @@ fun HelpScreen() {
                 titleRes = R.string.sheet_section_security,
                 actions = listOf(
                     HelpAction(Icons.Default.Lock,               R.string.settings_app_lock_label, R.string.help_item_app_lock),
+                    HelpAction(Icons.Default.Lock,               R.string.backup_group_title,      R.string.help_item_encrypted_backup),
                     HelpAction(Icons.Default.Lock,               R.string.action_protect_pdf,     R.string.help_item_protect_pdf),
                     HelpAction(Icons.Default.AdminPanelSettings, R.string.action_restrict_usage,  R.string.help_item_restrict_usage),
                     HelpAction(Icons.Default.LockOpen,           R.string.action_unlock_pdf,      R.string.help_item_unlock_pdf),

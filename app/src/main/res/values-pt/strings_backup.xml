@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="backup_group_title">Backup criptografado</string>
+    <string name="backup_hint">Os arquivos de backup são protegidos por senha. A senha não pode ser recuperada. Isso não criptografa adicionalmente os dados locais do aplicativo.</string>
+    <string name="backup_create_action">Criar backup criptografado</string>
+    <string name="backup_restore_action">Restaurar backup</string>
+    <string name="help_item_encrypted_backup">Use Backup criptografado nas configurações para criar ou restaurar um arquivo .m24backup protegido por senha. A senha não pode ser recuperada. Os documentos restaurados voltam ao arquivo local normal do app.</string>
+    <string name="privacy_keyword_8">Backup criptografado</string>
+    <string name="privacy_point_8">Backups criptografados só são criados quando você escolhe um arquivo de destino. A senha não pode ser recuperada. O backup protege o arquivo exportado; após a restauração, documentos e metadados voltam ao arquivo local normal do app.</string>
+
+    <string name="backup_options_title">Opções de backup</string>
+    <string name="backup_option_include_ocr">Incluir texto OCR</string>
+    <string name="backup_option_include_thumbnails">Incluir miniaturas</string>
+    <string name="backup_option_include_trash">Incluir lixeira</string>
+    <string name="backup_options_continue">Continuar</string>
+    <string name="backup_dialog_cancel">Cancelar</string>
+
+    <string name="backup_export_passphrase_title">Definir senha do backup</string>
+    <string name="backup_export_passphrase_message">A senha não pode ser recuperada. Sem ela, o backup não pode ser restaurado.</string>
+    <string name="backup_passphrase_label">Senha</string>
+    <string name="backup_passphrase_repeat_label">Repetir senha</string>
+    <string name="backup_passphrase_show">Mostrar senha</string>
+    <string name="backup_passphrase_hide">Ocultar senha</string>
+    <string name="backup_export_passphrase_confirm">Criar backup</string>
+    <string name="backup_restore_passphrase_title">Digitar senha do backup</string>
+    <string name="backup_restore_passphrase_confirm">Continuar</string>
+
+    <string name="backup_summary_title">Restaurar backup</string>
+    <string name="backup_summary_documents" tools:ignore="PluralsCandidate">Documentos: %1$d</string>
+    <string name="backup_summary_folders" tools:ignore="PluralsCandidate">Pastas: %1$d</string>
+    <string name="backup_summary_size">Tamanho: %1$s</string>
+    <string name="backup_summary_created">Criado: %1$s</string>
+    <string name="backup_summary_app_version">Versão do app: %1$s</string>
+    <string name="backup_summary_app_version_unknown">desconhecida</string>
+    <string name="backup_summary_includes_trash">Inclui documentos na lixeira</string>
+    <string name="backup_summary_merge_note">A restauração adiciona documentos (mesclagem) e pode criar duplicatas de documentos que você já tem.</string>
+    <string name="backup_summary_confirm">Restaurar</string>
+
+    <string name="backup_progress_export_title">Criando backup…</string>
+    <string name="backup_progress_restore_prepare_title">Lendo backup…</string>
+    <string name="backup_progress_restore_title">Restaurando…</string>
+    <string name="backup_progress_counter">%1$d / %2$d</string>
+
+    <string name="backup_export_success" tools:ignore="PluralsCandidate">Backup criado (%1$d documentos)</string>
+    <string name="backup_export_error_leftover">%1$s Um arquivo de backup incompleto pode permanecer na pasta de destino.</string>
+    <string name="backup_restore_success">%1$d documentos restaurados (%2$d novas pastas, %3$d reutilizadas)</string>
+    <string name="backup_cancelled">Cancelado</string>
+
+    <string name="backup_error_passphrase_too_short">Use pelo menos 8 caracteres</string>
+    <string name="backup_error_passphrase_mismatch">As senhas não coincidem</string>
+    <string name="backup_error_passphrase_empty">Digite a senha</string>
+    <string name="backup_error_wrong_passphrase">Senha de backup incorreta</string>
+    <string name="backup_error_corrupt">O backup está danificado ou incompleto</string>
+    <string name="backup_error_unsupported_format">Não é um backup M24 válido</string>
+    <string name="backup_error_future_version">Este backup precisa de uma versão mais recente do app</string>
+    <string name="backup_error_invalid_manifest">O conteúdo do backup é inválido</string>
+    <string name="backup_error_missing_document">Falta um arquivo de documento no backup</string>
+    <string name="backup_error_insufficient_storage">Não há espaço livre suficiente para este backup</string>
+    <string name="backup_error_io">Falha no backup (erro de armazenamento ou acesso)</string>
+</resources>

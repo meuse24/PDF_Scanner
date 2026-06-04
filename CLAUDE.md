@@ -134,7 +134,7 @@ Testabhängigkeiten: `junit:4.13.2`, `kotlinx-coroutines-test:1.10.1`, `mockito-
 | Bibliothek | Version |
 |---|---|
 | Kotlin | 2.2.10 |
-| AGP | 9.1.1 |
+| AGP | 9.2.1 |
 | KSP | 2.3.2 |
 | Hilt | 2.59.2 |
 | Room | 2.8.4 |

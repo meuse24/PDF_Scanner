@@ -135,16 +135,22 @@ fun InfoScreen() {
         }
         item {
             SectionCard(Icons.AutoMirrored.Filled.LibraryBooks, stringResource(R.string.info_section_libraries)) {
-                InfoRow("Google ML Kit Document Scanner",    "16.0.0")
+                InfoRow("Compose BOM",                      "2026.03.00")
+                InfoRow("Navigation Compose",               "2.9.7")
+                InfoRow("Hilt (Dagger)",                    "2.59.2")
+                InfoRow("Hilt Navigation Compose",          "1.3.0")
+                InfoRow("Jetpack Room",                     "2.8.4")
+                InfoRow("AndroidX Biometric",               "1.4.0-alpha04")
+                InfoRow("Kotlinx Serialization",            "1.8.1")
+                InfoRow("Google ML Kit Document Scanner",   "16.0.0")
                 InfoRow("Google ML Kit Barcode Scanning",   "17.3.0")
                 InfoRow("Google ML Kit Text Recognition",   "16.0.1")
                 InfoRow("PdfBox Android",                   "2.0.27.0")
-                InfoRow("Jetpack Room",                     "2.8.4")
-                InfoRow("Hilt (Dagger)",                    "2.59.2")
-                InfoRow("Navigation Compose",               "2.9.7")
-                InfoRow("Hilt Navigation Compose",          "1.3.0")
+                InfoRow("Reorderable",                      "2.4.3")
+                InfoRow("Google Tink",                      "1.19.0")
+                InfoRow("Argon2kt",                         "1.6.0")
                 InfoRow("KSP",                              "2.3.2")
-                InfoRow("Android Gradle Plugin",            "9.1.1")
+                InfoRow("Android Gradle Plugin",            "9.2.1")
             }
         }
         item {

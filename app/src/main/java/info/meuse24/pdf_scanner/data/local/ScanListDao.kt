@@ -9,7 +9,10 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, tags, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted,
+               ((extracted_text IS NOT NULL AND trim(extracted_text) != '')
+                 OR (ocr_page_text_json IS NOT NULL AND trim(ocr_page_text_json) != '')) AS has_stored_ocr_text,
+               tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL
@@ -21,7 +24,10 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, tags, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted,
+               ((extracted_text IS NOT NULL AND trim(extracted_text) != '')
+                 OR (ocr_page_text_json IS NOT NULL AND trim(ocr_page_text_json) != '')) AS has_stored_ocr_text,
+               tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL AND folder_id IS :folderId
@@ -33,7 +39,10 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, tags, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted,
+               ((extracted_text IS NOT NULL AND trim(extracted_text) != '')
+                 OR (ocr_page_text_json IS NOT NULL AND trim(ocr_page_text_json) != '')) AS has_stored_ocr_text,
+               tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL AND is_favorite = 1
@@ -45,7 +54,10 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, tags, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted,
+               ((extracted_text IS NOT NULL AND trim(extracted_text) != '')
+                 OR (ocr_page_text_json IS NOT NULL AND trim(ocr_page_text_json) != '')) AS has_stored_ocr_text,
+               tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL
@@ -58,7 +70,10 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, tags, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted,
+               ((extracted_text IS NOT NULL AND trim(extracted_text) != '')
+                 OR (ocr_page_text_json IS NOT NULL AND trim(ocr_page_text_json) != '')) AS has_stored_ocr_text,
+               tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL
@@ -71,7 +86,10 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, tags, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted,
+               ((extracted_text IS NOT NULL AND trim(extracted_text) != '')
+                 OR (ocr_page_text_json IS NOT NULL AND trim(ocr_page_text_json) != '')) AS has_stored_ocr_text,
+               tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL
@@ -85,7 +103,10 @@ interface ScanListDao {
     @Query(
         """
         SELECT id, filename, filepath, timestamp, pageCount, fileSize,
-               thumbnail_path, is_searchable, is_encrypted, tags, deleted_at,
+               thumbnail_path, is_searchable, is_encrypted,
+               ((extracted_text IS NOT NULL AND trim(extracted_text) != '')
+                 OR (ocr_page_text_json IS NOT NULL AND trim(ocr_page_text_json) != '')) AS has_stored_ocr_text,
+               tags, deleted_at,
                folder_id, is_favorite
         FROM scan_records
         WHERE deleted_at IS NULL

@@ -18,6 +18,7 @@ import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
 import info.meuse24.pdf_scanner.domain.usecase.BuildScanSearchQueryUseCase
 import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportDocxUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
@@ -144,7 +145,11 @@ class HomeViewModelTest {
                 R.string.error_restore_failed to "Restore failed",
                 R.string.rename_error_exists  to "Filename already exists",
                 R.string.rename_error_failed  to "Rename failed",
-                R.string.rename_success       to "Renamed to %s"
+                R.string.rename_success       to "Renamed to %s",
+                R.string.docx_export_success  to "DOCX exported: %s",
+                R.string.docx_export_nothing_to_export to "No OCR text for DOCX",
+                R.string.docx_export_error    to "DOCX export failed",
+                R.string.docx_export_ocr_busy to "OCR is already running"
             ),
             plurals = mapOf(
                 R.plurals.trash_moved to "%d moved to trash",
@@ -207,6 +212,127 @@ class HomeViewModelTest {
         assertEquals("No image available", viewModel.messageUiState.value.error)
         assertFalse(viewModel.operationUiState.value.ocrLoading)
         assertNull(viewModel.operationUiState.value.ocrText)
+    }
+
+    @Test
+    fun `exportDocx without OCR text prompts OCR instead of showing error`() = runTest(testDispatcher) {
+        val pdf = File(tmpFolder.root, "no-ocr.pdf").apply { writeText("pdf") }
+        val record = Document(
+            id = 31L,
+            filename = "no-ocr",
+            filepath = pdf.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = pdf.length()
+        )
+        `when`(repository.getScansByIds(listOf(31L))).thenReturn(listOf(record))
+
+        val viewModel = buildViewModel()
+        viewModel.exportDocx(record)
+        advanceUntilIdle()
+
+        assertEquals(listOf(31L), viewModel.operationUiState.value.docxOcrPrompt?.documentIds)
+        assertNull(viewModel.messageUiState.value.error)
+    }
+
+    @Test
+    fun `startDocxOcrPrompt exports Word after successful OCR`() = runTest(testDispatcher) {
+        val pdf = File(tmpFolder.root, "needs-ocr.pdf").apply { writeText("pdf") }
+        val record = Document(
+            id = 32L,
+            filename = "needs-ocr",
+            filepath = pdf.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = pdf.length()
+        )
+        val recordWithText = record.copy(
+            extractedText = "Recognized text",
+            pageTexts = listOf("Recognized text"),
+            hasStoredOcrText = true
+        )
+        `when`(repository.getScansByIds(listOf(32L))).thenReturn(listOf(record), listOf(record), listOf(recordWithText))
+
+        val viewModel = buildViewModel(
+            extractTextUseCase = fakeExtract { records, _ ->
+                listOf(
+                    OcrDocumentResult(
+                        recordId = records.single().id,
+                        fullText = "Recognized text",
+                        pageTexts = listOf("Recognized text"),
+                        stats = null
+                    )
+                )
+            }
+        )
+
+        viewModel.exportDocx(record)
+        advanceUntilIdle()
+        viewModel.startDocxOcrPrompt("de")
+        advanceUntilIdle()
+
+        assertNull(viewModel.operationUiState.value.docxOcrPrompt)
+        assertNull(viewModel.operationUiState.value.ocrReviewRequestId)
+        assertEquals("DOCX exported: needs-ocr.docx", viewModel.messageUiState.value.success)
+        assertNull(viewModel.messageUiState.value.error)
+    }
+
+    @Test
+    fun `exportDocxs with mixed OCR prompts for missing text and exports original selection after OCR`() = runTest(testDispatcher) {
+        val readyPdf = File(tmpFolder.root, "ready.pdf").apply { writeText("pdf") }
+        val missingPdf = File(tmpFolder.root, "missing.pdf").apply { writeText("pdf") }
+        val ready = Document(
+            id = 41L,
+            filename = "ready",
+            filepath = readyPdf.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = readyPdf.length(),
+            extractedText = "Already recognized",
+            pageTexts = listOf("Already recognized"),
+            hasStoredOcrText = true
+        )
+        val missing = Document(
+            id = 42L,
+            filename = "missing",
+            filepath = missingPdf.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = missingPdf.length()
+        )
+        val missingWithText = missing.copy(
+            extractedText = "Newly recognized",
+            pageTexts = listOf("Newly recognized"),
+            hasStoredOcrText = true
+        )
+        `when`(repository.getScansByIds(listOf(41L, 42L)))
+            .thenReturn(listOf(ready, missing), listOf(ready, missingWithText))
+        `when`(repository.getScansByIds(listOf(42L))).thenReturn(listOf(missing))
+
+        val viewModel = buildViewModel(
+            extractTextUseCase = fakeExtract { records, _ ->
+                listOf(
+                    OcrDocumentResult(
+                        recordId = records.single().id,
+                        fullText = "Newly recognized",
+                        pageTexts = listOf("Newly recognized"),
+                        stats = null
+                    )
+                )
+            }
+        )
+
+        viewModel.exportDocxs(listOf(ready, missing))
+        advanceUntilIdle()
+
+        assertEquals(listOf(42L), viewModel.operationUiState.value.docxOcrPrompt?.documentIds)
+
+        viewModel.startDocxOcrPrompt("de")
+        advanceUntilIdle()
+
+        assertNull(viewModel.operationUiState.value.docxOcrPrompt)
+        assertTrue(viewModel.messageUiState.value.success?.startsWith("DOCX exported: docx_export_") == true)
+        assertNull(viewModel.messageUiState.value.error)
     }
 
     @Test
@@ -468,6 +594,7 @@ class HomeViewModelTest {
 
     private fun buildViewModel(
         extractTextUseCase: ExtractTextUseCase = this.extractTextUseCase,
+        exportDocxUseCase: ExportDocxUseCase = testExportDocxUseCase(),
         trashScansUseCase: TrashScansUseCase = this.trashScansUseCase,
         restoreScansUseCase: RestoreScansUseCase = this.restoreScansUseCase,
         archiveFilterStore: ArchiveFilterStore = ArchiveFilterStore(),
@@ -481,6 +608,7 @@ class HomeViewModelTest {
             importFileUseCase = importFileUseCase,
             exportScanUseCase = exportScanUseCase,
             exportAsJpgUseCase = exportAsJpgUseCase,
+            exportDocxUseCase = exportDocxUseCase,
             exportOcrTextUseCase = testExportOcrTextUseCase(),
             checkPrintPageSizeWarningUseCase = CheckPrintPageSizeWarningUseCase(
                 pdfMetadataOps = pdfMetadataOps,
@@ -530,6 +658,28 @@ class HomeViewModelTest {
                 mimeType: String,
                 writer: (java.io.OutputStream) -> Unit
             ): DownloadEntry = error("DownloadsStorage not configured")
+        }
+    )
+
+    private fun testExportDocxUseCase() = ExportDocxUseCase(
+        downloadsStorage = object : DownloadsStorage {
+            override fun writeDownload(
+                displayName: String,
+                mimeType: String,
+                writer: (java.io.OutputStream) -> Unit
+            ): DownloadEntry {
+                writer(java.io.ByteArrayOutputStream())
+                return object : DownloadEntry {
+                    override val displayName: String = displayName
+                    override fun delete() = Unit
+                }
+            }
+        },
+        docxBuilder = object : info.meuse24.pdf_scanner.domain.gateway.DocxBuilder {
+            override fun writeDocx(
+                doc: info.meuse24.pdf_scanner.domain.gateway.DocxDocument,
+                out: java.io.OutputStream
+            ) = Unit
         }
     )
 

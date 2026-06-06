@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="docx_export_action">Экспортировать в Word (.docx)</string>
+    <string name="docx_export_success">Сохранено в Загрузки: %1$s</string>
+    <string name="docx_export_error">Не удалось экспортировать в Word</string>
+    <string name="docx_export_nothing_to_export">В выбранных документах нет OCR-текста для экспорта в Word</string>
+    <string name="docx_export_ocr_prompt_title">Для экспорта в Word нужен OCR</string>
+    <string name="docx_export_ocr_prompt_message">%1$d выбранных документа(ов) пока не имеют OCR-текста. Запустите OCR сейчас, чтобы экспортировать их как документы Word.</string>
+    <string name="docx_export_start_ocr">Запустить OCR</string>
+    <string name="docx_export_ocr_busy">OCR уже выполняется. Дождитесь завершения, прежде чем запускать другой экспорт в Word.</string>
+    <string name="help_item_export_docx">Экспортирует сохраненный OCR-текст в редактируемый документ Word (.docx). Макет и изображения не воссоздаются; используйте PDF с поиском, если нужно сохранить исходный вид PDF.</string>
+    <string name="info_feature_docx">Экспорт в Word создает редактируемые DOCX-файлы из сохраненного OCR-текста. Экспорт содержит только текст и хранит документы локально, пока вы не сохраните, не поделитесь или не экспортируете их.</string>
+</resources>

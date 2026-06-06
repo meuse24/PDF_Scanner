@@ -15,6 +15,7 @@ import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.repository.FolderRepository
 import info.meuse24.pdf_scanner.domain.usecase.BuildScanSearchQueryUseCase
 import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportDocxUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
@@ -26,6 +27,7 @@ import info.meuse24.pdf_scanner.domain.usecase.MoveDocumentsUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
 import info.meuse24.pdf_scanner.domain.usecase.OcrBackfillUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
+import info.meuse24.pdf_scanner.domain.usecase.NoExportableTextException
 import info.meuse24.pdf_scanner.domain.usecase.RecordReviewPromptActionUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RenameDocumentResult
 import info.meuse24.pdf_scanner.domain.usecase.RenameDocumentUseCase
@@ -45,6 +47,7 @@ import info.meuse24.pdf_scanner.domain.model.OcrModelInstallException
 import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import info.meuse24.pdf_scanner.domain.model.OcrResultStats
 import info.meuse24.pdf_scanner.domain.model.OcrThresholds
+import info.meuse24.pdf_scanner.domain.model.hasDocxExportText
 import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
 import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
@@ -75,6 +78,7 @@ class HomeViewModel @Inject constructor(
     private val importFileUseCase: ImportFileUseCase,
     private val exportScanUseCase: ExportScanUseCase,
     private val exportAsJpgUseCase: ExportAsJpgUseCase,
+    private val exportDocxUseCase: ExportDocxUseCase,
     private val exportOcrTextUseCase: ExportOcrTextUseCase,
     checkPrintPageSizeWarningUseCase: CheckPrintPageSizeWarningUseCase,
     private val trashScansUseCase: TrashScansUseCase,
@@ -146,7 +150,9 @@ class HomeViewModel @Inject constructor(
     private val _ocrLoading = MutableStateFlow(false)
     private val _ocrProgress = MutableStateFlow<HomeOcrProgress?>(null)
     private val _ocrStatusText = MutableStateFlow<String?>(null)
+    private val _docxOcrPrompt = MutableStateFlow<HomeDocxOcrPrompt?>(null)
     private val _editLoading = MutableStateFlow(false)
+    private var pendingDocxExportIds: List<Long> = emptyList()
 
     private val _pendingImageUris = MutableStateFlow<List<Uri>>(emptyList())
 
@@ -210,11 +216,13 @@ class HomeViewModel @Inject constructor(
             )
         },
         _playReviewRequestId,
-        _editLoading
-    ) { state, playReviewRequestId, editLoading ->
+        _editLoading,
+        _docxOcrPrompt
+    ) { state, playReviewRequestId, editLoading, docxOcrPrompt ->
         state.copy(
             playReviewRequestId = playReviewRequestId,
-            editLoading = editLoading
+            editLoading = editLoading,
+            docxOcrPrompt = docxOcrPrompt
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeOperationUiState())
 
@@ -382,6 +390,7 @@ class HomeViewModel @Inject constructor(
 
         val validRecords = findOcrExtractableDocumentsUseCase(records)
         if (validRecords.isEmpty()) {
+            pendingDocxExportIds = emptyList()
             _error.value = resourceProvider.getString(R.string.ocr_no_image)
             return
         }
@@ -389,6 +398,7 @@ class HomeViewModel @Inject constructor(
         _ocrLoading.value = true
         viewModelScope.launch(dispatcherProvider.io) {
             try {
+                val hasPendingDocxExport = pendingDocxExportIds.isNotEmpty()
                 val results = extractTextUseCase(validRecords, languageCode, ::updateOcrStatus)
                 results.forEach { document ->
                     repository.updateExtractedTextAndOcrStats(
@@ -401,14 +411,21 @@ class HomeViewModel @Inject constructor(
                 }
 
                 val firstStats = results.firstOrNull { it.fullText.isNotBlank() }?.stats
-                if (validRecords.size == 1) {
+                if (hasPendingDocxExport) {
+                    _ocrText.value = null
+                    _ocrReviewRequestId.value = null
+                } else if (validRecords.size == 1) {
                     _ocrText.value = null
                     _ocrReviewRequestId.value = validRecords.single().id
                 } else {
                     _ocrText.value = buildCombinedOcrText(validRecords, results)
                 }
-                maybeWarnAboutUncertainAutoMode(languageCode, firstStats)
+                if (!hasPendingDocxExport) {
+                    maybeWarnAboutUncertainAutoMode(languageCode, firstStats)
+                }
+                continuePendingDocxExportAfterOcr()
             } catch (_: OcrNoTextException) {
+                pendingDocxExportIds = emptyList()
                 val messageRes = if (languageCode == OCR_LANGUAGE_AUTO) {
                     R.string.ocr_no_text_auto_hint
                 } else {
@@ -416,8 +433,10 @@ class HomeViewModel @Inject constructor(
                 }
                 _error.value = resourceProvider.getString(messageRes)
             } catch (_: OcrModelInstallException) {
+                pendingDocxExportIds = emptyList()
                 _error.value = resourceProvider.getString(R.string.ocr_model_download_failed)
             } catch (_: Exception) {
+                pendingDocxExportIds = emptyList()
                 _error.value = resourceProvider.getString(R.string.ocr_failed)
             } finally {
                 _ocrLoading.value = false
@@ -574,6 +593,37 @@ class HomeViewModel @Inject constructor(
         _ocrReviewRequestId.value = null
     }
 
+    fun dismissDocxOcrPrompt() {
+        _docxOcrPrompt.value = null
+        pendingDocxExportIds = emptyList()
+    }
+
+    fun startDocxOcrPrompt(languageCode: String) {
+        if (_ocrLoading.value) {
+            _error.value = resourceProvider.getString(R.string.docx_export_ocr_busy)
+            return
+        }
+
+        val ids = _docxOcrPrompt.value?.documentIds.orEmpty()
+        _docxOcrPrompt.value = null
+        if (ids.isEmpty()) return
+
+        viewModelScope.launch(dispatcherProvider.io) {
+            try {
+                val records = repository.getScansByIds(ids)
+                if (records.isEmpty()) {
+                    pendingDocxExportIds = emptyList()
+                    _error.value = resourceProvider.getString(R.string.docx_export_nothing_to_export)
+                } else {
+                    extractTexts(records, languageCode)
+                }
+            } catch (_: Exception) {
+                pendingDocxExportIds = emptyList()
+                _error.value = resourceProvider.getString(R.string.ocr_failed)
+            }
+        }
+    }
+
     fun launchPlayReview(activity: Activity, onComplete: () -> Unit) {
         playReviewPromptManager.launchReviewFlow(activity, onComplete)
     }
@@ -651,6 +701,78 @@ class HomeViewModel @Inject constructor(
 
     fun exportOcrText(record: Document) {
         exportOcrTexts(listOf(record))
+    }
+
+    fun exportDocx(record: Document) {
+        exportDocxs(listOf(record))
+    }
+
+    fun exportDocxs(records: List<Document>) {
+        viewModelScope.launch(dispatcherProvider.io) {
+            val requestedIds = records.map { it.id }
+            try {
+                val fullRecords = repository.getScansByIds(requestedIds)
+                val missingTextRecords = fullRecords.filterNot { it.hasDocxExportText() }
+                if (missingTextRecords.isNotEmpty()) {
+                    promptDocxOcr(
+                        ocrIds = missingTextRecords.map { it.id },
+                        exportIds = requestedIds
+                    )
+                    return@launch
+                }
+
+                val exportableRecords = fullRecords.filter { it.hasDocxExportText() }
+                if (exportableRecords.isEmpty()) {
+                    promptDocxOcr(ocrIds = requestedIds, exportIds = requestedIds)
+                    return@launch
+                }
+                val displayName = exportDocxUseCase(exportableRecords)
+                _success.value = resourceProvider.getString(R.string.docx_export_success, displayName)
+            } catch (_: NoExportableTextException) {
+                promptDocxOcr(ocrIds = requestedIds, exportIds = requestedIds)
+            } catch (_: Exception) {
+                _error.value = resourceProvider.getString(R.string.docx_export_error)
+            }
+        }
+    }
+
+    private fun promptDocxOcr(ocrIds: List<Long>, exportIds: List<Long>) {
+        val uniqueOcrIds = ocrIds.distinct().filter { it > 0L }
+        val uniqueExportIds = exportIds.distinct().filter { it > 0L }
+        if (uniqueOcrIds.isEmpty() || uniqueExportIds.isEmpty()) {
+            pendingDocxExportIds = emptyList()
+            _error.value = resourceProvider.getString(R.string.docx_export_nothing_to_export)
+        } else {
+            pendingDocxExportIds = uniqueExportIds
+            _docxOcrPrompt.value = HomeDocxOcrPrompt(uniqueOcrIds)
+        }
+    }
+
+    private suspend fun continuePendingDocxExportAfterOcr() {
+        val ids = pendingDocxExportIds
+        pendingDocxExportIds = emptyList()
+        if (ids.isEmpty()) return
+
+        val records = repository.getScansByIds(ids)
+        if (records.isEmpty()) {
+            _error.value = resourceProvider.getString(R.string.docx_export_nothing_to_export)
+            return
+        }
+
+        val exportableRecords = records.filter { it.hasDocxExportText() }
+        if (exportableRecords.isEmpty()) {
+            _error.value = resourceProvider.getString(R.string.docx_export_nothing_to_export)
+            return
+        }
+
+        try {
+            val displayName = exportDocxUseCase(exportableRecords)
+            _success.value = resourceProvider.getString(R.string.docx_export_success, displayName)
+        } catch (_: NoExportableTextException) {
+            _error.value = resourceProvider.getString(R.string.docx_export_nothing_to_export)
+        } catch (_: Exception) {
+            _error.value = resourceProvider.getString(R.string.docx_export_error)
+        }
     }
 
     fun exportOcrTexts(records: List<Document>) {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="docx_export_action">تصدير كـ Word (.docx)</string>
+    <string name="docx_export_success">تم الحفظ في التنزيلات: %1$s</string>
+    <string name="docx_export_error">فشل تصدير Word</string>
+    <string name="docx_export_nothing_to_export">لا يحتوي أي مستند محدد على نص OCR لتصديره إلى Word</string>
+    <string name="docx_export_ocr_prompt_title">يلزم OCR للتصدير إلى Word</string>
+    <string name="docx_export_ocr_prompt_message">%1$d مستند(ات) محددة لا تحتوي بعد على نص OCR. ابدأ OCR الآن لتتمكن من تصديرها كمستندات Word.</string>
+    <string name="docx_export_start_ocr">بدء OCR</string>
+    <string name="docx_export_ocr_busy">OCR قيد التشغيل بالفعل. انتظر حتى يكتمل قبل بدء تصدير Word آخر.</string>
+    <string name="help_item_export_docx">يصدر نص OCR المحفوظ كمستند Word قابل للتحرير (.docx). لا تتم إعادة إنشاء التخطيط أو الصور؛ استخدم PDF قابلًا للبحث عندما تحتاج إلى مظهر PDF الأصلي.</string>
+    <string name="info_feature_docx">ينشئ تصدير Word ملفات DOCX قابلة للتحرير من نص OCR المحفوظ. التصدير نصي فقط وتبقى المستندات محلية حتى تحفظها أو تشاركها أو تصدرها.</string>
+</resources>

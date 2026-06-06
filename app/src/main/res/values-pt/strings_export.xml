@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="docx_export_action">Exportar como Word (.docx)</string>
+    <string name="docx_export_success">Salvo em Downloads: %1$s</string>
+    <string name="docx_export_error">Falha ao exportar para Word</string>
+    <string name="docx_export_nothing_to_export">Nenhum documento selecionado tem texto OCR para exportar para Word</string>
+    <string name="docx_export_ocr_prompt_title">OCR necessário para exportar para Word</string>
+    <string name="docx_export_ocr_prompt_message">%1$d documento(s) selecionado(s) ainda não têm texto OCR. Inicie o OCR agora para poder exportá-los como documentos do Word.</string>
+    <string name="docx_export_start_ocr">Iniciar OCR</string>
+    <string name="docx_export_ocr_busy">O OCR já está em execução. Aguarde até terminar antes de iniciar outra exportação para Word.</string>
+    <string name="help_item_export_docx">Exporta o texto OCR salvo como um documento Word editável (.docx). O layout e as imagens não são recriados; use PDF pesquisável quando precisar manter a aparência original do PDF.</string>
+    <string name="info_feature_docx">A exportação para Word cria arquivos DOCX editáveis a partir do texto OCR salvo. A exportação é somente texto e mantém os documentos locais até que você os salve, compartilhe ou exporte.</string>
+</resources>

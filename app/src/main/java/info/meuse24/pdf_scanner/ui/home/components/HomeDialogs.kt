@@ -151,6 +151,67 @@ internal fun HomeBulkLanguageDialog(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun HomeDocxOcrPromptDialog(
+    documentCount: Int,
+    expanded: Boolean,
+    languageCode: String,
+    languages: List<Pair<String, String>>,
+    onExpandedChange: (Boolean) -> Unit,
+    onLanguageSelected: (String) -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.docx_export_ocr_prompt_title)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.docx_export_ocr_prompt_message, documentCount))
+                androidx.compose.foundation.layout.Spacer(Modifier.height(16.dp))
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = onExpandedChange
+                ) {
+                    OutlinedTextField(
+                        value = languages.find { it.first == languageCode }?.second ?: languageCode,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.dialog_ocr_language)) },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        },
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                        modifier = Modifier
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
+                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { onExpandedChange(false) }
+                    ) {
+                        languages.forEach { (code, name) ->
+                            DropdownMenuItem(
+                                text = { Text(name) },
+                                onClick = { onLanguageSelected(code) }
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(R.string.docx_export_start_ocr))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        }
+    )
+}
+
 @Composable
 internal fun HomeLoadingDialog(statusText: String? = null) {
     AlertDialog(

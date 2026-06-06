@@ -280,6 +280,7 @@ fun PdfViewerScreen(
                     showRenameAction = false,
                     showPrintAction = false,
                     showExportAsJpgAction = false,
+                    showTextExportActions = false,
                     onAction = { action ->
                         editSheetVisible = false
                         when (action) {
@@ -306,6 +307,7 @@ fun PdfViewerScreen(
                             ScanAction.ScanQrCodes -> onNavigateToQrScan(record.id)
                             ScanAction.ScanBusinessCard -> onNavigateToBusinessCard(record.id)
                             ScanAction.ExportAsJpg,
+                            ScanAction.ExportDocx,
                             ScanAction.ExportOcrText,
                             ScanAction.Print,
                             ScanAction.Rename -> Unit

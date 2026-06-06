@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.BrandingWatermark
 import androidx.compose.material.icons.automirrored.filled.RotateRight
+import androidx.compose.material.icons.automirrored.filled.TextSnippet
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.BorderColor
@@ -84,6 +85,7 @@ sealed interface ScanAction {
     data object RemovePassword : ScanAction
     data object RestrictUsage : ScanAction
     data object ExportAsJpg : ScanAction
+    data object ExportDocx : ScanAction
     data object ExportOcrText : ScanAction
     data object Annotate : ScanAction
     data object Redact : ScanAction
@@ -103,6 +105,7 @@ fun DocumentEditSheet(
     showRenameAction: Boolean = true,
     showPrintAction: Boolean = true,
     showExportAsJpgAction: Boolean = true,
+    showTextExportActions: Boolean = true,
     onToggleFavorite: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
@@ -120,7 +123,8 @@ fun DocumentEditSheet(
     val showRename = showRenameAction
     val showPrint = showPrintAction && notEncrypted
     val showExportAsJpg = showExportAsJpgAction && notEncrypted
-    val showExportOcrText = !record.extractedText.isNullOrBlank()
+    val showExportDocx = showTextExportActions
+    val showExportOcrText = showTextExportActions && !record.extractedText.isNullOrBlank()
     val showReorder = notEncrypted && multiPage
     val showRotate = notEncrypted
     val showAppend = notEncrypted
@@ -143,12 +147,12 @@ fun DocumentEditSheet(
     val showUnlock = record.isEncrypted
     val showRemovePassword = record.isEncrypted
 
-    val showQuickSection = showFavorite || showRename || showMetadata || showPrint || showExportAsJpg
+    val showQuickSection = showFavorite || showRename || showMetadata || showPrint
     val showPagesSection = showReorder || showRotate || showAppend || showExtractPages ||
         showDuplicatePages || showSplit || showDeletePages
     val showEditSection = showAnnotate || showSignature || showPageNumbers || showTextWatermark || showRedact
     val showAnalyseSection = showQrScan || showBusinessCard || showRemoveTextLayer
-    val showExportSection = showGrayscale || showCompress || showExportOcrText
+    val showExportSection = showExportAsJpg || showGrayscale || showCompress || showExportDocx || showExportOcrText
     val showSecuritySection = showProtect || showRestrictUsage || showUnlock || showRemovePassword
 
     LazyColumn(
@@ -202,14 +206,6 @@ fun DocumentEditSheet(
                 }
             }
         }
-        if (showExportAsJpg) {
-            item {
-                SheetItem(Icons.Default.Image, R.string.action_export_as_jpg, true) {
-                    onAction(ScanAction.ExportAsJpg)
-                }
-            }
-        }
-
         if (showPagesSection) {
             item {
                 SheetSection(R.string.sheet_section_pages)
@@ -336,6 +332,20 @@ fun DocumentEditSheet(
         if (showExportSection) {
             item {
                 SheetSection(R.string.sheet_section_export)
+            }
+        }
+        if (showExportAsJpg) {
+            item {
+                SheetItem(Icons.Default.Image, R.string.action_export_as_jpg, true) {
+                    onAction(ScanAction.ExportAsJpg)
+                }
+            }
+        }
+        if (showExportDocx) {
+            item {
+                SheetItem(Icons.AutoMirrored.Filled.TextSnippet, R.string.docx_export_action, true) {
+                    onAction(ScanAction.ExportDocx)
+                }
             }
         }
         if (showExportOcrText) {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="docx_export_action">导出为 Word (.docx)</string>
+    <string name="docx_export_success">已保存到“下载”：%1$s</string>
+    <string name="docx_export_error">Word 导出失败</string>
+    <string name="docx_export_nothing_to_export">所选文档没有可用于 Word 导出的 OCR 文本</string>
+    <string name="docx_export_ocr_prompt_title">Word 导出需要 OCR</string>
+    <string name="docx_export_ocr_prompt_message">%1$d 个所选文档尚无 OCR 文本。现在启动 OCR 后即可导出为 Word 文档。</string>
+    <string name="docx_export_start_ocr">启动 OCR</string>
+    <string name="docx_export_ocr_busy">OCR 已在运行。请等待完成后再启动另一个 Word 导出。</string>
+    <string name="help_item_export_docx">将已保存的 OCR 文本导出为可编辑的 Word 文档 (.docx)。不会重建版式和图片；如果需要保留原始 PDF 外观，请使用可搜索 PDF。</string>
+    <string name="info_feature_docx">Word 导出会根据已保存的 OCR 文本创建可编辑的 DOCX 文件。该导出仅包含文本，并会保持文档在本地，直到你保存、分享或导出它们。</string>
+</resources>

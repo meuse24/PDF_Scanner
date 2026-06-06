@@ -140,6 +140,7 @@ fun HelpScreen() {
                     HelpAction(Icons.Default.FindInPage, R.string.cd_make_searchable, R.string.help_item_make_searchable),
                     HelpAction(Icons.Default.Delete, R.string.cd_delete, R.string.help_item_delete),
                     HelpAction(Icons.Default.Download, R.string.action_export, R.string.help_desc_export),
+                    HelpAction(Icons.AutoMirrored.Filled.TextSnippet, R.string.docx_export_action, R.string.help_item_export_docx),
                     HelpAction(Icons.AutoMirrored.Filled.MergeType, R.string.cd_merge, R.string.help_item_merge)
                 )
             ),
@@ -191,6 +192,7 @@ fun HelpScreen() {
                 icon = Icons.Default.Print,
                 titleRes = R.string.sheet_section_export,
                 actions = listOf(
+                    HelpAction(Icons.AutoMirrored.Filled.TextSnippet, R.string.docx_export_action, R.string.help_item_export_docx),
                     HelpAction(Icons.Default.InvertColors, R.string.action_grayscale_pdf, R.string.help_item_grayscale_pdf),
                     HelpAction(Icons.Default.Compress,     R.string.action_compress_pdf,  R.string.help_item_compress_pdf)
                 )

@@ -16,31 +16,36 @@ fun ScanListItem.toDomain(): Document = Document(
     thumbnailPath = thumbnailPath,
     isSearchable = isSearchable,
     isEncrypted = isEncrypted,
+    hasStoredOcrText = hasStoredOcrText,
     tags = tags,
     deletedAt = deletedAt,
     folderId = folderId,
     isFavorite = isFavorite
 )
 
-fun ScanRecord.toDomain(): Document = Document(
-    id = id,
-    filename = filename,
-    filepath = filepath,
-    timestamp = timestamp,
-    pageCount = pageCount,
-    fileSize = fileSize,
-    thumbnailPath = thumbnailPath,
-    isSearchable = isSearchable,
-    isEncrypted = isEncrypted,
-    extractedText = extractedText,
-    tags = tags,
-    ocrConfidence = ocrConfidence,
-    ocrLanguage = ocrLanguage,
-    pageTexts = ocrPageTextJson.fromOcrPageTextJson(),
-    deletedAt = deletedAt,
-    folderId = folderId,
-    isFavorite = isFavorite
-)
+fun ScanRecord.toDomain(): Document {
+    val pageTexts = ocrPageTextJson.fromOcrPageTextJson()
+    return Document(
+        id = id,
+        filename = filename,
+        filepath = filepath,
+        timestamp = timestamp,
+        pageCount = pageCount,
+        fileSize = fileSize,
+        thumbnailPath = thumbnailPath,
+        isSearchable = isSearchable,
+        isEncrypted = isEncrypted,
+        extractedText = extractedText,
+        tags = tags,
+        ocrConfidence = ocrConfidence,
+        ocrLanguage = ocrLanguage,
+        pageTexts = pageTexts,
+        hasStoredOcrText = !extractedText.isNullOrBlank() || pageTexts.any { it.isNotBlank() },
+        deletedAt = deletedAt,
+        folderId = folderId,
+        isFavorite = isFavorite
+    )
+}
 
 fun ScanRecord.toListItem(): ScanListItem = ScanListItem(
     id = id,
@@ -52,6 +57,8 @@ fun ScanRecord.toListItem(): ScanListItem = ScanListItem(
     thumbnailPath = thumbnailPath,
     isSearchable = isSearchable,
     isEncrypted = isEncrypted,
+    hasStoredOcrText = !extractedText.isNullOrBlank() ||
+        ocrPageTextJson.fromOcrPageTextJson().any { it.isNotBlank() },
     tags = tags,
     deletedAt = deletedAt,
     folderId = folderId,

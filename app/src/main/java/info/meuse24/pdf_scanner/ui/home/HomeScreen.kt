@@ -36,6 +36,7 @@ import info.meuse24.pdf_scanner.ui.components.ScanAction
 import info.meuse24.pdf_scanner.ui.components.PrintPageSizeWarningDialog
 import info.meuse24.pdf_scanner.ui.entry.AppEntryAction
 import info.meuse24.pdf_scanner.ui.home.components.HomeArchiveContent
+import info.meuse24.pdf_scanner.ui.home.components.HomeDocxOcrPromptDialog
 import info.meuse24.pdf_scanner.ui.home.components.HomeErrorDialog
 import info.meuse24.pdf_scanner.ui.home.components.HomeLoadingDialog
 import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
@@ -123,6 +124,8 @@ fun HomeScreen(
     var bulkLangForSearchable by remember { mutableStateOf(false) }
     var selectedBulkLang by rememberSaveable { mutableStateOf(archiveUiState.settings.defaultOcrLanguage) }
     var bulkLangMenuExpanded by remember { mutableStateOf(false) }
+    var selectedDocxOcrLang by rememberSaveable { mutableStateOf(archiveUiState.settings.defaultOcrLanguage) }
+    var docxOcrLangMenuExpanded by remember { mutableStateOf(false) }
     var showFolderPicker by remember { mutableStateOf(false) }
 
     fun preparePdfImport(uri: Uri) {
@@ -196,6 +199,7 @@ fun HomeScreen(
         onQrScan = navigation.onQrScan,
         onBusinessCard = navigation.onBusinessCard,
         onExportAsJpg = viewModel::exportAsJpg,
+        onExportDocx = viewModel::exportDocx,
         onExportOcrText = viewModel::exportOcrText,
         onPrint = viewModel::requestPrint,
         onRename = { record ->
@@ -269,6 +273,10 @@ fun HomeScreen(
                     },
                     onExport = {
                         selectedRecords.forEach(viewModel::exportScan)
+                        viewModel.clearSelectedIds()
+                    },
+                    onExportDocx = {
+                        viewModel.exportDocxs(selectedRecords)
                         viewModel.clearSelectedIds()
                     },
                     onExportOcrText = {
@@ -348,6 +356,10 @@ fun HomeScreen(
                 },
                 onExport = {
                     selectedRecords.forEach(viewModel::exportScan)
+                    viewModel.clearSelectedIds()
+                },
+                onExportDocx = {
+                    viewModel.exportDocxs(selectedRecords)
                     viewModel.clearSelectedIds()
                 },
                 onExportOcrText = {
@@ -470,6 +482,28 @@ fun HomeScreen(
 
     if (operationUiState.editLoading) {
         HomeLoadingDialog()
+    }
+
+    operationUiState.docxOcrPrompt?.let { prompt ->
+        HomeDocxOcrPromptDialog(
+            documentCount = prompt.documentIds.size,
+            expanded = docxOcrLangMenuExpanded,
+            languageCode = selectedDocxOcrLang,
+            languages = ocrLanguages,
+            onExpandedChange = { docxOcrLangMenuExpanded = it },
+            onLanguageSelected = {
+                selectedDocxOcrLang = it
+                docxOcrLangMenuExpanded = false
+            },
+            onConfirm = {
+                docxOcrLangMenuExpanded = false
+                viewModel.startDocxOcrPrompt(selectedDocxOcrLang)
+            },
+            onDismiss = {
+                docxOcrLangMenuExpanded = false
+                viewModel.dismissDocxOcrPrompt()
+            }
+        )
     }
 
     messageUiState.error?.let { message ->

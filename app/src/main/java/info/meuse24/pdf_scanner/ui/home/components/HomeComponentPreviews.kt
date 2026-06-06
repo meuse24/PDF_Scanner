@@ -70,6 +70,7 @@ private fun LandscapeSelectionTopBarPreview() {
             onSelectAll = {},
             onShare = {},
             onExport = {},
+            onExportDocx = {},
             onExportOcrText = {},
             onExtractTexts = {},
             onMakeSearchable = {},
@@ -88,6 +89,7 @@ private fun BulkActionBarPreview() {
             BulkActionBar(
                 onShare = {},
                 onExport = {},
+                onExportDocx = {},
                 onExportOcrText = {},
                 onExtractTexts = {},
                 onMakeSearchable = {},

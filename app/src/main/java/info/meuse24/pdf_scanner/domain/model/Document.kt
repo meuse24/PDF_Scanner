@@ -15,6 +15,7 @@ data class Document(
     val ocrConfidence: Float? = null,
     val ocrLanguage: String? = null,
     val pageTexts: List<String> = emptyList(),
+    val hasStoredOcrText: Boolean = false,
     val deletedAt: Long? = null,
     val folderId: Long? = null,
     val isFavorite: Boolean = false
@@ -37,3 +38,6 @@ data class Document(
             )
         }
 }
+
+fun Document.hasDocxExportText(): Boolean =
+    hasStoredOcrText || pageTexts.any { it.isNotBlank() } || !extractedText.isNullOrBlank()

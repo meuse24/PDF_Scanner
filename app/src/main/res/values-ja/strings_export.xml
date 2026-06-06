@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="docx_export_action">Word (.docx) としてエクスポート</string>
+    <string name="docx_export_success">ダウンロードに保存しました: %1$s</string>
+    <string name="docx_export_error">Word エクスポートに失敗しました</string>
+    <string name="docx_export_nothing_to_export">選択した文書に Word エクスポート用の OCR テキストがありません</string>
+    <string name="docx_export_ocr_prompt_title">Word エクスポートには OCR が必要です</string>
+    <string name="docx_export_ocr_prompt_message">%1$d 件の選択した文書にはまだ OCR テキストがありません。今すぐ OCR を開始すると Word 文書としてエクスポートできます。</string>
+    <string name="docx_export_start_ocr">OCR を開始</string>
+    <string name="docx_export_ocr_busy">OCR はすでに実行中です。完了してから別の Word エクスポートを開始してください。</string>
+    <string name="help_item_export_docx">保存済みの OCR テキストを編集可能な Word 文書 (.docx) としてエクスポートします。レイアウトや画像は再作成されません。元の PDF の見た目を保つ必要がある場合は、検索可能 PDF を使用してください。</string>
+    <string name="info_feature_docx">Word エクスポートは保存済みの OCR テキストから編集可能な DOCX ファイルを作成します。エクスポートはテキストのみで、保存、共有、エクスポートするまで文書はローカルに保持されます。</string>
+</resources>

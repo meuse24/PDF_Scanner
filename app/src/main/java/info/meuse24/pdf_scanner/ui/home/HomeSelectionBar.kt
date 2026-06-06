@@ -46,6 +46,7 @@ internal fun HomeSelectionBar(
     selectedRecords: List<Document>,
     onShare: () -> Unit,
     onExport: () -> Unit,
+    onExportDocx: () -> Unit,
     onExportOcrText: () -> Unit,
     onExtractTexts: () -> Unit,
     onMakeSearchable: () -> Unit,
@@ -57,9 +58,11 @@ internal fun HomeSelectionBar(
     BulkActionBar(
         onShare = onShare,
         onExport = onExport,
+        onExportDocx = onExportDocx,
         onExportOcrText = onExportOcrText,
         onExtractTexts = onExtractTexts,
         extractEnabled = selectedRecords.isNotEmpty(),
+        exportDocxEnabled = selectedRecords.isNotEmpty(),
         exportTextEnabled = selectedRecords.isNotEmpty(),
         onMakeSearchable = onMakeSearchable,
         makeSearchableEnabled = true,
@@ -79,6 +82,7 @@ internal fun LandscapeSelectionTopBar(
     onSelectAll: () -> Unit,
     onShare: () -> Unit,
     onExport: () -> Unit,
+    onExportDocx: () -> Unit,
     onExportOcrText: () -> Unit,
     onExtractTexts: () -> Unit,
     onMakeSearchable: () -> Unit,
@@ -91,6 +95,7 @@ internal fun LandscapeSelectionTopBar(
     var moreMenuExpanded by remember { mutableStateOf(false) }
     val hasSelection = selectedRecords.isNotEmpty()
     val mergeEnabled = selectedRecords.size >= 2
+    val docxExportEnabled = hasSelection
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -187,6 +192,15 @@ internal fun LandscapeSelectionTopBar(
                     )
                     SelectionDropdownItem(
                         icon = Icons.AutoMirrored.Filled.TextSnippet,
+                        labelRes = R.string.docx_export_action,
+                        enabled = docxExportEnabled,
+                        onClick = {
+                            moreMenuExpanded = false
+                            onExportDocx()
+                        }
+                    )
+                    SelectionDropdownItem(
+                        icon = Icons.Default.Download,
                         labelRes = R.string.ocr_export_as_file,
                         enabled = hasSelection,
                         onClick = {

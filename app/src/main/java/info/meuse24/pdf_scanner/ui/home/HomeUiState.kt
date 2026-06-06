@@ -28,6 +28,11 @@ data class HomeOcrProgress(
 )
 
 @Immutable
+data class HomeDocxOcrPrompt(
+    val documentIds: List<Long>
+)
+
+@Immutable
 data class HomeOperationUiState(
     val ocrText: String? = null,
     val ocrReviewRequestId: Long? = null,
@@ -35,7 +40,8 @@ data class HomeOperationUiState(
     val ocrLoading: Boolean = false,
     val ocrProgress: HomeOcrProgress? = null,
     val ocrStatusText: String? = null,
-    val editLoading: Boolean = false
+    val editLoading: Boolean = false,
+    val docxOcrPrompt: HomeDocxOcrPrompt? = null
 )
 
 @Immutable

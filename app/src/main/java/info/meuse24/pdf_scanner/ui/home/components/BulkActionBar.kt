@@ -49,6 +49,7 @@ import info.meuse24.pdf_scanner.R
 internal fun BulkActionBar(
     onShare:               () -> Unit,
     onExport:              () -> Unit,
+    onExportDocx:          () -> Unit,
     onExportOcrText:       () -> Unit,
     onExtractTexts:        () -> Unit,
     onMakeSearchable:      () -> Unit,
@@ -57,6 +58,7 @@ internal fun BulkActionBar(
     onDelete:              () -> Unit,
     modifier:              Modifier = Modifier,
     extractEnabled:        Boolean  = true,
+    exportDocxEnabled:     Boolean  = false,
     exportTextEnabled:     Boolean  = false,
     makeSearchableEnabled: Boolean  = true,
     mergeEnabled:          Boolean  = false
@@ -139,6 +141,15 @@ internal fun BulkActionBar(
             )
             BulkSheetItem(
                 icon = Icons.AutoMirrored.Filled.TextSnippet,
+                labelRes = R.string.docx_export_action,
+                enabled = exportDocxEnabled,
+                onClick = {
+                    moreSheetVisible = false
+                    onExportDocx()
+                }
+            )
+            BulkSheetItem(
+                icon = Icons.Default.Download,
                 labelRes = R.string.ocr_export_as_file,
                 enabled = exportTextEnabled,
                 onClick = {

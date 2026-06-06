@@ -14,6 +14,7 @@ import info.meuse24.pdf_scanner.util.AndroidPdfPageBitmapRenderer
 import info.meuse24.pdf_scanner.util.DefaultDispatcherProvider
 import info.meuse24.pdf_scanner.domain.gateway.DocumentFileStore
 import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import info.meuse24.pdf_scanner.domain.gateway.DocxBuilder
 import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
 import info.meuse24.pdf_scanner.domain.gateway.OcrDocumentTextExtractor
 import info.meuse24.pdf_scanner.domain.gateway.PdfPageJpgRenderer
@@ -36,6 +37,7 @@ import info.meuse24.pdf_scanner.util.TextRecognizerRunner
 import info.meuse24.pdf_scanner.util.AndroidOcrModelInstaller
 import info.meuse24.pdf_scanner.domain.pdf.PdfImageRenderer
 import info.meuse24.pdf_scanner.util.BitmapPdfImageRenderer
+import info.meuse24.pdf_scanner.util.DocxBuilderImpl
 import javax.inject.Singleton
 
 @Module
@@ -59,6 +61,12 @@ abstract class AppProvidersModule {
     abstract fun bindDownloadsStorage(
         impl: AndroidDownloadsStorage
     ): DownloadsStorage
+
+    @Binds
+    @Singleton
+    abstract fun bindDocxBuilder(
+        impl: DocxBuilderImpl
+    ): DocxBuilder
 
     @Binds
     @Singleton

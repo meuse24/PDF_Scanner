@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="translate_action_label">ترجمة PDF</string>
+    <string name="translate_settings_title">إعدادات الترجمة</string>
+    <string name="translate_source_language">لغة المصدر</string>
+    <string name="translate_target_language">لغة الهدف</string>
+    <string name="translate_language_auto">الكشف التلقائي</string>
+    <string name="translate_action_button">ترجمة</string>
+    <string name="translate_result_title">الترجمة</string>
+    <string name="translate_original_label">النص الأصلي</string>
+    <string name="translate_translation_label">الترجمة</string>
+    <string name="translate_page_header">الصفحة %1$d (%2$s ← %3$s)</string>
+    <string name="translate_no_result">لا توجد ترجمة بعد. اختر اللغات واضغط على ترجمة.</string>
+    <string name="translate_error_no_text">لم يُعثر على نص OCR. يرجى تشغيل التعرف على النص أولاً.</string>
+    <string name="translate_error_failed">فشلت الترجمة. يرجى المحاولة مجدداً.</string>
+    <string name="translate_downloading_model">جارٍ تنزيل نموذج اللغة…</string>
+    <string name="translate_progress">ترجمة الصفحة %1$d من %2$d…</string>
+    <string name="translate_copy_all">نسخ الكل</string>
+    <string name="translate_copied_message">تم نسخ الترجمة</string>
+    <string name="help_item_translate">يترجم نص PDF على الجهاز إلى لغة أخرى باستخدام ML Kit. يجب تشغيل التعرف على النص (OCR) أولاً. يتم تنزيل نماذج اللغة (~15–30 ميغابايت) تلقائياً عند الاستخدام الأول وتبقى على الجهاز.</string>
+    <string name="info_feature_translate">ترجمة محلية لنص PDF إلى 10 لغات (EN، DE، ES، FR، PT، RU، AR، HI، ZH، JA) عبر ML Kit. يتم تنزيل النماذج عند الطلب؛ لا يغادر النص الجهاز.</string>
+</resources>

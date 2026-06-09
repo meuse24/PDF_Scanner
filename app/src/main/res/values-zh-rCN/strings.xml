@@ -93,7 +93,7 @@
     <string name="help_step2">Google 文档扫描仪将打开。拍摄一页或多页文档，边缘和透视将自动校正。</string>
     <string name="help_step3">扫描完成后会弹出对话框。输入文件名并点击"保存"，PDF 将保存到您的设备本地。</string>
     <string name="help_section_archive">管理文件库</string>
-    <string name="help_item_open">点击列表中的条目，可在应用内查看器中打开 PDF。仍可从查看器选择外部打开。</string>
+    <string name="help_item_open">点击列表中的条目，可在应用内查看器中打开 PDF。双指捏合可缩放，双击页面可在适应宽度与 2× 缩放之间切换。缩放状态下继续滑动可跨页导航。仍可从查看器选择外部打开。</string>
     <string name="help_item_select">点击复选框即可选择一个或多个条目。标题栏会显示数量，并支持全选。</string>
     <string name="help_item_add_document_scan">点击 + 并选择“扫描文档”，即可使用系统扫描器采集新页面。保存后，PDF 会像其他文档一样出现在归档中。</string>
     <string name="help_item_add_document_import">点击 + 并选择“导入 PDF”，即可打开系统文件选择器。从设备中选择现有 PDF；保存后，它会被复制到归档中。</string>
@@ -143,7 +143,7 @@
     <string name="info_repository_label">GitHub 仓库</string>
     <string name="info_section_privacy">隐私</string>
     <string name="info_section_features">功能</string>
-    <string name="info_features_body">本应用可在应用内扫描、导入、创建、追加并查看 PDF，将已删除文档在回收站中保留 30 天，在设备本地执行 OCR，并将 OCR 文本和质量元数据保存在本地，用于文件库搜索、OCR 审核、可选自动标签、标签筛选和 TXT 导出。同时还提供页面编辑、批注、签名、元数据编辑、灰度转换、保护以及安全遮蔽，并可为遮蔽副本选择性重建 OCR。图片可在照片模式（全出血）或文档模式下转换为 PDF，后者支持标准页面尺寸（A4、Letter、A5 等）。加密备份支持导出和恢复应用设置。</string>
+    <string name="info_features_body">本应用可在应用内以捏合缩放和双击缩放方式扫描、导入、创建、追加并查看 PDF，将已删除文档在回收站中保留 30 天，在设备本地执行 OCR，并将 OCR 文本和质量元数据保存在本地，用于文件库搜索、OCR 审核、可选自动标签、标签筛选和 TXT 导出。同时还提供页面编辑、批注、签名、元数据编辑、灰度转换、保护以及安全遮蔽，并可为遮蔽副本选择性重建 OCR。图片可在照片模式（全出血）或文档模式下转换为 PDF，后者支持标准页面尺寸（A4、Letter、A5 等）。加密备份支持导出和恢复应用设置。</string>
     <string name="info_feature_print_share">Android 打印、分享和 Open with 集成使用系统对话框。打印会把所选 PDF 发送给 Android Print；若 PDF 页面尺寸与所选打印格式不符，将显示警告。共享到本应用或通过本应用打开的传入 PDF 和图片，只会在用户确认后复制到应用归档中。</string>
     <string name="info_privacy_body">无广告、无需账号、没有自有后端。PDF、缩略图、生成的副本、回收站项目、OCR 文本和 OCR 质量元数据都会保留在您设备上的应用存储中，直到您导出、分享或永久删除它们。扫描、OCR 以及模型和字体下载依赖 Google Play 服务；本应用不会上传文档内容。</string>
     <!-- Privacy screen -->

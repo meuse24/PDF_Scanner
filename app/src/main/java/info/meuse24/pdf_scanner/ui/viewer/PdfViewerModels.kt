@@ -36,4 +36,5 @@ internal const val PDF_VIEWER_DEFAULT_ASPECT_RATIO = 0.707f
 internal const val PDF_VIEWER_PREFETCH_DISTANCE = 1
 internal const val PDF_VIEWER_FIT_MAX_BITMAP_SIDE_PX = 2_048
 internal const val PDF_VIEWER_ZOOM_MAX_BITMAP_SIDE_PX = 3_072
+internal const val PDF_VIEWER_MAX_ZOOM_SCALE = 5f
 

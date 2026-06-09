@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="translate_action_label">Перевести PDF</string>
+    <string name="translate_settings_title">Настройки перевода</string>
+    <string name="translate_source_language">Язык оригинала</string>
+    <string name="translate_target_language">Язык перевода</string>
+    <string name="translate_language_auto">Определить автоматически</string>
+    <string name="translate_action_button">Перевести</string>
+    <string name="translate_result_title">Перевод</string>
+    <string name="translate_original_label">Оригинал</string>
+    <string name="translate_translation_label">Перевод</string>
+    <string name="translate_page_header">Страница %1$d (%2$s → %3$s)</string>
+    <string name="translate_no_result">Перевода пока нет. Выберите языки и нажмите «Перевести».</string>
+    <string name="translate_error_no_text">Текст OCR не найден. Сначала выполните распознавание текста.</string>
+    <string name="translate_error_failed">Перевод не удался. Попробуйте ещё раз.</string>
+    <string name="translate_downloading_model">Загрузка языковой модели…</string>
+    <string name="translate_progress">Перевод страницы %1$d из %2$d…</string>
+    <string name="translate_copy_all">Копировать всё</string>
+    <string name="translate_copied_message">Перевод скопирован</string>
+    <string name="help_item_translate">Переводит текст PDF на устройстве на другой язык с помощью ML Kit. Сначала необходимо выполнить распознавание текста (OCR). Языковые модели (~15–30 МБ) загружаются автоматически при первом использовании и остаются на устройстве.</string>
+    <string name="info_feature_translate">Локальный перевод текста PDF на 10 языков (EN, DE, ES, FR, PT, RU, AR, HI, ZH, JA) через ML Kit. Модели загружаются при первом использовании; текст не покидает устройство.</string>
+</resources>

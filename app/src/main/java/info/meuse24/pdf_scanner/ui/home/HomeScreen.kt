@@ -198,6 +198,7 @@ fun HomeScreen(
         onPdfMetadata = navigation.onPdfMetadata,
         onQrScan = navigation.onQrScan,
         onBusinessCard = navigation.onBusinessCard,
+        onTranslateText = navigation.onTranslation,
         onExportAsJpg = viewModel::exportAsJpg,
         onExportDocx = viewModel::exportDocx,
         onExportOcrText = viewModel::exportOcrText,

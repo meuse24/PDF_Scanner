@@ -218,6 +218,53 @@ class PdfViewerViewModelTest {
     }
 
     @Test
+    fun `visible zoom render rerenders retained pages at stepped zoom width`() = runTest(testDispatcher) {
+        val pdf = tmpFolder.newFile("zoom.pdf").apply { writeText("pdf") }
+        val savedStateHandle = SavedStateHandle(mapOf("scanId" to 1L))
+        val handle = FakePdfDocumentBitmapHandle(pageCount = 4)
+        val viewModel = buildViewModel(
+            records = listOf(scanRecord(filepath = pdf.absolutePath, pageCount = 4)),
+            renderer = FakePdfPageBitmapRenderer(handle),
+            savedStateHandle = savedStateHandle
+        )
+
+        advanceUntilIdle()
+        viewModel.onVisiblePagesChanged(pageIndexes = listOf(2), targetWidthPx = 320)
+        advanceUntilIdle()
+        handle.requests.clear()
+
+        viewModel.requestVisibleZoomRender(viewportWidthPx = 320, zoomScale = 2.2f)
+        advanceUntilIdle()
+
+        assertEquals(2.2f, savedStateHandle["pdf_viewer_zoom_scale"])
+        assertEquals(listOf(1, 2, 3), handle.requests.map { it.pageIndex }.sorted())
+        assertTrue(handle.requests.all { it.targetWidthPx == 960 })
+        assertTrue(handle.requests.all { it.maxBitmapSidePx == 2_048 })
+    }
+
+    @Test
+    fun `visible zoom render debounces rapid scale changes to latest request`() = runTest(testDispatcher) {
+        val pdf = tmpFolder.newFile("zoom-debounce.pdf").apply { writeText("pdf") }
+        val handle = FakePdfDocumentBitmapHandle(pageCount = 3)
+        val viewModel = buildViewModel(
+            records = listOf(scanRecord(filepath = pdf.absolutePath, pageCount = 3)),
+            renderer = FakePdfPageBitmapRenderer(handle)
+        )
+
+        advanceUntilIdle()
+        viewModel.onVisiblePagesChanged(pageIndexes = listOf(1), targetWidthPx = 320)
+        advanceUntilIdle()
+        handle.requests.clear()
+
+        viewModel.requestVisibleZoomRender(viewportWidthPx = 320, zoomScale = 3f)
+        viewModel.requestVisibleZoomRender(viewportWidthPx = 320, zoomScale = 1.2f)
+        advanceUntilIdle()
+
+        assertEquals(listOf(0, 1, 2), handle.requests.map { it.pageIndex }.sorted())
+        assertTrue(handle.requests.all { it.targetWidthPx == 480 })
+    }
+
+    @Test
     fun `scrolling clears bitmaps outside retained page window`() = runTest(testDispatcher) {
         val pdf = tmpFolder.newFile("scroll.pdf").apply { writeText("pdf") }
         val viewModel = buildViewModel(

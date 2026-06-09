@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="translate_action_label">PDF übersetzen</string>
+    <string name="translate_settings_title">Übersetzungseinstellungen</string>
+    <string name="translate_source_language">Quellsprache</string>
+    <string name="translate_target_language">Zielsprache</string>
+    <string name="translate_language_auto">Automatisch erkennen</string>
+    <string name="translate_action_button">Übersetzen</string>
+    <string name="translate_result_title">Übersetzung</string>
+    <string name="translate_original_label">Original</string>
+    <string name="translate_translation_label">Übersetzung</string>
+    <string name="translate_page_header">Seite %1$d (%2$s → %3$s)</string>
+    <string name="translate_no_result">Noch keine Übersetzung. Sprachen wählen und auf Übersetzen tippen.</string>
+    <string name="translate_error_no_text">Kein OCR-Text vorhanden. Bitte zuerst Texterkennung ausführen.</string>
+    <string name="translate_error_failed">Übersetzung fehlgeschlagen. Bitte erneut versuchen.</string>
+    <string name="translate_downloading_model">Sprachmodell wird heruntergeladen…</string>
+    <string name="translate_progress">Seite %1$d von %2$d wird übersetzt…</string>
+    <string name="translate_copy_all">Gesamten Text kopieren</string>
+    <string name="translate_copied_message">Übersetzung kopiert</string>
+    <string name="help_item_translate">Übersetzt PDF-Text auf dem Gerät in eine andere Sprache (ML Kit Translate). Voraussetzung ist eine vorherige Texterkennung (OCR). Sprachmodelle (~15–30 MB) werden beim ersten Einsatz automatisch heruntergeladen und verbleiben auf dem Gerät.</string>
+    <string name="info_feature_translate">Lokale Übersetzung von PDF-Texten in 10 Sprachen (EN, DE, ES, FR, PT, RU, AR, HI, ZH, JA) via ML Kit. Sprachmodelle werden bei Bedarf geladen; kein Text verlässt das Gerät.</string>
+</resources>

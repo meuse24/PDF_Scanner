@@ -81,4 +81,7 @@ sealed class Screen(val route: String) {
         fun createRoute(scanId: Long) = "business-card/$scanId"
     }
     data object ImagesToPdf : Screen("images-to-pdf")
+    data object Translation : Screen("translation/{scanId}") {
+        fun createRoute(scanId: Long) = "translation/$scanId"
+    }
 }

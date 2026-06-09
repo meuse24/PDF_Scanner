@@ -8,7 +8,7 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - Import existing PDFs into the app archive
 - Start scans from app shortcuts, a Quick Settings tile, or a home-screen widget
 - Accept PDFs and images from other Android apps via Share or Open with
-- View PDFs directly in the app with PdfRenderer, page scrolling, zoom, print, share, export, and external-open fallback
+- View PDFs directly in the app with PdfRenderer, page scrolling, inline pinch-to-zoom, double-tap zoom toggle, cross-page scroll while zoomed, print, share, export, and external-open fallback
 - Extract OCR text and create searchable PDFs with automatic/manual language selection and on-demand ML Kit model downloads
 - Review OCR text per page with recognized language, quality badges, copy/share actions, and TXT export to Downloads
 - Assign optional on-device automatic document tags from OCR text and filter the archive by invoice, contract, insurance, certificate, bank, or delivery tags
@@ -27,6 +27,8 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - Add annotations with marks, rectangles, ovals, text notes, and zoom-aware editing
 - Add page numbers, text watermarks, and signatures
 - Compress PDFs, protect them with passwords, unlock them, remove text layers, convert to grayscale, and restrict usage
+- Export OCR text as an editable Word document (.docx) to Downloads
+- Translate PDF text on-device into 10 languages (EN, DE, ES, FR, PT, RU, AR, HI, ZH, JA) using ML Kit Translate with per-page results and copy/share actions; language models (~15–30 MB each) are downloaded on first use and stay on-device
 - Securely redact content and optionally rebuild searchability with OCR
 - Optionally protect the app UI with Android biometrics or device credentials
 
@@ -116,11 +118,12 @@ Recent structure work:
 - Added app shortcuts, a Quick Settings tile, a home-screen scan widget, and Android Share/Open-with import via a shared `AppEntryAction` bridge
 - Added folders, favorites, app-lock settings, business-card vCard export, and Android Print integration
 - Added optional OCR-based tags, tag filter chips, retroactive tagging from Settings, and OCR text TXT export
-- Added an in-app PdfRenderer viewer with lazy page rendering, local bitmap cache, zoom overlay, and viewer action bar
+- Added an in-app PdfRenderer viewer with lazy page rendering, local bitmap cache, inline pinch-to-zoom with cross-page scroll, double-tap zoom toggle, debounced zoom re-render, zoom overlay, and viewer action bar
 - `PdfEditor` split into focused ops files for annotations, overlays, redaction, images, and shared core helpers
 - `HomeScreen` split into archive content, dialogs, sheets, and small screen models
 - String resources split by feature with `strings_annotate.xml`, `strings_images_to_pdf.xml`, `strings_shortcuts.xml`, `strings_folders.xml`, `strings_lock.xml`, and `strings_businesscard.xml` in every locale
 - Legacy `HighlightScreen` removed; active editing now lives in `annotate/` and `redact/`
+- Added on-device PDF text translation via ML Kit Translate with `TextTranslator` domain gateway, `TranslateTextUseCase`, and `TranslationReviewScreen`; models downloaded on demand, no language data bundled in the APK
 
 ## Testing
 
@@ -129,6 +132,7 @@ Recent structure work:
 - JVM tests cover the encrypted backup codec, ZIP payload/staging validation, merge restore, SAF orchestration use cases, and Backup UI state machine
 - Business-card parsing/vCard generation and Room migrations are covered by unit or instrumentation tests where practical
 - Viewer JVM tests cover `PdfViewerViewModel` render-window behavior and the bitmap cache
+- JVM tests cover `TranslateTextUseCase` (page-text selection, blank-page filtering, fallback to `extractedText`, progress forwarding) and `TranslationReviewViewModel` (load record, translate success/error, progress cleared, duplicate-call guard)
 - Instrumentation tests cover Android-specific paths such as `PdfRenderer`, URI import, MediaStore export, annotation rendering, redaction, and image-to-PDF generation
 
 ## Tech stack
@@ -139,6 +143,7 @@ Recent structure work:
 - Room
 - ML Kit Document Scanner
 - ML Kit Text Recognition
+- ML Kit Translate
 - PdfBox-Android
 
 Detailed engineering notes live in `CLAUDE.md`.

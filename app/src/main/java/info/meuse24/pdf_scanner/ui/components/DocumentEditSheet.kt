@@ -42,6 +42,7 @@ import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.filled.SwapVert
@@ -94,6 +95,7 @@ sealed interface ScanAction {
     data object PdfMetadata : ScanAction
     data object ScanQrCodes : ScanAction
     data object ScanBusinessCard : ScanAction
+    data object TranslateText : ScanAction
     data object Print : ScanAction
 }
 
@@ -139,6 +141,7 @@ fun DocumentEditSheet(
     val showRedact = notEncrypted
     val showQrScan = notEncrypted
     val showBusinessCard = notEncrypted && record.pageCount >= 1
+    val showTranslateText = notEncrypted && record.pageCount >= 1
     val showRemoveTextLayer = record.isSearchable && notEncrypted
     val showGrayscale = notEncrypted
     val showCompress = notEncrypted && !record.isSearchable
@@ -151,7 +154,7 @@ fun DocumentEditSheet(
     val showPagesSection = showReorder || showRotate || showAppend || showExtractPages ||
         showDuplicatePages || showSplit || showDeletePages
     val showEditSection = showAnnotate || showSignature || showPageNumbers || showTextWatermark || showRedact
-    val showAnalyseSection = showQrScan || showBusinessCard || showRemoveTextLayer
+    val showAnalyseSection = showQrScan || showBusinessCard || showTranslateText || showRemoveTextLayer
     val showExportSection = showExportAsJpg || showGrayscale || showCompress || showExportDocx || showExportOcrText
     val showSecuritySection = showProtect || showRestrictUsage || showUnlock || showRemovePassword
 
@@ -318,6 +321,13 @@ fun DocumentEditSheet(
             item {
                 SheetItem(Icons.Default.ContactPage, R.string.action_scan_business_card, true) {
                     onAction(ScanAction.ScanBusinessCard)
+                }
+            }
+        }
+        if (showTranslateText) {
+            item {
+                SheetItem(Icons.Default.Translate, R.string.translate_action_label, true) {
+                    onAction(ScanAction.TranslateText)
                 }
             }
         }

@@ -40,6 +40,7 @@ import info.meuse24.pdf_scanner.ui.imagestopdf.ImagesToPdfScreen
 import info.meuse24.pdf_scanner.ui.backup.BackupSettingsSection
 import info.meuse24.pdf_scanner.ui.info.InfoScreen
 import info.meuse24.pdf_scanner.ui.ocr.OcrReviewScreen
+import info.meuse24.pdf_scanner.ui.translation.TranslationReviewScreen
 import info.meuse24.pdf_scanner.ui.overlay.PageNumbersScreen
 import info.meuse24.pdf_scanner.ui.overlay.TextWatermarkScreen
 import info.meuse24.pdf_scanner.ui.pageedit.DeletePagesScreen
@@ -144,6 +145,7 @@ private fun NavGraphBuilder.homeNavGraph(
                 onQrScan = { scanId -> navController.navigate(Screen.QrScan.createRoute(scanId)) },
                 onBusinessCard = { scanId -> navController.navigate(Screen.BusinessCard.createRoute(scanId)) },
                 onOcrReview = { scanId -> navController.navigate(Screen.OcrReview.createRoute(scanId)) },
+                onTranslation = { scanId -> navController.navigate(Screen.Translation.createRoute(scanId)) },
                 onViewer = { scanId -> navController.navigate(Screen.Viewer.createRoute(scanId)) },
                 onImagesToPdf = { navController.navigate(Screen.ImagesToPdf.route) }
             )
@@ -235,6 +237,12 @@ private fun NavGraphBuilder.viewerNavGraph(
         OcrReviewScreen()
     }
     composable(
+        route = Screen.Translation.route,
+        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+    ) {
+        TranslationReviewScreen()
+    }
+    composable(
         route = Screen.Viewer.route,
         arguments = listOf(navArgument("scanId") { type = NavType.LongType })
     ) {
@@ -261,7 +269,8 @@ private fun NavGraphBuilder.viewerNavGraph(
             onNavigateToGrayscale = { scanId -> navController.navigate(Screen.Grayscale.createRoute(scanId)) },
             onNavigateToPdfMetadata = { scanId -> navController.navigate(Screen.PdfMetadata.createRoute(scanId)) },
             onNavigateToQrScan = { scanId -> navController.navigate(Screen.QrScan.createRoute(scanId)) },
-            onNavigateToBusinessCard = { scanId -> navController.navigate(Screen.BusinessCard.createRoute(scanId)) }
+            onNavigateToBusinessCard = { scanId -> navController.navigate(Screen.BusinessCard.createRoute(scanId)) },
+            onNavigateToTranslation = { scanId -> navController.navigate(Screen.Translation.createRoute(scanId)) }
         )
     }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="translate_action_label">PDF अनुवाद करें</string>
+    <string name="translate_settings_title">अनुवाद सेटिंग्स</string>
+    <string name="translate_source_language">स्रोत भाषा</string>
+    <string name="translate_target_language">लक्ष्य भाषा</string>
+    <string name="translate_language_auto">स्वतः पहचानें</string>
+    <string name="translate_action_button">अनुवाद करें</string>
+    <string name="translate_result_title">अनुवाद</string>
+    <string name="translate_original_label">मूल पाठ</string>
+    <string name="translate_translation_label">अनुवाद</string>
+    <string name="translate_page_header">पृष्ठ %1$d (%2$s → %3$s)</string>
+    <string name="translate_no_result">अभी कोई अनुवाद नहीं। भाषाएँ चुनें और अनुवाद करें पर टैप करें।</string>
+    <string name="translate_error_no_text">OCR टेक्स्ट नहीं मिला। पहले टेक्स्ट पहचान चलाएँ।</string>
+    <string name="translate_error_failed">अनुवाद विफल हुआ। कृपया पुनः प्रयास करें।</string>
+    <string name="translate_downloading_model">भाषा मॉडल डाउनलोड हो रहा है…</string>
+    <string name="translate_progress">पृष्ठ %1$d / %2$d का अनुवाद हो रहा है…</string>
+    <string name="translate_copy_all">सभी कॉपी करें</string>
+    <string name="translate_copied_message">अनुवाद कॉपी किया गया</string>
+    <string name="help_item_translate">ML Kit का उपयोग करके डिवाइस पर PDF टेक्स्ट को दूसरी भाषा में अनुवाद करता है। पहले टेक्स्ट पहचान (OCR) चलाना आवश्यक है। भाषा मॉडल (~15–30 MB) पहले उपयोग पर स्वचालित रूप से डाउनलोड होते हैं और डिवाइस पर रहते हैं।</string>
+    <string name="info_feature_translate">ML Kit के माध्यम से PDF टेक्स्ट का 10 भाषाओं (EN, DE, ES, FR, PT, RU, AR, HI, ZH, JA) में स्थानीय अनुवाद। मॉडल पहले उपयोग पर डाउनलोड होते हैं; टेक्स्ट डिवाइस नहीं छोड़ता।</string>
+</resources>

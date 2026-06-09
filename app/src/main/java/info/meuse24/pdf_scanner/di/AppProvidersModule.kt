@@ -38,6 +38,8 @@ import info.meuse24.pdf_scanner.util.AndroidOcrModelInstaller
 import info.meuse24.pdf_scanner.domain.pdf.PdfImageRenderer
 import info.meuse24.pdf_scanner.util.BitmapPdfImageRenderer
 import info.meuse24.pdf_scanner.util.DocxBuilderImpl
+import info.meuse24.pdf_scanner.domain.gateway.TextTranslator
+import info.meuse24.pdf_scanner.util.MlKitTextTranslator
 import javax.inject.Singleton
 
 @Module
@@ -145,4 +147,10 @@ abstract class AppProvidersModule {
     abstract fun bindDispatcherProvider(
         impl: DefaultDispatcherProvider
     ): DispatcherProvider
+
+    @Binds
+    @Singleton
+    abstract fun bindTextTranslator(
+        impl: MlKitTextTranslator
+    ): TextTranslator
 }

@@ -159,6 +159,8 @@ dependencies {
     implementation(libs.mlkit.text.devanagari)
     implementation(libs.mlkit.text.korean)
     implementation(libs.mlkit.barcode.scanning)
+    // ML Kit Translate – models downloaded on demand, NOT bundled in APK
+    implementation(libs.mlkit.translate)
 
     // PdfBox-Android – searchable PDF generation
     implementation(libs.pdfbox.android)

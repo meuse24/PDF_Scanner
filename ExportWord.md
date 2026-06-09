@@ -1,4 +1,26 @@
-# Plan: PDF → Word (.docx) Export
+# Plan und Umsetzungsdokumentation: PDF → Word (.docx) Export
+
+## Umsetzungsstand
+
+**Status: umgesetzt und verifiziert.**
+
+Der DOCX-Export ist als textbasierter Word-Export implementiert. Er nutzt gespeicherten OCR-Text
+(`pageTexts` bevorzugt, sonst `extractedText`) und erzeugt ein minimales, editierbares `.docx`.
+Bild-/Hybrid-Modi wurden bewusst nicht umgesetzt.
+
+Aktueller Nutzerfluss:
+
+- Einzelnes Dokument: Archiv/Home-Liste → 3-Punkt-Menü → **Export & Umwandeln** →
+  **Als Word (.docx) exportieren**.
+- Bulk: Dokumente auswählen → Mehr-Menü/Auswahlleiste → **Als Word (.docx) exportieren**.
+- Wenn ein ausgewähltes Dokument noch keinen OCR-Text hat, erscheint ein Dialog
+  **OCR für Word-Export erforderlich** mit OCR-Sprachauswahl.
+- Nach erfolgreicher OCR wird der ursprünglich angeforderte Word-Export automatisch fortgesetzt.
+  Bei DOCX-initiiertem OCR wird kein OCR-Review-Screen zwischengeschoben.
+- Bei gemischter Auswahl wird OCR nur für die fehlenden Dokumente angeboten; danach wird die
+  ursprüngliche Gesamtauswahl als DOCX exportiert.
+- Wenn bereits OCR läuft, meldet der DOCX-OCR-Start lokalisiert, dass auf den laufenden OCR-Vorgang
+  gewartet werden muss.
 
 ## Grundentscheidung (nach kritischer Prüfung)
 
@@ -108,7 +130,8 @@ Kein `Mode`, kein `ByteArray`, kein Bild — bewusst minimal.
 
 ### 3. Impl (`util/`)
 `util/DocxBuilderImpl.kt` — `ZipOutputStream`-Writer der OpenXML-Teile.
-- XML-Escaping (`& < > "`).
+- XML-Escaping (`& < > "`) plus XML-1.0-Sanitization: illegale Steuerzeichen werden vor dem
+  Escaping entfernt; Nicht-BMP-Codepoints/Surrogates werden über `codePoints()` korrekt behandelt.
 - **RTL:** bei arabischem Inhalt `w:bidi` (Absatz) + `w:rtl` (Run) setzen, sonst LTR-Fehldarstellung.
 - CJK unkritisch (DOCX bettet keine Fonts ein; Word nutzt System-Fonts — anders als Searchable-PDF).
 
@@ -150,17 +173,26 @@ Exakt am OCR-TXT-Pfad andocken:
 - **Bulk:** Eintrag „Als Word (.docx)" im „Mehr"-Menü der `BulkActionBar`, neben PDF-/OCR-TXT-Export.
 - Erfolg/Fehler über vorhandene `_success`/`_error`-StateFlows;
   `NoExportableTextException` → `_error = docx_export_nothing_to_export`.
-- **Sichtbarkeit (definieren!):** Die OCR-TXT-Aktion prüft heute nur `record.extractedText`
-  (`DocumentEditSheet.kt:123`). Für DOCX sichtbar, wenn **Text vorhanden** ist:
-  `!extractedText.isNullOrBlank() || pageTexts.isNotEmpty()`.
-  - **MVP:** Searchable-PDFs *ohne* OCR-Text zeigen die Aktion **nicht** (es gibt keine Quelle).
-  - **Stufe 2:** Sobald `extractPageText` existiert, Sichtbarkeit auf „hat OCR-Text **oder**
-    `isSearchable`" erweitern. Bis dahin bewusst nicht versprechen.
+- **Aktuelle Sichtbarkeit:** Die DOCX-Aktion bleibt im Home-/Archiv-Menü sichtbar. Wenn kein
+  exportierbarer Text vorhanden ist, wird nicht still ausgeblendet, sondern direkt OCR angeboten.
+  Im geöffneten PDF-Viewer ist DOCX weiterhin nicht verfügbar; der Export startet aus der
+  Archiv/Home-Liste.
+- **JPG-Gruppierung:** „Als JPG exportieren" wurde aus dem Abschnitt „Dokument" in
+  **Export & Umwandeln** verschoben.
+- **OCR-Fortsetzung:** `HomeViewModel` merkt sich bei DOCX-ohne-Text die ursprünglich gewünschten
+  Export-IDs (`pendingDocxExportIds`). Nach erfolgreichem OCR ruft es den DOCX-Export automatisch
+  erneut auf und konsumiert den Pending-State.
 
 ### 7. Strings (alle 10 Locales)
 `values/`, `-de`, `-es`, `-fr`, `-pt`, `-zh-rCN`, `-ar`, `-ja`, `-ru`, `-hi`
 (`strings_export.xml` o. ä.): `docx_export_action`, `docx_export_success`,
-`docx_export_error`, `docx_export_nothing_to_export`.
+`docx_export_error`, `docx_export_nothing_to_export`, `docx_export_ocr_prompt_title`,
+`docx_export_ocr_prompt_message`, `docx_export_start_ocr`, `docx_export_ocr_busy`.
+
+Help und Info wurden aktualisiert:
+
+- `HelpScreen`: DOCX-Export ist in den Hilfelisten enthalten.
+- `InfoScreen`: Feature-Hinweis zum textbasierten Word-Export ist ergänzt.
 
 ### 8. Tests
 - **JVM** `domain/common/ParagraphReconstructionTest`: Zeilen-Merge, sprachneutrale Absatzgrenzen,
@@ -172,12 +204,33 @@ Exakt am OCR-TXT-Pfad andocken:
 - **Manuell/Abnahme:** erzeugtes DOCX in Word **und** LibreOffice öffnen (ZIP/XML-Tests beweisen
   das nicht). Stichprobe je ein OCR-Dokument latein / CJK / arabisch.
 
+Implementierte Testabdeckung:
+
+- `ParagraphReconstructionTest`: Absatzrekonstruktion, CJK/RTL-Signale, Hyphenation.
+- `ExportDocxUseCaseTest`: Quellenpriorität, leere Exporte, Dateiname, Builder/Storage-Verhalten.
+- `DocxBuilderImplTest`: ZIP/XML-Struktur, Escaping, RTL, illegale XML-Zeichen.
+- `DocumentMappersTest`: Listenprojektion `hasStoredOcrText` und Full-Record-Ableitung.
+- `HomeViewModelTest`: DOCX-ohne-OCR-Prompt, automatische Fortsetzung nach OCR, gemischte Auswahl.
+
+Verifikation:
+
+- `./gradlew.bat --no-daemon :app:compileDebugKotlin`
+- `./gradlew.bat --no-daemon testDebugUnitTest --tests "info.meuse24.pdf_scanner.ui.home.HomeViewModelTest"`
+- Zusätzlich wurden vorher die fokussierten DOCX-/Mapper-/Builder-/Paragraph-Tests erfolgreich
+  ausgeführt.
+
+Offener manueller Abnahmepunkt:
+
+- Ein erzeugtes DOCX einmal in Microsoft Word und LibreOffice öffnen, idealerweise mit lateinischem,
+  CJK- und arabischem OCR-Text. Die Unit-Tests prüfen ZIP/XML-Korrektheit, ersetzen aber keinen
+  echten Office-Öffnen-Check.
+
 ## Stufenplan
-1. **MVP:** `pageTexts`/`extractedText` → Absätze (mit Heuristik), Überschrift als fetter Run,
-   ohne `styles.xml`. Sichtbarkeit nur bei vorhandenem OCR-Text. Liefert sofort echten Mehrwert.
+1. **MVP: erledigt.** `pageTexts`/`extractedText` → Absätze (mit Heuristik), Überschrift als
+   fetter Run, ohne `styles.xml`. DOCX-Aktion sichtbar; fehlender OCR-Text führt zum OCR-Angebot
+   und anschließendem automatischen Word-Export.
 2. **Text-Layer-PDFs:** erst **neue API** (`PdfTextOps.extractPageText` bzw. `PositionedTextLine`)
    in `PdfEditor` bauen (heute verwirft `extractTextLines` den Text!), dann als Quelle nutzen
    (exakter Text + vertikale-Abstands-Heuristik); Sichtbarkeit auf `isSearchable` erweitern.
 3. **Später, optional:** `styles.xml` + echte Heading-Styles, einfache Tabellen-/Überschrift-Heuristik.
    Kein Bild-/Hybrid-Modus.
-```

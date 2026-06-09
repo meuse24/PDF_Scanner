@@ -24,6 +24,7 @@ data class HomeNavigationCallbacks(
     val onQrScan: (Long) -> Unit = {},
     val onBusinessCard: (Long) -> Unit = {},
     val onOcrReview: (Long) -> Unit = {},
+    val onTranslation: (Long) -> Unit = {},
     val onViewer: (Long) -> Unit = {},
     val onImagesToPdf: () -> Unit = {}
 )

@@ -19,6 +19,7 @@ mlkitTextJapanese = "16.0.1"
 mlkitTextDevanagari = "16.0.1"
 mlkitTextKorean = "16.0.1"
 mlkitBarcode = "17.3.0"
+mlkitTranslate = "17.0.3"
 pdfboxAndroid = "2.0.27.0"
 navigationCompose = "2.9.7"
 reorderable = "2.4.3"
@@ -65,6 +66,7 @@ mlkit-text-japanese     = { group = "com.google.android.gms",        name = "pla
 mlkit-text-devanagari   = { group = "com.google.android.gms",        name = "play-services-mlkit-text-recognition-devanagari", version.ref = "mlkitTextDevanagari" }
 mlkit-text-korean       = { group = "com.google.android.gms",        name = "play-services-mlkit-text-recognition-korean",     version.ref = "mlkitTextKorean" }
 mlkit-barcode-scanning  = { group = "com.google.mlkit",              name = "barcode-scanning",                                version.ref = "mlkitBarcode" }
+mlkit-translate         = { group = "com.google.mlkit",              name = "translate",                                       version.ref = "mlkitTranslate" }
 pdfbox-android          = { group = "com.tom-roush",                 name = "pdfbox-android",                                  version.ref = "pdfboxAndroid" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }

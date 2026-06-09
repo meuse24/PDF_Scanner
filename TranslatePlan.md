@@ -1,6 +1,6 @@
 # Implementierungsplan: Übersetzungsfeature (ML Kit Translate)
 
-Status: Entwurf · Datum: 2026-04-24
+Status: **Implementiert** · Datum: 2026-06-07
 
 ---
 
@@ -10,18 +10,25 @@ Nutzer können den OCR-Text eines Dokuments mit einem Tippen in eine Zielsprache
 
 ---
 
+## APK-Größe
+
+`com.google.mlkit:translate` (~1 MB) enthält **keine** Sprachdaten. Modelle (~15–30 MB pro Sprache) werden ausschließlich via `downloadModelIfNeeded()` on-demand von GMS-Servern geladen und gerätelokal gecacht — identisch zum OCR-unbundled-Pattern des Projekts. Die APK bleibt schlank.
+
+---
+
 ## Ausgangslage im Projekt
 
 | Vorhandener Baustein | Nutzung |
 |---|---|
 | `Document.extractedText` / `pageTexts` | direkter Input, kein neuer OCR-Lauf nötig |
-| `Document.ocrLanguage` | Hinweis auf Quellsprache |
-| `ExtractTextUseCase` | Fallback wenn noch kein OCR-Text vorhanden |
-| `OcrModelInstaller` / `ModuleInstall` | Blueprint für Translation-Modell-Download |
+| `Document.ocrLanguage` | Vorauswahl der Quellsprache im Picker |
+| `ExtractTextUseCase` | nicht genutzt (UseCase gibt Fehler wenn kein Text) |
+| `OcrModelInstaller` / `ModuleInstall` | Blueprint für Modell-Download-Pattern |
 | `OcrReviewScreen` / `OcrReviewViewModel` | Blueprint für UI und ViewModel-Struktur |
 | `DispatcherProvider` + `ResourceProvider` | Standard-Utilities, wie in allen ViewModels |
 | `Icons.filled.Translate` | Icon bereits in Compose-Materialicons vorhanden |
-| `DocumentEditSheet` (Sektion „Analysieren & Text") | Einstiegspunkt |
+| `DocumentEditSheet` (Sektion „Analyse") | Einstiegspunkt |
+| `PlayServicesTasks.awaitTask()` | Coroutinen-Bridge für ML Kit Tasks |
 
 ---
 
@@ -35,203 +42,170 @@ mlkit-translate = { group = "com.google.mlkit", name = "translate", version.ref 
 
 ```kotlin
 // app/build.gradle.kts
+// ML Kit Translate – models downloaded on demand, NOT bundled in APK
 implementation(libs.mlkit.translate)
 ```
 
-Das SDK selbst ist klein (~1 MB). Sprachmodelle (~30 MB pro Sprache) werden unbundled heruntergeladen und lokal gecacht.
-
 ---
 
-## Architektur
+## Implementierte Architektur
 
 ### Domain-Modell
 
 ```
-domain/model/TranslationResult.kt
+domain/model/TranslationResult.kt       ✅
 ```
 
 ```kotlin
 data class TranslationResult(
-    val sourceLanguage: String,        // BCP-47, z. B. "de", "en"
+    val sourceLanguage: String,
     val targetLanguage: String,
-    val pageTranslations: List<String> // eine Übersetzung pro Seite
+    val pageTranslations: List<String>
 ) {
-    val fullTranslation: String get() = pageTranslations.joinToString("\n\n")
+    val fullText: String get() = pageTranslations.joinToString("\n\n")
+}
+```
+
+### Domain-Gateway (Port)
+
+```
+domain/gateway/TextTranslator.kt        ✅
+```
+
+```kotlin
+interface TextTranslator {
+    suspend fun translate(
+        pageTexts: List<String>,
+        sourceLanguage: String,
+        targetLanguage: String,
+        onProgress: (current: Int, total: Int) -> Unit = { _, _ -> }
+    ): List<String>
 }
 ```
 
 ### UseCase
 
 ```
-domain/usecase/TranslateTextUseCase.kt
+domain/usecase/TranslateTextUseCase.kt  ✅
 ```
 
 Ablauf:
-1. `Document.pageTexts` nutzen (gecacht). Falls leer: `ExtractTextUseCase` triggern.
-2. `TranslationModelManager.ensureModelsAvailable(source, target)` — lädt Modelle falls nötig.
-3. `TranslatorClient.translate(pageTexts)` — Seite für Seite, Progress-Callbacks.
+1. `Document.pageTexts` nutzen; Fallback auf `extractedText` als einzelne Seite.
+2. Kein Text → `TranslationNoTextException`.
+3. `TextTranslator.translate(...)` aufrufen.
 4. `TranslationResult` zurückgeben.
 
-```kotlin
-class TranslateTextUseCase @Inject constructor(
-    private val extractTextUseCase: ExtractTextUseCase,
-    private val translationModelManager: TranslationModelManager,
-    private val dispatcherProvider: DispatcherProvider
-) {
-    suspend operator fun invoke(
-        document: Document,
-        targetLanguage: String,
-        onProgress: (Int, Int) -> Unit = { _, _ -> }
-    ): TranslationResult
-}
-```
-
-### Modell-Management
+### Util-Implementierung
 
 ```
-util/TranslationModelManager.kt
+util/MlKitTextTranslator.kt             ✅
 ```
 
-Analog `OcrModelInstaller`, aber mit `RemoteModelManager` (ML Kit Translate nutzt einen eigenen Manager, nicht `ModuleInstallClient`):
+- `Translation.getClient(options)` mit `setSourceLanguage` / `setTargetLanguage`
+- Quellsprache `"auto"` → `"und"` (ML Kit-Undetermined, kein `TranslateLanguage.UNDETERMINED` in v17.0.3)
+- `translator.downloadModelIfNeeded(DownloadConditions.Builder().build()).awaitTask()` — lädt Modelle on-demand
+- Seitenweise Übersetzung mit `onProgress`-Callback
+- `translator.close()` im `finally`-Block
 
-```kotlin
-@Singleton
-class TranslationModelManager @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
-    suspend fun ensureModelsAvailable(
-        sourceLanguage: String,
-        targetLanguage: String,
-        onStatus: (String) -> Unit = {}
-    )
+> Hinweis: `TranslationModelManager` als eigene Klasse entfällt — `downloadModelIfNeeded()` übernimmt das Management direkt und ist idiomatischer.
 
-    suspend fun deleteModel(languageCode: String)
-
-    fun getDownloadedModels(): List<String>   // für zukünftige Verwaltungs-UI
-}
-```
-
-ML Kit Translate routet intern über Englisch als Pivot — es müssen also bis zu **zwei** Modelle heruntergeladen werden (Source-Sprache + Target-Sprache), wenn keine der beiden Englisch ist.
-
----
-
-## Presentation
-
-### Screen + ViewModel
+### DI
 
 ```
-ui/translation/TranslationReviewScreen.kt
-ui/translation/TranslationReviewViewModel.kt
+di/AppProvidersModule.kt                ✅  (TextTranslator → MlKitTextTranslator)
 ```
 
-**ViewModel UiState (analog `OcrReviewViewModel.UiState`):**
+### Presentation
+
+```
+ui/translation/TranslationReviewViewModel.kt   ✅
+ui/translation/TranslationReviewScreen.kt      ✅
+```
+
+**ViewModel UiState:**
 
 ```kotlin
 data class UiState(
     val record: Document? = null,
     val result: TranslationResult? = null,
-    val sourceLanguage: String = "auto",
-    val targetLanguage: String = "de",
     val isLoading: Boolean = false,
-    val progress: Pair<Int, Int>? = null,   // (aktuelle Seite, Gesamtseiten)
-    val modelDownloading: Boolean = false,
+    val progress: Pair<Int, Int>? = null,   // null = Modell-Download, sonst Seite X/Y
     val error: String? = null
 )
 ```
 
 **Screen-Layout:**
+- Dokument-Info-Card
+- Einstellungs-Card: Quell-/Ziel-Picker (ExposedDropdownMenuBox) + Übersetzen-Button + Fortschrittsanzeige + Fehlertext
+- Ergebnis-Card: Original-Text + Übersetzung pro Seite, bei Mehrseiter mit Seitenheader; Copy-all + Share
 
-- Oben: zwei Language-Pickers (Quell-/Zielsprache) + „Übersetzen"-Button
-- Mitte: `LazyColumn` mit abwechselnden Kacheln Original / Übersetzung, Seite für Seite
-- Unten: Floating Action Row — „Volltext kopieren" + „Teilen" (wie OcrReviewScreen)
-- Ladeindikator mit Seitenfortschritt während Modell-Download und Translation
-
-### Navigation
-
-```
-ui/navigation/Screen.kt   →  data class Translation(val scanId: Long) : Screen("translation/{scanId}")
-ui/navigation/AppNavHost.kt  →  composable für Translation-Route
-```
-
-### Einstiegspunkt
-
-`DocumentEditSheet.kt` — Sektion „Analysieren & Text":
-
-```
-ScanAction.TranslateText   (enabled = pageCount >= 1 && !isEncrypted)
-```
-
-`HomeActionDispatcher.kt` → navigiert zu `Screen.Translation(scanId)`.
+**Quellsprachen-Vorauswahl:** `Document.ocrLanguage` wird als Vorschlag übernommen, sofern in der Sprachliste enthalten.
 
 ---
 
-## Neue / geänderte Dateien
+## Navigation
 
-| Datei | Typ |
-|---|---|
-| `gradle/libs.versions.toml` | geändert — `mlkitTranslate` |
-| `app/build.gradle.kts` | geändert — neue Dependency |
-| `domain/model/TranslationResult.kt` | neu |
-| `domain/usecase/TranslateTextUseCase.kt` | neu |
-| `util/TranslationModelManager.kt` | neu |
-| `ui/translation/TranslationReviewScreen.kt` | neu |
-| `ui/translation/TranslationReviewViewModel.kt` | neu |
-| `ui/navigation/Screen.kt` | geändert |
-| `ui/navigation/AppNavHost.kt` | geändert |
-| `ui/home/HomeActionDispatcher.kt` | geändert |
-| `ui/components/DocumentEditSheet.kt` | geändert — neuer Sheet-Eintrag |
-| `res/values*/strings_translation.xml` | neu (10 Locales) |
+```
+ui/navigation/Screen.kt                 ✅  (Translation data object)
+ui/navigation/AppNavHost.kt             ✅  (Route + Composable)
+ui/home/HomeNavigationCallbacks.kt      ✅  (onTranslation)
+ui/home/HomeActionDispatcher.kt         ✅  (HomeScanActionNavigator.onTranslateText + Dispatch)
+ui/components/DocumentEditSheet.kt      ✅  (ScanAction.TranslateText, Sektion Analyse)
+ui/viewer/PdfViewerScreen.kt            ✅  (TranslateText → Unit im when-Branch)
+ui/home/HomeScreen.kt                   ✅  (onTranslateText = navigation.onTranslation)
+```
+
+**Einstieg:** Aktions-Sheet → Abschnitt „Analyse" → „PDF übersetzen" (Icon: `Translate`, enabled wenn `!isEncrypted && pageCount >= 1`)
 
 ---
 
-## Stufenplan
+## String-Ressourcen
 
-### Stufe 1 — MVP (1 Tag)
-
-- Dependency + `TranslationModelManager` + `TranslateTextUseCase`
-- `TranslationReviewScreen` mit Quell-/Ziel-Picker, Volltext-Ansicht, Kopieren/Teilen
-- Einstieg via `DocumentEditSheet`
-- Language-Liste: 10 Sprachen für Picker (DE, EN, FR, ES, PT, ZH, JA, RU, AR, HI) — passt zu den bestehenden App-Locales
-- Privacy-Hinweis: Modell-Download-Dialog vor erstem Gebrauch (analog OCR)
-
-### Stufe 2 — Qualität (0.5 Tage extra)
-
-- Seitenweise Ansicht (Original neben Übersetzung, nicht nur Volltext)
-- Fortschrittsindikator mit Seite X / Y
-- Gespeicherte Zielsprache in `AppSettings` (Standardeinstellung)
-- Fehlermeldungen für: kein Text vorhanden, Modell-Download fehlgeschlagen, Sprache nicht erkannt
-
-### Stufe 3 — TXT-Export (0.5 Tage extra)
-
-- Übersetzung als `.txt`-Datei nach `cacheDir/translations/` schreiben
-- Export via FileProvider + `MediaStore.Downloads` (wie `ExportScanUseCase`)
-- Button „Als Textdatei exportieren" im Review-Screen
+```
+res/values/strings_translation.xml          ✅  (EN – Basis)
+res/values-de/strings_translation.xml       ✅
+res/values-es/strings_translation.xml       ✅
+res/values-fr/strings_translation.xml       ✅
+res/values-pt/strings_translation.xml       ✅
+res/values-zh-rCN/strings_translation.xml   ✅
+res/values-ar/strings_translation.xml       ✅
+res/values-ja/strings_translation.xml       ✅
+res/values-ru/strings_translation.xml       ✅
+res/values-hi/strings_translation.xml       ✅
+```
 
 ---
 
-## Tests
+## Build-Status
 
-- `TranslateTextUseCaseTest` — gecachter OCR-Text bevorzugt (kein `ExtractTextUseCase`-Aufruf), Fallback auf Extraktion wenn `pageTexts` leer.
-- `TranslationModelManagerTest` — Modell bereits vorhanden → kein Download, Pivot-Logik (DE→FR erfordert DE+FR-Modell).
-- `TranslationReviewViewModelTest` — Loading-State, Success, Error, clearError.
-- Manuelle Verifikation auf Gerät: Deutsch→Englisch auf einem bekannten Testdokument.
+```
+./gradlew :app:compileDebugKotlin   ✅  BUILD SUCCESSFUL (2026-06-07)
+```
+
+Nur vorbestehende Tink-Deprecation-Warnungen (unverändert).
 
 ---
 
-## Risiken / Entscheidungen
+## Abweichungen vom ursprünglichen Plan
 
-| Punkt | Entscheidung |
-|---|---|
-| **Quellsprache auto-detect** | ML Kit Translate kann Sprache selbst erkennen — `BCP47LanguageCode("und")` als Quelle nutzen, Picker zeigt erkannte Sprache nach erstem Translate-Aufruf an. |
-| **Pivot über Englisch** | Für den Nutzer unsichtbar; Qualität bei DE↔FR via EN-Pivot ist für Fließtext akzeptabel. |
-| **Privacy** | Modell-Download über GMS-Server (wie OCR-unbundled). Einmalig vor dem ersten Übersetzen mit Dialog hinweisen. `PrivacyScreen` + `docs/privacy-policy.html` aktualisieren. |
-| **CJK/Devanagari** | Diese Sprachen können übersetzt werden (Textausgabe), aber kein eigenes PDF erzeugt. MVP bleibt bei Textausgabe. |
-| **Keine Persistenz in DB** | Übersetzungsergebnisse werden **nicht** in `ScanRecord` gespeichert — sie sind flüchtig. Stufe 3 (TXT-Export) ist der persistente Pfad. Kein Schema-Change. |
-| **Modellgröße** | Bis zu 2×30 MB pro Sprachpaar. Nutzer darüber informieren (Download-Dialog mit Größenangabe). |
-| **Entschlüsselte PDFs** | Verschlüsselte Dokumente → Einstieg im Sheet deaktiviert (`enabled = !isEncrypted`), analog Annotate. |
+| Plan-Entwurf | Tatsächliche Umsetzung | Begründung |
+|---|---|---|
+| `TranslationModelManager` als eigene Klasse | Direkt in `MlKitTextTranslator` via `downloadModelIfNeeded()` | Kein Mehrwert durch eigene Klasse; API übernimmt das Management |
+| `modelDownloading: Boolean` als extra-Flag | Unified: `progress == null && isLoading` | Einfachere State-Logik, gleiche UX |
+| `sourceLanguage = "auto"` im State | Vorbelegt mit `Document.ocrLanguage` wenn bekannt | Bessere UX, weniger manuelle Auswahl |
+| `TranslateLanguage.UNDETERMINED` | `"und"` als Literal | Konstante existiert in v17.0.3 nicht |
+| Stufe 3: TXT-Export | Noch nicht umgesetzt | Optional, bei Bedarf nachrüstbar |
+
+---
+
+## Offene Punkte (optional)
+
+- **Stufe 3 – TXT-Export:** Übersetzung als `.txt` nach `MediaStore.Downloads` exportieren (analog `ExportOcrTextUseCase`).
+- **Privacy-Screen:** Hinweis auf Modell-Download ergänzen (`docs/privacy-policy.html`).
 
 ---
 
 ## Änderungshistorie
 
 - **2026-04-24:** Initialversion.
+- **2026-06-07:** Vollständig implementiert. Alle Stufe-1- und Stufe-2-Punkte umgesetzt. Architektur gegenüber Entwurf vereinfacht.

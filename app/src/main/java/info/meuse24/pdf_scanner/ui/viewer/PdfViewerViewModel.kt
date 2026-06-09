@@ -21,6 +21,7 @@ import info.meuse24.pdf_scanner.util.RenderedPdfPage
 import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +38,7 @@ import kotlin.math.roundToInt
 
 private const val SAVED_CURRENT_PAGE = "pdf_viewer_current_page"
 private const val SAVED_ZOOM_SCALE = "pdf_viewer_zoom_scale"
+private const val PDF_VIEWER_VISIBLE_ZOOM_RENDER_DEBOUNCE_MS = 120L
 private val PDF_VIEWER_ZOOM_SCALE_STEPS = floatArrayOf(1f, 1.5f, 2f, 3f, 4f, 5f)
 
 @HiltViewModel
@@ -60,6 +62,7 @@ class PdfViewerViewModel @Inject constructor(
     @Volatile
     private var documentKey: String? = null
     private var openDocumentJob: Job? = null
+    private var visibleZoomRenderJob: Job? = null
     private var visiblePageIndexes: Set<Int> = setOf(savedStateHandle[SAVED_CURRENT_PAGE] ?: 0)
     private var targetWidthPx: Int = 0
 
@@ -124,6 +127,8 @@ class PdfViewerViewModel @Inject constructor(
         _uiState.update { it.copy(currentPageIndex = currentPage) }
 
         renderVisiblePages()
+        val currentZoom = _uiState.value.zoomScale
+        if (currentZoom > 1f) scheduleZoomRender(targetWidthPx, currentZoom)
     }
 
     fun requestZoomRender(pageIndex: Int, viewportWidthPx: Int, zoomScale: Float) {
@@ -132,13 +137,32 @@ class PdfViewerViewModel @Inject constructor(
         renderPage(pageIndex, width, maxSide, cacheResult = false)
     }
 
+    fun requestVisibleZoomRender(viewportWidthPx: Int, zoomScale: Float) {
+        setZoomScale(zoomScale)
+        scheduleZoomRender(viewportWidthPx, zoomScale)
+    }
+
+    private fun scheduleZoomRender(viewportWidthPx: Int, zoomScale: Float) {
+        val pageCount = _uiState.value.pageCount
+        if (documentHandleRef.get() == null || pageCount <= 0 || viewportWidthPx <= 0) return
+        val (width, maxSide) = zoomRenderDimensions(viewportWidthPx, zoomScale)
+        val pageIndexes = retainedPageIndexes(pageCount)
+        visibleZoomRenderJob?.cancel()
+        visibleZoomRenderJob = viewModelScope.launch(dispatcherProvider.io) {
+            delay(PDF_VIEWER_VISIBLE_ZOOM_RENDER_DEBOUNCE_MS)
+            pageIndexes.forEach { pageIndex ->
+                renderPage(pageIndex, width, maxSide, cacheResult = false)
+            }
+        }
+    }
+
     fun prefetchZoomRender(pageIndex: Int, viewportWidthPx: Int) {
         val (width, maxSide) = zoomRenderDimensions(viewportWidthPx, 2f)
         renderPage(pageIndex, width, maxSide, cacheResult = false)
     }
 
     fun setZoomScale(scale: Float) {
-        val clamped = scale.coerceIn(1f, 5f)
+        val clamped = scale.coerceIn(1f, PDF_VIEWER_MAX_ZOOM_SCALE)
         savedStateHandle[SAVED_ZOOM_SCALE] = clamped
         _uiState.update { it.copy(zoomScale = clamped) }
     }
@@ -284,12 +308,7 @@ class PdfViewerViewModel @Inject constructor(
         val pageCount = _uiState.value.pageCount
         if (documentHandleRef.get() == null || pageCount <= 0 || targetWidthPx <= 0) return
 
-        val keepPages = visiblePageIndexes
-            .flatMap { pageIndex ->
-                (pageIndex - PDF_VIEWER_PREFETCH_DISTANCE)..(pageIndex + PDF_VIEWER_PREFETCH_DISTANCE)
-            }
-            .filter { it in 0 until pageCount }
-            .toSet()
+        val keepPages = retainedPageIndexes(pageCount)
 
         bitmapCache.retainPages(keepPages)
         renderJobs.keys.filter { it !in keepPages }.forEach { pageIndex ->
@@ -308,6 +327,14 @@ class PdfViewerViewModel @Inject constructor(
             renderPage(pageIndex, targetWidthPx, PDF_VIEWER_FIT_MAX_BITMAP_SIDE_PX)
         }
     }
+
+    private fun retainedPageIndexes(pageCount: Int): Set<Int> =
+        visiblePageIndexes
+            .flatMap { pageIndex ->
+                (pageIndex - PDF_VIEWER_PREFETCH_DISTANCE)..(pageIndex + PDF_VIEWER_PREFETCH_DISTANCE)
+            }
+            .filter { it in 0 until pageCount }
+            .toSet()
 
     private fun renderPage(
         pageIndex: Int,
@@ -397,6 +424,8 @@ class PdfViewerViewModel @Inject constructor(
     }
 
     private fun cancelRenderJobs() {
+        visibleZoomRenderJob?.cancel()
+        visibleZoomRenderJob = null
         renderJobs.values.forEach { it.job.cancel() }
         renderJobs.clear()
     }

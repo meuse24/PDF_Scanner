@@ -3,9 +3,10 @@ package info.meuse24.pdf_scanner.ui.viewer
 import android.content.Intent
 import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,10 +52,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -87,6 +91,8 @@ import info.meuse24.pdf_scanner.ui.shared.clampPanOffset
 import info.meuse24.pdf_scanner.util.PdfPrintHelper
 import info.meuse24.pdf_scanner.util.buildPdfShareIntent
 import info.meuse24.pdf_scanner.util.openPdfExternally
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -119,6 +125,7 @@ fun PdfViewerScreen(
     onNavigateToPdfMetadata: (Long) -> Unit,
     onNavigateToQrScan: (Long) -> Unit,
     onNavigateToBusinessCard: (Long) -> Unit,
+    onNavigateToTranslation: (Long) -> Unit,
     viewModel: PdfViewerViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -131,6 +138,17 @@ fun PdfViewerScreen(
     val listState = rememberLazyListState()
     var editSheetVisible by remember { mutableStateOf(false) }
     var zoomPageIndex by remember { mutableStateOf<Int?>(null) }
+    var inlineViewerSize by rememberSaveable(stateSaver = intSizeSaver) { mutableStateOf(IntSize.Zero) }
+    var inlineScale by rememberSaveable(state.record?.filepath, state.record?.fileSize) {
+        mutableFloatStateOf(state.zoomScale.coerceIn(1f, PDF_VIEWER_MAX_ZOOM_SCALE))
+    }
+    var inlineOffsetX by rememberSaveable(state.record?.filepath, state.record?.fileSize) {
+        mutableFloatStateOf(0f)
+    }
+    var inlineOffsetY by rememberSaveable(state.record?.filepath, state.record?.fileSize) {
+        mutableFloatStateOf(0f)
+    }
+    var activePointerCount by remember { mutableIntStateOf(0) }
 
     fun showMessage(message: String) {
         val hostState = snackbarHostState ?: return
@@ -167,6 +185,35 @@ fun PdfViewerScreen(
         val density = LocalDensity.current
         val viewportWidthPx = with(density) { maxWidth.roundToPx() }.coerceAtLeast(64)
         val recordThumbnail = rememberViewerThumbnail(state.record?.thumbnailPath)
+        val inlineTransformableState = rememberTransformableState { zoomChange, panChange, _ ->
+            val newScale = (inlineScale * zoomChange).coerceIn(1f, PDF_VIEWER_MAX_ZOOM_SCALE)
+            // Clamp existing offset to new scale first — scale-out shrinks maxY, which must not
+            // produce a spurious unusedY that scrolls the list without a real pan gesture.
+            val scaleClamped = clampPanOffset(inlineViewerSize, newScale, inlineOffsetX, inlineOffsetY)
+            val rawY = scaleClamped.y + panChange.y
+            val finalClamped = clampPanOffset(inlineViewerSize, newScale, scaleClamped.x + panChange.x, rawY)
+            val unusedY = rawY - finalClamped.y
+            inlineScale = newScale
+            inlineOffsetX = finalClamped.x
+            inlineOffsetY = finalClamped.y
+            if (unusedY != 0f) {
+                listState.dispatchRawDelta(-unusedY / newScale)
+            }
+            viewModel.requestVisibleZoomRender(viewportWidthPx, newScale)
+        }
+
+        BackHandler(enabled = inlineScale > 1f && zoomPageIndex == null) {
+            inlineScale = 1f
+            inlineOffsetX = 0f
+            inlineOffsetY = 0f
+            viewModel.setZoomScale(1f)
+        }
+
+        LaunchedEffect(viewportWidthPx, state.pageCount) {
+            if (state.pageCount > 0 && viewportWidthPx > 0 && inlineScale > 1f) {
+                viewModel.requestVisibleZoomRender(viewportWidthPx, inlineScale)
+            }
+        }
 
         LaunchedEffect(listState, state.pageCount, viewportWidthPx) {
             snapshotFlow {
@@ -201,22 +248,62 @@ fun PdfViewerScreen(
                 }
             )
             else -> {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 96.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    items(
-                        count = state.pageCount,
-                        key = { pageIndex -> "${state.record?.filepath}_${state.record?.fileSize}_$pageIndex" }
-                    ) { pageIndex ->
-                        PdfPageCard(
-                            pageIndex = pageIndex,
-                            pageState = state.pages[pageIndex],
-                            thumbnail = if (pageIndex == 0) recordThumbnail else null,
-                            onClick = { zoomPageIndex = pageIndex }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .onSizeChanged { inlineViewerSize = it }
+                        .pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                                    activePointerCount = event.changes.count { it.pressed }
+                                }
+                            }
+                        }
+                        .transformable(
+                            state = inlineTransformableState,
+                            canPan = { inlineScale > 1f }
                         )
+                ) {
+                    LazyColumn(
+                        state = listState,
+                        userScrollEnabled = inlineScale <= 1f && activePointerCount < 2,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .graphicsLayer {
+                                scaleX = inlineScale
+                                scaleY = inlineScale
+                                translationX = inlineOffsetX
+                                translationY = inlineOffsetY
+                                clip = true
+                            },
+                        contentPadding = PaddingValues(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 96.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        items(
+                            count = state.pageCount,
+                            key = { pageIndex -> "${state.record?.filepath}_${state.record?.fileSize}_$pageIndex" }
+                        ) { pageIndex ->
+                            PdfPageCard(
+                                pageIndex = pageIndex,
+                                pageState = state.pages[pageIndex],
+                                thumbnail = if (pageIndex == 0) recordThumbnail else null,
+                                onClick = { zoomPageIndex = pageIndex },
+                                onDoubleClick = {
+                                    if (inlineScale > 1f) {
+                                        inlineScale = 1f
+                                        inlineOffsetX = 0f
+                                        inlineOffsetY = 0f
+                                        viewModel.setZoomScale(1f)
+                                    } else {
+                                        inlineScale = 2f
+                                        inlineOffsetX = 0f
+                                        inlineOffsetY = 0f
+                                        viewModel.requestVisibleZoomRender(viewportWidthPx, 2f)
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
 
@@ -306,6 +393,7 @@ fun PdfViewerScreen(
                             ScanAction.PdfMetadata -> onNavigateToPdfMetadata(record.id)
                             ScanAction.ScanQrCodes -> onNavigateToQrScan(record.id)
                             ScanAction.ScanBusinessCard -> onNavigateToBusinessCard(record.id)
+                            ScanAction.TranslateText -> onNavigateToTranslation(record.id)
                             ScanAction.ExportAsJpg,
                             ScanAction.ExportDocx,
                             ScanAction.ExportOcrText,
@@ -393,19 +481,31 @@ private fun rememberViewerThumbnail(thumbnailPath: String?): ImageBitmap? {
     return thumbnail
 }
 
+private val intSizeSaver = listSaver<IntSize, Int>(
+    save = { listOf(it.width, it.height) },
+    restore = { values ->
+        IntSize(
+            width = values.getOrNull(0) ?: 0,
+            height = values.getOrNull(1) ?: 0
+        )
+    }
+)
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PdfPageCard(
     pageIndex: Int,
     pageState: PdfViewerPageState?,
     thumbnail: ImageBitmap?,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onDoubleClick: () -> Unit = {}
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(pageState?.aspectRatio ?: PDF_VIEWER_DEFAULT_ASPECT_RATIO)
             .clip(RoundedCornerShape(6.dp))
-            .clickable(onClick = onClick),
+            .combinedClickable(onClick = onClick, onDoubleClick = onDoubleClick),
         shape = RoundedCornerShape(6.dp),
         color = Color.White,
         shadowElevation = 2.dp
@@ -535,7 +635,7 @@ private fun PdfZoomOverlay(
     var offsetX by remember(pageIndex) { mutableFloatStateOf(0f) }
     var offsetY by remember(pageIndex) { mutableFloatStateOf(0f) }
     val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
-        val newScale = (scale * zoomChange).coerceIn(1f, 5f)
+        val newScale = (scale * zoomChange).coerceIn(1f, PDF_VIEWER_MAX_ZOOM_SCALE)
         val clamped = clampPanOffset(
             canvasSize = containerSize,
             scale = newScale,

@@ -369,14 +369,21 @@ class HomeViewModel @Inject constructor(
     fun exportAsJpg(record: Document) {
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                val count = exportAsJpgUseCase(record)
-                _success.value = if (count == 1) {
-                    resourceProvider.getString(R.string.export_jpg_success, record.filename)
+                val result = exportAsJpgUseCase(record)
+                _success.value = if (result.pageCount == 1) {
+                    resourceProvider.getString(
+                        R.string.export_pages_folder_success_single,
+                        result.folderName
+                    )
                 } else {
-                    resourceProvider.getString(R.string.export_jpg_success_multi, count)
+                    resourceProvider.getString(
+                        R.string.export_pages_folder_success_multi,
+                        result.pageCount,
+                        result.folderName
+                    )
                 }
             } catch (_: Exception) {
-                _error.value = resourceProvider.getString(R.string.error_export_jpg_failed)
+                _error.value = resourceProvider.getString(R.string.error_export_pages_folder_failed)
             }
         }
     }

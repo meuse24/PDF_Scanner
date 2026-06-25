@@ -20,3 +20,8 @@ fun sanitizeFilename(name: String, fallback: String = "Document"): String {
         .trim('.')
     return sanitized.ifBlank { fallback }
 }
+
+fun sanitizeDownloadFolderName(filename: String): String {
+    val withoutPdfExtension = filename.replace(Regex("""(?i)\.pdf$"""), "")
+    return sanitizeFilename(withoutPdfExtension, fallback = "export")
+}

@@ -94,10 +94,7 @@
     <string name="action_export">Export</string>
     <string name="export_success">Saved to Downloads: %1$s</string>
     <string name="error_export_failed">Export failed</string>
-    <string name="action_export_as_jpg">Export as JPG</string>
-    <string name="export_jpg_success">Saved to Downloads: %1$s.jpg</string>
-    <string name="export_jpg_success_multi">%1$d pages exported as JPEG to Downloads</string>
-    <string name="error_export_jpg_failed">JPEG export failed</string>
+    <string name="action_export_as_jpg">Export to JPG folder</string>
     <string name="error_device_unsupported">Scanner not supported on this device</string>
 
     <!-- Home: share -->
@@ -347,7 +344,6 @@
     <string name="password_required">Enter a password</string>
     <string name="password_wrong">The password is incorrect</string>
     <string name="help_item_compress_pdf">Choose Compress PDF to create a smaller copy of a non-searchable PDF. The original file remains unchanged.</string>
-    <string name="help_item_export_as_jpg">Export as JPG renders each page of the PDF as a JPEG image (150 DPI) and saves it to your Downloads folder. Single-page PDFs produce one file; multi-page PDFs produce one image per page.</string>
     <string name="help_item_protect_pdf">Choose Set opening password to create a password-protected copy that requires the password when opening it.</string>
     <string name="help_item_unlock_pdf">Choose Remove opening password and enter the current password to save an unprotected copy.</string>
     <string name="signature_screen_title">Sign PDF</string>
@@ -486,7 +482,6 @@
     <string name="pdf_viewer_page_content_description">PDF page %1$d</string>
     <string name="pdf_viewer_retry">Retry</string>
     <string name="pdf_viewer_back_to_archive">Back to archive</string>
-    <string name="pdf_viewer_close_zoom">Close zoom</string>
     <string name="pdf_viewer_file_missing">This PDF file is missing.</string>
     <string name="pdf_viewer_file_encrypted">This PDF is encrypted and cannot be rendered in the in-app viewer yet.</string>
     <string name="pdf_viewer_file_corrupted">This PDF could not be opened.</string>

@@ -75,10 +75,7 @@
     <string name="action_export">エクスポート</string>
     <string name="export_success">ダウンロードに保存しました：%1$s</string>
     <string name="error_export_failed">エクスポートに失敗しました</string>
-    <string name="action_export_as_jpg">JPGとしてエクスポート</string>
-    <string name="export_jpg_success">ダウンロードに保存しました：%1$s.jpg</string>
-    <string name="export_jpg_success_multi">%1$d ページをJPEGとしてダウンロードにエクスポートしました</string>
-    <string name="error_export_jpg_failed">JPEGエクスポートに失敗しました</string>
+    <string name="action_export_as_jpg">JPGフォルダとしてエクスポート</string>
     <string name="error_device_unsupported">このデバイスはスキャナーをサポートしていません</string>
     <string name="share_pdf_title">PDF を共有</string>
     <string name="help_item_external_share">Android の共有や Open with を使って、他のアプリから PDF や画像を M24 PDF Scanner に渡せます。PDF は通常のインポート保存ダイアログを開き、共有またはこのアプリで開いた画像は画像から PDF へのフローを開きます。アプリロックが有効な場合、受信ファイルはロック解除まで待機します。</string>
@@ -319,7 +316,6 @@
     <string name="password_required">Enter a password</string>
     <string name="password_wrong">The password is incorrect</string>
     <string name="help_item_compress_pdf">Choose Compress PDF to create a smaller copy of a non-searchable PDF. The original file remains unchanged.</string>
-    <string name="help_item_export_as_jpg">JPGとしてエクスポートは、PDFの各ページをJPEG画像（150 DPI）に変換し、ダウンロードフォルダに保存します。1ページのPDFは1ファイルを生成し、複数ページのPDFはページごとに1枚の画像を生成します。</string>
     <string name="help_item_protect_pdf">Choose Set opening password to create a password-protected copy that requires the password when opening it.</string>
     <string name="help_item_unlock_pdf">Choose Remove opening password and enter the current password to save an unprotected copy.</string>
     <string name="signature_screen_title">Sign PDF</string>
@@ -507,7 +503,6 @@
     <string name="pdf_viewer_page_content_description">PDFページ %1$d</string>
     <string name="pdf_viewer_retry">再試行</string>
     <string name="pdf_viewer_back_to_archive">アーカイブに戻る</string>
-    <string name="pdf_viewer_close_zoom">ズームを閉じる</string>
     <string name="pdf_viewer_file_missing">このPDFファイルが見つかりません。</string>
     <string name="pdf_viewer_file_encrypted">このPDFは暗号化されているため、まだ内蔵ビューアで表示できません。</string>
     <string name="pdf_viewer_file_corrupted">このPDFを開けませんでした。</string>

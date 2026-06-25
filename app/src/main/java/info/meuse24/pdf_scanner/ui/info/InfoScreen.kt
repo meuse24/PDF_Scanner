@@ -139,6 +139,12 @@ fun InfoScreen() {
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
+                    stringResource(R.string.info_feature_jpg_folder_export),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
                     stringResource(R.string.info_feature_translate),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant

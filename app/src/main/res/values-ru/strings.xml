@@ -75,10 +75,7 @@
     <string name="action_export">Экспортировать</string>
     <string name="export_success">Сохранено в Загрузки: %1$s</string>
     <string name="error_export_failed">Ошибка экспорта</string>
-    <string name="action_export_as_jpg">Экспорт в JPG</string>
-    <string name="export_jpg_success">Сохранено в Загрузки: %1$s.jpg</string>
-    <string name="export_jpg_success_multi">%1$d страниц экспортировано в JPEG в Загрузки</string>
-    <string name="error_export_jpg_failed">Ошибка экспорта JPEG</string>
+    <string name="action_export_as_jpg">Экспортировать в папку JPG</string>
     <string name="error_device_unsupported">Сканер не поддерживается на этом устройстве</string>
     <string name="share_pdf_title">Поделиться PDF</string>
     <string name="help_item_external_share">Вы можете отправлять или открывать PDF и изображения из другого приложения в M24 PDF Scanner через Android Share или Открыть с помощью. PDF открывают обычный диалог сохранения импорта; отправленные или открытые изображения запускают процесс Images to PDF. Если включена блокировка приложения, входящие файлы ждут разблокировки.</string>
@@ -319,7 +316,6 @@
     <string name="password_required">Enter a password</string>
     <string name="password_wrong">The password is incorrect</string>
     <string name="help_item_compress_pdf">Choose Compress PDF to create a smaller copy of a non-searchable PDF. The original file remains unchanged.</string>
-    <string name="help_item_export_as_jpg">Экспорт в JPG преобразует каждую страницу PDF в изображение JPEG (150 DPI) и сохраняет его в папку Загрузки. Одностраничный PDF создаёт один файл; многостраничный PDF создаёт по одному изображению на страницу.</string>
     <string name="help_item_protect_pdf">Choose Set opening password to create a password-protected copy that requires the password when opening it.</string>
     <string name="help_item_unlock_pdf">Choose Remove opening password and enter the current password to save an unprotected copy.</string>
     <string name="signature_screen_title">Sign PDF</string>
@@ -507,7 +503,6 @@
     <string name="pdf_viewer_page_content_description">Страница PDF %1$d</string>
     <string name="pdf_viewer_retry">Повторить</string>
     <string name="pdf_viewer_back_to_archive">Назад в архив</string>
-    <string name="pdf_viewer_close_zoom">Закрыть масштаб</string>
     <string name="pdf_viewer_file_missing">Этот PDF-файл отсутствует.</string>
     <string name="pdf_viewer_file_encrypted">Этот PDF зашифрован и пока не может быть отрисован во встроенном просмотрщике.</string>
     <string name="pdf_viewer_file_corrupted">Не удалось открыть этот PDF.</string>

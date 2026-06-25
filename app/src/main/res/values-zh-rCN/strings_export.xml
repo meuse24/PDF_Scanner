@@ -10,4 +10,9 @@
     <string name="docx_export_ocr_busy">OCR 已在运行。请等待完成后再启动另一个 Word 导出。</string>
     <string name="help_item_export_docx">将已保存的 OCR 文本导出为可编辑的 Word 文档 (.docx)。不会重建版式和图片；如果需要保留原始 PDF 外观，请使用可搜索 PDF。</string>
     <string name="info_feature_docx">Word 导出会根据已保存的 OCR 文本创建可编辑的 DOCX 文件。该导出仅包含文本，并会保持文档在本地，直到你保存、分享或导出它们。</string>
+    <string name="export_pages_folder_success_single">已保存为 下载/%1$s/page_1.jpg</string>
+    <string name="export_pages_folder_success_multi">已将 %1$d 页保存到 下载/%2$s/</string>
+    <string name="error_export_pages_folder_failed">JPG 文件夹导出失败</string>
+    <string name="help_item_export_pages_to_folder">将 PDF 的每一页导出为 JPEG 图片（150 DPI），保存到以 PDF 命名的下载子文件夹。文件依次命名为 page_1.jpg、page_2.jpg 等。</string>
+    <string name="info_feature_jpg_folder_export">PDF 页面可导出为带编号的 JPEG 图片，并保存到以文档命名的专用下载子文件夹。</string>
 </resources>

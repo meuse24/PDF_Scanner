@@ -1,13 +1,12 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
-import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.gateway.DownloadEntry
 import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
 import info.meuse24.pdf_scanner.domain.gateway.PdfPageJpgRenderer
+import info.meuse24.pdf_scanner.domain.model.Document
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -22,66 +21,77 @@ class ExportAsJpgUseCaseTest {
     val tmpFolder = TemporaryFolder()
 
     @Test
-    fun `writes one jpg per rendered page`() = runTest {
-        val pdfFile = tmpFolder.newFile("scan.pdf").apply { writeText("pdf") }
-        val renderer = FakePdfPageJpgRenderer(
-            pages = listOf(
-                RenderedPage(byteArrayOf(1, 2, 3)),
-                RenderedPage(byteArrayOf(4, 5))
+    fun `writes every page with stable numbering into sanitized folder`() = runTest {
+        val source = tmpFolder.newFile("source.pdf").apply { writeText("pdf") }
+        val storage = FakeJpgFolderDownloadsStorage()
+        val useCase = ExportAsJpgUseCase(
+            downloadsStorage = storage,
+            pdfPageJpgRenderer = FakeJpgPageRenderer(
+                listOf(byteArrayOf(1), byteArrayOf(2, 3), byteArrayOf(4))
             )
         )
-        val downloadsStorage = FakeJpgDownloadsStorage()
-        val useCase = ExportAsJpgUseCase(downloadsStorage, renderer)
 
-        val exportedPages = useCase(scanRecord(pdfFile, "Invoice"))
+        val result = useCase(document(source, "my/file:name?.PDF"))
 
-        assertEquals(2, exportedPages)
-        assertEquals(listOf("Invoice_p1.jpg", "Invoice_p2.jpg"), downloadsStorage.entries.map { it.displayName })
-        assertEquals(listOf("image/jpeg", "image/jpeg"), downloadsStorage.entries.map { it.mimeType })
-        assertArrayEquals(byteArrayOf(1, 2, 3), downloadsStorage.entries[0].bytes.toByteArray())
-        assertArrayEquals(byteArrayOf(4, 5), downloadsStorage.entries[1].bytes.toByteArray())
-        assertFalse(downloadsStorage.entries[0].deleted)
-        assertFalse(downloadsStorage.entries[1].deleted)
+        assertEquals("my_file_name_", result.folderName)
+        assertEquals(3, result.pageCount)
+        assertEquals(
+            listOf("page_1.jpg", "page_2.jpg", "page_3.jpg"),
+            storage.entries.map { it.displayName }
+        )
+        assertTrue(storage.entries.all { it.subfolder == "my_file_name_" })
+        assertArrayEquals(byteArrayOf(2, 3), storage.entries[1].bytes.toByteArray())
     }
 
     @Test
-    fun `rolls back already written jpgs when later page export fails`() = runTest {
-        val pdfFile = tmpFolder.newFile("scan.pdf").apply { writeText("pdf") }
-        val renderer = FakePdfPageJpgRenderer(
-            pages = listOf(
-                RenderedPage(byteArrayOf(1)),
-                RenderedPage(byteArrayOf(2))
+    fun `single page still uses page one filename`() = runTest {
+        val source = tmpFolder.newFile("source.pdf").apply { writeText("pdf") }
+        val storage = FakeJpgFolderDownloadsStorage()
+        val useCase = ExportAsJpgUseCase(
+            downloadsStorage = storage,
+            pdfPageJpgRenderer = FakeJpgPageRenderer(listOf(byteArrayOf(1)))
+        )
+
+        val result = useCase(document(source, ".pdf"))
+
+        assertEquals("export", result.folderName)
+        assertEquals("page_1.jpg", storage.entries.single().displayName)
+    }
+
+    @Test
+    fun `rolls back committed pages when a later write fails`() = runTest {
+        val source = tmpFolder.newFile("source.pdf").apply { writeText("pdf") }
+        val storage = FakeJpgFolderDownloadsStorage(failOnWriteCall = 2)
+        val useCase = ExportAsJpgUseCase(
+            downloadsStorage = storage,
+            pdfPageJpgRenderer = FakeJpgPageRenderer(
+                listOf(byteArrayOf(1), byteArrayOf(2))
             )
         )
-        val downloadsStorage = FakeJpgDownloadsStorage(failOnWriteCall = 2)
-        val useCase = ExportAsJpgUseCase(downloadsStorage, renderer)
 
-        val error = runCatching { useCase(scanRecord(pdfFile, "Invoice")) }.exceptionOrNull()
+        val error = runCatching { useCase(document(source, "scan.pdf")) }.exceptionOrNull()
 
         assertTrue(error is IllegalStateException)
-        assertEquals("synthetic download failure", error?.message)
-        assertEquals(2, downloadsStorage.writeCalls)
-        assertEquals(1, downloadsStorage.entries.size)
-        assertTrue(downloadsStorage.entries[0].deleted)
+        assertEquals(1, storage.entries.size)
+        assertTrue(storage.entries.single().deleted)
     }
 
     @Test
     fun `fails before rendering when source file is missing`() = runTest {
-        val missingFile = File(tmpFolder.root, "missing.pdf")
-        val renderer = FakePdfPageJpgRenderer()
-        val downloadsStorage = FakeJpgDownloadsStorage()
-        val useCase = ExportAsJpgUseCase(downloadsStorage, renderer)
+        val renderer = FakeJpgPageRenderer(emptyList())
+        val storage = FakeJpgFolderDownloadsStorage()
+        val useCase = ExportAsJpgUseCase(storage, renderer)
 
         val error = runCatching {
-            useCase(scanRecord(missingFile, "Missing"))
+            useCase(document(File(tmpFolder.root, "missing.pdf"), "missing.pdf"))
         }.exceptionOrNull()
 
         assertTrue(error is IllegalStateException)
         assertEquals(0, renderer.renderCalls)
-        assertEquals(0, downloadsStorage.writeCalls)
+        assertEquals(0, storage.writeCalls)
     }
 
-    private fun scanRecord(file: File, filename: String) = Document(
+    private fun document(file: File, filename: String) = Document(
         id = 1L,
         filename = filename,
         filepath = file.absolutePath,
@@ -91,60 +101,57 @@ class ExportAsJpgUseCaseTest {
     )
 }
 
-private data class RenderedPage(val jpegBytes: ByteArray)
-
-private class FakePdfPageJpgRenderer(
-    private val pages: List<RenderedPage> = emptyList()
+private class FakeJpgPageRenderer(
+    private val pages: List<ByteArray>
 ) : PdfPageJpgRenderer {
-    var renderCalls: Int = 0
+    var renderCalls = 0
 
     override fun renderPages(
-        sourceFile: File,
-        onPageRendered: (pageIndex: Int, pageCount: Int, writeJpeg: (OutputStream) -> Unit) -> Unit
+        pdfFile: File,
+        onPage: (pageIndex: Int, pageCount: Int, writeJpeg: (OutputStream) -> Unit) -> Unit
     ) {
         renderCalls++
-        pages.forEachIndexed { index, page ->
-            onPageRendered(index, pages.size) { output -> output.write(page.jpegBytes) }
+        pages.forEachIndexed { index, bytes ->
+            onPage(index, pages.size) { output -> output.write(bytes) }
         }
     }
 }
 
-private class FakeJpgDownloadsStorage(
+private class FakeJpgFolderDownloadsStorage(
     private val failOnWriteCall: Int? = null
 ) : DownloadsStorage {
-    val entries = mutableListOf<FakeDownloadEntry>()
-    var writeCalls: Int = 0
+    val entries = mutableListOf<FakeJpgFolderDownloadEntry>()
+    var writeCalls = 0
 
     override fun writeDownload(
         displayName: String,
         mimeType: String,
         writer: (OutputStream) -> Unit
+    ): DownloadEntry = error("Root download not expected")
+
+    override fun writeDownloadToSubfolder(
+        displayName: String,
+        mimeType: String,
+        subfolder: String,
+        writer: (OutputStream) -> Unit
     ): DownloadEntry {
         writeCalls++
-        if (writeCalls == failOnWriteCall) {
-            error("synthetic download failure")
-        }
+        if (writeCalls == failOnWriteCall) error("synthetic download failure")
 
         val bytes = ByteArrayOutputStream()
         writer(bytes)
-
-        return FakeDownloadEntry(
-            displayName = displayName,
-            mimeType = mimeType,
-            bytes = bytes
-        ).also(entries::add)
+        return FakeJpgFolderDownloadEntry(displayName, subfolder, bytes).also(entries::add)
     }
 }
 
-private class FakeDownloadEntry(
+private class FakeJpgFolderDownloadEntry(
     override val displayName: String,
-    val mimeType: String,
+    val subfolder: String,
     val bytes: ByteArrayOutputStream
 ) : DownloadEntry {
-    var deleted: Boolean = false
+    var deleted = false
 
     override fun delete() {
         deleted = true
     }
 }
-

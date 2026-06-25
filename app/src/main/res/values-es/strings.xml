@@ -75,10 +75,7 @@
     <string name="action_export">Exportar</string>
     <string name="export_success">Guardado en Descargas: %1$s</string>
     <string name="error_export_failed">Error al exportar</string>
-    <string name="action_export_as_jpg">Exportar como JPG</string>
-    <string name="export_jpg_success">Guardado en Descargas: %1$s.jpg</string>
-    <string name="export_jpg_success_multi">%1$d páginas exportadas como JPEG a Descargas</string>
-    <string name="error_export_jpg_failed">Error al exportar JPEG</string>
+    <string name="action_export_as_jpg">Exportar a carpeta JPG</string>
     <string name="error_device_unsupported">El escáner no es compatible con este dispositivo</string>
     <string name="share_pdf_title">Compartir PDF</string>
     <string name="help_item_external_share">Puedes enviar o abrir PDFs e imágenes desde otra app en M24 PDF Scanner mediante Compartir de Android o Abrir con. Los PDFs abren el diálogo normal de guardar importación; las imágenes compartidas o abiertas abren el flujo Imágenes a PDF. Si el bloqueo de la app está activado, los archivos entrantes esperan hasta que la app se desbloquee.</string>
@@ -319,7 +316,6 @@
     <string name="password_required">Enter a password</string>
     <string name="password_wrong">The password is incorrect</string>
     <string name="help_item_compress_pdf">Choose Compress PDF to create a smaller copy of a non-searchable PDF. The original file remains unchanged.</string>
-    <string name="help_item_export_as_jpg">Exportar como JPG convierte cada página del PDF en una imagen JPEG (150 DPI) y la guarda en la carpeta Descargas. Los PDFs de una página generan un archivo; los de varias páginas generan una imagen por página.</string>
     <string name="help_item_protect_pdf">Choose Set opening password to create a password-protected copy that requires the password when opening it.</string>
     <string name="help_item_unlock_pdf">Choose Remove opening password and enter the current password to save an unprotected copy.</string>
     <string name="signature_screen_title">Sign PDF</string>
@@ -507,7 +503,6 @@
     <string name="pdf_viewer_page_content_description">Página PDF %1$d</string>
     <string name="pdf_viewer_retry">Reintentar</string>
     <string name="pdf_viewer_back_to_archive">Volver al archivo</string>
-    <string name="pdf_viewer_close_zoom">Cerrar zoom</string>
     <string name="pdf_viewer_file_missing">Falta este archivo PDF.</string>
     <string name="pdf_viewer_file_encrypted">Este PDF está cifrado y aún no se puede renderizar en el visor integrado.</string>
     <string name="pdf_viewer_file_corrupted">No se pudo abrir este PDF.</string>

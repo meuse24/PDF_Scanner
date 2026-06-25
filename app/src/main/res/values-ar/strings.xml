@@ -75,10 +75,7 @@
     <string name="action_export">تصدير</string>
     <string name="export_success">تم الحفظ في التنزيلات: %1$s</string>
     <string name="error_export_failed">فشل التصدير</string>
-    <string name="action_export_as_jpg">تصدير كـ JPG</string>
-    <string name="export_jpg_success">تم الحفظ في التنزيلات: %1$s.jpg</string>
-    <string name="export_jpg_success_multi">تم تصدير %1$d صفحات بصيغة JPEG إلى التنزيلات</string>
-    <string name="error_export_jpg_failed">فشل تصدير JPEG</string>
+    <string name="action_export_as_jpg">تصدير إلى مجلد JPG</string>
     <string name="error_device_unsupported">الماسح الضوئي غير مدعوم على هذا الجهاز</string>
     <string name="share_pdf_title">مشاركة PDF</string>
     <string name="help_item_external_share">يمكنك إرسال ملفات PDF أو الصور من تطبيق آخر إلى M24 PDF Scanner عبر مشاركة Android أو Open with. تفتح ملفات PDF مربع حوار الاستيراد والحفظ المعتاد، وتفتح الصور المشتركة أو المفتوحة باستخدام التطبيق مسار الصور إلى PDF. إذا كان قفل التطبيق مفعّلًا، تنتظر الملفات الواردة حتى يتم فتح التطبيق.</string>
@@ -319,7 +316,6 @@
     <string name="password_required">Enter a password</string>
     <string name="password_wrong">The password is incorrect</string>
     <string name="help_item_compress_pdf">Choose Compress PDF to create a smaller copy of a non-searchable PDF. The original file remains unchanged.</string>
-    <string name="help_item_export_as_jpg">تصدير كـ JPG يحوّل كل صفحة من PDF إلى صورة JPEG (150 DPI) ويحفظها في مجلد التنزيلات. يُنتج PDF من صفحة واحدة ملفًا واحدًا؛ ويُنتج PDF متعدد الصفحات صورة لكل صفحة.</string>
     <string name="help_item_protect_pdf">Choose Set opening password to create a password-protected copy that requires the password when opening it.</string>
     <string name="help_item_unlock_pdf">Choose Remove opening password and enter the current password to save an unprotected copy.</string>
     <string name="signature_screen_title">Sign PDF</string>
@@ -507,7 +503,6 @@
     <string name="pdf_viewer_page_content_description">صفحة PDF %1$d</string>
     <string name="pdf_viewer_retry">إعادة المحاولة</string>
     <string name="pdf_viewer_back_to_archive">العودة إلى الأرشيف</string>
-    <string name="pdf_viewer_close_zoom">إغلاق التكبير</string>
     <string name="pdf_viewer_file_missing">ملف PDF هذا غير موجود.</string>
     <string name="pdf_viewer_file_encrypted">ملف PDF هذا مشفر ولا يمكن عرضه داخل التطبيق بعد.</string>
     <string name="pdf_viewer_file_corrupted">تعذر فتح ملف PDF هذا.</string>

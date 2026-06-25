@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.BrandingWatermark
 import androidx.compose.material.icons.automirrored.filled.RotateRight
@@ -56,6 +57,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -64,6 +67,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Velocity
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
 import java.util.Locale
@@ -120,6 +124,19 @@ fun DocumentEditSheet(
     val windowHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
     val maxSheetHeight = (windowHeight * 0.78f)
         .coerceIn(360.dp, 640.dp)
+    val listState = rememberLazyListState()
+    val bottomFlingGuard = remember(listState) {
+        object : NestedScrollConnection {
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+                // Prevent a bottom-edge list fling from repeatedly settling the parent sheet.
+                return if (!listState.canScrollForward && available.y < 0f) {
+                    available
+                } else {
+                    Velocity.Zero
+                }
+            }
+        }
+    }
     val showMetadata = true
     val showFavorite = onToggleFavorite != null
     val showRename = showRenameAction
@@ -159,11 +176,14 @@ fun DocumentEditSheet(
     val showSecuritySection = showProtect || showRestrictUsage || showUnlock || showRemovePassword
 
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(max = maxSheetHeight)
             .navigationBarsPadding()
             .padding(bottom = 16.dp)
+            .nestedScroll(bottomFlingGuard),
+        overscrollEffect = null
     ) {
         stickyHeader {
             SheetHeader(
@@ -497,4 +517,3 @@ private fun SheetItem(
         )
     }
 }
-

@@ -25,6 +25,7 @@ import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.FindOcrExtractableDocumentsUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
+import info.meuse24.pdf_scanner.domain.usecase.JpgExportResult
 import info.meuse24.pdf_scanner.domain.usecase.MoveDocumentsUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrBackfillUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
@@ -149,7 +150,10 @@ class HomeViewModelTest {
                 R.string.docx_export_success  to "DOCX exported: %s",
                 R.string.docx_export_nothing_to_export to "No OCR text for DOCX",
                 R.string.docx_export_error    to "DOCX export failed",
-                R.string.docx_export_ocr_busy to "OCR is already running"
+                R.string.docx_export_ocr_busy to "OCR is already running",
+                R.string.export_pages_folder_success_single to "Saved as Downloads/%s/page_1.jpg",
+                R.string.export_pages_folder_success_multi to "%d pages saved in Downloads/%s/",
+                R.string.error_export_pages_folder_failed to "JPG folder export failed"
             ),
             plurals = mapOf(
                 R.plurals.trash_moved to "%d moved to trash",
@@ -170,6 +174,52 @@ class HomeViewModelTest {
         assertEquals("foo* bar*", useCase("foo bar"))
         assertEquals("invoice* 2026* final*", useCase("invoice:2026/final"))
         assertEquals("", useCase(" - "))
+    }
+
+    @Test
+    fun `exportAsJpg reports target folder and page count`() = runTest(testDispatcher) {
+        val record = Document(
+            id = 21L,
+            filename = "Invoice.pdf",
+            filepath = File(tmpFolder.root, "Invoice.pdf").absolutePath,
+            timestamp = 0L,
+            pageCount = 3,
+            fileSize = 1L
+        )
+        `when`(exportAsJpgUseCase(record)).thenReturn(
+            JpgExportResult(folderName = "Invoice", pageCount = 3)
+        )
+        val viewModel = buildViewModel()
+
+        viewModel.exportAsJpg(record)
+        advanceUntilIdle()
+
+        assertEquals(
+            "3 pages saved in Downloads/Invoice/",
+            viewModel.messageUiState.value.success
+        )
+        assertNull(viewModel.messageUiState.value.error)
+        verify(exportAsJpgUseCase).invoke(record)
+    }
+
+    @Test
+    fun `exportAsJpg reports localized error when export fails`() = runTest(testDispatcher) {
+        val record = Document(
+            id = 22L,
+            filename = "Broken.pdf",
+            filepath = File(tmpFolder.root, "Broken.pdf").absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = 1L
+        )
+        `when`(exportAsJpgUseCase(record)).thenThrow(IllegalStateException("synthetic failure"))
+        val viewModel = buildViewModel()
+
+        viewModel.exportAsJpg(record)
+        advanceUntilIdle()
+
+        assertEquals("JPG folder export failed", viewModel.messageUiState.value.error)
+        assertNull(viewModel.messageUiState.value.success)
     }
 
     @Test

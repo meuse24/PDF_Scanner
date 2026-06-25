@@ -75,10 +75,7 @@
     <string name="action_export">Exportar</string>
     <string name="export_success">Guardado em Downloads: %1$s</string>
     <string name="error_export_failed">Falha ao exportar</string>
-    <string name="action_export_as_jpg">Exportar como JPG</string>
-    <string name="export_jpg_success">Guardado em Downloads: %1$s.jpg</string>
-    <string name="export_jpg_success_multi">%1$d páginas exportadas como JPEG para Downloads</string>
-    <string name="error_export_jpg_failed">Falha ao exportar JPEG</string>
+    <string name="action_export_as_jpg">Exportar para pasta JPG</string>
     <string name="error_device_unsupported">Scanner não suportado neste dispositivo</string>
     <string name="share_pdf_title">Compartilhar PDF</string>
     <string name="help_item_external_share">Você pode enviar ou abrir PDFs e imagens de outro app no M24 PDF Scanner usando o Compartilhar do Android ou Abrir com. PDFs abrem o diálogo normal de salvar importação; imagens compartilhadas ou abertas abrem o fluxo Imagens para PDF. Se o bloqueio do app estiver ativo, os arquivos recebidos aguardam até o desbloqueio.</string>
@@ -319,7 +316,6 @@
     <string name="password_required">Enter a password</string>
     <string name="password_wrong">The password is incorrect</string>
     <string name="help_item_compress_pdf">Choose Compress PDF to create a smaller copy of a non-searchable PDF. The original file remains unchanged.</string>
-    <string name="help_item_export_as_jpg">Exportar como JPG converte cada página do PDF em uma imagem JPEG (150 DPI) e a salva na pasta Downloads. PDFs de uma página geram um arquivo; PDFs de várias páginas geram uma imagem por página.</string>
     <string name="help_item_protect_pdf">Choose Set opening password to create a password-protected copy that requires the password when opening it.</string>
     <string name="help_item_unlock_pdf">Choose Remove opening password and enter the current password to save an unprotected copy.</string>
     <string name="signature_screen_title">Sign PDF</string>
@@ -507,7 +503,6 @@
     <string name="pdf_viewer_page_content_description">Página PDF %1$d</string>
     <string name="pdf_viewer_retry">Tentar novamente</string>
     <string name="pdf_viewer_back_to_archive">Voltar ao arquivo</string>
-    <string name="pdf_viewer_close_zoom">Fechar zoom</string>
     <string name="pdf_viewer_file_missing">Este arquivo PDF está ausente.</string>
     <string name="pdf_viewer_file_encrypted">Este PDF está criptografado e ainda não pode ser renderizado no visualizador integrado.</string>
     <string name="pdf_viewer_file_corrupted">Não foi possível abrir este PDF.</string>

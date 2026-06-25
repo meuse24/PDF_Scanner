@@ -10,4 +10,9 @@
     <string name="docx_export_ocr_busy">OCR läuft bereits. Warte, bis es abgeschlossen ist, bevor du einen weiteren Word-Export startest.</string>
     <string name="help_item_export_docx">Exportiert gespeicherten OCR-Text als bearbeitbares Word-Dokument (.docx). Layout und Bilder werden nicht nachgebaut; nutze durchsuchbares PDF, wenn das originale PDF-Aussehen erhalten bleiben soll.</string>
     <string name="info_feature_docx">Der Word-Export erstellt bearbeitbare DOCX-Dateien aus gespeichertem OCR-Text. Der Export ist textbasiert und behält Dokumente lokal, bis du sie speicherst, teilst oder exportierst.</string>
+    <string name="export_pages_folder_success_single">Gespeichert als Downloads/%1$s/page_1.jpg</string>
+    <string name="export_pages_folder_success_multi">%1$d Seiten in Downloads/%2$s/ gespeichert</string>
+    <string name="error_export_pages_folder_failed">JPG-Ordner-Export fehlgeschlagen</string>
+    <string name="help_item_export_pages_to_folder">Exportiert jede PDF-Seite als JPEG-Bild (150 DPI) in einen nach dem PDF benannten Unterordner von Downloads. Die Dateien heißen page_1.jpg, page_2.jpg usw.</string>
+    <string name="info_feature_jpg_folder_export">PDF-Seiten können als nummerierte JPEG-Bilder in einen eigenen, nach dem Dokument benannten Downloads-Unterordner exportiert werden.</string>
 </resources>

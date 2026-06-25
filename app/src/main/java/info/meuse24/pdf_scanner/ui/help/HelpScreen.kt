@@ -151,8 +151,7 @@ fun HelpScreen() {
                 actions = listOf(
                     HelpAction(Icons.Default.DriveFileRenameOutline, R.string.action_rename,       R.string.help_item_rename),
                     HelpAction(Icons.Default.Info,                   R.string.action_pdf_metadata, R.string.help_item_pdf_metadata),
-                    HelpAction(Icons.Default.Print,                  R.string.action_print_pdf,    R.string.help_item_print_pdf),
-                    HelpAction(Icons.Default.Image,                  R.string.action_export_as_jpg, R.string.help_item_export_as_jpg)
+                    HelpAction(Icons.Default.Print,                  R.string.action_print_pdf,    R.string.help_item_print_pdf)
                 )
             ),
             HelpSection(
@@ -194,6 +193,7 @@ fun HelpScreen() {
                 icon = Icons.Default.Print,
                 titleRes = R.string.sheet_section_export,
                 actions = listOf(
+                    HelpAction(Icons.Default.Image, R.string.action_export_as_jpg, R.string.help_item_export_pages_to_folder),
                     HelpAction(Icons.AutoMirrored.Filled.TextSnippet, R.string.docx_export_action, R.string.help_item_export_docx),
                     HelpAction(Icons.Default.InvertColors, R.string.action_grayscale_pdf, R.string.help_item_grayscale_pdf),
                     HelpAction(Icons.Default.Compress,     R.string.action_compress_pdf,  R.string.help_item_compress_pdf)

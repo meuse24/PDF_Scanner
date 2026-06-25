@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.util
 
 import android.content.ContentValues
 import android.content.Context
+import android.os.Environment
 import android.provider.MediaStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.domain.gateway.DownloadEntry
@@ -16,10 +17,41 @@ class AndroidDownloadsStorage @Inject constructor(
         displayName: String,
         mimeType: String,
         writer: (OutputStream) -> Unit
+    ): DownloadEntry = writeDownload(
+        displayName = displayName,
+        mimeType = mimeType,
+        relativePath = Environment.DIRECTORY_DOWNLOADS,
+        writer = writer
+    )
+
+    override fun writeDownloadToSubfolder(
+        displayName: String,
+        mimeType: String,
+        subfolder: String,
+        writer: (OutputStream) -> Unit
+    ): DownloadEntry {
+        require(subfolder.isNotBlank()) { "Download-Unterordner darf nicht leer sein" }
+        require('/' !in subfolder && '\\' !in subfolder) {
+            "Download-Unterordner muss ein einzelner Pfadabschnitt sein"
+        }
+        return writeDownload(
+            displayName = displayName,
+            mimeType = mimeType,
+            relativePath = "${Environment.DIRECTORY_DOWNLOADS}/$subfolder",
+            writer = writer
+        )
+    }
+
+    private fun writeDownload(
+        displayName: String,
+        mimeType: String,
+        relativePath: String,
+        writer: (OutputStream) -> Unit
     ): DownloadEntry {
         val contentValues = ContentValues().apply {
             put(MediaStore.Downloads.DISPLAY_NAME, displayName)
             put(MediaStore.Downloads.MIME_TYPE, mimeType)
+            put(MediaStore.Downloads.RELATIVE_PATH, relativePath)
             put(MediaStore.Downloads.IS_PENDING, 1)
         }
         val resolver = context.contentResolver

@@ -131,12 +131,6 @@ class PdfViewerViewModel @Inject constructor(
         if (currentZoom > 1f) scheduleZoomRender(targetWidthPx, currentZoom)
     }
 
-    fun requestZoomRender(pageIndex: Int, viewportWidthPx: Int, zoomScale: Float) {
-        setZoomScale(zoomScale)
-        val (width, maxSide) = zoomRenderDimensions(viewportWidthPx, zoomScale)
-        renderPage(pageIndex, width, maxSide, cacheResult = false)
-    }
-
     fun requestVisibleZoomRender(viewportWidthPx: Int, zoomScale: Float) {
         setZoomScale(zoomScale)
         scheduleZoomRender(viewportWidthPx, zoomScale)
@@ -154,11 +148,6 @@ class PdfViewerViewModel @Inject constructor(
                 renderPage(pageIndex, width, maxSide, cacheResult = false)
             }
         }
-    }
-
-    fun prefetchZoomRender(pageIndex: Int, viewportWidthPx: Int) {
-        val (width, maxSide) = zoomRenderDimensions(viewportWidthPx, 2f)
-        renderPage(pageIndex, width, maxSide, cacheResult = false)
     }
 
     fun setZoomScale(scale: Float) {
@@ -486,4 +475,3 @@ private data class RenderJob(
     val targetWidthPx: Int,
     val job: Job
 )
-

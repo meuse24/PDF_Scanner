@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.net.Uri
+import android.os.Environment
 import android.provider.MediaStore
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -302,14 +303,14 @@ class SearchableAndRoundTripInstrumentedTest {
                 RoundTripPage(width = 403f, height = 603f)
             )
         )
-        val baseName = "androidtest_exportjpg_result"
-        val exportedPages = ExportAsJpgUseCase(
+        val folderName = "androidtest_exportjpg_result"
+        val result = ExportAsJpgUseCase(
             downloadsStorage = AndroidDownloadsStorage(context),
             pdfPageJpgRenderer = AndroidPdfPageJpgRenderer()
         )(
             Document(
                 id = 4L,
-                filename = baseName,
+                filename = "$folderName.pdf",
                 filepath = source.absolutePath,
                 timestamp = 0L,
                 pageCount = 3,
@@ -317,9 +318,13 @@ class SearchableAndRoundTripInstrumentedTest {
             )
         )
 
-        assertEquals(3, exportedPages)
+        assertEquals(folderName, result.folderName)
+        assertEquals(3, result.pageCount)
 
-        val uris = findDownloadUris(listOf("${baseName}_p1.jpg", "${baseName}_p2.jpg", "${baseName}_p3.jpg"))
+        val uris = findDownloadUrisInFolder(
+            folderName = folderName,
+            displayNames = listOf("page_1.jpg", "page_2.jpg", "page_3.jpg")
+        )
         assertEquals(3, uris.size)
         uris.forEach { uri ->
             resolver.openInputStream(uri).use { input ->
@@ -346,15 +351,15 @@ class SearchableAndRoundTripInstrumentedTest {
                 ImagePageSpec(lines = listOf("PAGE 6"))
             )
         )
-        val baseName = "androidtest_exportjpg_large"
+        val folderName = "androidtest_exportjpg_large"
 
-        val exportedPages = ExportAsJpgUseCase(
+        val result = ExportAsJpgUseCase(
             downloadsStorage = AndroidDownloadsStorage(context),
             pdfPageJpgRenderer = AndroidPdfPageJpgRenderer()
         )(
             Document(
                 id = 5L,
-                filename = baseName,
+                filename = folderName,
                 filepath = source.absolutePath,
                 timestamp = 0L,
                 pageCount = 6,
@@ -362,8 +367,12 @@ class SearchableAndRoundTripInstrumentedTest {
             )
         )
 
-        assertEquals(6, exportedPages)
-        val uris = findDownloadUris((1..6).map { "${baseName}_p$it.jpg" })
+        assertEquals(folderName, result.folderName)
+        assertEquals(6, result.pageCount)
+        val uris = findDownloadUrisInFolder(
+            folderName = folderName,
+            displayNames = (1..6).map { "page_$it.jpg" }
+        )
         assertEquals(6, uris.size)
         uris.forEach { uri ->
             resolver.openInputStream(uri).use { input ->
@@ -412,6 +421,29 @@ class SearchableAndRoundTripInstrumentedTest {
     private fun findDownloadUris(displayNames: List<String>): List<Uri> =
         displayNames.mapNotNull(::findDownloadUri)
 
+    private fun findDownloadUrisInFolder(
+        folderName: String,
+        displayNames: List<String>
+    ): List<Uri> {
+        val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/$folderName/"
+        return displayNames.mapNotNull { displayName ->
+            resolver.query(
+                collection,
+                arrayOf(MediaStore.Downloads._ID),
+                "${MediaStore.Downloads.RELATIVE_PATH} = ? AND ${MediaStore.Downloads.DISPLAY_NAME} = ?",
+                arrayOf(relativePath, displayName),
+                null
+            )?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    ContentUris.withAppendedId(collection, cursor.getLong(0))
+                } else {
+                    null
+                }
+            }
+        }
+    }
+
     private fun cleanupLocalArtifacts() {
         scansDir.listFiles().orEmpty()
             .filter { it.name.startsWith("androidtest_") }
@@ -422,9 +454,13 @@ class SearchableAndRoundTripInstrumentedTest {
         val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
         resolver.query(
             collection,
-            arrayOf(MediaStore.Downloads._ID, MediaStore.Downloads.DISPLAY_NAME),
-            "${MediaStore.Downloads.DISPLAY_NAME} LIKE ?",
-            arrayOf("androidtest_%"),
+            arrayOf(
+                MediaStore.Downloads._ID,
+                MediaStore.Downloads.DISPLAY_NAME,
+                MediaStore.Downloads.RELATIVE_PATH
+            ),
+            "${MediaStore.Downloads.DISPLAY_NAME} LIKE ? OR ${MediaStore.Downloads.RELATIVE_PATH} LIKE ?",
+            arrayOf("androidtest_%", "${Environment.DIRECTORY_DOWNLOADS}/androidtest_%"),
             null
         )?.use { cursor ->
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID)

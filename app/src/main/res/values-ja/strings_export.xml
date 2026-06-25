@@ -10,4 +10,9 @@
     <string name="docx_export_ocr_busy">OCR はすでに実行中です。完了してから別の Word エクスポートを開始してください。</string>
     <string name="help_item_export_docx">保存済みの OCR テキストを編集可能な Word 文書 (.docx) としてエクスポートします。レイアウトや画像は再作成されません。元の PDF の見た目を保つ必要がある場合は、検索可能 PDF を使用してください。</string>
     <string name="info_feature_docx">Word エクスポートは保存済みの OCR テキストから編集可能な DOCX ファイルを作成します。エクスポートはテキストのみで、保存、共有、エクスポートするまで文書はローカルに保持されます。</string>
+    <string name="export_pages_folder_success_single">Downloads/%1$s/page_1.jpg として保存しました</string>
+    <string name="export_pages_folder_success_multi">%1$d ページを Downloads/%2$s/ に保存しました</string>
+    <string name="error_export_pages_folder_failed">JPG フォルダのエクスポートに失敗しました</string>
+    <string name="help_item_export_pages_to_folder">PDF の各ページを JPEG 画像（150 DPI）として、PDF 名の Downloads サブフォルダにエクスポートします。ファイル名は page_1.jpg、page_2.jpg のように連番になります。</string>
+    <string name="info_feature_jpg_folder_export">PDF ページを連番の JPEG 画像として、文書名の専用 Downloads サブフォルダにエクスポートできます。</string>
 </resources>

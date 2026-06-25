@@ -77,10 +77,7 @@
     <string name="action_export">Exportieren</string>
     <string name="export_success">In Downloads gespeichert: %1$s</string>
     <string name="error_export_failed">Export fehlgeschlagen</string>
-    <string name="action_export_as_jpg">Als JPG exportieren</string>
-    <string name="export_jpg_success">In Downloads gespeichert: %1$s.jpg</string>
-    <string name="export_jpg_success_multi">%1$d Seiten als JPEG in Downloads exportiert</string>
-    <string name="error_export_jpg_failed">JPEG-Export fehlgeschlagen</string>
+    <string name="action_export_as_jpg">Als JPG-Ordner exportieren</string>
     <string name="error_device_unsupported">Scanner wird auf diesem Gerät nicht unterstützt</string>
     <string name="share_pdf_title">PDF teilen</string>
     <string name="help_item_external_share">Du kannst PDFs oder Bilder aus einer anderen App per Android-Teilen oder Öffnen mit an M24 PDF-Scanner übergeben. PDFs öffnen den normalen Import-Speichern-Dialog; geteilte oder geöffnete Bilder öffnen den Bilder-zu-PDF-Ablauf. Wenn die App-Sperre aktiv ist, warten eingehende Dateien bis zum Entsperren.</string>
@@ -322,7 +319,6 @@
     <string name="password_required">Bitte ein Passwort eingeben</string>
     <string name="password_wrong">Das Passwort ist falsch</string>
     <string name="help_item_compress_pdf">Mit PDF komprimieren erstellst du eine kleinere Kopie eines nicht durchsuchbaren PDFs. Die Originaldatei bleibt unverändert.</string>
-    <string name="help_item_export_as_jpg">Als JPG exportieren rendert jede Seite des PDFs als JPEG-Bild (150 DPI) und speichert es in deinem Downloads-Ordner. Einseitige PDFs erzeugen eine Datei; mehrseitige PDFs erzeugen ein Bild pro Seite.</string>
     <string name="help_item_protect_pdf">Mit Öffnungspasswort setzen erstellst du eine passwortgeschützte Kopie, die beim Öffnen das Passwort verlangt.</string>
     <string name="help_item_unlock_pdf">Mit Öffnungspasswort entfernen und dem aktuellen Passwort speicherst du eine ungeschützte Kopie.</string>
     <string name="signature_screen_title">PDF signieren</string>
@@ -444,7 +440,6 @@
     <string name="pdf_viewer_page_content_description">PDF-Seite %1$d</string>
     <string name="pdf_viewer_retry">Erneut versuchen</string>
     <string name="pdf_viewer_back_to_archive">Zurück zur Ablage</string>
-    <string name="pdf_viewer_close_zoom">Zoom schließen</string>
     <string name="pdf_viewer_file_missing">Diese PDF-Datei fehlt.</string>
     <string name="pdf_viewer_file_encrypted">Diese PDF ist verschlüsselt und kann im integrierten Viewer noch nicht gerendert werden.</string>
     <string name="pdf_viewer_file_corrupted">Diese PDF konnte nicht geöffnet werden.</string>

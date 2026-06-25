@@ -3,10 +3,8 @@ package info.meuse24.pdf_scanner.ui.viewer
 import android.content.Intent
 import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,14 +21,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FindInPage
@@ -41,7 +37,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
@@ -137,7 +132,6 @@ fun PdfViewerScreen(
     val shareTitle = stringResource(R.string.share_pdf_title)
     val listState = rememberLazyListState()
     var editSheetVisible by remember { mutableStateOf(false) }
-    var zoomPageIndex by remember { mutableStateOf<Int?>(null) }
     var inlineViewerSize by rememberSaveable(stateSaver = intSizeSaver) { mutableStateOf(IntSize.Zero) }
     var inlineScale by rememberSaveable(state.record?.filepath, state.record?.fileSize) {
         mutableFloatStateOf(state.zoomScale.coerceIn(1f, PDF_VIEWER_MAX_ZOOM_SCALE))
@@ -202,7 +196,7 @@ fun PdfViewerScreen(
             viewModel.requestVisibleZoomRender(viewportWidthPx, newScale)
         }
 
-        BackHandler(enabled = inlineScale > 1f && zoomPageIndex == null) {
+        BackHandler(enabled = inlineScale > 1f) {
             inlineScale = 1f
             inlineOffsetX = 0f
             inlineOffsetY = 0f
@@ -288,7 +282,6 @@ fun PdfViewerScreen(
                                 pageIndex = pageIndex,
                                 pageState = state.pages[pageIndex],
                                 thumbnail = if (pageIndex == 0) recordThumbnail else null,
-                                onClick = { zoomPageIndex = pageIndex },
                                 onDoubleClick = {
                                     if (inlineScale > 1f) {
                                         inlineScale = 1f
@@ -336,23 +329,6 @@ fun PdfViewerScreen(
                     )
                 }
             }
-        }
-
-        val zoomIndex = zoomPageIndex
-        if (zoomIndex != null) {
-            PdfZoomOverlay(
-                pageIndex = zoomIndex,
-                pageCount = state.pageCount,
-                pageState = state.pages[zoomIndex],
-                viewportWidthPx = viewportWidthPx,
-                onClose = { zoomPageIndex = null },
-                onPrefetchZoom = {
-                    viewModel.prefetchZoomRender(zoomIndex, viewportWidthPx)
-                },
-                onZoomScaleChanged = { scale ->
-                    viewModel.requestZoomRender(zoomIndex, viewportWidthPx, scale)
-                }
-            )
         }
     }
 
@@ -491,13 +467,11 @@ private val intSizeSaver = listSaver<IntSize, Int>(
     }
 )
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PdfPageCard(
     pageIndex: Int,
     pageState: PdfViewerPageState?,
     thumbnail: ImageBitmap?,
-    onClick: () -> Unit,
     onDoubleClick: () -> Unit = {}
 ) {
     Surface(
@@ -505,7 +479,9 @@ private fun PdfPageCard(
             .fillMaxWidth()
             .aspectRatio(pageState?.aspectRatio ?: PDF_VIEWER_DEFAULT_ASPECT_RATIO)
             .clip(RoundedCornerShape(6.dp))
-            .combinedClickable(onClick = onClick, onDoubleClick = onDoubleClick),
+            .pointerInput(onDoubleClick) {
+                detectTapGestures(onDoubleTap = { onDoubleClick() })
+            },
         shape = RoundedCornerShape(6.dp),
         color = Color.White,
         shadowElevation = 2.dp
@@ -615,102 +591,6 @@ private fun ViewerActionButton(
             imageVector = icon,
             contentDescription = stringResource(labelRes)
         )
-    }
-}
-
-@Composable
-private fun PdfZoomOverlay(
-    pageIndex: Int,
-    pageCount: Int,
-    pageState: PdfViewerPageState?,
-    viewportWidthPx: Int,
-    onClose: () -> Unit,
-    onPrefetchZoom: () -> Unit,
-    onZoomScaleChanged: (Float) -> Unit
-) {
-    BackHandler(onBack = onClose)
-
-    var containerSize by remember { mutableStateOf(IntSize.Zero) }
-    var scale by remember(pageIndex) { mutableFloatStateOf(1f) }
-    var offsetX by remember(pageIndex) { mutableFloatStateOf(0f) }
-    var offsetY by remember(pageIndex) { mutableFloatStateOf(0f) }
-    val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
-        val newScale = (scale * zoomChange).coerceIn(1f, PDF_VIEWER_MAX_ZOOM_SCALE)
-        val clamped = clampPanOffset(
-            canvasSize = containerSize,
-            scale = newScale,
-            offsetX = offsetX + panChange.x,
-            offsetY = offsetY + panChange.y
-        )
-        scale = newScale
-        offsetX = clamped.x
-        offsetY = clamped.y
-        onZoomScaleChanged(newScale)
-    }
-
-    LaunchedEffect(pageIndex, viewportWidthPx) {
-        if (viewportWidthPx > 0) onPrefetchZoom()
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .onSizeChanged { containerSize = it }
-            .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.82f))
-            .padding(12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        val bitmap = pageState?.bitmap
-        if (bitmap != null) {
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = stringResource(
-                    R.string.pdf_viewer_page_content_description,
-                    pageIndex + 1
-                ),
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .transformable(transformableState)
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                        translationX = offsetX
-                        translationY = offsetY
-                    }
-                    .padding(vertical = 44.dp)
-            )
-        } else {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.inversePrimary)
-        }
-
-        Surface(
-            modifier = Modifier.align(Alignment.TopCenter),
-            shape = RoundedCornerShape(999.dp),
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
-        ) {
-            Text(
-                text = stringResource(R.string.pdf_viewer_page_indicator, pageIndex + 1, pageCount),
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
-            )
-        }
-
-        IconButton(
-            onClick = onClose,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .background(
-                    MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
-                    RoundedCornerShape(999.dp)
-                )
-        ) {
-            Icon(Icons.Default.Close, stringResource(R.string.pdf_viewer_close_zoom))
-        }
-
-        LaunchedEffect(viewportWidthPx) {
-            if (viewportWidthPx > 0) onZoomScaleChanged(scale)
-        }
     }
 }
 

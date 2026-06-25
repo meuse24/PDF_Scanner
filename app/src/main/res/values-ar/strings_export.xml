@@ -10,4 +10,9 @@
     <string name="docx_export_ocr_busy">OCR قيد التشغيل بالفعل. انتظر حتى يكتمل قبل بدء تصدير Word آخر.</string>
     <string name="help_item_export_docx">يصدر نص OCR المحفوظ كمستند Word قابل للتحرير (.docx). لا تتم إعادة إنشاء التخطيط أو الصور؛ استخدم PDF قابلًا للبحث عندما تحتاج إلى مظهر PDF الأصلي.</string>
     <string name="info_feature_docx">ينشئ تصدير Word ملفات DOCX قابلة للتحرير من نص OCR المحفوظ. التصدير نصي فقط وتبقى المستندات محلية حتى تحفظها أو تشاركها أو تصدرها.</string>
+    <string name="export_pages_folder_success_single">تم الحفظ باسم التنزيلات/%1$s/page_1.jpg</string>
+    <string name="export_pages_folder_success_multi">تم حفظ %1$d صفحات في التنزيلات/%2$s/</string>
+    <string name="error_export_pages_folder_failed">فشل تصدير مجلد JPG</string>
+    <string name="help_item_export_pages_to_folder">يُصدّر كل صفحة PDF كصورة JPEG بدقة 150 DPI إلى مجلد فرعي في التنزيلات يحمل اسم ملف PDF. تُرقّم الملفات page_1.jpg وpage_2.jpg وهكذا.</string>
+    <string name="info_feature_jpg_folder_export">يمكن تصدير صفحات PDF كصور JPEG مرقمة إلى مجلد فرعي مخصص في التنزيلات يحمل اسم المستند.</string>
 </resources>

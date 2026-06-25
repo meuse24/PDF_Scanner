@@ -10,4 +10,9 @@
     <string name="docx_export_ocr_busy">OCR уже выполняется. Дождитесь завершения, прежде чем запускать другой экспорт в Word.</string>
     <string name="help_item_export_docx">Экспортирует сохраненный OCR-текст в редактируемый документ Word (.docx). Макет и изображения не воссоздаются; используйте PDF с поиском, если нужно сохранить исходный вид PDF.</string>
     <string name="info_feature_docx">Экспорт в Word создает редактируемые DOCX-файлы из сохраненного OCR-текста. Экспорт содержит только текст и хранит документы локально, пока вы не сохраните, не поделитесь или не экспортируете их.</string>
+    <string name="export_pages_folder_success_single">Сохранено как Загрузки/%1$s/page_1.jpg</string>
+    <string name="export_pages_folder_success_multi">%1$d страниц сохранено в Загрузки/%2$s/</string>
+    <string name="error_export_pages_folder_failed">Не удалось экспортировать папку JPG</string>
+    <string name="help_item_export_pages_to_folder">Экспортирует каждую страницу PDF как изображение JPEG (150 DPI) в подпапку Загрузки с именем PDF. Файлы нумеруются page_1.jpg, page_2.jpg и далее.</string>
+    <string name="info_feature_jpg_folder_export">Страницы PDF можно экспортировать как нумерованные изображения JPEG в отдельную подпапку Загрузки с именем документа.</string>
 </resources>

@@ -10,4 +10,9 @@
     <string name="docx_export_ocr_busy">OCR पहले से चल रहा है। दूसरा Word निर्यात शुरू करने से पहले इसके पूरा होने की प्रतीक्षा करें।</string>
     <string name="help_item_export_docx">सहेजे गए OCR टेक्स्ट को संपादन योग्य Word दस्तावेज़ (.docx) के रूप में निर्यात करता है। लेआउट और चित्र दोबारा नहीं बनाए जाते; मूल PDF का रूप बनाए रखना हो तो खोज योग्य PDF का उपयोग करें।</string>
     <string name="info_feature_docx">Word निर्यात सहेजे गए OCR टेक्स्ट से संपादन योग्य DOCX फ़ाइलें बनाता है। यह निर्यात केवल टेक्स्ट होता है और दस्तावेज़ों को तब तक स्थानीय रखता है जब तक आप उन्हें सहेजें, साझा करें या निर्यात करें।</string>
+    <string name="export_pages_folder_success_single">Downloads/%1$s/page_1.jpg के रूप में सहेजा गया</string>
+    <string name="export_pages_folder_success_multi">%1$d पृष्ठ Downloads/%2$s/ में सहेजे गए</string>
+    <string name="error_export_pages_folder_failed">JPG फ़ोल्डर निर्यात विफल हुआ</string>
+    <string name="help_item_export_pages_to_folder">हर PDF पृष्ठ को JPEG चित्र (150 DPI) के रूप में PDF के नाम वाले Downloads उपफ़ोल्डर में निर्यात करता है। फ़ाइलों के नाम page_1.jpg, page_2.jpg आदि होते हैं।</string>
+    <string name="info_feature_jpg_folder_export">PDF पृष्ठों को क्रमांकित JPEG चित्रों के रूप में दस्तावेज़ के नाम वाले अलग Downloads उपफ़ोल्डर में निर्यात किया जा सकता है।</string>
 </resources>

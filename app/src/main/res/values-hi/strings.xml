@@ -75,10 +75,7 @@
     <string name="action_export">निर्यात</string>
     <string name="export_success">डाउनलोड में सहेजा गया: %1$s</string>
     <string name="error_export_failed">निर्यात विफल</string>
-    <string name="action_export_as_jpg">JPG के रूप में निर्यात करें</string>
-    <string name="export_jpg_success">डाउनलोड में सहेजा गया: %1$s.jpg</string>
-    <string name="export_jpg_success_multi">%1$d पृष्ठ JPEG के रूप में डाउनलोड में निर्यात किए गए</string>
-    <string name="error_export_jpg_failed">JPEG निर्यात विफल</string>
+    <string name="action_export_as_jpg">JPG फ़ोल्डर में निर्यात करें</string>
     <string name="error_device_unsupported">इस डिवाइस पर स्कैनर समर्थित नहीं है</string>
     <string name="share_pdf_title">PDF साझा करें</string>
     <string name="help_item_external_share">आप Android Share या Open with के जरिए किसी दूसरे ऐप से PDF या चित्र M24 PDF Scanner में भेज या खोल सकते हैं। PDF सामान्य सेव-इम्पोर्ट डायलॉग खोलते हैं; साझा किए गए या इस ऐप में खोले गए चित्र Images to PDF फ्लो खोलते हैं। यदि App Lock चालू है, तो आने वाली फाइलें ऐप अनलॉक होने तक प्रतीक्षा करती हैं।</string>
@@ -319,7 +316,6 @@
     <string name="password_required">Enter a password</string>
     <string name="password_wrong">The password is incorrect</string>
     <string name="help_item_compress_pdf">Choose Compress PDF to create a smaller copy of a non-searchable PDF. The original file remains unchanged.</string>
-    <string name="help_item_export_as_jpg">JPG के रूप में निर्यात करें PDF के प्रत्येक पृष्ठ को JPEG छवि (150 DPI) में बदलता है और डाउनलोड फ़ोल्डर में सहेजता है। एकल-पृष्ठ PDF एक फ़ाइल बनाता है; बहु-पृष्ठ PDF प्रत्येक पृष्ठ के लिए एक छवि बनाता है।</string>
     <string name="help_item_protect_pdf">Choose Set opening password to create a password-protected copy that requires the password when opening it.</string>
     <string name="help_item_unlock_pdf">Choose Remove opening password and enter the current password to save an unprotected copy.</string>
     <string name="signature_screen_title">Sign PDF</string>
@@ -507,7 +503,6 @@
     <string name="pdf_viewer_page_content_description">PDF पेज %1$d</string>
     <string name="pdf_viewer_retry">फिर कोशिश करें</string>
     <string name="pdf_viewer_back_to_archive">आर्काइव पर वापस जाएं</string>
-    <string name="pdf_viewer_close_zoom">ज़ूम बंद करें</string>
     <string name="pdf_viewer_file_missing">यह PDF फ़ाइल नहीं मिली।</string>
     <string name="pdf_viewer_file_encrypted">यह PDF एन्क्रिप्टेड है और अभी इन-ऐप व्यूअर में रेंडर नहीं हो सकती।</string>
     <string name="pdf_viewer_file_corrupted">यह PDF खोली नहीं जा सकी।</string>

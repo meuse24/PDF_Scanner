@@ -1,89 +1,282 @@
-# Implementierungsplan: bestehenden JPG-Export auf Unterordner umstellen
+# Umsetzungsplan – Release-Härtung PDF Scanner
 
-## Entscheidung
+Grundlage: Code-Review-Findings vom 2026-06-27.
+Prioritätsreihenfolge: Lint-Blocker → OOM-Risiko → Pfadsicherheit → Transaktionskorrektheit → Privacy/Lock → Architektur.
 
-Es bleibt genau eine Benutzeraktion **„Als JPG-Ordner exportieren“**. Der bisherige
-flache Export wird vollständig durch den Unterordner-Export ersetzt:
+---
 
-```text
-Vorher:
-Downloads/Rechnung_p1.jpg
-Downloads/Rechnung_p2.jpg
+## Phase 1 – Lint-Fehler beheben (Release-Blocker)
 
-Nachher:
-Downloads/Rechnung/page_1.jpg
-Downloads/Rechnung/page_2.jpg
+**Status (2026-06-27): Abgeschlossen.**
+
+- Die drei Druckdialog-Texte sind in allen neun zusätzlichen Locales vorhanden.
+- `confirm_delete_multi` und `selection_count` sind in allen Locales als Plural-Ressourcen umgesetzt; alle Compose-Aufrufe von `selection_count` verwenden `pluralStringResource`.
+- Verifiziert mit `./gradlew.bat --no-configuration-cache lintDebug testDebugUnitTest --console=plain`.
+- Ergebnis: Build erfolgreich, 0 Lint-Errors (22 verbleibende Warnungen außerhalb des vereinbarten Phase-1-Scopes), 424 Unit-Tests ohne Fehler.
+
+**Ziel:** `lintDebug` von 3 Errors / 18 Warnings auf 0 Errors senken.
+
+### 1.1 Fehlende Übersetzungen nachliefern
+
+Die drei Strings aus `strings.xml:71-73` fehlen in allen neun Locale-Dateien:
+
+```
+print_custom_page_size_title
+print_custom_page_size_message
+print_custom_page_size_confirm
 ```
 
-Zwei parallele JPG-Exporte wären fachlich redundant, würden die Aktionsliste
-verlängern und dauerhaft doppelte Use Cases, Meldungen, Übersetzungen und Tests
-erfordern.
-
-## Architektur
-
-```text
-DocumentEditSheet
-  -> ScanAction.ExportAsJpg
-  -> HomeActionDispatcher
-  -> HomeViewModel.exportAsJpg()
-  -> ExportAsJpgUseCase
-       -> sanitizeDownloadFolderName()
-       -> PdfPageJpgRenderer
-       -> DownloadsStorage.writeDownloadToSubfolder()
-            -> AndroidDownloadsStorage / MediaStore RELATIVE_PATH
+**Betroffene Dateien:**
+```
+app/src/main/res/values-de/strings.xml
+app/src/main/res/values-es/strings.xml
+app/src/main/res/values-fr/strings.xml
+app/src/main/res/values-pt/strings.xml
+app/src/main/res/values-zh-rCN/strings.xml
+app/src/main/res/values-ar/strings.xml
+app/src/main/res/values-ja/strings.xml
+app/src/main/res/values-ru/strings.xml
+app/src/main/res/values-hi/strings.xml
 ```
 
-Die bestehende Aktion, der bestehende Dispatcher-Pfad und der bestehende
-Use-Case-Name bleiben erhalten. Nur das Exportverhalten und sein Ergebnis werden
-gezielt geändert.
+**Vorgehen:** Übersetzungen für jede Sprache einfügen. Solange kein Native-Speaker verfügbar ist, englische Fallback-Texte verwenden und `tools:ignore="TypographyDashes"` vermeiden – stattdessen korrekte Anführungszeichen je Locale nutzen.
 
-## Kritische technische Festlegungen
+### 1.2 Plurals-Strings umstellen
 
-1. `DownloadsStorage` erhält eine explizite Operation
-   `writeDownloadToSubfolder(...)`. Bestehende Root-Downloads und deren Fakes
-   bleiben unverändert.
-2. Jede Seite heißt konsistent `page_<n>.jpg`, auch bei einseitigen PDFs
-   (`page_1.jpg`).
-3. Die vorhandene `sanitizeFilename(...)`-Logik wird durch
-   `sanitizeDownloadFolderName(...)` wiederverwendet. Dadurch werden ungültige
-   Zeichen, Steuerzeichen, leere Namen und abschließende Punkte behandelt.
-4. Der Android-Adapter validiert zusätzlich, dass der Unterordner nur ein
-   einzelnes Pfadsegment ist.
-5. Der Use Case liefert `JpgExportResult(folderName, pageCount)`, damit das
-   ViewModel eine genaue, lokalisierte Zielmeldung anzeigen kann.
-6. Bei einem Fehler werden alle bereits durch den aktuellen Export erzeugten
-   MediaStore-Einträge gelöscht.
-7. Bestehende gleichnamige Dateien werden nicht überschrieben oder gelöscht.
-   MediaStore darf neue Namen kollisionsfrei vergeben.
+Lint meldet Mengenangaben, die als `<plurals>` umgesetzt werden sollten (18 Warnings, teilweise als Error eingestuft). Kandidaten sind u.a. `confirm_delete_multi` und `selection_count`.
 
-## Umsetzungsschritte
+**Vorgehen:**
+1. `./gradlew lint` ausführen und alle `ImpliedQuantity`-Findings auflisten.
+2. Betroffene `<string>`-Einträge in `<plurals>`-Blöcke überführen.
+3. Aufrufe im Kotlin-Code von `getString(R.string.x, n)` auf `resources.getQuantityString(R.plurals.x, n, n)` umstellen.
+4. Änderungen in alle 10 Locale-Dateien übertragen.
 
-1. Domain-Gateway um `writeDownloadToSubfolder(...)` erweitern.
-2. `AndroidDownloadsStorage` mit
-   `RELATIVE_PATH = "Download/<bereinigter Name>"` erweitern.
-3. `sanitizeDownloadFolderName(...)` in `FilenameUtils.kt` ergänzen.
-4. `ExportAsJpgUseCase` vom flachen Export auf den Unterordner-Export umstellen.
-5. `HomeViewModel.exportAsJpg()` auf das strukturierte Ergebnis und neue
-   Erfolgs-/Fehlermeldungen umstellen.
-6. Keine zweite `ScanAction`, kein zweiter Use Case und kein zweiter
-   Dispatcher-Callback einführen.
-7. Hilfe und Info um das neue Verhalten ergänzen; neue Texte in allen zehn
-   Locales bereitstellen.
-8. Bestehende JPG-Unit-Tests auf Ordnerbereinigung, Seitennamen, fehlende Quelle
-   und Rollback migrieren.
-9. Bestehende MediaStore-Instrumentierungstests auf `RELATIVE_PATH` und
-   dekodierbare `page_<n>.jpg`-Dateien migrieren.
-10. Unit-Tests, Debug-Kompilierung, Android-Test-Kompilierung und Lint ausführen.
+**Akzeptanzkriterium:** `./gradlew lint` meldet 0 Errors.
 
-## Akzeptanzkriterien
+---
 
-- In der UI existiert nur eine JPG-Exportaktion.
-- Es gibt nur einen JPG-Use-Case und einen Dispatcher-Pfad.
-- Der Export erzeugt ausschließlich
-  `Downloads/<bereinigter Dokumentname>/page_1.jpg` usw.
-- Einseitige PDFs erzeugen `page_1.jpg`.
-- Jede erzeugte Datei ist ein dekodierbares JPEG.
-- Ein fehlgeschlagener Lauf entfernt seine bereits geschriebenen Seiten.
-- Verschlüsselte PDFs zeigen die Aktion weiterhin nicht an.
-- Erfolgs-/Fehlermeldungen, Hilfe und Info sind in allen zehn Locales vorhanden.
-- Unit-Tests, Hauptcode, Android-Testcode und Lint sind grün.
+## Phase 2 – OOM-Risiko in der Bild-zu-PDF-Pipeline beseitigen
+
+### 2.1 Tatsächliches Downsampling in `BitmapPdfImageRenderer`
+
+**Datei:** `util/BitmapPdfImageRenderer.kt:16`
+
+**Problem:** `decodeBitmapBytes()` ruft `readBytes()` auf den rohen InputStream und ignoriert den `maxDimension`-Parameter vollständig. Der Parameter existiert im Interface `PdfImageRenderer` aber wird nie angewendet.
+
+**Lösung:**
+```
+openInputStream(uri)
+  → BitmapFactory.Options mit inJustDecodeBounds = true → Originalgröße messen
+  → inSampleSize berechnen: größte Seite auf maxDimension begrenzen
+  → Bitmap mit inSampleSize dekodieren
+  → Bitmap als JPEG (quality 85) in ByteArray komprimieren
+  → Bitmap.recycle()
+```
+
+Damit hält der Renderer nie mehr als ein dekodiertes Bild gleichzeitig im Heap.
+
+**Clean-Architecture-Grenze:** Die Logik bleibt in `util/`, da sie Android-APIs (BitmapFactory) verwendet. Das Domain-Interface `PdfImageRenderer` bleibt unverändert.
+
+### 2.2 Sequentielle statt parallele Bildverarbeitung in `ImagePdfBuilder`
+
+**Datei:** `domain/usecase/ImagePdfBuilder.kt:32`
+
+**Problem:** `imageUris.map { imageRenderer.decodeBitmapBytes(…) }` lädt alle Bilder gleichzeitig als `List<ByteArray?>` in den Heap, bevor `createPdfFromImages` aufgerufen wird. Bei vielen oder großen Bildern entsteht Peak-Speicherdruck.
+
+**Lösung – seitenweise Verarbeitung:**
+```kotlin
+// Statt map → imageProvider-Lambda
+pdfEditor.createPdfFromImages(
+    imageUris = imageUris,
+    imageProvider = { uri -> imageRenderer.decodeBitmapBytes(uri, IMAGE_PDF_MAX_SOURCE_DIMENSION) },
+    options = options,
+    outputFile = outputFile
+)
+```
+
+Das erfordert, dass `PdfRenderingOps.createPdfFromImages` einen `imageProvider`-Lambda statt einer fertig befüllten Liste akzeptiert. Die `PdfEditor`-Implementierung ruft den Lambda pro Seite auf und schreibt die Seite sofort, ohne alle Bytes vorzuhalten.
+
+**Alternativ (einfacher, ohne Interface-Änderung):** In `ImagePdfBuilder.createPdf` die Bilder per `chunked(1)` sequentiell abarbeiten und jeweils ein Einzel-PDF erstellen, das danach gemergt wird. Der Speicherfootprint ist identisch, erfordert aber zwei PdfBox-Pässe. Bevorzugte Option: Interface-Anpassung.
+
+**Zusätzliche Absicherung:** Obergrenze für `imageUris.size` einführen (z.B. 50 Bilder). Bei Überschreitung `IllegalArgumentException` mit sprechendem Fehlermeldungs-String.
+
+---
+
+## Phase 3 – Dateinamen-Normalisierung durchsetzen
+
+### 3.1 Path-Traversal-Schutz in `FileUtil`
+
+**Datei:** `util/FileUtil.kt:25`
+
+**Problem:** `savePdf(source, filename)` baut `File(scansDir, "$filename.pdf")` direkt aus der Benutzereingabe. Enthält `filename` `../`-Segmente oder verbotene Zeichen, landet die Datei außerhalb von `scansDir`.
+
+**Lösung:**
+```kotlin
+override fun savePdf(source: Any, filename: String): File {
+    val safe = sanitizeFilename(filename)              // domain/common/FilenameUtils.kt
+    var destFile = File(scansDir, "$safe.pdf")
+    // Kanonischer Pfad-Guard
+    check(destFile.canonicalPath.startsWith(scansDir.canonicalPath + File.separator)) {
+        "Resolved path escapes scansDir"
+    }
+    // … uniqueness-Loop wie bisher …
+}
+```
+
+`sanitizeFilename()` ist bereits in `domain/common/FilenameUtils.kt:16` vorhanden und entfernt `\/:*?"<>|` sowie Steuerzeichen.
+
+### 3.2 Path-Traversal-Schutz in `RenameDocumentUseCase`
+
+**Datei:** `domain/usecase/RenameDocumentUseCase.kt:25`
+
+**Problem:** `File(targetScansDir, "$trimmed.pdf")` wird ohne Sanitisierung gebaut.
+
+**Lösung:** Denselben `sanitizeFilename(trimmed)` + kanonischen Pfad-Check wie in 3.1 anwenden. Da `RenameDocumentUseCase` in `domain/` liegt, darf es `domain/common/FilenameUtils.sanitizeFilename()` direkt aufrufen.
+
+```kotlin
+val safe = sanitizeFilename(trimmed)
+if (safe.isBlank()) return RenameDocumentResult.BlankName
+val newFile = File(targetScansDir, "$safe.pdf")
+check(newFile.canonicalPath.startsWith(targetScansDir.canonicalPath + File.separator))
+```
+
+---
+
+## Phase 4 – Transaktionale Korrektheit im Import
+
+### 4.1 Cleanup bei Fehler in `ImportScanUseCase`
+
+**Datei:** `domain/usecase/ImportScanUseCase.kt:30`
+
+**Problem:** Schlägt `searchablePdfBuilder.makeSearchable()` oder `repository.saveScan()` fehl, bleiben `savedFile` und ggf. `thumbnailFile` als verwaiste Dateien in `filesDir/scans/`. `ImportFileUseCase` (Zeile 56–59) macht dies korrekt mit einem `try/catch`-Block.
+
+**Lösung:** `ImportScanUseCase` auf das gleiche Muster umstellen:
+
+```kotlin
+val savedFile = fileStore.savePdf(pdfUri, filename)
+val baseName  = savedFile.nameWithoutExtension
+val thumbnailPath = thumbnailUri?.let {
+    fileStore.saveThumbnail(it, baseName)?.absolutePath
+}
+try {
+    // OCR + repository.saveScan(…)
+} catch (e: Exception) {
+    savedFile.delete()
+    thumbnailPath?.let { File(it).delete() }
+    throw e
+}
+```
+
+---
+
+## Phase 5 – App-Lock und Privacy-Verbesserungen
+
+### 5.1 `FLAG_SECURE` bei aktiviertem App-Lock setzen
+
+**Datei:** `MainActivity.kt:41`
+
+**Problem:** Ist App-Lock aktiv und `isLocked == true`, sind Dokumentinhalte in der Android-Aufgabenübersicht und für Screenshot-APIs sichtbar, da `FLAG_SECURE` fehlt.
+
+**Lösung:** In `MainActivity.onCreate()` einen Observer auf `isLocked` und `settings.appLockEnabled` reagieren lassen:
+
+```kotlin
+lifecycleScope.launch {
+    combine(appLockManager.isLocked, settingsFlow) { locked, s -> s.appLockEnabled && locked }
+        .collect { secure ->
+            if (secure) window.setFlags(FLAG_SECURE, FLAG_SECURE)
+            else window.clearFlags(FLAG_SECURE)
+        }
+}
+```
+
+**Hinweis:** `FLAG_SECURE` verhindert keine Accessibility-Audits auf gerooteten Geräten; das ist dokumentiertes Android-Verhalten und muss nicht als Bug kommuniziert werden.
+
+### 5.2 Stale Staging-Verzeichnisse beim App-Start bereinigen
+
+**Datei:** `domain/usecase/RestoreBackupUseCase.kt:97` / `PdfScannerApp.onCreate()`
+
+**Problem:** `backup_restore/`-Unterverzeichnisse in `tempDir` werden bei normalem Ablauf durch `cancel()` oder den Fehlerfall in `prepare()` gelöscht. Ein harter Prozessabbruch (OOM-Kill, Force-Stop) zwischen `prepare()` und `confirm()`/`cancel()` hinterlässt Klartext-PDFs im Cache.
+
+**Lösung:** In `PdfScannerApp.onCreate()` (oder einem dafür zuständigen `AppInitializer`) nach dem Startup synchron oder via Coroutine:
+
+```kotlin
+File(storageProvider.tempDir(), "backup_restore")
+    .takeIf { it.exists() }
+    ?.deleteRecursively()
+```
+
+**Clean-Architecture-Grenze:** Die Bereinigung kann als eigener `CleanStagingDirsUseCase` (Domain, nutzt `StorageProvider`) modelliert werden, den `AppModule` beim Start aufruft. Alternativ direkt in `PdfScannerApp` via `StorageProvider`-Implementierung, solange keine Fachlogik eingebaut wird.
+
+---
+
+## Phase 6 – Architektur: HomeViewModel aufteilen
+
+**Datei:** `ui/home/HomeViewModel.kt` (~900 Zeilen, 28 Konstruktor-Abhängigkeiten)
+
+**Problem:** Der ViewModel ist ein God-Object. 28 Use-Cases werden direkt injiziert; Import-, Export-, OCR-, Archiv- und Review-Verantwortlichkeiten sind vermischt. Das macht Tests aufwendig und erschwert Weiterentwicklung.
+
+**Empfohlener Schnitt** (keine Feature-Module nötig, aber vorbereitet):
+
+| Koordinator | Verantwortung | Use-Cases |
+|---|---|---|
+| `HomeImportCoordinator` | Scan + PDF-Import + Bild-zu-PDF | `ImportScanUseCase`, `ImportFileUseCase` |
+| `HomeOcrCoordinator` | Text-Extraktion, Backfill, Searchable | `ExtractTextUseCase`, `OcrBackfillUseCase`, `MakeSearchableWorkflow` |
+| `HomeExportCoordinator` | PDF, JPG, DOCX, OCR-TXT Export | `ExportScanUseCase`, `ExportAsJpgUseCase`, `ExportDocxUseCase`, `ExportOcrTextUseCase` |
+| `HomeArchiveCoordinator` | Trash, Restore, Move, Rename, Favorite | `TrashScansUseCase`, `RestoreScansUseCase`, `MoveDocumentsUseCase`, `RenameDocumentUseCase`, `ToggleFavoriteUseCase` |
+
+`HomeViewModel` hält die vier Koordinatoren als Abhängigkeiten und delegiert. States werden je Koordinator als eigene `StateFlow` gehalten und im ViewModel zu `HomeUiState` gemergt.
+
+**Vorgehen (schrittweise, ohne Regression):**
+1. `HomeImportCoordinator` extrahieren – alle Import-Methoden verschieben, Tests laufen lassen.
+2. `HomeExportCoordinator` extrahieren.
+3. `HomeOcrCoordinator` extrahieren.
+4. `HomeArchiveCoordinator` extrahieren.
+5. `HomeViewModel` auf Koordinatoren umstellen; bestehende Tests gegen `HomeViewModel` bleiben und testen das zusammengesetzte Verhalten.
+
+---
+
+## Phase 7 – Barrierefreiheit der Zeichenflächen (Backlog)
+
+**Betroffene Screens:** `ui/signature/SignatureScreen.kt:325`, `ui/annotate/AnnotateScreen`, `ui/redact/RedactScreen`
+
+**Problem:** Eigene Pointer-Flächen ohne semantische Aktionen sind für TalkBack nicht bedienbar.
+
+**Minimalziel für nächste Release:**
+- Content-Description auf Zeichenflächen (`Modifier.semantics { contentDescription = … }`).
+- Alternative Aktions-Buttons (z.B. „Unterschrift löschen", „Punkt hinzufügen") außerhalb der Zeichenfläche sichtbar machen.
+- Tastaturbedienung (Tab-Fokus) für alle Buttons prüfen.
+
+**Vollständige Accessibility-Härtung** (späteres Milestone):
+- `SemanticsProperties.CustomActions` für Zeichengesten.
+- TalkBack-Explorationstest für alle Edit-Screens.
+- Mindest-Touch-Target 48 dp für alle interaktiven Elemente prüfen.
+
+---
+
+## Reihenfolge und Aufwandsschätzung
+
+| Phase | Aufwand | Release-Relevanz |
+|---|---|---|
+| 1 – Lint / Plurals | ~1 Tag | **Blocker** |
+| 2 – OOM Bilder | ~0,5–1 Tag | Hoch (Absturzrisiko) |
+| 3 – Dateinamen | ~0,5 Tag | Hoch (Sicherheit) |
+| 4 – Import Cleanup | ~1–2 h | Mittel |
+| 5 – App-Lock / Staging | ~2–3 h | Mittel |
+| 6 – HomeViewModel | ~2–3 Tage | Niedrig (Technische Schuld) |
+| 7 – Barrierefreiheit | ~2 Tage | Niedrig (Backlog) |
+
+**Empfehlung:** Phasen 1–5 vor dem nächsten Release abschließen. Phase 6 als eigenen Refactoring-Sprint einplanen. Phase 7 ins Backlog aufnehmen mit TalkBack-Test als Akzeptanzkriterium.
+
+---
+
+## Nicht aufgenommen
+
+Die folgenden produktseitigen Vorschläge aus dem Review wurden bewusst ausgeklammert, da sie neue Features darstellen und nicht Teil der Release-Härtung sind:
+
+- Automatische Dateinamenvorschläge aus OCR
+- WorkManager-Backups
+- Fortschrittsanzeige bei großen Importen
+- Aktions-Sichtbarkeit reduzieren
+- Macrobenchmark-Tests / CI-Pipeline
+
+Diese können als separates Backlog-Epic erfasst werden.

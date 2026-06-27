@@ -58,11 +58,20 @@
     <string name="action_save">Guardar</string>
     <string name="action_cancel">Cancelar</string>
     <string name="action_ok">OK</string>
+    <string name="print_custom_page_size_title">¿Imprimir tamaños de foto o personalizados?</string>
+    <string name="print_custom_page_size_message">Este PDF contiene tamaños de página fotográficos o personalizados. En el diálogo de impresión, elige Ajustar para imprimir en papel normal; Tamaño real puede recortar las páginas si el papel es más pequeño.</string>
+    <string name="print_custom_page_size_confirm">Imprimir</string>
     <string name="confirm_delete_title">¿Eliminar?</string>
     <string name="confirm_delete_single">¿Eliminar %1$s?</string>
-    <string name="confirm_delete_multi">¿Eliminar %1$d documentos?</string>
+    <plurals name="confirm_delete_multi">
+        <item quantity="one">¿Eliminar %1$d documento?</item>
+        <item quantity="other">¿Eliminar %1$d documentos?</item>
+    </plurals>
     <string name="selection_count_fraction">%1$d/%2$d</string>
-    <string name="selection_count">%1$d seleccionados</string>
+    <plurals name="selection_count">
+        <item quantity="one">%1$d seleccionado</item>
+        <item quantity="other">%1$d seleccionados</item>
+    </plurals>
     <string name="action_select_all">Seleccionar todo</string>
     <string name="error_title">Error</string>
     <string name="error_no_pdf_viewer">No hay visor de PDF instalado</string>

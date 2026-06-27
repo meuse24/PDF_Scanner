@@ -75,10 +75,16 @@
     <!-- Delete confirmation -->
     <string name="confirm_delete_title">Delete?</string>
     <string name="confirm_delete_single">Delete %1$s?</string>
-    <string name="confirm_delete_multi">Delete %1$d documents?</string>
+    <plurals name="confirm_delete_multi">
+        <item quantity="one">Delete %1$d document?</item>
+        <item quantity="other">Delete %1$d documents?</item>
+    </plurals>
 
     <!-- Multi-select -->
-    <string name="selection_count">%1$d selected</string>
+    <plurals name="selection_count">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
     <string name="selection_count_fraction">%1$d/%2$d</string>
     <string name="action_select_all">Select all</string>
 

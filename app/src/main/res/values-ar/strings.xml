@@ -58,11 +58,28 @@
     <string name="action_save">حفظ</string>
     <string name="action_cancel">إلغاء</string>
     <string name="action_ok">موافق</string>
+    <string name="print_custom_page_size_title">هل تريد طباعة أحجام صور أو أحجام مخصصة؟</string>
+    <string name="print_custom_page_size_message">يحتوي ملف PDF هذا على أحجام صفحات للصور أو أحجام مخصصة. في مربع حوار الطباعة، اختر ملاءمة للطباعة على ورق عادي؛ قد يؤدي الحجم الفعلي إلى اقتصاص الصفحات إذا كان الورق أصغر.</string>
+    <string name="print_custom_page_size_confirm">طباعة</string>
     <string name="confirm_delete_title">حذف؟</string>
     <string name="confirm_delete_single">حذف %1$s؟</string>
-    <string name="confirm_delete_multi">حذف %1$d مستند؟</string>
+    <plurals name="confirm_delete_multi">
+        <item quantity="zero">حذف %1$d مستند؟</item>
+        <item quantity="one">حذف مستند واحد؟</item>
+        <item quantity="two">حذف مستندين؟</item>
+        <item quantity="few">حذف %1$d مستندات؟</item>
+        <item quantity="many">حذف %1$d مستندًا؟</item>
+        <item quantity="other">حذف %1$d مستند؟</item>
+    </plurals>
     <string name="selection_count_fraction">%1$d/%2$d</string>
-    <string name="selection_count">تم تحديد %1$d</string>
+    <plurals name="selection_count">
+        <item quantity="zero">لم يتم تحديد أي عنصر</item>
+        <item quantity="one">تم تحديد عنصر واحد</item>
+        <item quantity="two">تم تحديد عنصرين</item>
+        <item quantity="few">تم تحديد %1$d عناصر</item>
+        <item quantity="many">تم تحديد %1$d عنصرًا</item>
+        <item quantity="other">تم تحديد %1$d عنصر</item>
+    </plurals>
     <string name="action_select_all">تحديد الكل</string>
     <string name="error_title">خطأ</string>
     <string name="error_no_pdf_viewer">لا يوجد عارض PDF مثبت</string>

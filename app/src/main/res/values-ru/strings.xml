@@ -58,11 +58,24 @@
     <string name="action_save">Сохранить</string>
     <string name="action_cancel">Отмена</string>
     <string name="action_ok">ОК</string>
+    <string name="print_custom_page_size_title">Печатать фото или нестандартные форматы?</string>
+    <string name="print_custom_page_size_message">Этот PDF содержит страницы фотоформата или нестандартного размера. В диалоге печати выберите «Вписать» для обычной бумаги; режим «Фактический размер» может обрезать страницы, если бумага меньше.</string>
+    <string name="print_custom_page_size_confirm">Печать</string>
     <string name="confirm_delete_title">Удалить?</string>
     <string name="confirm_delete_single">Удалить %1$s?</string>
-    <string name="confirm_delete_multi">Удалить %1$d документов?</string>
+    <plurals name="confirm_delete_multi">
+        <item quantity="one">Удалить %1$d документ?</item>
+        <item quantity="few">Удалить %1$d документа?</item>
+        <item quantity="many">Удалить %1$d документов?</item>
+        <item quantity="other">Удалить %1$d документа?</item>
+    </plurals>
     <string name="selection_count_fraction">%1$d/%2$d</string>
-    <string name="selection_count">Выбрано: %1$d</string>
+    <plurals name="selection_count">
+        <item quantity="one">Выбран %1$d</item>
+        <item quantity="few">Выбрано %1$d</item>
+        <item quantity="many">Выбрано %1$d</item>
+        <item quantity="other">Выбрано %1$d</item>
+    </plurals>
     <string name="action_select_all">Выбрать все</string>
     <string name="error_title">Ошибка</string>
     <string name="error_no_pdf_viewer">Просмотрщик PDF не установлен</string>

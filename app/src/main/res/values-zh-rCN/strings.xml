@@ -58,11 +58,18 @@
     <string name="action_save">保存</string>
     <string name="action_cancel">取消</string>
     <string name="action_ok">确定</string>
+    <string name="print_custom_page_size_title">打印照片或自定义尺寸？</string>
+    <string name="print_custom_page_size_message">此 PDF 包含照片或自定义页面尺寸。在打印对话框中，选择“适合”以输出到普通纸张；如果纸张较小，“实际大小”可能会裁剪页面。</string>
+    <string name="print_custom_page_size_confirm">打印</string>
     <string name="confirm_delete_title">删除？</string>
     <string name="confirm_delete_single">删除 %1$s？</string>
-    <string name="confirm_delete_multi">删除 %1$d 个文档？</string>
+    <plurals name="confirm_delete_multi">
+        <item quantity="other">删除 %1$d 个文档？</item>
+    </plurals>
     <string name="selection_count_fraction">%1$d/%2$d</string>
-    <string name="selection_count">已选 %1$d 个</string>
+    <plurals name="selection_count">
+        <item quantity="other">已选 %1$d 个</item>
+    </plurals>
     <string name="action_select_all">全选</string>
     <string name="error_title">错误</string>
     <string name="error_no_pdf_viewer">未安装PDF查看器</string>

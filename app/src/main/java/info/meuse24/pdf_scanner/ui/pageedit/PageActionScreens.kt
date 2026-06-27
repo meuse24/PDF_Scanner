@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -72,7 +73,7 @@ fun RotatePagesScreen(
         selectedPages = selectedPages,
         loading = loading,
         selectionSummary = if (selectedPages.isNotEmpty()) {
-            stringResource(R.string.selection_count, selectedPages.size)
+            pluralStringResource(R.plurals.selection_count, selectedPages.size, selectedPages.size)
         } else {
             null
         },
@@ -143,7 +144,11 @@ fun DeletePagesScreen(
         loading = loading,
         selectionSummary = when {
             allPagesSelected -> stringResource(R.string.delete_pages_all_hint)
-            selectedPages.isNotEmpty() -> stringResource(R.string.selection_count, selectedPages.size)
+            selectedPages.isNotEmpty() -> pluralStringResource(
+                R.plurals.selection_count,
+                selectedPages.size,
+                selectedPages.size
+            )
             else -> null
         },
         saveAsCopy = saveAsCopy,
@@ -204,7 +209,7 @@ fun ExtractPagesScreen(
         selectedPages = selectedPages,
         loading = loading,
         selectionSummary = if (selectedPages.isNotEmpty()) {
-            stringResource(R.string.selection_count, selectedPages.size)
+            pluralStringResource(R.plurals.selection_count, selectedPages.size, selectedPages.size)
         } else {
             null
         },
@@ -266,7 +271,7 @@ fun DuplicatePagesScreen(
         selectedPages = selectedPages,
         loading = loading,
         selectionSummary = if (selectedPages.isNotEmpty()) {
-            stringResource(R.string.selection_count, selectedPages.size)
+            pluralStringResource(R.plurals.selection_count, selectedPages.size, selectedPages.size)
         } else {
             null
         },

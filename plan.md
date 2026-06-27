@@ -242,6 +242,15 @@ File(storageProvider.tempDir(), "backup_restore")
 
 ## Phase 6 – Architektur: HomeViewModel aufteilen
 
+**Status (2026-06-27): Abgeschlossen.**
+
+- Vier injizierbare Koordinatoren kapseln Import/Review, Export/Print, OCR sowie Archiv/Suche/Ordner.
+- Der `HomeViewModel`-Konstruktor wurde von 28 auf sieben Abhängigkeiten reduziert: vier fachliche Koordinatoren plus `WorkflowErrorMapper`, `ResourceProvider` und `DispatcherProvider`.
+- Das ViewModel delegiert Datei-, OCR-, Export- und Archivoperationen an die Koordinatoren. Die bestehenden öffentlichen StateFlows bleiben bewusst im ViewModel, damit Compose-Screens und Navigation keine parallele API-Migration benötigen.
+- `HomeOcrCoordinator` übernimmt zusätzlich die Persistierung extrahierter OCR-Ergebnisse; `HomeExportCoordinator` kapselt den Print-State.
+- Der bestehende `HomeViewModelTest` läuft mit unveränderten fachlichen Assertions über die neuen Koordinatoren.
+- Verifiziert mit `./gradlew.bat --no-configuration-cache testDebugUnitTest lintDebug --console=plain`: Build und Hilt-Codegenerierung erfolgreich, 0 Lint-Errors, 432 Unit-Tests ohne Fehler.
+
 **Datei:** `ui/home/HomeViewModel.kt` (~900 Zeilen, 28 Konstruktor-Abhängigkeiten)
 
 **Problem:** Der ViewModel ist ein God-Object. 28 Use-Cases werden direkt injiziert; Import-, Export-, OCR-, Archiv- und Review-Verantwortlichkeiten sind vermischt. Das macht Tests aufwendig und erschwert Weiterentwicklung.

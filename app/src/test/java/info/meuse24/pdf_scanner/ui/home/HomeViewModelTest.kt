@@ -650,12 +650,17 @@ class HomeViewModelTest {
         archiveFilterStore: ArchiveFilterStore = ArchiveFilterStore(),
         pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD }
     ): HomeViewModel {
-        return HomeViewModel(
-            repository = repository,
-            folderRepository = folderRepository,
-            settingsRepository = settingsRepository,
+        val importCoordinator = HomeImportCoordinator(
             importScanUseCase = importScanUseCase,
             importFileUseCase = importFileUseCase,
+            recordReviewPromptActionUseCase = RecordReviewPromptActionUseCase(
+                object : ReviewPromptPolicy {
+                    override fun recordSuccessfulDocumentActionAndCheckEligibility(): Boolean = false
+                }
+            ),
+            playReviewPromptManager = playReviewPromptManager
+        )
+        val exportCoordinator = HomeExportCoordinator(
             exportScanUseCase = exportScanUseCase,
             exportAsJpgUseCase = exportAsJpgUseCase,
             exportDocxUseCase = exportDocxUseCase,
@@ -663,11 +668,10 @@ class HomeViewModelTest {
             checkPrintPageSizeWarningUseCase = CheckPrintPageSizeWarningUseCase(
                 pdfMetadataOps = pdfMetadataOps,
                 dispatcherProvider = TestDispatcherProvider(testDispatcher)
-            ),
-            trashScansUseCase = trashScansUseCase,
-            restoreScansUseCase = restoreScansUseCase,
-            moveDocumentsUseCase = moveDocumentsUseCase,
-            toggleFavoriteUseCase = toggleFavoriteUseCase,
+            )
+        )
+        val ocrCoordinator = HomeOcrCoordinator(
+            repository = repository,
             extractTextUseCase = extractTextUseCase,
             findOcrExtractableDocumentsUseCase = FindOcrExtractableDocumentsUseCase(
                 object : info.meuse24.pdf_scanner.domain.gateway.DocumentFileStore {
@@ -683,21 +687,30 @@ class HomeViewModelTest {
                 extractTextUseCase = extractTextUseCase,
                 autoTagUseCase = AutoTagUseCase()
             ),
+            makeSearchableWorkflow = makeSearchableWorkflow
+        )
+        val archiveCoordinator = HomeArchiveCoordinator(
+            repository = repository,
+            folderRepository = folderRepository,
+            settingsRepository = settingsRepository,
+            trashScansUseCase = trashScansUseCase,
+            restoreScansUseCase = restoreScansUseCase,
+            moveDocumentsUseCase = moveDocumentsUseCase,
+            toggleFavoriteUseCase = toggleFavoriteUseCase,
             renameDocumentUseCase = RenameDocumentUseCase(repository, storageProvider),
             buildScanSearchQueryUseCase = BuildScanSearchQueryUseCase(),
-            recordReviewPromptActionUseCase = RecordReviewPromptActionUseCase(
-                object : ReviewPromptPolicy {
-                    override fun recordSuccessfulDocumentActionAndCheckEligibility(): Boolean = false
-                }
-            ),
-            makeSearchableWorkflow = makeSearchableWorkflow,
             mergePdfsWorkflow = mergePdfsWorkflow,
+            storageProvider = storageProvider,
+            archiveFilterStore = archiveFilterStore
+        )
+        return HomeViewModel(
+            importCoordinator = importCoordinator,
+            exportCoordinator = exportCoordinator,
+            ocrCoordinator = ocrCoordinator,
+            archiveCoordinator = archiveCoordinator,
             workflowErrorMapper = WorkflowErrorMapper(resourceProvider),
             resourceProvider = resourceProvider,
-            storageProvider = storageProvider,
-            dispatcherProvider = TestDispatcherProvider(testDispatcher),
-            archiveFilterStore = archiveFilterStore,
-            playReviewPromptManager = playReviewPromptManager
+            dispatcherProvider = TestDispatcherProvider(testDispatcher)
         )
     }
 

@@ -10,33 +10,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
-import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
-import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
-import info.meuse24.pdf_scanner.domain.repository.FolderRepository
-import info.meuse24.pdf_scanner.domain.usecase.BuildScanSearchQueryUseCase
-import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
-import info.meuse24.pdf_scanner.domain.usecase.ExportDocxUseCase
-import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
-import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
-import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
-import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
-import info.meuse24.pdf_scanner.domain.usecase.FindOcrExtractableDocumentsUseCase
-import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
-import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
-import info.meuse24.pdf_scanner.domain.usecase.MoveDocumentsUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
-import info.meuse24.pdf_scanner.domain.usecase.OcrBackfillUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
 import info.meuse24.pdf_scanner.domain.usecase.NoExportableTextException
-import info.meuse24.pdf_scanner.domain.usecase.RecordReviewPromptActionUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RenameDocumentResult
-import info.meuse24.pdf_scanner.domain.usecase.RenameDocumentUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RestoreMissingFileException
-import info.meuse24.pdf_scanner.domain.usecase.RestoreScansUseCase
-import info.meuse24.pdf_scanner.domain.usecase.ToggleFavoriteUseCase
-import info.meuse24.pdf_scanner.domain.usecase.TrashScansUseCase
-import info.meuse24.pdf_scanner.domain.workflow.MakeSearchableWorkflow
-import info.meuse24.pdf_scanner.domain.workflow.MergePdfsWorkflow
 import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
@@ -48,79 +26,51 @@ import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import info.meuse24.pdf_scanner.domain.model.OcrResultStats
 import info.meuse24.pdf_scanner.domain.model.OcrThresholds
 import info.meuse24.pdf_scanner.domain.model.hasDocxExportText
-import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
 import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
-import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
-import info.meuse24.pdf_scanner.ui.print.PrintRequestCoordinator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
 import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: DocumentRepository,
-    private val folderRepository: FolderRepository,
-    private val settingsRepository: AppSettingsRepository,
-    private val importScanUseCase: ImportScanUseCase,
-    private val importFileUseCase: ImportFileUseCase,
-    private val exportScanUseCase: ExportScanUseCase,
-    private val exportAsJpgUseCase: ExportAsJpgUseCase,
-    private val exportDocxUseCase: ExportDocxUseCase,
-    private val exportOcrTextUseCase: ExportOcrTextUseCase,
-    checkPrintPageSizeWarningUseCase: CheckPrintPageSizeWarningUseCase,
-    private val trashScansUseCase: TrashScansUseCase,
-    private val restoreScansUseCase: RestoreScansUseCase,
-    private val moveDocumentsUseCase: MoveDocumentsUseCase,
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
-    private val extractTextUseCase: ExtractTextUseCase,
-    private val findOcrExtractableDocumentsUseCase: FindOcrExtractableDocumentsUseCase,
-    private val ocrBackfillUseCase: OcrBackfillUseCase,
-    private val renameDocumentUseCase: RenameDocumentUseCase,
-    private val buildScanSearchQueryUseCase: BuildScanSearchQueryUseCase,
-    private val recordReviewPromptActionUseCase: RecordReviewPromptActionUseCase,
-    private val makeSearchableWorkflow: MakeSearchableWorkflow,
-    private val mergePdfsWorkflow: MergePdfsWorkflow,
+    private val importCoordinator: HomeImportCoordinator,
+    private val exportCoordinator: HomeExportCoordinator,
+    private val ocrCoordinator: HomeOcrCoordinator,
+    private val archiveCoordinator: HomeArchiveCoordinator,
     private val workflowErrorMapper: WorkflowErrorMapper,
     private val resourceProvider: ResourceProvider,
-    private val storageProvider: StorageProvider,
-    private val dispatcherProvider: DispatcherProvider,
-    private val archiveFilterStore: ArchiveFilterStore,
-    private val playReviewPromptManager: PlayReviewPromptManager
+    private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 
-    private val archiveFilterFlow = archiveFilterStore.filter
+    private val archiveFilterFlow = archiveCoordinator.filter
         .stateIn(viewModelScope, SharingStarted.Eagerly, ArchiveFilter.AllDocuments)
 
-    private val allScansForListFlow = repository.getAllScansForList()
+    private val allScansForListFlow = archiveCoordinator.allScansForList()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val scansFlow = archiveFilterFlow
         .flatMapLatest { filter -> listScansFor(filter) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val foldersFlow = folderRepository.observeFolders()
+    private val foldersFlow = archiveCoordinator.observeFolders()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val _searchQuery = MutableStateFlow("")
     private val _sortOrder = MutableStateFlow(SortOrder.ByDate)
     private val _selectedIds = MutableStateFlow<Set<Long>>(emptySet())
     val selectedIds: StateFlow<Set<Long>> = _selectedIds.asStateFlow()
-    private val printRequestCoordinator = PrintRequestCoordinator(checkPrintPageSizeWarningUseCase)
-    val pendingPrintDocument: StateFlow<Document?> = printRequestCoordinator.pendingPrintDocument
-    val printRequests: SharedFlow<Document> = printRequestCoordinator.printRequests
+    val pendingPrintDocument: StateFlow<Document?> = exportCoordinator.pendingPrintDocument
+    val printRequests: SharedFlow<Document> = exportCoordinator.printRequests
 
     private val filteredScansFlow = combine(archiveFilterFlow, _searchQuery, _sortOrder) { filter, rawQuery, sortOrder ->
         SearchListRequest(filter, rawQuery.trim(), sortOrder)
@@ -129,7 +79,7 @@ class HomeViewModel @Inject constructor(
         val source = if (query.isBlank()) {
             listScansFor(request.filter)
         } else {
-            val ftsQuery = buildScanSearchQueryUseCase(query)
+            val ftsQuery = archiveCoordinator.buildSearchQuery(query)
             if (ftsQuery.isBlank()) {
                 flowOf(emptyList())
             } else {
@@ -165,7 +115,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private val archiveBaseState = combine(
-        settingsRepository.settings,
+        archiveCoordinator.settings,
         scanArchiveData,
         foldersFlow,
         archiveFilterFlow
@@ -245,13 +195,11 @@ class HomeViewModel @Inject constructor(
     init {
         triggerSilentBackfill()
         viewModelScope.launch {
-            settingsRepository.settings.collect { appSettings ->
+            archiveCoordinator.settings.collect { appSettings ->
                 _sortOrder.value = appSettings.defaultSortOrder.toUiSortOrder()
             }
         }
     }
-
-    private val scansDir get() = storageProvider.scansDir()
 
     fun setPendingImageUris(uris: List<Uri>) {
         _pendingImageUris.value = uris
@@ -272,7 +220,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(dispatcherProvider.io) {
             try {
                 if (makeSearchable) _ocrLoading.value = true
-                val document = importScanUseCase(
+                val document = importCoordinator.saveScan(
                     pdfUri = pdfUri,
                     pageCount = pageCount,
                     filename = filename,
@@ -303,7 +251,7 @@ class HomeViewModel @Inject constructor(
         _editLoading.value = true
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                val document = importFileUseCase(pdfUri, filename)
+                val document = importCoordinator.importFile(pdfUri, filename)
                 assignToCurrentFolder(document.id)
                 maybeRequestPlayReview()
             } catch (exception: Exception) {
@@ -319,7 +267,7 @@ class HomeViewModel @Inject constructor(
     fun deleteScans(records: List<Document>) {
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                val ids = trashScansUseCase(records)
+                val ids = archiveCoordinator.trash(records)
                 if (ids.isNotEmpty()) {
                     _lastTrashed.value = ids
                     _trashMessage.value = resourceProvider.getQuantityString(
@@ -340,7 +288,7 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                restoreScansUseCase(ids)
+                archiveCoordinator.restore(ids)
                 _success.value = resourceProvider.getQuantityString(
                     R.plurals.trash_restored,
                     ids.size,
@@ -358,7 +306,7 @@ class HomeViewModel @Inject constructor(
     fun exportScan(record: Document) {
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                val displayName = exportScanUseCase(record)
+                val displayName = exportCoordinator.exportPdf(record)
                 _success.value = resourceProvider.getString(R.string.export_success, displayName)
             } catch (_: Exception) {
                 _error.value = resourceProvider.getString(R.string.error_export_failed)
@@ -369,7 +317,7 @@ class HomeViewModel @Inject constructor(
     fun exportAsJpg(record: Document) {
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                val result = exportAsJpgUseCase(record)
+                val result = exportCoordinator.exportAsJpg(record)
                 _success.value = if (result.pageCount == 1) {
                     resourceProvider.getString(
                         R.string.export_pages_folder_success_single,
@@ -395,7 +343,7 @@ class HomeViewModel @Inject constructor(
     fun extractTexts(records: List<Document>, languageCode: String = Locale.getDefault().language) {
         if (_ocrLoading.value) return
 
-        val validRecords = findOcrExtractableDocumentsUseCase(records)
+        val validRecords = ocrCoordinator.findExtractable(records)
         if (validRecords.isEmpty()) {
             pendingDocxExportIds = emptyList()
             _error.value = resourceProvider.getString(R.string.ocr_no_image)
@@ -406,16 +354,11 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(dispatcherProvider.io) {
             try {
                 val hasPendingDocxExport = pendingDocxExportIds.isNotEmpty()
-                val results = extractTextUseCase(validRecords, languageCode, ::updateOcrStatus)
-                results.forEach { document ->
-                    repository.updateExtractedTextAndOcrStats(
-                        id = document.recordId,
-                        text = document.fullText.ifBlank { null },
-                        confidence = document.stats?.confidence,
-                        language = document.stats?.recognizedLanguage,
-                        pageTexts = document.pageTexts
-                    )
-                }
+                val results = ocrCoordinator.extractAndPersist(
+                    validRecords,
+                    languageCode,
+                    ::updateOcrStatus
+                )
 
                 val firstStats = results.firstOrNull { it.fullText.isNotBlank() }?.stats
                 if (hasPendingDocxExport) {
@@ -459,7 +402,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(dispatcherProvider.io) {
             try {
                 when (
-                    val result = makeSearchableWorkflow(
+                    val result = ocrCoordinator.makeSearchable(
                         records = records,
                         languageCode = languageCode,
                         force = true,
@@ -500,7 +443,7 @@ class HomeViewModel @Inject constructor(
         _editLoading.value = true
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                when (val result = mergePdfsWorkflow(records, outputFilename, scansDir)) {
+                when (val result = archiveCoordinator.merge(records, outputFilename)) {
                     is WorkflowResult.Success -> {
                         _success.value = resourceProvider.getString(
                             R.string.merge_success,
@@ -518,7 +461,7 @@ class HomeViewModel @Inject constructor(
 
     fun renameScan(record: Document, newName: String) {
         viewModelScope.launch(dispatcherProvider.io) {
-            when (val result = renameDocumentUseCase(record, newName)) {
+            when (val result = archiveCoordinator.rename(record, newName)) {
                 RenameDocumentResult.BlankName -> Unit
                 RenameDocumentResult.TargetExists -> {
                     _error.value = resourceProvider.getString(R.string.rename_error_exists)
@@ -551,25 +494,25 @@ class HomeViewModel @Inject constructor(
     }
 
     fun showAllDocuments() {
-        archiveFilterStore.showAllDocuments()
+        archiveCoordinator.showAllDocuments()
     }
 
     fun showFavorites() {
-        archiveFilterStore.showFavorites()
+        archiveCoordinator.showFavorites()
     }
 
     fun showFolder(folderId: Long) {
-        archiveFilterStore.showFolder(folderId)
+        archiveCoordinator.showFolder(folderId)
     }
 
     fun showTag(tagKey: String) {
-        archiveFilterStore.showTag(tagKey)
+        archiveCoordinator.showTag(tagKey)
     }
 
     fun moveScansToFolder(ids: Set<Long>, folderId: Long?) {
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                moveDocumentsUseCase(ids.toList(), folderId)
+                archiveCoordinator.move(ids.toList(), folderId)
                 _success.value = resourceProvider.getString(R.string.folder_move_success)
             } catch (_: Exception) {
                 _error.value = resourceProvider.getString(R.string.folder_move_failed)
@@ -580,7 +523,7 @@ class HomeViewModel @Inject constructor(
     fun toggleFavorite(record: Document) {
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                toggleFavoriteUseCase(record)
+                archiveCoordinator.toggleFavorite(record)
             } catch (_: Exception) {
                 _error.value = resourceProvider.getString(R.string.favorite_toggle_failed)
             }
@@ -589,7 +532,7 @@ class HomeViewModel @Inject constructor(
 
     fun setSortOrder(sortOrder: SortOrder) {
         _sortOrder.value = sortOrder
-        settingsRepository.updateDefaultSortOrder(sortOrder.toAppSortOrder())
+        archiveCoordinator.updateSortOrder(sortOrder.toAppSortOrder())
     }
 
     fun clearOcrText() {
@@ -617,7 +560,7 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch(dispatcherProvider.io) {
             try {
-                val records = repository.getScansByIds(ids)
+                val records = archiveCoordinator.getDocuments(ids)
                 if (records.isEmpty()) {
                     pendingDocxExportIds = emptyList()
                     _error.value = resourceProvider.getString(R.string.docx_export_nothing_to_export)
@@ -632,7 +575,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun launchPlayReview(activity: Activity, onComplete: () -> Unit) {
-        playReviewPromptManager.launchReviewFlow(activity, onComplete)
+        importCoordinator.launchReview(activity, onComplete)
     }
 
     fun clearPlayReviewRequest() {
@@ -665,7 +608,7 @@ class HomeViewModel @Inject constructor(
 
         backfillTriggered = true
         viewModelScope.launch(dispatcherProvider.io) {
-            ocrBackfillUseCase(
+            ocrCoordinator.backfill(
                 languageCode = OCR_LANGUAGE_AUTO,
                 onBackfilled = { filename -> Log.d("Backfill", "Text nacherfasst: $filename") },
                 onFailure = { filename, exception ->
@@ -686,11 +629,11 @@ class HomeViewModel @Inject constructor(
     private suspend fun assignToCurrentFolder(documentId: Long) {
         val filter = archiveFilterFlow.value
         if (documentId <= 0L || filter !is ArchiveFilter.Folder) return
-        moveDocumentsUseCase(listOf(documentId), filter.folderId)
+        archiveCoordinator.move(listOf(documentId), filter.folderId)
     }
 
     private fun maybeRequestPlayReview() {
-        if (recordReviewPromptActionUseCase()) {
+        if (importCoordinator.shouldRequestReview()) {
             _playReviewRequestId.value = System.currentTimeMillis()
         }
     }
@@ -718,7 +661,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(dispatcherProvider.io) {
             val requestedIds = records.map { it.id }
             try {
-                val fullRecords = repository.getScansByIds(requestedIds)
+                val fullRecords = archiveCoordinator.getDocuments(requestedIds)
                 val missingTextRecords = fullRecords.filterNot { it.hasDocxExportText() }
                 if (missingTextRecords.isNotEmpty()) {
                     promptDocxOcr(
@@ -733,7 +676,7 @@ class HomeViewModel @Inject constructor(
                     promptDocxOcr(ocrIds = requestedIds, exportIds = requestedIds)
                     return@launch
                 }
-                val displayName = exportDocxUseCase(exportableRecords)
+                val displayName = exportCoordinator.exportDocx(exportableRecords)
                 _success.value = resourceProvider.getString(R.string.docx_export_success, displayName)
             } catch (_: NoExportableTextException) {
                 promptDocxOcr(ocrIds = requestedIds, exportIds = requestedIds)
@@ -760,7 +703,7 @@ class HomeViewModel @Inject constructor(
         pendingDocxExportIds = emptyList()
         if (ids.isEmpty()) return
 
-        val records = repository.getScansByIds(ids)
+        val records = archiveCoordinator.getDocuments(ids)
         if (records.isEmpty()) {
             _error.value = resourceProvider.getString(R.string.docx_export_nothing_to_export)
             return
@@ -773,7 +716,7 @@ class HomeViewModel @Inject constructor(
         }
 
         try {
-            val displayName = exportDocxUseCase(exportableRecords)
+            val displayName = exportCoordinator.exportDocx(exportableRecords)
             _success.value = resourceProvider.getString(R.string.docx_export_success, displayName)
         } catch (_: NoExportableTextException) {
             _error.value = resourceProvider.getString(R.string.docx_export_nothing_to_export)
@@ -786,13 +729,13 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(dispatcherProvider.io) {
             try {
                 val requestedIds = records.map { it.id }
-                val fullRecords = repository.getScansByIds(requestedIds)
+                val fullRecords = archiveCoordinator.getDocuments(requestedIds)
                     .filter { !it.extractedText.isNullOrBlank() }
                 if (fullRecords.isEmpty()) {
                     _error.value = resourceProvider.getString(R.string.ocr_export_nothing_to_export)
                     return@launch
                 }
-                val displayName = exportOcrTextUseCase(fullRecords)
+                val displayName = exportCoordinator.exportOcrText(fullRecords)
                 _success.value = resourceProvider.getString(R.string.ocr_export_success, displayName)
             } catch (_: Exception) {
                 _error.value = resourceProvider.getString(R.string.ocr_export_error)
@@ -801,30 +744,21 @@ class HomeViewModel @Inject constructor(
     }
 
     fun requestPrint(record: Document) {
-        printRequestCoordinator.requestPrint(viewModelScope, record)
+        exportCoordinator.requestPrint(viewModelScope, record)
     }
 
     fun confirmPrintWarning() {
-        printRequestCoordinator.confirmPrintWarning(viewModelScope)
+        exportCoordinator.confirmPrintWarning(viewModelScope)
     }
 
     fun dismissPrintWarning() {
-        printRequestCoordinator.dismissPrintWarning()
+        exportCoordinator.dismissPrintWarning()
     }
 
-    private fun listScansFor(filter: ArchiveFilter) = when (filter) {
-        ArchiveFilter.AllDocuments -> repository.getAllScansForList()
-        ArchiveFilter.Favorites -> repository.getFavoriteScansForList()
-        is ArchiveFilter.Folder -> repository.getScansInFolderForList(filter.folderId)
-        is ArchiveFilter.Tag -> repository.getScansWithTagForList(filter.key)
-    }
+    private fun listScansFor(filter: ArchiveFilter) = archiveCoordinator.listScans(filter)
 
-    private fun searchScansFor(filter: ArchiveFilter, ftsQuery: String) = when (filter) {
-        ArchiveFilter.AllDocuments -> repository.searchScansForList(ftsQuery)
-        ArchiveFilter.Favorites -> repository.searchFavoriteScansForList(ftsQuery)
-        is ArchiveFilter.Folder -> repository.searchScansInFolderForList(ftsQuery, filter.folderId)
-        is ArchiveFilter.Tag -> repository.searchScansWithTagForList(ftsQuery, filter.key)
-    }
+    private fun searchScansFor(filter: ArchiveFilter, ftsQuery: String) =
+        archiveCoordinator.searchScans(filter, ftsQuery)
 }
 
 private val TAG_ORDER = listOf("invoice", "contract", "insurance", "certificate", "bank", "delivery")

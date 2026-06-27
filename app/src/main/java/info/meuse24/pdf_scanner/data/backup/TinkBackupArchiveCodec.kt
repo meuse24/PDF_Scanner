@@ -1,12 +1,12 @@
 package info.meuse24.pdf_scanner.data.backup
 
-import com.google.crypto.tink.CleartextKeysetHandle
-import com.google.crypto.tink.JsonKeysetReader
-import com.google.crypto.tink.JsonKeysetWriter
+import com.google.crypto.tink.InsecureSecretKeyAccess
 import com.google.crypto.tink.KeysetHandle
+import com.google.crypto.tink.RegistryConfiguration
 import com.google.crypto.tink.StreamingAead
+import com.google.crypto.tink.TinkJsonProtoKeysetFormat
+import com.google.crypto.tink.streamingaead.PredefinedStreamingAeadParameters
 import com.google.crypto.tink.streamingaead.StreamingAeadConfig
-import com.google.crypto.tink.streamingaead.StreamingAeadKeyTemplates
 import info.meuse24.pdf_scanner.domain.backup.BACKUP_ASSOCIATED_DATA_VERSION
 import info.meuse24.pdf_scanner.domain.backup.BACKUP_APP_ID
 import info.meuse24.pdf_scanner.domain.backup.BACKUP_FORMAT_VERSION
@@ -18,8 +18,6 @@ import info.meuse24.pdf_scanner.domain.backup.BackupKeyWrapInfo
 import info.meuse24.pdf_scanner.domain.backup.BackupProgress
 import info.meuse24.pdf_scanner.domain.gateway.BackupArchiveCodec
 import info.meuse24.pdf_scanner.domain.gateway.BackupKeyDeriver
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.InputStream
@@ -68,7 +66,9 @@ class TinkBackupArchiveCodec @Inject constructor(
         val kdfParameters = BackupKdfParameters(saltBase64 = Base64.encode(salt))
         val kek = keyDeriver.deriveKey(passphrase, kdfParameters)
         return try {
-            val keysetHandle = KeysetHandle.generateNew(StreamingAeadKeyTemplates.AES256_GCM_HKDF_1MB)
+            val keysetHandle = KeysetHandle.generateNew(
+                PredefinedStreamingAeadParameters.AES256_GCM_HKDF_1MB
+            )
             val serializedKeyset = serializeKeyset(keysetHandle)
             val encryptedKeyset = aesGcmEncrypt(
                 key = kek,
@@ -87,7 +87,10 @@ class TinkBackupArchiveCodec @Inject constructor(
             )
             val headerBytes = json.encodeToString(header).encodeToByteArray()
             writeContainerPrefix(outputStream, headerBytes)
-            val streamingAead = keysetHandle.getPrimitive(StreamingAead::class.java)
+            val streamingAead = keysetHandle.getPrimitive(
+                RegistryConfiguration.get(),
+                StreamingAead::class.java
+            )
             streamingAead.newEncryptingStream(outputStream, associatedData(headerBytes)).use { encryptingStream ->
                 payloadWriter(encryptingStream)
             }
@@ -120,12 +123,16 @@ class TinkBackupArchiveCodec @Inject constructor(
                 nonce = Base64.decode(header.keyWrap.nonceBase64),
                 ciphertext = Base64.decode(header.keyWrap.encryptedStreamingKeysetBase64)
             )
-            val keysetHandle = CleartextKeysetHandle.read(
-                JsonKeysetReader.withInputStream(ByteArrayInputStream(serializedKeyset))
+            val keysetHandle = TinkJsonProtoKeysetFormat.parseKeyset(
+                serializedKeyset.decodeToString(),
+                InsecureSecretKeyAccess.get()
             )
             Arrays.fill(serializedKeyset, 0)
 
-            val streamingAead = keysetHandle.getPrimitive(StreamingAead::class.java)
+            val streamingAead = keysetHandle.getPrimitive(
+                RegistryConfiguration.get(),
+                StreamingAead::class.java
+            )
             streamingAead.newDecryptingStream(inputStream, associatedData(headerBytes)).use { decryptingStream ->
                 payloadReader(decryptingStream, header)
             }
@@ -274,11 +281,11 @@ class TinkBackupArchiveCodec @Inject constructor(
         return MAGIC_BYTES + headerHash
     }
 
-    private fun serializeKeyset(keysetHandle: KeysetHandle): ByteArray {
-        val output = ByteArrayOutputStream()
-        CleartextKeysetHandle.write(keysetHandle, JsonKeysetWriter.withOutputStream(output))
-        return output.toByteArray()
-    }
+    private fun serializeKeyset(keysetHandle: KeysetHandle): ByteArray =
+        TinkJsonProtoKeysetFormat.serializeKeyset(
+            keysetHandle,
+            InsecureSecretKeyAccess.get()
+        ).encodeToByteArray()
 
     private fun aesGcmEncrypt(key: ByteArray, nonce: ByteArray, plaintext: ByteArray): ByteArray =
         aesGcmCipher(Cipher.ENCRYPT_MODE, key, nonce).doFinal(plaintext)

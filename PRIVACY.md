@@ -1,6 +1,6 @@
 # Datenschutzerklaerung fuer PDF Scanner
 
-Stand: 4. Juni 2026
+Stand: 27. Juni 2026
 
 Diese Datenschutzerklaerung gilt fuer die Android-App **PDF Scanner** mit dem Paketnamen `info.meuse24.pdf_scanner`.
 
@@ -42,17 +42,34 @@ Nach der aktuellen Implementierung sind die gescannten PDFs und die lokale Daten
 
 - Die App nutzt kein eigenes Backend und lädt Dokumente nicht auf Server des Entwicklers hoch. Durch Google Play Services / ML Kit können im gemergten App-Manifest Netzwerkberechtigungen enthalten sein, etwa für Modell-, Kompatibilitäts- und Diagnosefunktionen.
 - Die App enthaelt keine Werbung.
+- Die App enthaelt keine Werbung.
 - Die App verwendet kein eigenes Analytics- oder Crash-Reporting-System.
 - Die App verlangt kein Benutzerkonto und kein Abonnement.
 - Die App fordert keine Kamera-, Kontakt-, Mikrofon- oder Standortberechtigung an.
 
 Der eigentliche Scan-Vorgang wird ueber Google ML Kit Document Scanner gestartet, ohne dass die App selbst eine Kamera-Berechtigung anfordert.
 
-## 5. Einsatz von Google ML Kit Document Scanner und Google Play Services
+## 5. Einsatz von Google ML Kit und Google Play Services
 
+### ML Kit Document Scanner
 Die App nutzt fuer das Scannen von Dokumenten die von Google bereitgestellte Komponente **ML Kit Document Scanner**, die ueber **Google Play Services** bereitgestellt wird.
 
 Nach den offiziellen ML-Kit-Hinweisen von Google findet die Verarbeitung der Eingabedaten wie Bilder und Scan-Ergebnisse vollstaendig auf dem Geraet statt; diese Daten werden nicht an Google-Server gesendet. Google weist jedoch ebenfalls darauf hin, dass ML Kit APIs gelegentlich Google-Server kontaktieren koennen, um Fehlerbehebungen, aktualisierte Modelle oder Hardware-Kompatibilitaetsinformationen zu beziehen. Ausserdem koennen Leistungs- und Nutzungsmetriken der API an Google uebermittelt werden.
+
+### ML Kit Text Recognition (OCR)
+Die App bietet eine optionale **Texterkennungs-Funktion (OCR)** auf Basis von **ML Kit Text Recognition**. Der automatische Modus verwendet ein integriertes Lateinmodell, das vollstaendig offline laeuft. Bei manueller Auswahl von *Hindi, Chinesisch, Japanisch oder Koreanisch* wird beim ersten Einsatz ein GMS-unbundled-Modell ueber Google Play Services heruntergeladen. Dokumentbilder werden weder an Google-Server noch an sonstige externe Dienste uebertragen. Erkannter Text kann optional lokal in der App-Datenbank gespeichert werden, wenn der Nutzer eine durchsuchbare PDF erstellt.
+
+Die oben beschriebenen ML-Kit-Bedingungen fuer Updates und Metriken gelten gleichermassen fuer diese Komponente.
+
+### ML Kit Translate
+Die App bietet eine optionale Funktion **PDF uebersetzen** auf Basis von **ML Kit Translate**. Die Uebersetzung laeuft vollstaendig auf dem Geraet. Sprachmodelle (~15–30 MB) werden beim ersten Einsatz automatisch ueber Google Play Services heruntergeladen und verbleiben danach auf dem Geraet. Dokumenttext oder erkannter OCR-Text wird durch diese Funktion nicht an Server uebertragen.
+
+Die oben beschriebenen ML-Kit-Bedingungen fuer Updates und Metriken gelten gleichermassen fuer diese Komponente.
+
+### Google Fonts (DM Sans)
+Die App laedt die Schriftart **DM Sans** ueber die **Google Fonts API**, die als Downloadable-Fonts-Anbieter ueber Google Play Services bereitgestellt wird. Die App selbst stellt keine direkten Netzwerkanfragen fuer Schriftarten; der Download wird vom GMS-Schriftartenanbieter uebernommen. Cached-Schriften verbleiben nach der ersten Nutzung auf dem Geraet. Google Play Services kann Google-Server kontaktieren, um Schriftdateien abzurufen oder zu aktualisieren.
+
+---
 
 Daneben kann Google Play Services gemaess den Einstellungen des Geraets und des Google-Kontos weitere Daten verarbeiten. Darauf hat der Entwickler dieser App keinen vollstaendigen Einfluss. Fuer diese Verarbeitung gelten die Datenschutzbestimmungen von Google.
 
@@ -65,7 +82,6 @@ Offizielle Informationen:
 ## 6. Teilen und Exportieren von Dateien
 
 Die App kann Scans auf ausdrueckliche Aktion des Nutzers an andere Apps weitergeben oder in den Download-Bereich des Geraets exportieren.
-
 - Beim **Teilen** wird die Datei an die vom Nutzer ausgewaehlte Ziel-App uebergeben.
 - Beim **Export** wird eine Kopie der Datei in den Download-Bereich des Geraets geschrieben.
 

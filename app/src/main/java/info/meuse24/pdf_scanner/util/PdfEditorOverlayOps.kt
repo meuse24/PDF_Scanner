@@ -10,19 +10,69 @@ import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
 import com.tom_roush.pdfbox.pdmodel.graphics.image.LosslessFactory
 import com.tom_roush.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
 import com.tom_roush.pdfbox.util.Matrix
+import info.meuse24.pdf_scanner.domain.model.PageNumberHorizontalPosition
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
+import info.meuse24.pdf_scanner.domain.model.PageNumberVerticalPosition
 import java.io.File
 
 internal fun PdfEditor.appendPageNumber(
     page: PDPage,
     document: PDDocument,
     font: PDFont,
-    pageNumber: Int
+    pageNumber: Int,
+    totalPageCount: Int,
+    settings: PageNumberSettings
 ) {
-    val label = pageNumber.toString()
-    val fontSize = (page.mediaBox.height * 0.018f).coerceIn(10f, 14f)
-    val textWidth = font.getStringWidth(label) / 1000f * fontSize
-    val x = ((page.mediaBox.width - textWidth) / 2f).coerceAtLeast(12f)
-    val y = 16f
+    val label = sanitizeOverlayText(
+        buildPageNumberLabel(pageNumber, totalPageCount, settings),
+        font
+    )
+    val mediaBox = page.mediaBox
+    val rotation = normalizeRotation(page.rotation)
+    val displayedWidth =
+        if (rotation == 90 || rotation == 270) mediaBox.height else mediaBox.width
+    val displayedHeight =
+        if (rotation == 90 || rotation == 270) mediaBox.width else mediaBox.height
+    val horizontalMargin = minOf(PAGE_NUMBER_MARGIN, displayedWidth * 0.1f)
+    val verticalMargin = minOf(PAGE_NUMBER_MARGIN, displayedHeight * 0.1f)
+    val availableWidth = (displayedWidth - horizontalMargin * 2f).coerceAtLeast(0f)
+    val availableHeight = (displayedHeight - verticalMargin * 2f).coerceAtLeast(0f)
+    val baseFontSize = minOf(
+        (displayedHeight * 0.018f).coerceIn(10f, 14f),
+        availableHeight
+    )
+    val textWidthAtUnitSize = font.getStringWidth(label) / 1000f
+    val (fontSize, textWidth) = fitPageNumberText(
+        baseFontSize = baseFontSize,
+        textWidthAtUnitSize = textWidthAtUnitSize,
+        availableWidth = availableWidth
+    )
+    val displayX = when (settings.horizontalPosition) {
+        PageNumberHorizontalPosition.LEFT -> horizontalMargin
+        PageNumberHorizontalPosition.CENTER ->
+            (displayedWidth - textWidth) / 2f
+        PageNumberHorizontalPosition.RIGHT ->
+            displayedWidth - textWidth - horizontalMargin
+    }.coerceAtLeast(horizontalMargin)
+    val displayBaselineYFromTop = when (settings.verticalPosition) {
+        PageNumberVerticalPosition.TOP -> verticalMargin + fontSize
+        PageNumberVerticalPosition.BOTTOM -> displayedHeight - verticalMargin
+    }
+    val (relativeX, relativeY) = mapDisplayToPdfCoord(
+        nx = displayX / displayedWidth,
+        ny = displayBaselineYFromTop / displayedHeight,
+        pageWidth = mediaBox.width,
+        pageHeight = mediaBox.height,
+        rotation = rotation
+    )
+    val x = mediaBox.lowerLeftX + relativeX
+    val y = mediaBox.lowerLeftY + relativeY
+    val textMatrix = when (rotation) {
+        90 -> Matrix(0f, 1f, -1f, 0f, x, y)
+        180 -> Matrix(-1f, 0f, 0f, -1f, x, y)
+        270 -> Matrix(0f, -1f, 1f, 0f, x, y)
+        else -> Matrix(1f, 0f, 0f, 1f, x, y)
+    }
     val graphicsState = PDExtendedGraphicsState().apply { nonStrokingAlphaConstant = 0.7f }
 
     PDPageContentStream(
@@ -36,10 +86,41 @@ internal fun PdfEditor.appendPageNumber(
         contentStream.beginText()
         contentStream.setNonStrokingColor(82 / 255f, 82 / 255f, 91 / 255f)
         contentStream.setFont(font, fontSize)
-        contentStream.newLineAtOffset(x, y)
+        contentStream.setTextMatrix(textMatrix)
         contentStream.showText(label)
         contentStream.endText()
     }
+}
+
+internal fun fitPageNumberText(
+    baseFontSize: Float,
+    textWidthAtUnitSize: Float,
+    availableWidth: Float
+): Pair<Float, Float> {
+    require(baseFontSize > 0f)
+    require(textWidthAtUnitSize >= 0f)
+    require(availableWidth >= 0f)
+
+    val fontSize = if (textWidthAtUnitSize == 0f) {
+        baseFontSize
+    } else {
+        minOf(baseFontSize, availableWidth / textWidthAtUnitSize)
+    }
+    return fontSize to textWidthAtUnitSize * fontSize
+}
+
+internal fun buildPageNumberLabel(
+    pageNumber: Int,
+    totalPageCount: Int,
+    settings: PageNumberSettings
+): String {
+    val number = if (settings.includeTotalPageCount) {
+        "$pageNumber / $totalPageCount"
+    } else {
+        pageNumber.toString()
+    }
+    val prefix = settings.prefix.trim()
+    return if (prefix.isEmpty()) number else "$prefix $number"
 }
 
 internal fun PdfEditor.appendTextWatermark(
@@ -128,3 +209,5 @@ internal fun sanitizeOverlayText(text: String, font: PDFont): String {
     }
     return text.replace("\n", " ").replace("\r", "").trim()
 }
+
+private const val PAGE_NUMBER_MARGIN = 16f

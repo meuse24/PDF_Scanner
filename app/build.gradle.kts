@@ -33,8 +33,8 @@ android {
         applicationId = "info.meuse24.pdf_scanner"
         minSdk = 29
         targetSdk = 36
-        versionCode = 9
-        versionName = "2.2"
+        versionCode = 11
+        versionName = "2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -70,16 +70,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    androidResources {
+        // TFLite-Modelle (ML Kit) und Noto-Fonts komprimieren schlecht (binäre Gewichte /
+        // Font-Bytecode) und verursachten 7-8 s in compressDebugAssets. Unkomprimiert
+        // ermöglicht das OS zudem direktes mmap → schnellerer App-Start.
+        noCompress += listOf("tflite", "ttf", "otf")
+    }
     buildFeatures {
         compose = true
         buildConfig = true
-    }
-    packaging {
-        jniLibs.keepDebugSymbols += setOf(
-            "**/libandroidx.graphics.path.so",
-            "**/libbarhopper_v3.so",
-            "**/libmlkit_google_ocr_pipeline.so"
-        )
     }
     testOptions {
         unitTests {
@@ -177,8 +176,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.room.testing)
-    androidTestImplementation(libs.kotlinx.serialization.core)
-    androidTestImplementation(libs.kotlinx.serialization.json)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)

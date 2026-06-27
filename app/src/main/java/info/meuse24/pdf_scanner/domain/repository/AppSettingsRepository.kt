@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.domain.repository
 
 import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.model.AppSortOrder
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
@@ -20,4 +21,5 @@ interface AppSettingsRepository {
     fun updateAppLockEnabled(enabled: Boolean)
     fun updateAppLockTimeoutSeconds(seconds: Int)
     fun updateDefaultImagePdfPageSetup(setup: PdfPageSetup)
+    fun updatePageNumberSettings(settings: PageNumberSettings)
 }

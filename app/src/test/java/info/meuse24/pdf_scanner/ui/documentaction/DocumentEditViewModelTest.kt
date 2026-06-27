@@ -6,7 +6,11 @@ import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.mapper.toDomain
 import info.meuse24.pdf_scanner.data.mapper.toEntity
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.PageNumberHorizontalPosition
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
+import info.meuse24.pdf_scanner.domain.model.PageNumberVerticalPosition
 import info.meuse24.pdf_scanner.domain.usecase.AddPageNumbersUseCase
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationRect
@@ -35,6 +39,7 @@ import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowResult
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
+import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.testutil.TestStorageProvider
 import info.meuse24.pdf_scanner.util.PdfEditor
@@ -51,6 +56,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -102,13 +108,15 @@ class DocumentEditViewModelTest {
         scanRecord: Document,
         errorMapper: WorkflowErrorMapper = stubMapper(),
         redactPdfWorkflow: RedactPdfWorkflow = mock(RedactPdfWorkflow::class.java),
-        annotatePdfWorkflow: AnnotatePdfWorkflow = mock(AnnotatePdfWorkflow::class.java)
+        annotatePdfWorkflow: AnnotatePdfWorkflow = mock(AnnotatePdfWorkflow::class.java),
+        pageNumberSettings: PageNumberSettings = PageNumberSettings()
     ): DocumentEditViewModel {
         val dao = TestScanDao(listOf(scanRecord))
         val repository = ScanRepository(dao)
         val addPageNumbersUseCase = AddPageNumbersUseCase(
             pdfEditor,
-            info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository)
+            info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository),
+            FakeSettingsRepository(AppSettings(pageNumberSettings = pageNumberSettings))
         )
         val pageNumbersWorkflow = PageNumbersWorkflow(addPageNumbersUseCase, DocumentWorkflowGuard(pdfEditor))
 
@@ -164,6 +172,28 @@ class DocumentEditViewModelTest {
         assertTrue(vm.uiState.value.success)
         assertFalse(vm.uiState.value.editLoading)
         assertNull(vm.uiState.value.error)
+    }
+
+    @Test
+    fun `addPageNumbers uebergibt konfigurierte Einstellungen`() = runTest(testDispatcher) {
+        val settings = PageNumberSettings(
+            horizontalPosition = PageNumberHorizontalPosition.RIGHT,
+            verticalPosition = PageNumberVerticalPosition.TOP,
+            prefix = "Seite",
+            includeTotalPageCount = true
+        )
+        val editor = SuccessPageNumbersPdfEditor(tmpFolder.root)
+        val vm = buildVm(
+            pdfEditor = editor,
+            scanRecord = record(pdfFile()),
+            pageNumberSettings = settings
+        )
+        advanceUntilIdle()
+
+        vm.addPageNumbers()
+        advanceUntilIdle()
+
+        assertEquals(settings, editor.receivedSettings)
     }
 
     @Test
@@ -364,14 +394,28 @@ private class TestScanDao(
 }
 
 private class NoOpPageNumbersPdfEditor : PdfEditor() {
-    override fun addPageNumbers(input: File, outputDir: File): File = input
+    override fun addPageNumbers(
+        input: File,
+        outputDir: File,
+        settings: info.meuse24.pdf_scanner.domain.model.PageNumberSettings
+    ): File = input
+
     override fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int) = null
 }
 
 private class SuccessPageNumbersPdfEditor(private val outputDir: File) : PdfEditor() {
-    override fun addPageNumbers(input: File, outputDir: File): File =
-        File(outputDir, "${input.nameWithoutExtension}_numbered.pdf")
+    var receivedSettings: PageNumberSettings? = null
+        private set
+
+    override fun addPageNumbers(
+        input: File,
+        outputDir: File,
+        settings: PageNumberSettings
+    ): File {
+        receivedSettings = settings
+        return File(this.outputDir, "${input.nameWithoutExtension}_numbered.pdf")
             .apply { writeText("numbered") }
+    }
 
     override fun generateThumbnail(pdfFile: File, outputFile: File): Boolean {
         outputFile.writeText("thumb")
@@ -382,8 +426,11 @@ private class SuccessPageNumbersPdfEditor(private val outputDir: File) : PdfEdit
 }
 
 private class FailPageNumbersPdfEditor : PdfEditor() {
-    override fun addPageNumbers(input: File, outputDir: File): File =
-        throw IOException("disk full")
+    override fun addPageNumbers(
+        input: File,
+        outputDir: File,
+        settings: info.meuse24.pdf_scanner.domain.model.PageNumberSettings
+    ): File = throw IOException("disk full")
 
     override fun renderPageThumbnail(pdfFile: File, pageIndex: Int, maxSizePx: Int) = null
 }

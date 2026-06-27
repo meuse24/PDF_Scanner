@@ -2,10 +2,16 @@ package info.meuse24.pdf_scanner.domain.pdf
 
 import info.meuse24.pdf_scanner.domain.model.PdfMetadata
 import info.meuse24.pdf_scanner.domain.model.PdfPageSizeCategory
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import java.io.File
 
 interface PdfMetadataOps {
-    fun addPageNumbers(input: File, outputDir: File): File
+    fun addPageNumbers(
+        input: File,
+        outputDir: File,
+        settings: PageNumberSettings
+    ): File
+
     fun applyTextWatermark(input: File, outputDir: File, text: String): File
     fun readMetadata(input: File): PdfMetadata
 

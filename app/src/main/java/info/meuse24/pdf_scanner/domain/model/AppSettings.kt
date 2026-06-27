@@ -16,7 +16,8 @@ data class AppSettings(
     val trashUndoSnackbarSeconds: Int = DEFAULT_TRASH_UNDO_SNACKBAR_SECONDS,
     val appLockEnabled: Boolean = false,
     val appLockTimeoutSeconds: Int = 30,
-    val defaultImagePdfPageSetup: PdfPageSetup = PdfPageSetup()
+    val defaultImagePdfPageSetup: PdfPageSetup = PdfPageSetup(),
+    val pageNumberSettings: PageNumberSettings = PageNumberSettings()
 ) {
     companion object {
         const val OCR_LANGUAGE_AUTO = "auto"

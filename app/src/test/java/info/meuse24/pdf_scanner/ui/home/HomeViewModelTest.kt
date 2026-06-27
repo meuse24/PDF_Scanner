@@ -748,7 +748,11 @@ class HomeViewModelTest {
 
     private fun testPdfMetadataOps(classifier: () -> PdfPageSizeCategory): PdfMetadataOps =
         object : PdfMetadataOps {
-            override fun addPageNumbers(input: File, outputDir: File): File = input
+            override fun addPageNumbers(
+                input: File,
+                outputDir: File,
+                settings: info.meuse24.pdf_scanner.domain.model.PageNumberSettings
+            ): File = input
             override fun applyTextWatermark(input: File, outputDir: File, text: String): File = input
             override fun readMetadata(input: File): PdfMetadata =
                 PdfMetadata(null, null, null, null, null, null, null)

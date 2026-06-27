@@ -9,6 +9,7 @@ import info.meuse24.pdf_scanner.domain.usecase.RetroTagUseCase
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.domain.model.AppSortOrder
 import info.meuse24.pdf_scanner.domain.model.AppSettings
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -78,6 +79,10 @@ class SettingsViewModel @Inject constructor(
 
     fun setAppLockTimeoutSeconds(seconds: Int) {
         settingsRepository.updateAppLockTimeoutSeconds(seconds)
+    }
+
+    fun setPageNumberSettings(settings: PageNumberSettings) {
+        settingsRepository.updatePageNumberSettings(settings)
     }
 
     fun reportError(message: String) {

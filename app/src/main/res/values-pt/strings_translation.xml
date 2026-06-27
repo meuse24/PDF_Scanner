@@ -19,4 +19,6 @@
     <string name="translate_copied_message">Tradução copiada</string>
     <string name="help_item_translate">Traduz o texto do PDF no dispositivo para outro idioma usando ML Kit. O reconhecimento de texto (OCR) deve ser executado primeiro. Os modelos de idioma (~15–30 MB) são baixados automaticamente no primeiro uso e permanecem no dispositivo.</string>
     <string name="info_feature_translate">Tradução local do texto PDF em 10 idiomas (EN, DE, ES, FR, PT, RU, AR, HI, ZH, JA) via ML Kit. Os modelos são baixados no primeiro uso; o texto não sai do dispositivo.</string>
+    <string name="privacy_keyword_9">Tradução</string>
+    <string name="privacy_point_9">O recurso opcional Traduzir PDF usa ML Kit Translate para traduzir no dispositivo o texto extraído por OCR para um dos 10 idiomas suportados. Os modelos de idioma (~15–30 MB) são baixados automaticamente no primeiro uso via Google Play Services e permanecem no dispositivo. Nenhum texto é transmitido a qualquer servidor.</string>
 </resources>

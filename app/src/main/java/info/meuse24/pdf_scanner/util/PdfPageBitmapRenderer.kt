@@ -7,6 +7,7 @@ import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import androidx.core.graphics.createBitmap
 import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -140,12 +141,15 @@ private class AndroidPdfDocumentBitmapHandle(
         }
     }
 
-    @Synchronized
     override fun close() {
-        if (closed) return
-        closed = true
-        runCatching { renderer.close() }
-        runCatching { pfd.close() }
+        runBlocking {
+            renderMutex.withLock {
+                if (closed) return@withLock
+                closed = true
+                runCatching { renderer.close() }
+                runCatching { pfd.close() }
+            }
+        }
     }
 
     private fun renderPageBitmap(

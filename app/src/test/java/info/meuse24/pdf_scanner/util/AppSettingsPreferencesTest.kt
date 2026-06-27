@@ -6,6 +6,9 @@ import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
 import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
 import info.meuse24.pdf_scanner.domain.model.PdfPageSizePreset
+import info.meuse24.pdf_scanner.domain.model.PageNumberHorizontalPosition
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
+import info.meuse24.pdf_scanner.domain.model.PageNumberVerticalPosition
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -64,5 +67,39 @@ class AppSettingsPreferencesTest {
         val settings = AppSettingsPreferences.load(context)
 
         assertEquals(5, settings.trashUndoSnackbarSeconds)
+    }
+
+    @Test
+    fun `load restores page number settings`() {
+        val context = mock(Context::class.java)
+        val prefs = mock(SharedPreferences::class.java)
+        `when`(context.applicationContext).thenReturn(context)
+        `when`(context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)).thenReturn(prefs)
+        `when`(prefs.getString("page_number_horizontal_position", null)).thenReturn("RIGHT")
+        `when`(prefs.getString("page_number_vertical_position", null)).thenReturn("TOP")
+        `when`(prefs.getString("page_number_prefix", null)).thenReturn("Seite")
+        `when`(prefs.getBoolean("page_number_include_total", false)).thenReturn(true)
+
+        val settings = AppSettingsPreferences.load(context).pageNumberSettings
+
+        assertEquals(PageNumberHorizontalPosition.RIGHT, settings.horizontalPosition)
+        assertEquals(PageNumberVerticalPosition.TOP, settings.verticalPosition)
+        assertEquals("Seite", settings.prefix)
+        assertTrue(settings.includeTotalPageCount)
+    }
+
+    @Test
+    fun `load truncates overlong stored page number prefix at persistence boundary`() {
+        val context = mock(Context::class.java)
+        val prefs = mock(SharedPreferences::class.java)
+        `when`(context.applicationContext).thenReturn(context)
+        `when`(context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)).thenReturn(prefs)
+        `when`(prefs.getString("page_number_prefix", null)).thenReturn(
+            "x".repeat(PageNumberSettings.MAX_PREFIX_LENGTH + 10)
+        )
+
+        val prefix = AppSettingsPreferences.load(context).pageNumberSettings.prefix
+
+        assertEquals(PageNumberSettings.MAX_PREFIX_LENGTH, prefix.length)
     }
 }

@@ -160,6 +160,13 @@ check(newFile.canonicalPath.startsWith(targetScansDir.canonicalPath + File.separ
 
 ## Phase 4 – Transaktionale Korrektheit im Import
 
+**Status (2026-06-27): Abgeschlossen.**
+
+- Der komplette Ablauf nach erfolgreichem PDF-Copy ist durch kompensierenden Cleanup geschützt.
+- Bei Fehlern in Thumbnail-Erzeugung, OCR oder Repository-Persistierung werden die kopierte PDF und ein bereits erzeugtes Thumbnail gelöscht.
+- Zwei neue Unit-Tests verifizieren OCR- und Datenbankfehler.
+- Verifiziert mit `./gradlew.bat --no-configuration-cache testDebugUnitTest lintDebug --console=plain`: Build erfolgreich, 0 Lint-Errors, 430 Unit-Tests ohne Fehler.
+
 ### 4.1 Cleanup bei Fehler in `ImportScanUseCase`
 
 **Datei:** `domain/usecase/ImportScanUseCase.kt:30`

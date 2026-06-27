@@ -51,6 +51,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
@@ -310,6 +314,19 @@ private fun SignaturePad(
     val completedStrokes = completedStrokesState.value
     val currentStroke = currentStrokeState.value
     val allStrokes = completedStrokes + listOf(currentStroke.toList()).filter { it.isNotEmpty() }
+    val canvasDescription = stringResource(R.string.signature_hint)
+    val clearActionLabel = stringResource(R.string.signature_clear)
+    val accessibilityActions = if (allStrokes.isNotEmpty()) {
+        listOf(
+            CustomAccessibilityAction(clearActionLabel) {
+                completedStrokesState.value = emptyList()
+                currentStrokeState.value = emptyList()
+                true
+            }
+        )
+    } else {
+        emptyList()
+    }
 
     Box(
         modifier = Modifier
@@ -322,6 +339,10 @@ private fun SignaturePad(
                 shape = RoundedCornerShape(16.dp)
             )
             .onSizeChanged(onSizeChanged)
+            .semantics {
+                contentDescription = canvasDescription
+                customActions = accessibilityActions
+            }
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = { offset ->

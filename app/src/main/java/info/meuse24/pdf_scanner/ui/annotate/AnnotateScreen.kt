@@ -52,6 +52,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -280,6 +284,39 @@ fun AnnotateScreen(
         AnnotationHistoryKind.STROKE, AnnotationHistoryKind.RECT, AnnotationHistoryKind.OVAL -> R.string.highlight_stroke_width
         null -> if (selectedTool == AnnotateTool.TEXT) R.string.annotate_text_size else R.string.highlight_stroke_width
     }
+    val canvasDescription = stringResource(
+        R.string.annotate_page_content_description,
+        selectedPageIndex + 1
+    )
+    val undoActionLabel = stringResource(R.string.annotate_action_undo)
+    val clearPageActionLabel = stringResource(R.string.annotate_action_clear_page)
+    val clearAllActionLabel = stringResource(R.string.annotate_action_clear_all)
+    val canvasAccessibilityActions = buildList {
+        if (annotationHistory.any { it.pageIndex == selectedPageIndex }) {
+            add(
+                CustomAccessibilityAction(undoActionLabel) {
+                    undoLastAnnotation()
+                    true
+                }
+            )
+        }
+        if (hasPageAnnotations) {
+            add(
+                CustomAccessibilityAction(clearPageActionLabel) {
+                    clearCurrentPage()
+                    true
+                }
+            )
+        }
+        if (hasAnyAnnotations) {
+            add(
+                CustomAccessibilityAction(clearAllActionLabel) {
+                    resetAllAnnotations()
+                    true
+                }
+            )
+        }
+    }
 
     val (pdfOrigin, pdfSize) = remember(canvasSize, aspectRatio) {
         val cw = canvasSize.width.toFloat()
@@ -352,6 +389,10 @@ fun AnnotateScreen(
         Box(
             modifier = Modifier.fillMaxWidth().weight(1f).background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .onSizeChanged { canvasSize = it }
+                .semantics {
+                    contentDescription = canvasDescription
+                    customActions = canvasAccessibilityActions
+                }
                 .pointerInput(Unit) {
                     awaitPointerEventScope {
                         while (true) {
@@ -724,7 +765,7 @@ private fun AnnotateCanvasContent(
         if (bitmap != null) {
             Image(
                 bitmap = bitmap.asImageBitmap(),
-                contentDescription = stringResource(R.string.annotate_page_content_description, selectedPageIndex + 1),
+                contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize()
             )

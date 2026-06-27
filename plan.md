@@ -277,6 +277,15 @@ File(storageProvider.tempDir(), "backup_restore")
 
 ## Phase 7 – Barrierefreiheit der Zeichenflächen (Backlog)
 
+**Status (2026-06-27): Minimalziel abgeschlossen; Gerätetest bleibt offen.**
+
+- Signatur-, Annotations- und Schwärzungs-Zeichenflächen besitzen eigene, lokalisierte Semantik-Beschreibungen.
+- Verfügbare Rückgängig-/Löschaktionen werden zusätzlich über `CustomAccessibilityAction` angeboten.
+- Die bereits sichtbaren `OutlinedButton`-/Footer-Aktionen bleiben als nicht-gestische Alternativen erhalten und verwenden Material-Touch-Targets.
+- Die doppelte TalkBack-Ausgabe der PDF-Seite im Annotation-Screen wurde entfernt; die Beschreibung liegt jetzt am interaktiven Elternknoten.
+- Verifiziert mit `./gradlew.bat --no-configuration-cache testDebugUnitTest lintDebug --console=plain`: Build erfolgreich, 0 Lint-Errors, 432 Unit-Tests ohne Fehler.
+- Offen bleibt der manuelle TalkBack-/Switch-Access-Explorationstest auf einem Android-Gerät; im aktuellen Arbeitslauf war kein Gerät verbunden.
+
 **Betroffene Screens:** `ui/signature/SignatureScreen.kt:325`, `ui/annotate/AnnotateScreen`, `ui/redact/RedactScreen`
 
 **Problem:** Eigene Pointer-Flächen ohne semantische Aktionen sind für TalkBack nicht bedienbar.

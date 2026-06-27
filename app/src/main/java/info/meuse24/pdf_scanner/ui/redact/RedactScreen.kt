@@ -62,6 +62,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -191,6 +195,38 @@ fun RedactScreen(
     val hasPageRects = pageRectsForDisplay.isNotEmpty() || draftRect != null
     val hasAnyRects = allRects.isNotEmpty()
     val hasMultiplePages = currentRecord.pageCount > 1
+    val canvasDescription = buildString {
+        append(stringResource(R.string.signature_target_page, selectedPageIndex + 1, currentRecord.pageCount))
+        append(". ")
+        append(stringResource(R.string.redact_hint))
+    }
+    val undoActionLabel = stringResource(R.string.highlight_undo_last)
+    val clearPageActionLabel = stringResource(R.string.highlight_clear_page)
+    val clearAllActionLabel = stringResource(R.string.highlight_reset_all)
+    val canvasAccessibilityActions = buildList {
+        if (pageRectsForDisplay.isNotEmpty()) {
+            add(
+                CustomAccessibilityAction(undoActionLabel) {
+                    undoLastRect()
+                    true
+                }
+            )
+            add(
+                CustomAccessibilityAction(clearPageActionLabel) {
+                    clearCurrentPage()
+                    true
+                }
+            )
+        }
+        if (hasAnyRects) {
+            add(
+                CustomAccessibilityAction(clearAllActionLabel) {
+                    resetAllRects()
+                    true
+                }
+            )
+        }
+    }
 
     val (pdfInCanvasOrigin, pdfInCanvasSize) = remember(canvasSize, aspectRatio) {
         val canvasWidth = canvasSize.width.toFloat()
@@ -230,6 +266,10 @@ fun RedactScreen(
                 .weight(1f)
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .onSizeChanged { canvasSize = it }
+                .semantics {
+                    contentDescription = canvasDescription
+                    customActions = canvasAccessibilityActions
+                }
                 .transformable(state = transformableState, enabled = isZoomMode)
                 .pointerInput(isZoomMode) {
                     if (!isZoomMode) {

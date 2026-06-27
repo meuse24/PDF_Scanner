@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,6 +59,9 @@ import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.model.AppSortOrder
+import info.meuse24.pdf_scanner.domain.model.PageNumberHorizontalPosition
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
+import info.meuse24.pdf_scanner.domain.model.PageNumberVerticalPosition
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,6 +79,7 @@ fun SettingsScreen(
     onTrashUndoSnackbarSecondsChange: (Int) -> Unit,
     onAppLockEnabledChange: (Boolean) -> Unit,
     onAppLockTimeoutSecondsChange: (Int) -> Unit,
+    onPageNumberSettingsChange: (PageNumberSettings) -> Unit,
     transientSuccess: String?,
     transientError: String?,
     onTransientSuccessConsumed: () -> Unit,
@@ -175,6 +180,13 @@ fun SettingsScreen(
         }
 
         item {
+            PageNumberSettingsGroup(
+                settings = settings.pageNumberSettings,
+                onSettingsChange = onPageNumberSettingsChange
+            )
+        }
+
+        item {
             SettingsGroup(
                 icon = Icons.AutoMirrored.Filled.Sort,
                 title = stringResource(R.string.settings_archive_title)
@@ -249,6 +261,82 @@ fun SettingsScreen(
         item {
             backupSection()
         }
+    }
+}
+
+@Composable
+private fun PageNumberSettingsGroup(
+    settings: PageNumberSettings,
+    onSettingsChange: (PageNumberSettings) -> Unit
+) {
+    SettingsGroup(
+        icon = Icons.Default.FormatListNumbered,
+        title = stringResource(R.string.settings_page_numbers_title)
+    ) {
+        SegmentedPreference(
+            title = stringResource(R.string.settings_page_numbers_horizontal_label),
+            options = listOf(
+                PageNumberHorizontalPosition.LEFT to
+                    stringResource(R.string.settings_page_numbers_left),
+                PageNumberHorizontalPosition.CENTER to
+                    stringResource(R.string.settings_page_numbers_center),
+                PageNumberHorizontalPosition.RIGHT to
+                    stringResource(R.string.settings_page_numbers_right)
+            ),
+            selected = settings.horizontalPosition,
+            onSelected = { onSettingsChange(settings.copy(horizontalPosition = it)) }
+        )
+        SettingsDivider()
+        SegmentedPreference(
+            title = stringResource(R.string.settings_page_numbers_vertical_label),
+            options = listOf(
+                PageNumberVerticalPosition.TOP to
+                    stringResource(R.string.settings_page_numbers_top),
+                PageNumberVerticalPosition.BOTTOM to
+                    stringResource(R.string.settings_page_numbers_bottom)
+            ),
+            selected = settings.verticalPosition,
+            onSelected = { onSettingsChange(settings.copy(verticalPosition = it)) }
+        )
+        SettingsDivider()
+        PageNumberPrefixPreference(
+            value = settings.prefix,
+            onValueChange = { prefix ->
+                onSettingsChange(
+                    settings.copy(prefix = prefix.take(PageNumberSettings.MAX_PREFIX_LENGTH))
+                )
+            }
+        )
+        SettingsDivider()
+        SettingsSwitchRow(
+            title = stringResource(R.string.settings_page_numbers_total_label),
+            checked = settings.includeTotalPageCount,
+            onCheckedChange = { onSettingsChange(settings.copy(includeTotalPageCount = it)) }
+        )
+    }
+}
+
+@Composable
+private fun PageNumberPrefixPreference(
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 14.dp)
+    ) {
+        PreferenceTitle(stringResource(R.string.settings_page_numbers_prefix_label))
+        Spacer(Modifier.height(8.dp))
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            singleLine = true,
+            placeholder = {
+                Text(stringResource(R.string.settings_page_numbers_prefix_placeholder))
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 

@@ -36,6 +36,7 @@ import info.meuse24.pdf_scanner.domain.common.buildRanges
 import info.meuse24.pdf_scanner.domain.common.normalizePageIndexes
 import info.meuse24.pdf_scanner.domain.common.normalizeSplitPoints
 import info.meuse24.pdf_scanner.domain.model.PdfMetadata
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import info.meuse24.pdf_scanner.domain.model.PdfPageSizeCategory
 import info.meuse24.pdf_scanner.domain.pdf.PdfAnnotationOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
@@ -234,12 +235,23 @@ open class PdfEditor @Inject constructor() :
         }
     }
 
-    override open fun addPageNumbers(input: File, outputDir: File): File {
+    override open fun addPageNumbers(
+        input: File,
+        outputDir: File,
+        settings: PageNumberSettings
+    ): File {
         return writeDerivedPdf(input, outputDir, "_Nummeriert", "PageNumbers") { source, numbered ->
             val font = loadOverlayFont(numbered)
             repeat(source.numberOfPages) { pageIdx ->
                 val page = numbered.importPage(source.getPage(pageIdx))
-                appendPageNumber(page, numbered, font, pageIdx + 1)
+                appendPageNumber(
+                    page = page,
+                    document = numbered,
+                    font = font,
+                    pageNumber = pageIdx + 1,
+                    totalPageCount = source.numberOfPages,
+                    settings = settings
+                )
             }
         }
     }

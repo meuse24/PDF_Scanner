@@ -19,4 +19,6 @@
     <string name="translate_copied_message">تم نسخ الترجمة</string>
     <string name="help_item_translate">يترجم نص PDF على الجهاز إلى لغة أخرى باستخدام ML Kit. يجب تشغيل التعرف على النص (OCR) أولاً. يتم تنزيل نماذج اللغة (~15–30 ميغابايت) تلقائياً عند الاستخدام الأول وتبقى على الجهاز.</string>
     <string name="info_feature_translate">ترجمة محلية لنص PDF إلى 10 لغات (EN، DE، ES، FR، PT، RU، AR، HI، ZH، JA) عبر ML Kit. يتم تنزيل النماذج عند الطلب؛ لا يغادر النص الجهاز.</string>
+    <string name="privacy_keyword_9">الترجمة</string>
+    <string name="privacy_point_9">تستخدم ميزة «ترجمة PDF» الاختيارية خدمة ML Kit Translate لترجمة النص المستخرج عبر OCR على الجهاز إلى إحدى 10 لغات مدعومة. يتم تنزيل نماذج اللغة (~15–30 ميغابايت) تلقائياً عند الاستخدام الأول عبر Google Play Services وتبقى على الجهاز. لا يُرسَل أي نص إلى أي خادم.</string>
 </resources>

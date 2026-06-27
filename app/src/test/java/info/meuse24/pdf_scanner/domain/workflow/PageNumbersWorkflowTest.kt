@@ -1,10 +1,15 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.AppSettings
+import info.meuse24.pdf_scanner.domain.model.PageNumberHorizontalPosition
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
+import info.meuse24.pdf_scanner.domain.model.PageNumberVerticalPosition
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.AddPageNumbersUseCase
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -35,10 +40,17 @@ class PageNumbersWorkflowTest {
         )
     }
 
-    private fun workflow(pdfEditor: PdfEditor): Pair<PageNumbersWorkflow, FakeScanDao> {
+    private fun workflow(
+        pdfEditor: PdfEditor,
+        pageNumberSettings: PageNumberSettings = PageNumberSettings()
+    ): Pair<PageNumbersWorkflow, FakeScanDao> {
         val dao = FakeScanDao()
         val repository = ScanRepository(dao)
-        val useCase = AddPageNumbersUseCase(pdfEditor, info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository))
+        val useCase = AddPageNumbersUseCase(
+            pdfEditor,
+            info.meuse24.pdf_scanner.domain.service.ScanArtifactPersister(pdfEditor, repository),
+            FakeSettingsRepository(AppSettings(pageNumberSettings = pageNumberSettings))
+        )
         return PageNumbersWorkflow(useCase, DocumentWorkflowGuard(pdfEditor)) to dao
     }
 
@@ -76,6 +88,22 @@ class PageNumbersWorkflowTest {
         assertTrue(result is WorkflowResult.Success)
         assertEquals(1, dao.inserted.size)
     }
+
+    @Test
+    fun `Seitennummern Einstellungen werden an PDF Editor uebergeben`() = runTest {
+        val settings = PageNumberSettings(
+            horizontalPosition = PageNumberHorizontalPosition.RIGHT,
+            verticalPosition = PageNumberVerticalPosition.TOP,
+            prefix = "Seite",
+            includeTotalPageCount = true
+        )
+        val editor = FakePageNumbersPdfEditor()
+        val (workflow, _) = workflow(editor, settings)
+
+        workflow(record(4L), tmpFolder.root)
+
+        assertEquals(settings, editor.receivedSettings)
+    }
 }
 
 private class FakePageNumbersPdfEditor(
@@ -83,7 +111,17 @@ private class FakePageNumbersPdfEditor(
         File(outputDir, "${input.nameWithoutExtension}_Nummeriert.pdf").apply { writeText("copy") }
     }
 ) : PdfEditor() {
-    override fun addPageNumbers(input: File, outputDir: File): File = onAdd(input, outputDir)
+    var receivedSettings: PageNumberSettings? = null
+        private set
+
+    override fun addPageNumbers(
+        input: File,
+        outputDir: File,
+        settings: PageNumberSettings
+    ): File {
+        receivedSettings = settings
+        return onAdd(input, outputDir)
+    }
 
     override fun generateThumbnail(pdfFile: File, outputFile: File): Boolean {
         outputFile.writeText("thumb")

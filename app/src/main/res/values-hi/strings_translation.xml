@@ -19,4 +19,6 @@
     <string name="translate_copied_message">अनुवाद कॉपी किया गया</string>
     <string name="help_item_translate">ML Kit का उपयोग करके डिवाइस पर PDF टेक्स्ट को दूसरी भाषा में अनुवाद करता है। पहले टेक्स्ट पहचान (OCR) चलाना आवश्यक है। भाषा मॉडल (~15–30 MB) पहले उपयोग पर स्वचालित रूप से डाउनलोड होते हैं और डिवाइस पर रहते हैं।</string>
     <string name="info_feature_translate">ML Kit के माध्यम से PDF टेक्स्ट का 10 भाषाओं (EN, DE, ES, FR, PT, RU, AR, HI, ZH, JA) में स्थानीय अनुवाद। मॉडल पहले उपयोग पर डाउनलोड होते हैं; टेक्स्ट डिवाइस नहीं छोड़ता।</string>
+    <string name="privacy_keyword_9">अनुवाद</string>
+    <string name="privacy_point_9">वैकल्पिक "PDF अनुवाद" सुविधा ML Kit Translate का उपयोग करके OCR से निकाले गए टेक्स्ट को डिवाइस पर 10 समर्थित भाषाओं में से किसी एक में अनुवाद करती है। भाषा मॉडल (~15–30 MB) पहले उपयोग पर Google Play Services के माध्यम से स्वचालित रूप से डाउनलोड होते हैं और डिवाइस पर बने रहते हैं। कोई टेक्स्ट किसी सर्वर पर नहीं भेजा जाता।</string>
 </resources>

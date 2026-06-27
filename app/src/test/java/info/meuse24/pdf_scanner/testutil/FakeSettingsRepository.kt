@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.testutil
 
 import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.domain.model.AppSettings
@@ -57,5 +58,9 @@ class FakeSettingsRepository(
 
     override fun updateDefaultImagePdfPageSetup(setup: PdfPageSetup) {
         _settings.value = _settings.value.copy(defaultImagePdfPageSetup = setup)
+    }
+
+    override fun updatePageNumberSettings(settings: PageNumberSettings) {
+        _settings.value = _settings.value.copy(pageNumberSettings = settings)
     }
 }

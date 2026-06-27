@@ -3,6 +3,7 @@ package info.meuse24.pdf_scanner.data.repository
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.domain.model.AppSortOrder
@@ -106,6 +107,14 @@ class SettingsRepository @Inject constructor(
         val current = _settings.value
         if (current.defaultImagePdfPageSetup == setup) return
         val updated = current.copy(defaultImagePdfPageSetup = setup)
+        AppSettingsPreferences.save(context, updated)
+        _settings.value = updated
+    }
+
+    override fun updatePageNumberSettings(settings: PageNumberSettings) {
+        val current = _settings.value
+        if (current.pageNumberSettings == settings) return
+        val updated = current.copy(pageNumberSettings = settings)
         AppSettingsPreferences.save(context, updated)
         _settings.value = updated
     }

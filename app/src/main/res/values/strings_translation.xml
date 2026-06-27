@@ -19,4 +19,6 @@
     <string name="translate_copied_message">Translation copied</string>
     <string name="help_item_translate">Translates PDF text on-device into another language using ML Kit. OCR text recognition must be run first. Language models (~15–30 MB each) are downloaded automatically on first use and stay on-device.</string>
     <string name="info_feature_translate">On-device translation of PDF text into 10 languages (EN, DE, ES, FR, PT, RU, AR, HI, ZH, JA) via ML Kit. Language models are downloaded on first use; no text leaves the device.</string>
+    <string name="privacy_keyword_9">Translation</string>
+    <string name="privacy_point_9">The optional Translate PDF feature uses ML Kit Translate to translate OCR-extracted text on-device into one of 10 supported languages. Language models (~15–30 MB each) are downloaded automatically on first use via Google Play Services and remain on the device. No document text is transmitted to any server.</string>
 </resources>

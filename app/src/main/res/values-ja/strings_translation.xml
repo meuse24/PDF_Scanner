@@ -19,4 +19,6 @@
     <string name="translate_copied_message">翻訳をコピーしました</string>
     <string name="help_item_translate">ML Kit を使用してデバイス上で PDF テキストを他の言語に翻訳します。最初にテキスト認識（OCR）を実行する必要があります。言語モデル（約 15〜30 MB）は初回使用時に自動的にダウンロードされ、デバイス上に保存されます。</string>
     <string name="info_feature_translate">ML Kit を通じて PDF テキストを 10 言語（EN、DE、ES、FR、PT、RU、AR、HI、ZH、JA）にローカル翻訳。モデルは初回使用時にダウンロードされ、テキストはデバイスから外に出ません。</string>
+    <string name="privacy_keyword_9">翻訳</string>
+    <string name="privacy_point_9">オプションの「PDF を翻訳」機能は ML Kit Translate を使用して、OCR で抽出したテキストをデバイス上で 10 の対応言語のいずれかに翻訳します。言語モデル（約 15〜30 MB）は初回使用時に Google Play Services を通じて自動的にダウンロードされ、デバイスに保存されます。テキストはサーバーに送信されません。</string>
 </resources>

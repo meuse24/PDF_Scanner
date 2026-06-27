@@ -88,6 +88,7 @@ import info.meuse24.pdf_scanner.util.buildPdfShareIntent
 import info.meuse24.pdf_scanner.util.openPdfExternally
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.geometry.Offset
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -178,6 +179,7 @@ fun PdfViewerScreen(
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val density = LocalDensity.current
         val viewportWidthPx = with(density) { maxWidth.roundToPx() }.coerceAtLeast(64)
+        val contentPaddingStartPx = with(density) { 16.dp.toPx() }
         val recordThumbnail = rememberViewerThumbnail(state.record?.thumbnailPath)
         val inlineTransformableState = rememberTransformableState { zoomChange, panChange, _ ->
             val newScale = (inlineScale * zoomChange).coerceIn(1f, PDF_VIEWER_MAX_ZOOM_SCALE)
@@ -282,17 +284,27 @@ fun PdfViewerScreen(
                                 pageIndex = pageIndex,
                                 pageState = state.pages[pageIndex],
                                 thumbnail = if (pageIndex == 0) recordThumbnail else null,
-                                onDoubleClick = {
+                                onDoubleClick = { tapOffset ->
                                     if (inlineScale > 1f) {
                                         inlineScale = 1f
                                         inlineOffsetX = 0f
                                         inlineOffsetY = 0f
                                         viewModel.setZoomScale(1f)
                                     } else {
-                                        inlineScale = 2f
-                                        inlineOffsetX = 0f
-                                        inlineOffsetY = 0f
-                                        viewModel.requestVisibleZoomRender(viewportWidthPx, 2f)
+                                        val newScale = 2f
+                                        val itemOffset = listState.layoutInfo.visibleItemsInfo
+                                            .firstOrNull { it.index == pageIndex }?.offset?.toFloat() ?: 0f
+                                        val tapX = contentPaddingStartPx + tapOffset.x
+                                        val tapY = itemOffset + tapOffset.y
+                                        val viewW = inlineViewerSize.width.toFloat()
+                                        val viewH = inlineViewerSize.height.toFloat()
+                                        val rawOffsetX = (viewW / 2f - tapX) * newScale
+                                        val rawOffsetY = (viewH / 2f - tapY) * newScale
+                                        val clamped = clampPanOffset(inlineViewerSize, newScale, rawOffsetX, rawOffsetY)
+                                        inlineScale = newScale
+                                        inlineOffsetX = clamped.x
+                                        inlineOffsetY = clamped.y
+                                        viewModel.requestVisibleZoomRender(viewportWidthPx, newScale)
                                     }
                                 }
                             )
@@ -472,7 +484,7 @@ private fun PdfPageCard(
     pageIndex: Int,
     pageState: PdfViewerPageState?,
     thumbnail: ImageBitmap?,
-    onDoubleClick: () -> Unit = {}
+    onDoubleClick: (Offset) -> Unit = {}
 ) {
     Surface(
         modifier = Modifier
@@ -480,7 +492,7 @@ private fun PdfPageCard(
             .aspectRatio(pageState?.aspectRatio ?: PDF_VIEWER_DEFAULT_ASPECT_RATIO)
             .clip(RoundedCornerShape(6.dp))
             .pointerInput(onDoubleClick) {
-                detectTapGestures(onDoubleTap = { onDoubleClick() })
+                detectTapGestures(onDoubleTap = { offset -> onDoubleClick(offset) })
             },
         shape = RoundedCornerShape(6.dp),
         color = Color.White,

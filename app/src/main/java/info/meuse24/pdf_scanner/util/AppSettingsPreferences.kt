@@ -8,6 +8,9 @@ import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
 import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
 import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
 import info.meuse24.pdf_scanner.domain.model.PdfPageSizePreset
+import info.meuse24.pdf_scanner.domain.model.PageNumberHorizontalPosition
+import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
+import info.meuse24.pdf_scanner.domain.model.PageNumberVerticalPosition
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
 
 object AppSettingsPreferences {
@@ -27,6 +30,10 @@ object AppSettingsPreferences {
     private const val KEY_IMG_PDF_SIZE_PRESET = "img_pdf_size_preset"
     private const val KEY_IMG_PDF_ORIENTATION = "img_pdf_orientation"
     private const val KEY_IMG_PDF_MARGIN_PRESET = "img_pdf_margin_preset"
+    private const val KEY_PAGE_NUMBER_HORIZONTAL_POSITION = "page_number_horizontal_position"
+    private const val KEY_PAGE_NUMBER_VERTICAL_POSITION = "page_number_vertical_position"
+    private const val KEY_PAGE_NUMBER_PREFIX = "page_number_prefix"
+    private const val KEY_PAGE_NUMBER_INCLUDE_TOTAL = "page_number_include_total"
 
     fun load(context: Context): AppSettings {
         val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -63,6 +70,20 @@ object AppSettingsPreferences {
                     prefs.getString(KEY_IMG_PDF_MARGIN_PRESET, null),
                     PdfMarginPreset.MEDIUM
                 )
+            ),
+            pageNumberSettings = PageNumberSettings(
+                horizontalPosition = enumPreference(
+                    prefs.getString(KEY_PAGE_NUMBER_HORIZONTAL_POSITION, null),
+                    PageNumberHorizontalPosition.CENTER
+                ),
+                verticalPosition = enumPreference(
+                    prefs.getString(KEY_PAGE_NUMBER_VERTICAL_POSITION, null),
+                    PageNumberVerticalPosition.BOTTOM
+                ),
+                prefix = prefs.getString(KEY_PAGE_NUMBER_PREFIX, null)
+                    .orEmpty()
+                    .take(PageNumberSettings.MAX_PREFIX_LENGTH),
+                includeTotalPageCount = prefs.getBoolean(KEY_PAGE_NUMBER_INCLUDE_TOTAL, false)
             )
         )
     }
@@ -84,6 +105,22 @@ object AppSettingsPreferences {
             putString(KEY_IMG_PDF_SIZE_PRESET, settings.defaultImagePdfPageSetup.sizePreset.name)
             putString(KEY_IMG_PDF_ORIENTATION, settings.defaultImagePdfPageSetup.orientation.name)
             putString(KEY_IMG_PDF_MARGIN_PRESET, settings.defaultImagePdfPageSetup.marginPreset.name)
+            putString(
+                KEY_PAGE_NUMBER_HORIZONTAL_POSITION,
+                settings.pageNumberSettings.horizontalPosition.name
+            )
+            putString(
+                KEY_PAGE_NUMBER_VERTICAL_POSITION,
+                settings.pageNumberSettings.verticalPosition.name
+            )
+            putString(
+                KEY_PAGE_NUMBER_PREFIX,
+                settings.pageNumberSettings.prefix
+            )
+            putBoolean(
+                KEY_PAGE_NUMBER_INCLUDE_TOTAL,
+                settings.pageNumberSettings.includeTotalPageCount
+            )
         }
     }
 

@@ -54,7 +54,14 @@ class PdfViewerViewModel @Inject constructor(
 
     private val scanId: Long = checkNotNull(savedStateHandle["scanId"])
 
-    private val bitmapCache = PdfPageBitmapCache()
+    private val bitmapCache = PdfPageBitmapCache(onEvict = { key ->
+        _uiState.update { state ->
+            val pageState = state.pages[key.pageIndex] ?: return@update state
+            if (pageState.renderedWidthPx == key.targetWidthPx) {
+                state.copy(pages = state.pages + (key.pageIndex to pageState.copy(bitmap = null)))
+            } else state
+        }
+    })
     private val renderJobs = ConcurrentHashMap<Int, RenderJob>()
     private val documentHandleRef = AtomicReference<PdfDocumentBitmapHandle?>(null)
     private val isCleared = AtomicBoolean(false)
@@ -142,7 +149,7 @@ class PdfViewerViewModel @Inject constructor(
         val (width, maxSide) = zoomRenderDimensions(viewportWidthPx, zoomScale)
         val pageIndexes = retainedPageIndexes(pageCount)
         visibleZoomRenderJob?.cancel()
-        visibleZoomRenderJob = viewModelScope.launch(dispatcherProvider.io) {
+        visibleZoomRenderJob = viewModelScope.launch {
             delay(PDF_VIEWER_VISIBLE_ZOOM_RENDER_DEBOUNCE_MS)
             pageIndexes.forEach { pageIndex ->
                 renderPage(pageIndex, width, maxSide, cacheResult = false)
@@ -202,6 +209,7 @@ class PdfViewerViewModel @Inject constructor(
         cancelRenderJobs()
         closeDocument()
         bitmapCache.clear()
+        visiblePageIndexes = setOf(0)
 
         if (record.isEncrypted) {
             _uiState.update {

@@ -9,7 +9,8 @@ data class PdfPageBitmapCacheKey(
 )
 
 class PdfPageBitmapCache(
-    private val maxBytes: Int = defaultMaxBytes()
+    private val maxBytes: Int = defaultMaxBytes(),
+    private val onEvict: ((PdfPageBitmapCacheKey) -> Unit)? = null
 ) {
     private val entries = LinkedHashMap<PdfPageBitmapCacheKey, RenderedPdfPage>(0, 0.75f, true)
     private var currentBytes = 0
@@ -17,12 +18,14 @@ class PdfPageBitmapCache(
     @Synchronized
     fun get(key: PdfPageBitmapCacheKey): RenderedPdfPage? = entries[key]
 
-    @Synchronized
     fun put(key: PdfPageBitmapCacheKey, page: RenderedPdfPage) {
-        entries.remove(key)?.let { currentBytes -= it.bitmap.cacheSizeBytes() }
-        entries[key] = page
-        currentBytes += page.bitmap.cacheSizeBytes()
-        trimToBudget()
+        val evicted = synchronized(this) {
+            entries.remove(key)?.let { currentBytes -= it.bitmap.cacheSizeBytes() }
+            entries[key] = page
+            currentBytes += page.bitmap.cacheSizeBytes()
+            trimToBudget()
+        }
+        evicted.forEach { onEvict?.invoke(it) }
     }
 
     @Synchronized
@@ -43,13 +46,17 @@ class PdfPageBitmapCache(
         currentBytes = 0
     }
 
-    private fun trimToBudget() {
+    // Must be called while holding the object's intrinsic lock (from within synchronized(this)).
+    private fun trimToBudget(): List<PdfPageBitmapCacheKey> {
+        val evicted = mutableListOf<PdfPageBitmapCacheKey>()
         val iterator = entries.iterator()
         while (currentBytes > maxBytes && iterator.hasNext()) {
             val eldest = iterator.next()
             currentBytes -= eldest.value.bitmap.cacheSizeBytes()
+            evicted += eldest.key
             iterator.remove()
         }
+        return evicted
     }
 }
 

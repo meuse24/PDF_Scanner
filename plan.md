@@ -194,6 +194,14 @@ try {
 
 ## Phase 5 – App-Lock und Privacy-Verbesserungen
 
+**Status (2026-06-27): Abgeschlossen.**
+
+- `FLAG_SECURE` wird per Compose-`SideEffect` reaktiv für die gesamte Dauer eines aktivierten App-Locks gesetzt und beim Deaktivieren wieder entfernt. Dadurch ist auch die Aufgabenübersicht geschützt, bevor der Lock-State beim nächsten Start erneut gesetzt wird.
+- Der gemeinsame Name des Restore-Staging-Verzeichnisses liegt in `domain/backup`.
+- `CleanStagingDirsUseCase` entfernt beim App-Start rekursiv alte Restore-Sitzungen; die Ausführung erfolgt auf dem vorhandenen IO-Dispatcher.
+- Zwei neue Unit-Tests verifizieren Bereinigung und idempotentes Verhalten ohne vorhandenes Staging-Verzeichnis.
+- Verifiziert mit `./gradlew.bat --no-configuration-cache testDebugUnitTest lintDebug --console=plain`: Build erfolgreich, 0 Lint-Errors, 432 Unit-Tests ohne Fehler.
+
 ### 5.1 `FLAG_SECURE` bei aktiviertem App-Lock setzen
 
 **Datei:** `MainActivity.kt:41`

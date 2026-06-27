@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -10,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.setValue
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -57,6 +59,14 @@ class MainActivity : FragmentActivity() {
             val scope = rememberCoroutineScope()
             var isAuthenticating by remember { mutableStateOf(false) }
             val windowSizeClass = calculateWindowSizeClass(this)
+
+            SideEffect {
+                if (settings.appLockEnabled) {
+                    window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                } else {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                }
+            }
 
             PDF_ScannerTheme(
                 themeMode = settings.themeMode,

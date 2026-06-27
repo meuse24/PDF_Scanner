@@ -8,6 +8,7 @@ import info.meuse24.pdf_scanner.domain.backup.BackupRestorePrepareResult
 import info.meuse24.pdf_scanner.domain.backup.BackupRestorePreview
 import info.meuse24.pdf_scanner.domain.backup.BackupRestoreResult
 import info.meuse24.pdf_scanner.domain.backup.BackupStagingResult
+import info.meuse24.pdf_scanner.domain.backup.BACKUP_RESTORE_STAGING_DIR_NAME
 import info.meuse24.pdf_scanner.domain.gateway.BackupArchiveCodec
 import info.meuse24.pdf_scanner.domain.gateway.BackupLocationFactory
 import info.meuse24.pdf_scanner.domain.gateway.BackupPayloadStagingReader
@@ -94,7 +95,10 @@ class RestoreBackupUseCase @Inject constructor(
     }
 
     private fun newStagingDir(): File =
-        File(File(storageProvider.tempDir(), STAGING_DIR_NAME), UUID.randomUUID().toString())
+        File(
+            File(storageProvider.tempDir(), BACKUP_RESTORE_STAGING_DIR_NAME),
+            UUID.randomUUID().toString()
+        )
 
     private fun BackupManifest.toPreview(): BackupRestorePreview {
         val totalBytes = documents.sumOf { document ->
@@ -115,8 +119,4 @@ class RestoreBackupUseCase @Inject constructor(
 
     private fun Exception.toBackupFailure(): BackupFailure =
         (this as? BackupArchiveException)?.failure ?: BackupFailure.Io(message)
-
-    private companion object {
-        const val STAGING_DIR_NAME = "backup_restore"
-    }
 }

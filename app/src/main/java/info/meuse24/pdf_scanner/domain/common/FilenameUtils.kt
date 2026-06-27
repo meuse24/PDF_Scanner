@@ -25,3 +25,12 @@ fun sanitizeDownloadFolderName(filename: String): String {
     val withoutPdfExtension = filename.replace(Regex("""(?i)\.pdf$"""), "")
     return sanitizeFilename(withoutPdfExtension, fallback = "export")
 }
+
+fun resolveSafeChildFile(directory: File, filename: String): File {
+    val canonicalDirectory = directory.canonicalFile
+    val candidate = File(canonicalDirectory, filename).canonicalFile
+    require(candidate.parentFile == canonicalDirectory) {
+        "Resolved path escapes target directory"
+    }
+    return candidate
+}

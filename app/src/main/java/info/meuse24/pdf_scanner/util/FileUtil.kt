@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.domain.common.resolveSafeChildFile
+import info.meuse24.pdf_scanner.domain.common.sanitizeFilename
 import info.meuse24.pdf_scanner.domain.gateway.DocumentFileStore
 import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
@@ -20,13 +22,14 @@ open class FileUtil @Inject constructor(
 
     override fun savePdf(source: Any, filename: String): File {
         val scansDir = storageProvider.scansDir()
+        val safeFilename = sanitizeFilename(filename)
 
         // Make filename unique: append _2, _3, … if the target already exists (#1)
-        var destFile = File(scansDir, "$filename.pdf")
+        var destFile = resolveSafeChildFile(scansDir, "$safeFilename.pdf")
         if (destFile.exists()) {
             var counter = 2
             do {
-                destFile = File(scansDir, "${filename}_$counter.pdf")
+                destFile = resolveSafeChildFile(scansDir, "${safeFilename}_$counter.pdf")
                 counter++
             } while (destFile.exists())
         }

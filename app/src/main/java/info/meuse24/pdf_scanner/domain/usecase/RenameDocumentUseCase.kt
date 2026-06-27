@@ -1,6 +1,8 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
 import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
+import info.meuse24.pdf_scanner.domain.common.resolveSafeChildFile
+import info.meuse24.pdf_scanner.domain.common.sanitizeFilename
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import java.io.File
@@ -20,9 +22,11 @@ class RenameDocumentUseCase @Inject constructor(
     suspend operator fun invoke(record: Document, newName: String): RenameDocumentResult {
         val trimmed = newName.trim()
         if (trimmed.isBlank()) return RenameDocumentResult.BlankName
+        val safeName = sanitizeFilename(trimmed, fallback = "")
+        if (safeName.isBlank()) return RenameDocumentResult.BlankName
 
         val targetScansDir = storageProvider.scansDir()
-        val newFile = File(targetScansDir, "$trimmed.pdf")
+        val newFile = resolveSafeChildFile(targetScansDir, "$safeName.pdf")
         if (newFile.exists()) return RenameDocumentResult.TargetExists
 
         val oldFile = File(record.filepath)
@@ -30,12 +34,12 @@ class RenameDocumentUseCase @Inject constructor(
 
         val newThumbPath = record.thumbnailPath?.let { oldThumb ->
             val thumbFile = File(oldThumb)
-            val newThumb = File(targetScansDir, "$trimmed.jpg")
+            val newThumb = resolveSafeChildFile(targetScansDir, "$safeName.jpg")
             val renamed = !thumbFile.exists() || thumbFile.renameTo(newThumb)
             if (renamed) newThumb.absolutePath else oldThumb
         }
 
-        repository.updateFilenameAndPath(record.id, trimmed, newFile.absolutePath, newThumbPath)
-        return RenameDocumentResult.Success(trimmed)
+        repository.updateFilenameAndPath(record.id, safeName, newFile.absolutePath, newThumbPath)
+        return RenameDocumentResult.Success(safeName)
     }
 }

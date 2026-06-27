@@ -113,6 +113,13 @@ Das erfordert, dass `PdfRenderingOps.createPdfFromImages` einen `imageProvider`-
 
 ## Phase 3 – Dateinamen-Normalisierung durchsetzen
 
+**Status (2026-06-27): Abgeschlossen.**
+
+- `sanitizeFilename` wird sowohl beim Speichern als auch beim Umbenennen vor jeder Pfadbildung angewendet.
+- `resolveSafeChildFile` prüft zentral über kanonische Pfade, dass das Ziel ein direktes Kind des vorgesehenen Verzeichnisses ist.
+- Drei neue Unit-Tests decken Traversal-Namen aus externen Quellen, sicheres Umbenennen und vollständig ungültige Namen ab.
+- Verifiziert mit `./gradlew.bat --no-configuration-cache testDebugUnitTest lintDebug --console=plain`: Build erfolgreich, 0 Lint-Errors, 428 Unit-Tests ohne Fehler.
+
 ### 3.1 Path-Traversal-Schutz in `FileUtil`
 
 **Datei:** `util/FileUtil.kt:25`

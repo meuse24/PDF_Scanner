@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">M24 PDF-Scanner</string>
     <string name="app_label">PDF 扫描</string>
@@ -328,20 +328,20 @@
     <string name="signature_screen_title">Sign PDF</string>
     <string name="signature_description">Add a handwritten signature stamp to this PDF</string>
     <string name="signature_details">Draw your signature, choose the target page, and save a new signed PDF copy. The signature is placed as a stamp at the bottom right of the selected page. Existing content and OCR text stay untouched.</string>
-    <string name="signature_hint">Draw your signature in one or more strokes.</string>
+    <string name="signature_hint">用一笔或多笔画出您的签名。</string>
     <string name="signature_apply">Add signature</string>
     <string name="signature_success">Signed PDF created: %1$s</string>
     <string name="signature_error">Error adding signature</string>
     <string name="signature_required">Draw a signature first</string>
     <string name="action_sign_pdf">Sign PDF</string>
-    <string name="signature_target_page">Target page: %1$d of %2$d</string>
+    <string name="signature_target_page">目标页面：第 %1$d 页（共 %2$d 页）</string>
     <string name="signature_page_previous">Previous page</string>
     <string name="signature_page_next">Next page</string>
     <string name="signature_size_label">Signature size</string>
     <string name="signature_size_small">Small</string>
     <string name="signature_size_medium">Medium</string>
     <string name="signature_size_large">Large</string>
-    <string name="signature_clear">Clear signature</string>
+    <string name="signature_clear">清除签名</string>
     <string name="protected_pdf_unsupported">Unlock the PDF before editing it</string>
     <string name="help_item_sign_pdf">Choose Sign PDF to draw a handwritten signature, choose the target page and stamp size, and save it as a new PDF copy.</string>
     <string name="reorder_invalid_order">Choose a valid page order for the whole PDF</string>

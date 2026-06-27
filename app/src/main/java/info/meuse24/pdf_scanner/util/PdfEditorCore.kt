@@ -106,7 +106,7 @@ internal suspend fun PdfEditor.writePdfSuspending(
     val parentDir = output.parentFile
         ?: output.absoluteFile.parentFile
         ?: throw IOException("Kann übergeordnetes Verzeichnis nicht ermitteln")
-    val temp = File(parentDir, "${output.nameWithoutExtension}_tmp.pdf")
+    val temp = File.createTempFile("${output.nameWithoutExtension}_", "_tmp.pdf", parentDir)
     try {
         write(temp)
         if (!temp.exists() || temp.length() == 0L) {

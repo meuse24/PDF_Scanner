@@ -61,7 +61,7 @@ class MainActivity : FragmentActivity() {
             val windowSizeClass = calculateWindowSizeClass(this)
 
             SideEffect {
-                if (settings.appLockEnabled) {
+                if (settings.appLockEnabled && isLocked) {
                     window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
                 } else {
                     window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)

@@ -17,13 +17,21 @@ class BitmapPdfImageRenderer @Inject constructor(
 ) : PdfImageRenderer {
     override suspend fun decodeBitmapBytes(uri: Any, maxDimension: Int): ByteArray? {
         val androidUri = uri as? Uri ?: return null
-        require(maxDimension > 0) { "maxDimension must be positive" }
+        // Guard inside the try so an invalid maxDimension returns null like other failures,
+        // rather than throwing an unhandled IllegalArgumentException at the call site.
+        if (maxDimension <= 0) return null
 
         return try {
+            // Single stream read — both decode passes use decodeByteArray so cloud/share
+            // URIs that permit only one sequential read (e.g. Google Drive, email attachments)
+            // are handled correctly. sourceBytes goes out of scope after the second
+            // decodeByteArray call and is eligible for GC before compress runs.
+            val sourceBytes = context.contentResolver.openInputStream(androidUri)
+                ?.use { it.readBytes() } ?: return null
+            if (sourceBytes.size > MAX_SOURCE_BYTES) return null
+
             val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-            context.contentResolver.openInputStream(androidUri)?.use { input ->
-                BitmapFactory.decodeStream(input, null, bounds)
-            } ?: return null
+            BitmapFactory.decodeByteArray(sourceBytes, 0, sourceBytes.size, bounds)
             if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
 
             val sampleSize = calculateInSampleSize(
@@ -31,26 +39,29 @@ class BitmapPdfImageRenderer @Inject constructor(
                 height = bounds.outHeight,
                 maxDimension = maxDimension
             )
-            val decoded = context.contentResolver.openInputStream(androidUri)?.use { input ->
-                BitmapFactory.decodeStream(
-                    input,
-                    null,
-                    BitmapFactory.Options().apply { inSampleSize = sampleSize }
-                )
-            } ?: return null
+            val decoded = BitmapFactory.decodeByteArray(
+                sourceBytes, 0, sourceBytes.size,
+                BitmapFactory.Options().apply { inSampleSize = sampleSize }
+            ) ?: return null
 
-            val bitmap = decoded.scaleDownTo(maxDimension)
+            // decoded.recycle() is in the outer finally so OOM from scaleDownTo cannot leak.
             try {
-                ByteArrayOutputStream().use { output ->
-                    if (!bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, output)) {
-                        return null
+                val bitmap = decoded.scaleDownTo(maxDimension)
+                try {
+                    ByteArrayOutputStream().use { output ->
+                        if (!bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, output)) {
+                            return null
+                        }
+                        output.toByteArray()
                     }
-                    output.toByteArray()
+                } finally {
+                    if (bitmap !== decoded) bitmap.recycle()
                 }
             } finally {
-                if (bitmap !== decoded) bitmap.recycle()
                 decoded.recycle()
             }
+        } catch (_: OutOfMemoryError) {
+            null
         } catch (_: Exception) {
             null
         }
@@ -78,5 +89,6 @@ class BitmapPdfImageRenderer @Inject constructor(
 
     private companion object {
         const val JPEG_QUALITY = 85
+        const val MAX_SOURCE_BYTES = 50_000_000 // 50 MB – rejects uncompressed/RAW inputs
     }
 }

@@ -611,7 +611,7 @@ class ImportAndPdfEditorInstrumentedTest {
         val imageBytes = listOf(createJpegBytes(200, 200, android.graphics.Color.RED))
         val outputFile = File(scansDir, "androidtest_imgpdf_single.pdf")
 
-        pdfEditor.createPdfFromImages(imageBytes, ImagePdfOptions(ImagePageLayout.SINGLE), outputFile)
+        createPdfFromImageBytes(imageBytes, ImagePdfOptions(ImagePageLayout.SINGLE), outputFile)
 
         assertTrue(outputFile.exists())
         assertEquals(1, pdfEditor.getPageCount(outputFile))
@@ -625,7 +625,7 @@ class ImportAndPdfEditorInstrumentedTest {
         )
         val outputFile = File(scansDir, "androidtest_imgpdf_two2.pdf")
 
-        pdfEditor.createPdfFromImages(imageBytes, ImagePdfOptions(ImagePageLayout.TWO_PER_PAGE), outputFile)
+        createPdfFromImageBytes(imageBytes, ImagePdfOptions(ImagePageLayout.TWO_PER_PAGE), outputFile)
 
         assertTrue(outputFile.exists())
         assertEquals(1, pdfEditor.getPageCount(outputFile))
@@ -636,7 +636,7 @@ class ImportAndPdfEditorInstrumentedTest {
         val imageBytes = (1..3).map { createJpegBytes(200, 200, android.graphics.Color.GREEN) }
         val outputFile = File(scansDir, "androidtest_imgpdf_two3.pdf")
 
-        pdfEditor.createPdfFromImages(imageBytes, ImagePdfOptions(ImagePageLayout.TWO_PER_PAGE), outputFile)
+        createPdfFromImageBytes(imageBytes, ImagePdfOptions(ImagePageLayout.TWO_PER_PAGE), outputFile)
 
         assertEquals(2, pdfEditor.getPageCount(outputFile))
     }
@@ -646,7 +646,7 @@ class ImportAndPdfEditorInstrumentedTest {
         val imageBytes = (1..4).map { createJpegBytes(200, 200, android.graphics.Color.CYAN) }
         val outputFile = File(scansDir, "androidtest_imgpdf_four4.pdf")
 
-        pdfEditor.createPdfFromImages(imageBytes, ImagePdfOptions(ImagePageLayout.FOUR_PER_PAGE), outputFile)
+        createPdfFromImageBytes(imageBytes, ImagePdfOptions(ImagePageLayout.FOUR_PER_PAGE), outputFile)
 
         assertEquals(1, pdfEditor.getPageCount(outputFile))
     }
@@ -658,7 +658,11 @@ class ImportAndPdfEditorInstrumentedTest {
         val blueBytes = createJpegBytes(200, 300, android.graphics.Color.BLUE)
         val outputFile = File(scansDir, "androidtest_imgpdf_slots.pdf")
 
-        pdfEditor.createPdfFromImages(listOf(redBytes, blueBytes), ImagePdfOptions(ImagePageLayout.TWO_PER_PAGE), outputFile)
+        createPdfFromImageBytes(
+            listOf(redBytes, blueBytes),
+            ImagePdfOptions(ImagePageLayout.TWO_PER_PAGE),
+            outputFile
+        )
 
         val bitmap = pdfEditor.renderPageThumbnail(outputFile, pageIndex = 0, maxSizePx = 400)
         assertNotNull(bitmap)
@@ -678,7 +682,7 @@ class ImportAndPdfEditorInstrumentedTest {
         val outputFile = File(scansDir, "androidtest_imgpdf_thumb.pdf")
         val thumbFile  = File(scansDir, "androidtest_imgpdf_thumb.jpg")
 
-        pdfEditor.createPdfFromImages(imageBytes, ImagePdfOptions(ImagePageLayout.SINGLE), outputFile)
+        createPdfFromImageBytes(imageBytes, ImagePdfOptions(ImagePageLayout.SINGLE), outputFile)
         pdfEditor.generateThumbnail(outputFile, thumbFile)
 
         assertTrue(thumbFile.exists())
@@ -692,6 +696,19 @@ class ImportAndPdfEditorInstrumentedTest {
         bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, out)
         bmp.recycle()
         return out.toByteArray()
+    }
+
+    private fun createPdfFromImageBytes(
+        imageBytes: List<ByteArray?>,
+        options: ImagePdfOptions,
+        outputFile: File
+    ) = runBlocking {
+        pdfEditor.createPdfFromImages(
+            imageCount = imageBytes.size,
+            imageProvider = imageBytes::get,
+            options = options,
+            outputFile = outputFile
+        )
     }
 
     private lateinit var fakeDao: InstrumentedFakeScanDao

@@ -29,15 +29,23 @@ open class ImagePdfBuilder @Inject constructor(
     ): ImagePdfBuildResult {
         require(imageUris.isNotEmpty())
 
-        val imageBytes: List<ByteArray?> = imageUris.map { uri ->
-            imageRenderer.decodeBitmapBytes(uri, IMAGE_PDF_MAX_SOURCE_DIMENSION)
-        }
-
-        val skippedCount = imageBytes.count { it == null }
-        require(skippedCount < imageUris.size)
+        var skippedCount = 0
 
         try {
-            pdfEditor.createPdfFromImages(imageBytes, options, outputFile)
+            pdfEditor.createPdfFromImages(
+                imageCount = imageUris.size,
+                imageProvider = { index ->
+                    imageRenderer.decodeBitmapBytes(
+                        imageUris[index],
+                        IMAGE_PDF_MAX_SOURCE_DIMENSION
+                    ).also { bytes ->
+                        if (bytes == null) skippedCount++
+                    }
+                },
+                options = options,
+                outputFile = outputFile
+            )
+            require(skippedCount < imageUris.size)
             val pageCount = pdfEditor.getPageCount(outputFile)
             return ImagePdfBuildResult(
                 pdfFile = outputFile,

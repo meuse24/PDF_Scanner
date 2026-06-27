@@ -161,6 +161,36 @@ class CreatePdfFromImagesUseCaseTest {
     }
 
     @Test
+    fun `Bilder werden erst auf Anforderung des PDF Editors dekodiert`() = runTest {
+        val uris = listOf(okUri("lazy1"), okUri("lazy2"))
+        val events = mutableListOf<String>()
+        val renderer = FakePdfImageRenderer(uris.toSet(), fakeBytes, events)
+        val editor = FakeImagesPdfEditor(tmpFolder, events)
+        val builder = ImagePdfBuilder(
+            renderer,
+            editor,
+            TestStorageProvider(tmpFolder.root)
+        )
+
+        builder.createPdf(
+            imageUris = uris,
+            options = ImagePdfOptions(ImagePageLayout.SINGLE),
+            outputFile = tmpFolder.newFile("lazy.pdf")
+        )
+
+        assertEquals(
+            listOf(
+                "editor:start",
+                "editor:request:0",
+                "renderer:decode",
+                "editor:request:1",
+                "renderer:decode"
+            ),
+            events
+        )
+    }
+
+    @Test
     fun `Dateiname wird eindeutig aufgeloest bei Konflikt`() = runTest {
         val scansDir = tmpFolder.newFolder("scans")
         File(scansDir, "mein_pdf.pdf").writeText("x")
@@ -192,9 +222,11 @@ class CreatePdfFromImagesUseCaseTest {
 
 private class FakePdfImageRenderer(
     private val readableUris: Set<Uri>,
-    private val bytes: ByteArray
+    private val bytes: ByteArray,
+    private val events: MutableList<String>? = null
 ) : PdfImageRenderer {
     override suspend fun decodeBitmapBytes(uri: Any, maxDimension: Int): ByteArray? {
+        events?.add("renderer:decode")
         return if (uri in readableUris) bytes else null
     }
 }
@@ -202,16 +234,23 @@ private class FakePdfImageRenderer(
 // ── Fake PdfEditor ────────────────────────────────────────────────────────────
 
 private class FakeImagesPdfEditor(
-    private val tmpFolder: TemporaryFolder
+    private val tmpFolder: TemporaryFolder,
+    private val events: MutableList<String>? = null
 ) : PdfEditor() {
 
     var lastPageCount: Int = -1
 
-    override fun createPdfFromImages(
-        imageBytes: List<ByteArray?>,
+    override suspend fun createPdfFromImages(
+        imageCount: Int,
+        imageProvider: suspend (index: Int) -> ByteArray?,
         options: ImagePdfOptions,
         outputFile: File
     ): File {
+        events?.add("editor:start")
+        val imageBytes = (0 until imageCount).map { index ->
+            events?.add("editor:request:$index")
+            imageProvider(index)
+        }
         lastPageCount = if (options.pageMode == ImagePdfPageMode.PHOTO_PAGE) {
             imageBytes.count { it != null }
         } else {

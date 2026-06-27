@@ -438,17 +438,28 @@ open class PdfEditor @Inject constructor() :
      * Das Layout bestimmt, wie viele Bilder pro Seite angeordnet werden.
      * Bilder werden proportional (fit-inside) zentriert in ihre Zelle skaliert.
      */
-    override open fun createPdfFromImages(
-        imageBytes: List<ByteArray?>,
+    override suspend fun createPdfFromImages(
+        imageCount: Int,
+        imageProvider: suspend (index: Int) -> ByteArray?,
         options: ImagePdfOptions,
         outputFile: File
     ): File {
-        require(imageBytes.isNotEmpty()) { "Bildliste darf nicht leer sein" }
-        return writePdf("CreatePdfFromImages", outputFile) { target ->
+        require(imageCount > 0) { "Bildliste darf nicht leer sein" }
+        return writePdfSuspending("CreatePdfFromImages", outputFile) { target ->
             PDDocument().use { doc ->
                 when (options.pageMode) {
-                    ImagePdfPageMode.FIXED_PAGE -> addFixedImagePages(doc, imageBytes, options)
-                    ImagePdfPageMode.PHOTO_PAGE -> addPhotoImagePages(doc, imageBytes, options)
+                    ImagePdfPageMode.FIXED_PAGE -> addFixedImagePages(
+                        doc,
+                        imageCount,
+                        imageProvider,
+                        options
+                    )
+                    ImagePdfPageMode.PHOTO_PAGE -> addPhotoImagePages(
+                        doc,
+                        imageCount,
+                        imageProvider,
+                        options
+                    )
                 }
                 if (doc.numberOfPages == 0) {
                     throw IOException("CreatePdfFromImages erzeugte keine Seiten")
@@ -458,24 +469,26 @@ open class PdfEditor @Inject constructor() :
         }
     }
 
-    private fun addFixedImagePages(
+    private suspend fun addFixedImagePages(
         doc: PDDocument,
-        imageBytes: List<ByteArray?>,
+        imageCount: Int,
+        imageProvider: suspend (index: Int) -> ByteArray?,
         options: ImagePdfOptions
     ) {
         val cells = layoutCells(options)
         val pageRectangle = pageRectangle(options.pageSetup)
-        imageBytes.chunked(options.layout.imagesPerPage).forEach { chunk ->
+        (0 until imageCount).chunked(options.layout.imagesPerPage).forEach { imageIndexes ->
             val page = PDPage(pageRectangle)
             doc.addPage(page)
             // Einen einzigen Content-Stream pro Seite öffnen, damit alle Bilder
             // erhalten bleiben. Mehrere Streams ohne APPEND überschreiben sich.
             PDPageContentStream(doc, page).use { cs ->
-                chunk.forEachIndexed { slotIndex, bytes ->
+                imageIndexes.forEachIndexed { slotIndex, imageIndex ->
+                    val bytes = imageProvider(imageIndex)
                     if (bytes != null) {
                         try {
                             val image = PDImageXObject.createFromByteArray(
-                                doc, bytes, "img$slotIndex"
+                                doc, bytes, "img$imageIndex"
                             )
                             val cell = cells[slotIndex]
                             val draw = fitInsideCell(
@@ -491,12 +504,14 @@ open class PdfEditor @Inject constructor() :
         }
     }
 
-    private fun addPhotoImagePages(
+    private suspend fun addPhotoImagePages(
         doc: PDDocument,
-        imageBytes: List<ByteArray?>,
+        imageCount: Int,
+        imageProvider: suspend (index: Int) -> ByteArray?,
         options: ImagePdfOptions
     ) {
-        imageBytes.forEachIndexed { index, bytes ->
+        repeat(imageCount) { index ->
+            val bytes = imageProvider(index)
             if (bytes != null) {
                 try {
                     val image = PDImageXObject.createFromByteArray(doc, bytes, "photo$index")

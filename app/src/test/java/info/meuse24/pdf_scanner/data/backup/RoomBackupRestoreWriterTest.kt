@@ -284,8 +284,9 @@ private class FakePdfRenderingOps(
     override fun convertToGrayscale(input: File, outputDir: File): File =
         throw UnsupportedOperationException()
 
-    override fun createPdfFromImages(
-        imageBytes: List<ByteArray?>,
+    override suspend fun createPdfFromImages(
+        imageCount: Int,
+        imageProvider: suspend (index: Int) -> ByteArray?,
         options: ImagePdfOptions,
         outputFile: File
     ): File = throw UnsupportedOperationException()

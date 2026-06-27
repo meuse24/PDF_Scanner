@@ -5,6 +5,7 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import kotlin.coroutines.cancellation.CancellationException
 
 internal fun mapDisplayToPdfCoord(
     nx: Float,
@@ -90,6 +91,36 @@ internal inline fun PdfEditor.writePdf(
             StandardCopyOption.ATOMIC_MOVE,
             StandardCopyOption.REPLACE_EXISTING
         )
+    } catch (e: Exception) {
+        temp.delete()
+        throw if (e is IOException) e else IOException("Fehler bei $operation: ${e.message}", e)
+    }
+    return output
+}
+
+internal suspend fun PdfEditor.writePdfSuspending(
+    operation: String,
+    output: File,
+    write: suspend (File) -> Unit
+): File {
+    val parentDir = output.parentFile
+        ?: output.absoluteFile.parentFile
+        ?: throw IOException("Kann übergeordnetes Verzeichnis nicht ermitteln")
+    val temp = File(parentDir, "${output.nameWithoutExtension}_tmp.pdf")
+    try {
+        write(temp)
+        if (!temp.exists() || temp.length() == 0L) {
+            throw IOException("$operation erzeugte keine Ausgabedatei")
+        }
+        Files.move(
+            temp.toPath(),
+            output.toPath(),
+            StandardCopyOption.ATOMIC_MOVE,
+            StandardCopyOption.REPLACE_EXISTING
+        )
+    } catch (e: CancellationException) {
+        temp.delete()
+        throw e
     } catch (e: Exception) {
         temp.delete()
         throw if (e is IOException) e else IOException("Fehler bei $operation: ${e.message}", e)

@@ -57,6 +57,15 @@ Lint meldet Mengenangaben, die als `<plurals>` umgesetzt werden sollten (18 Warn
 
 ## Phase 2 – OOM-Risiko in der Bild-zu-PDF-Pipeline beseitigen
 
+**Status (2026-06-27): Abgeschlossen.**
+
+- `BitmapPdfImageRenderer` bestimmt zuerst die Bildgrenzen, dekodiert mit `inSampleSize`, skaliert die längste Seite exakt auf höchstens `maxDimension` und komprimiert nur dieses Bitmap als JPEG.
+- `PdfRenderingOps.createPdfFromImages` fordert Bilddaten über einen suspendierenden Provider indexweise an; `ImagePdfBuilder` und `PdfEditor` halten daher keine vorberechnete Liste aller Quelldaten mehr.
+- Ein JVM-Test verifiziert die lazy/sequentielle Aufrufreihenfolge. Ein Instrumentationstest prüft die tatsächliche Ausgabedimension.
+- Verifiziert mit `./gradlew.bat --no-configuration-cache testDebugUnitTest lintDebug --console=plain`: Build erfolgreich, 0 Lint-Errors, 425 Unit-Tests ohne Fehler.
+- `compileDebugAndroidTestKotlin` wurde zusätzlich ausgeführt, bleibt aber durch bereits vor Phase 2 vorhandene Fehler in anderen Instrumentationstests blockiert (veraltete DAO-/OCR-Testdoubles). Die in Phase 2 geänderten Verträge und der neue Test erzeugen in der Compiler-Ausgabe keine zusätzlichen Fehler.
+- Auf eine starre 50-Bilder-Grenze wurde bewusst verzichtet: Die sequentielle Verarbeitung beseitigt den geplanten Heap-Peak, ohne legitime Stapelimporte künstlich einzuschränken.
+
 ### 2.1 Tatsächliches Downsampling in `BitmapPdfImageRenderer`
 
 **Datei:** `util/BitmapPdfImageRenderer.kt:16`

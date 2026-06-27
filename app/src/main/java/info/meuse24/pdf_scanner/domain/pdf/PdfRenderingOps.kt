@@ -7,8 +7,9 @@ import java.io.File
 interface PdfRenderingOps {
     fun compressPdf(input: File, outputDir: File, preset: PdfCompressionPreset): File
     fun convertToGrayscale(input: File, outputDir: File): File
-    fun createPdfFromImages(
-        imageBytes: List<ByteArray?>,
+    suspend fun createPdfFromImages(
+        imageCount: Int,
+        imageProvider: suspend (index: Int) -> ByteArray?,
         options: ImagePdfOptions,
         outputFile: File
     ): File

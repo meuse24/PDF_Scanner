@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.ui.viewer
 
 import android.graphics.Bitmap
+import info.meuse24.pdf_scanner.domain.common.DetectedEntities
 import info.meuse24.pdf_scanner.domain.model.Document
 
 data class PdfViewerUiState(
@@ -11,7 +12,14 @@ data class PdfViewerUiState(
     val pageCount: Int = 0,
     val currentPageIndex: Int = 0,
     val zoomScale: Float = 1f,
-    val pages: Map<Int, PdfViewerPageState> = emptyMap()
+    val pages: Map<Int, PdfViewerPageState> = emptyMap(),
+    val detectedEntities: DetectedEntities = DetectedEntities(),
+    val pageSearchAvailable: Boolean = false,
+    val searchActive: Boolean = false,
+    val searchQuery: String = "",
+    val searchMatches: List<Int> = emptyList(),
+    val searchCurrentIndex: Int = -1,
+    val searching: Boolean = false
 )
 
 data class PdfViewerPageState(

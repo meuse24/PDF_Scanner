@@ -13,6 +13,7 @@ data class HomeArchiveUiState(
     val filteredScans: List<Document> = emptyList(),
     val folders: List<Folder> = emptyList(),
     val currentFolder: Folder? = null,
+    val currentFolderId: Long? = null,
     val favoritesFilter: Boolean = false,
     val currentTagKey: String? = null,
     val availableTagKeys: List<String> = emptyList(),
@@ -51,3 +52,24 @@ data class HomeMessageUiState(
     val trashMessage: String? = null,
     val lastTrashed: List<Long> = emptyList()
 )
+
+@Immutable
+data class AddedDocumentScrollRequest(
+    val documentId: Long,
+    val folderId: Long?
+)
+
+internal fun AddedDocumentScrollRequest.matchesArchiveContext(
+    state: HomeArchiveUiState
+): Boolean =
+    state.searchQuery.isBlank() &&
+        !state.favoritesFilter &&
+        state.currentTagKey == null &&
+        folderId == state.currentFolderId
+
+@Immutable
+sealed interface HomeHashUiState {
+    data object Idle : HomeHashUiState
+    data class Calculating(val filename: String) : HomeHashUiState
+    data class Success(val filename: String, val sha256: String) : HomeHashUiState
+}

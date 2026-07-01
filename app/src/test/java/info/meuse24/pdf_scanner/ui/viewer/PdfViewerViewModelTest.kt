@@ -19,6 +19,7 @@ import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderer
 import info.meuse24.pdf_scanner.util.RenderedPdfPage
 import kotlinx.coroutines.async
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +33,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -63,6 +65,9 @@ class PdfViewerViewModelTest {
                 R.string.pdf_viewer_invalid_page to "Invalid page",
                 R.string.pdf_viewer_out_of_memory to "Out of memory",
                 R.string.pdf_viewer_renderer_failed to "Renderer failed",
+                R.string.pdf_viewer_copy_iban_success to "IBAN copied",
+                R.string.pdf_viewer_copy_amount_success to "Amount copied",
+                R.string.pdf_viewer_no_calendar_app to "No calendar app",
                 R.string.export_success to "Exported %s",
                 R.string.error_export_failed to "Export failed"
             )
@@ -285,6 +290,95 @@ class PdfViewerViewModelTest {
     }
 
     @Test
+    fun `search finds pages and emits wrapped navigation requests`() = runTest(testDispatcher) {
+        val pdf = tmpFolder.newFile("search.pdf").apply { writeText("pdf") }
+        val viewModel = buildViewModel(
+            records = listOf(
+                scanRecord(
+                    filepath = pdf.absolutePath,
+                    pageCount = 3,
+                    pageTexts = listOf("Alpha", "Beta invoice", "BETA paid")
+                )
+            ),
+            renderer = FakePdfPageBitmapRenderer(FakePdfDocumentBitmapHandle(pageCount = 3))
+        )
+        advanceUntilIdle()
+        assertTrue(viewModel.uiState.value.pageSearchAvailable)
+
+        viewModel.openSearch()
+        val firstRequest = async(start = CoroutineStart.UNDISPATCHED) {
+            viewModel.scrollToPageRequests.first()
+        }
+        viewModel.updateSearchQuery("beta")
+        advanceUntilIdle()
+
+        assertEquals(listOf(1, 2), viewModel.uiState.value.searchMatches)
+        assertEquals(0, viewModel.uiState.value.searchCurrentIndex)
+        assertEquals(1, firstRequest.await())
+
+        val nextRequest = async(start = CoroutineStart.UNDISPATCHED) {
+            viewModel.scrollToPageRequests.first()
+        }
+        viewModel.goToNextMatch()
+        assertEquals(2, nextRequest.await())
+        assertEquals(1, viewModel.uiState.value.searchCurrentIndex)
+
+        val wrappedRequest = async(start = CoroutineStart.UNDISPATCHED) {
+            viewModel.scrollToPageRequests.first()
+        }
+        viewModel.goToNextMatch()
+        assertEquals(1, wrappedRequest.await())
+        assertEquals(0, viewModel.uiState.value.searchCurrentIndex)
+
+        viewModel.closeSearch()
+        assertFalse(viewModel.uiState.value.searchActive)
+        assertEquals("", viewModel.uiState.value.searchQuery)
+        assertEquals(emptyList<Int>(), viewModel.uiState.value.searchMatches)
+    }
+
+    @Test
+    fun `search stays unavailable for misaligned legacy page text`() = runTest(testDispatcher) {
+        val pdf = tmpFolder.newFile("legacy-search.pdf").apply { writeText("pdf") }
+        val viewModel = buildViewModel(
+            records = listOf(
+                scanRecord(
+                    filepath = pdf.absolutePath,
+                    pageCount = 3,
+                    pageTexts = listOf("First", "Third")
+                )
+            ),
+            renderer = FakePdfPageBitmapRenderer(FakePdfDocumentBitmapHandle(pageCount = 3))
+        )
+
+        advanceUntilIdle()
+        viewModel.openSearch()
+
+        assertFalse(viewModel.uiState.value.pageSearchAvailable)
+        assertFalse(viewModel.uiState.value.searchActive)
+    }
+
+    @Test
+    fun `loading record detects smart document entities`() = runTest(testDispatcher) {
+        val pdf = tmpFolder.newFile("entities.pdf").apply { writeText("pdf") }
+        val viewModel = buildViewModel(
+            records = listOf(
+                scanRecord(
+                    filepath = pdf.absolutePath,
+                    extractedText = "Zahlbar bis 15.07.2026, Betrag 42,50 EUR, IBAN DE89 3704 0044 0532 0130 00"
+                )
+            ),
+            renderer = FakePdfPageBitmapRenderer(FakePdfDocumentBitmapHandle(pageCount = 1))
+        )
+
+        advanceUntilIdle()
+
+        val entities = viewModel.uiState.value.detectedEntities
+        assertEquals(listOf("42,50 EUR"), entities.amounts)
+        assertEquals(listOf("DE89 3704 0044 0532 0130 00"), entities.ibans)
+        assertEquals(1, entities.dates.size)
+    }
+
+    @Test
     fun `requestPrint emits print request for standard page sizes`() = runTest(testDispatcher) {
         val record = scanRecord()
         val viewModel = buildViewModel(
@@ -397,7 +491,9 @@ class PdfViewerViewModelTest {
     private fun scanRecord(
         filepath: String = File(tmpFolder.root, "scan.pdf").absolutePath,
         pageCount: Int = 1,
-        isEncrypted: Boolean = false
+        isEncrypted: Boolean = false,
+        extractedText: String? = null,
+        pageTexts: List<String> = emptyList()
     ): Document = Document(
         id = 1L,
         filename = "scan",
@@ -405,7 +501,10 @@ class PdfViewerViewModelTest {
         timestamp = 0L,
         pageCount = pageCount,
         fileSize = File(filepath).length(),
-        isEncrypted = isEncrypted
+        isEncrypted = isEncrypted,
+        extractedText = extractedText,
+        pageTexts = pageTexts,
+        hasStoredOcrText = !extractedText.isNullOrBlank() || pageTexts.any { it.isNotBlank() }
     )
 }
 

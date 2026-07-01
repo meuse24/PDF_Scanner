@@ -592,6 +592,14 @@ Exportiert alle Seiten des PDFs als einzelne JPEG-Bilder:
 2. Bearbeiten Sie Titel, Autor, Betreff und Stichwörter
 3. Bestätigen Sie – die Metadaten werden in die PDF-Datei geschrieben
 
+## SHA-256-Prüfsumme berechnen
+
+1. Öffnen Sie im Archiv das Drei-Punkte-Menü des Dokuments.
+2. Wählen Sie unter **Dokument → SHA-256 berechnen**.
+3. Die App zeigt die SHA-256-Prüfsumme an; mit **Kopieren** übernehmen Sie den vollständigen Wert in die Zwischenablage.
+
+Die Prüfsumme wird lokal direkt aus den Dateibytes berechnet, ohne die PDF im Viewer zu öffnen. Sie können den Wert anschließend lokal vergleichen oder bei einem Dienst wie VirusTotal suchen. Die App selbst lädt weder die PDF noch den Hash hoch.
+
 \newpage
 
 # Analyse

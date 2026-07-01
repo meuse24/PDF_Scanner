@@ -6,6 +6,7 @@ import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.usecase.DeleteScansUseCase
 import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
+import info.meuse24.pdf_scanner.domain.usecase.FakeExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactPdfUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
@@ -80,7 +81,8 @@ class RedactPdfWorkflowTest {
             searchablePdfBuilder,
             repository,
             AutoTagUseCase(),
-            FakeSettingsRepository()
+            FakeSettingsRepository(),
+            FakeExtractTextUseCase()
         )
         val makeSearchableWorkflow = MakeSearchableWorkflow(makeSearchableUseCase)
         val deleteScansUseCase = DeleteScansUseCase(repository)

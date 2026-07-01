@@ -189,6 +189,7 @@
     <string name="ocr_model_downloading">A transferir o modelo de idioma OCR…</string>
     <string name="ocr_model_installing">A instalar o modelo de idioma OCR…</string>
     <string name="action_copy">Copiar</string>
+    <string name="action_close">Fechar</string>
     <string name="action_share_text">Partilhar texto</string>
     <string name="ocr_copied">Texto copiado</string>
 
@@ -529,6 +530,19 @@
     <string name="pdf_viewer_invalid_page">Não foi possível abrir esta página.</string>
     <string name="pdf_viewer_out_of_memory">Esta página é grande demais para ser renderizada neste dispositivo.</string>
     <string name="pdf_viewer_renderer_failed">O visualizador PDF não conseguiu renderizar este documento.</string>
+    <string name="pdf_viewer_search">Pesquisar no documento</string>
+    <string name="pdf_viewer_search_hint">Pesquisar no documento</string>
+    <string name="pdf_viewer_search_no_matches">Sem resultados</string>
+    <string name="pdf_viewer_search_match_count">%1$d/%2$d</string>
+    <string name="pdf_viewer_search_previous">Resultado anterior</string>
+    <string name="pdf_viewer_search_next">Resultado seguinte</string>
+    <string name="pdf_viewer_search_close">Fechar pesquisa</string>
+    <string name="pdf_viewer_copy_iban">Copiar IBAN %1$s</string>
+    <string name="pdf_viewer_copy_iban_success">IBAN copiado</string>
+    <string name="pdf_viewer_copy_amount">Copiar montante %1$s</string>
+    <string name="pdf_viewer_copy_amount_success">Montante copiado</string>
+    <string name="pdf_viewer_create_event">Criar evento no calendário para %1$s</string>
+    <string name="pdf_viewer_no_calendar_app">Não foi encontrada uma aplicação de calendário</string>
     <string name="filter_tag_all">Todos</string>
     <string name="filter_tag_invoice">Faturas</string>
     <string name="filter_tag_contract">Contratos</string>

@@ -1,5 +1,6 @@
 package info.meuse24.pdf_scanner.ui.home
 
+import android.net.Uri
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.mapper.toEntity
@@ -17,6 +18,8 @@ import info.meuse24.pdf_scanner.domain.gateway.ReviewPromptPolicy
 import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
 import info.meuse24.pdf_scanner.domain.usecase.BuildScanSearchQueryUseCase
 import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
+import info.meuse24.pdf_scanner.domain.usecase.CalculateSha256UseCase
+import info.meuse24.pdf_scanner.domain.usecase.FileHashUnreadableException
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportDocxUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
@@ -48,6 +51,7 @@ import info.meuse24.pdf_scanner.domain.gateway.DownloadEntry
 import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
 import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
 import kotlinx.coroutines.async
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -153,7 +157,9 @@ class HomeViewModelTest {
                 R.string.docx_export_ocr_busy to "OCR is already running",
                 R.string.export_pages_folder_success_single to "Saved as Downloads/%s/page_1.jpg",
                 R.string.export_pages_folder_success_multi to "%d pages saved in Downloads/%s/",
-                R.string.error_export_pages_folder_failed to "JPG folder export failed"
+                R.string.error_export_pages_folder_failed to "JPG folder export failed",
+                R.string.hash_error_file_not_found to "Hash file not found",
+                R.string.hash_error_file_unreadable to "Hash file unreadable"
             ),
             plurals = mapOf(
                 R.plurals.trash_moved to "%d moved to trash",
@@ -220,6 +226,35 @@ class HomeViewModelTest {
 
         assertEquals("JPG folder export failed", viewModel.messageUiState.value.error)
         assertNull(viewModel.messageUiState.value.success)
+    }
+
+    @Test
+    fun `importFile requests one scroll to the added document`() = runTest(testDispatcher) {
+        val uri = mock(Uri::class.java)
+        val importedDocument = Document(
+            id = 23L,
+            filename = "New document",
+            filepath = File(tmpFolder.root, "new-document.pdf").absolutePath,
+            timestamp = 100L,
+            pageCount = 1,
+            fileSize = 10L
+        )
+        `when`(importFileUseCase(uri, "New document")).thenReturn(importedDocument)
+        val viewModel = buildViewModel()
+
+        viewModel.importFile(uri, "New document")
+        advanceUntilIdle()
+
+        assertEquals(
+            AddedDocumentScrollRequest(documentId = 23L, folderId = null),
+            viewModel.addedDocumentScrollRequest.value
+        )
+
+        viewModel.consumeAddedDocumentScrollRequest(
+            AddedDocumentScrollRequest(documentId = 23L, folderId = null)
+        )
+
+        assertNull(viewModel.addedDocumentScrollRequest.value)
     }
 
     @Test
@@ -538,6 +573,133 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `calculateSha256 exposes loading success and dismiss states`() = runTest(testDispatcher) {
+        val file = File(tmpFolder.root, "hash.pdf").apply { writeText("abc") }
+        val document = Document(
+            id = 91L,
+            filename = "hash",
+            filepath = file.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = file.length()
+        )
+        val viewModel = buildViewModel()
+
+        viewModel.calculateSha256(document)
+
+        assertEquals(HomeHashUiState.Calculating("hash"), viewModel.hashUiState.value)
+        advanceUntilIdle()
+        assertEquals(
+            HomeHashUiState.Success(
+                filename = "hash",
+                sha256 = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+            ),
+            viewModel.hashUiState.value
+        )
+
+        viewModel.dismissHashResult()
+
+        assertEquals(HomeHashUiState.Idle, viewModel.hashUiState.value)
+    }
+
+    @Test
+    fun `calculateSha256 reports localized missing file error`() = runTest(testDispatcher) {
+        val document = Document(
+            id = 92L,
+            filename = "missing",
+            filepath = File(tmpFolder.root, "missing.pdf").absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = 0L
+        )
+        val viewModel = buildViewModel()
+
+        viewModel.calculateSha256(document)
+        advanceUntilIdle()
+
+        assertEquals(HomeHashUiState.Idle, viewModel.hashUiState.value)
+        assertEquals("Hash file not found", viewModel.messageUiState.value.error)
+    }
+
+    @Test
+    fun `calculateSha256 reports localized read error`() = runTest(testDispatcher) {
+        val file = File(tmpFolder.root, "unreadable.pdf").apply { writeText("content") }
+        val document = Document(
+            id = 95L,
+            filename = "unreadable",
+            filepath = file.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = file.length()
+        )
+        val failingUseCase = mock(CalculateSha256UseCase::class.java)
+        `when`(failingUseCase(document)).thenAnswer {
+            throw FileHashUnreadableException()
+        }
+        val viewModel = buildViewModel(calculateSha256UseCase = failingUseCase)
+
+        viewModel.calculateSha256(document)
+        advanceUntilIdle()
+
+        assertEquals(HomeHashUiState.Idle, viewModel.hashUiState.value)
+        assertEquals("Hash file unreadable", viewModel.messageUiState.value.error)
+    }
+
+    @Test
+    fun `calculateSha256 resets state when calculation is cancelled`() = runTest(testDispatcher) {
+        val file = File(tmpFolder.root, "cancelled.pdf").apply { writeText("content") }
+        val document = Document(
+            id = 96L,
+            filename = "cancelled",
+            filepath = file.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = file.length()
+        )
+        val cancellingUseCase = mock(CalculateSha256UseCase::class.java)
+        `when`(cancellingUseCase(document)).thenAnswer {
+            throw CancellationException()
+        }
+        val viewModel = buildViewModel(calculateSha256UseCase = cancellingUseCase)
+
+        viewModel.calculateSha256(document)
+        advanceUntilIdle()
+
+        assertEquals(HomeHashUiState.Idle, viewModel.hashUiState.value)
+        assertNull(viewModel.messageUiState.value.error)
+    }
+
+    @Test
+    fun `calculateSha256 ignores concurrent second request`() = runTest(testDispatcher) {
+        val firstFile = File(tmpFolder.root, "first.pdf").apply { writeText("first") }
+        val secondFile = File(tmpFolder.root, "second.pdf").apply { writeText("second") }
+        val first = Document(
+            id = 93L,
+            filename = "first",
+            filepath = firstFile.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = firstFile.length()
+        )
+        val second = Document(
+            id = 94L,
+            filename = "second",
+            filepath = secondFile.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = secondFile.length()
+        )
+        val viewModel = buildViewModel()
+
+        viewModel.calculateSha256(first)
+        viewModel.calculateSha256(second)
+
+        assertEquals(HomeHashUiState.Calculating("first"), viewModel.hashUiState.value)
+        advanceUntilIdle()
+        assertEquals("first", (viewModel.hashUiState.value as HomeHashUiState.Success).filename)
+    }
+
+    @Test
     fun `restoreLastTrashed clears ids after successful restore`() = runTest(testDispatcher) {
         val file = File(tmpFolder.root, "restore-ok.pdf").apply { writeText("pdf") }
         val record = Document(
@@ -648,7 +810,10 @@ class HomeViewModelTest {
         trashScansUseCase: TrashScansUseCase = this.trashScansUseCase,
         restoreScansUseCase: RestoreScansUseCase = this.restoreScansUseCase,
         archiveFilterStore: ArchiveFilterStore = ArchiveFilterStore(),
-        pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD }
+        pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD },
+        calculateSha256UseCase: CalculateSha256UseCase = CalculateSha256UseCase(
+            TestDispatcherProvider(testDispatcher)
+        )
     ): HomeViewModel {
         val importCoordinator = HomeImportCoordinator(
             importScanUseCase = importScanUseCase,
@@ -710,7 +875,8 @@ class HomeViewModelTest {
             archiveCoordinator = archiveCoordinator,
             workflowErrorMapper = WorkflowErrorMapper(resourceProvider),
             resourceProvider = resourceProvider,
-            dispatcherProvider = TestDispatcherProvider(testDispatcher)
+            dispatcherProvider = TestDispatcherProvider(testDispatcher),
+            calculateSha256UseCase = calculateSha256UseCase
         )
     }
 

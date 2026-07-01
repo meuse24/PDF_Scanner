@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hash_action_calculate">SHA-256 を計算</string>
+    <string name="hash_dialog_title">SHA-256 チェックサム</string>
+    <string name="hash_algorithm_label">アルゴリズム</string>
+    <string name="hash_value_label">ハッシュ値</string>
+    <string name="hash_calculating">SHA-256 を計算しています…</string>
+    <string name="hash_copied">SHA-256 ハッシュをコピーしました</string>
+    <string name="hash_error_file_not_found">ファイルが見つかりません</string>
+    <string name="hash_error_file_unreadable">ファイルを読み取れませんでした</string>
+    <string name="help_item_sha256">PDF を開かずに、ファイルのバイト列から SHA-256 チェックサムを直接計算します。値をコピーしてローカルで比較したり、VirusTotal などのサービスで検索したりできます。アプリがファイルやハッシュをアップロードすることはありません。</string>
+    <string name="info_feature_sha256">SHA-256 チェックサムは文書のバイト列から端末上で計算され、外部で比較するためにコピーできます。アプリがファイルやハッシュをアップロードすることはありません。</string>
+</resources>

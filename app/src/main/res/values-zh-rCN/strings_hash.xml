@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hash_action_calculate">计算 SHA-256</string>
+    <string name="hash_dialog_title">SHA-256 校验值</string>
+    <string name="hash_algorithm_label">算法</string>
+    <string name="hash_value_label">哈希值</string>
+    <string name="hash_calculating">正在计算 SHA-256…</string>
+    <string name="hash_copied">已复制 SHA-256 哈希值</string>
+    <string name="hash_error_file_not_found">未找到文件</string>
+    <string name="hash_error_file_unreadable">无法读取文件</string>
+    <string name="help_item_sha256">直接从文件字节计算 SHA-256 校验值，无需打开 PDF。你可以复制该值进行本地比较，或在 VirusTotal 等服务中搜索。应用不会上传文件或哈希值。</string>
+    <string name="info_feature_sha256">SHA-256 校验值完全根据文档字节在设备本地计算，可复制用于外部比较。应用不会上传文件或哈希值。</string>
+</resources>

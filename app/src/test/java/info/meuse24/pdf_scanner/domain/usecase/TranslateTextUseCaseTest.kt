@@ -85,6 +85,7 @@ class TranslateTextUseCaseTest {
 
         assertEquals(listOf("Seite 1", "Seite 3"), translator.receivedPageTexts)
         assertEquals(listOf("Page 1", "Page 3"), result.pageTranslations)
+        assertEquals(listOf(0, 2), result.sourcePageIndices)
     }
 
     @Test

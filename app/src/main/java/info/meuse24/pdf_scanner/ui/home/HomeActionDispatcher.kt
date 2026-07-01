@@ -31,7 +31,8 @@ internal data class HomeScanActionNavigator(
     val onExportDocx: (Document) -> Unit,
     val onExportOcrText: (Document) -> Unit,
     val onPrint: (Document) -> Unit,
-    val onRename: (Document) -> Unit
+    val onRename: (Document) -> Unit,
+    val onCalculateSha256: (Document) -> Unit
 )
 
 internal fun dispatchHomeScanAction(
@@ -68,5 +69,6 @@ internal fun dispatchHomeScanAction(
         ScanAction.ScanBusinessCard -> navigator.onBusinessCard(record.id)
         ScanAction.Print -> navigator.onPrint(record)
         ScanAction.Rename -> navigator.onRename(record)
+        ScanAction.CalculateSha256 -> navigator.onCalculateSha256(record)
     }
 }

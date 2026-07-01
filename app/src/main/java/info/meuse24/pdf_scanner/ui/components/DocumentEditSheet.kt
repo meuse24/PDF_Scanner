@@ -97,6 +97,7 @@ sealed interface ScanAction {
     data object Rename : ScanAction
     data object Grayscale : ScanAction
     data object PdfMetadata : ScanAction
+    data object CalculateSha256 : ScanAction
     data object ScanQrCodes : ScanAction
     data object ScanBusinessCard : ScanAction
     data object TranslateText : ScanAction
@@ -112,6 +113,7 @@ fun DocumentEditSheet(
     showPrintAction: Boolean = true,
     showExportAsJpgAction: Boolean = true,
     showTextExportActions: Boolean = true,
+    showHashAction: Boolean = true,
     onToggleFavorite: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
@@ -167,7 +169,7 @@ fun DocumentEditSheet(
     val showUnlock = record.isEncrypted
     val showRemovePassword = record.isEncrypted
 
-    val showQuickSection = showFavorite || showRename || showMetadata || showPrint
+    val showQuickSection = showFavorite || showRename || showMetadata || showHashAction || showPrint
     val showPagesSection = showReorder || showRotate || showAppend || showExtractPages ||
         showDuplicatePages || showSplit || showDeletePages
     val showEditSection = showAnnotate || showSignature || showPageNumbers || showTextWatermark || showRedact
@@ -219,6 +221,13 @@ fun DocumentEditSheet(
             item {
                 SheetItem(Icons.Default.Info, R.string.action_pdf_metadata, true) {
                     onAction(ScanAction.PdfMetadata)
+                }
+            }
+        }
+        if (showHashAction) {
+            item {
+                SheetItem(Icons.Default.FindInPage, R.string.hash_action_calculate, true) {
+                    onAction(ScanAction.CalculateSha256)
                 }
             }
         }

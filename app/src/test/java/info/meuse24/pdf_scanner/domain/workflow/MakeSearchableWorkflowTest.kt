@@ -4,6 +4,7 @@ import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.FakeScanDao
 import info.meuse24.pdf_scanner.domain.usecase.FakeSearchablePdfBuilder
+import info.meuse24.pdf_scanner.domain.usecase.FakeExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
 import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
@@ -27,7 +28,8 @@ class MakeSearchableWorkflowTest {
             FakeSearchablePdfBuilder(onMakeSearchable),
             repository,
             AutoTagUseCase(),
-            FakeSettingsRepository()
+            FakeSettingsRepository(),
+            FakeExtractTextUseCase()
         )
         return MakeSearchableWorkflow(useCase)
     }
@@ -51,7 +53,8 @@ class MakeSearchableWorkflowTest {
             pageCount     = 1,
             fileSize      = 0L,
             isSearchable  = isSearchable,
-            extractedText = extractedText
+            extractedText = extractedText,
+            pageTexts = extractedText?.let(::listOf).orEmpty()
         )
     }
 

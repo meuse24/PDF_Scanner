@@ -10,6 +10,7 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.tom_roush.pdfbox.pdmodel.PDDocument
@@ -20,18 +21,20 @@ import com.tom_roush.pdfbox.pdmodel.font.PDFont
 import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
 import com.tom_roush.pdfbox.pdmodel.graphics.image.LosslessFactory
 import com.tom_roush.pdfbox.text.PDFTextStripper
+import info.meuse24.pdf_scanner.data.local.AppDatabase
 import info.meuse24.pdf_scanner.data.local.ScanDao
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.mapper.toDomain
+import info.meuse24.pdf_scanner.data.mapper.toEntity
+import info.meuse24.pdf_scanner.data.repository.SettingsRepository
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
+import info.meuse24.pdf_scanner.domain.usecase.AutoTagUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportFileUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ImportScanUseCase
 import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -56,6 +59,9 @@ class SearchableAndRoundTripInstrumentedTest {
     private val ocrPipeline = OcrPipeline(ocrManager, ocrModelInstaller)
     private val textRecognizerRunner = MlKitTextRecognizerRunner(AndroidPdfPageInputImageLoader())
     private val pdfEditor = PdfEditor()
+    private lateinit var database: AppDatabase
+    private val scanDao: ScanDao
+        get() = database.scanDao()
     private val searchablePdfBuilder = SearchablePdfBuilder(
         context,
         ocrPipeline,
@@ -67,12 +73,16 @@ class SearchableAndRoundTripInstrumentedTest {
 
     @Before
     fun setUp() {
+        database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
         cleanupLocalArtifacts()
         cleanupDownloads()
     }
 
     @After
     fun tearDown() {
+        database.close()
         cleanupLocalArtifacts()
         cleanupDownloads()
     }
@@ -100,8 +110,20 @@ class SearchableAndRoundTripInstrumentedTest {
             File(scansDir, "androidtest_searchable_usecase_source.pdf"),
             lines = listOf("PDF SCANNER", "5678")
         )
-        val dao = TrackingScanDao()
-        val useCase = MakeSearchableUseCase(searchablePdfBuilder, ScanRepository(dao))
+        val useCase = MakeSearchableUseCase(
+            searchablePdfBuilder = searchablePdfBuilder,
+            repository = ScanRepository(scanDao),
+            autoTagUseCase = AutoTagUseCase(),
+            settingsRepository = SettingsRepository(context),
+            extractTextUseCase = ExtractTextUseCase(
+                MlKitOcrDocumentTextExtractor(
+                    ocrPipeline = ocrPipeline,
+                    inputImageLoader = AndroidOcrInputImageLoader(context),
+                    dispatcherProvider = DefaultDispatcherProvider(),
+                    textRecognizerRunner = textRecognizerRunner
+                )
+            )
+        )
         val record = Document(
             id = 42L,
             filename = "androidtest_searchable_usecase_source",
@@ -110,18 +132,18 @@ class SearchableAndRoundTripInstrumentedTest {
             pageCount = 1,
             fileSize = source.length()
         )
+        scanDao.insert(record.toEntity())
 
         val (count, blankOcrCount) = useCase(listOf(record), "en")
 
         assertEquals(1, count)
         assertEquals(0, blankOcrCount)
-        assertEquals(1, dao.searchableUpdates.size)
-        val update = dao.searchableUpdates.single()
-        assertEquals(42L, update.id)
-        assertTrue(normalizeText(update.text).contains("PDFSCANNER"))
-        assertTrue(normalizeText(update.text).contains("5678"))
-        assertNotNull(update.pageTextJson)
-        assertTrue(update.pageTextJson.fromOcrPageTextJson().isNotEmpty())
+        val updated = scanDao.getScansByIds(listOf(42L)).single()
+        assertTrue(updated.isSearchable)
+        assertTrue(normalizeText(updated.extractedText).contains("PDFSCANNER"))
+        assertTrue(normalizeText(updated.extractedText).contains("5678"))
+        assertNotNull(updated.ocrPageTextJson)
+        assertTrue(updated.ocrPageTextJson.fromOcrPageTextJson().isNotEmpty())
         assertTrue(normalizeText(extractPdfText(source)).contains("PDFSCANNER"))
     }
 
@@ -266,11 +288,10 @@ class SearchableAndRoundTripInstrumentedTest {
             File(scansDir, "androidtest_importscan_thumb.jpg"),
             label = "THUMB"
         )
-        val dao = TrackingScanDao()
         val useCase = ImportScanUseCase(
-            fileUtil = FileUtil(context, storageProvider, resourceProvider),
+            fileStore = FileUtil(context, storageProvider, resourceProvider),
             searchablePdfBuilder = searchablePdfBuilder,
-            repository = ScanRepository(dao)
+            repository = ScanRepository(scanDao)
         )
 
         val record = useCase(
@@ -282,7 +303,7 @@ class SearchableAndRoundTripInstrumentedTest {
             languageCode = "en"
         )
 
-        assertEquals(1, dao.inserted.size)
+        assertEquals(1, scanDao.getAllScans().first().size)
         assertTrue(record.isSearchable)
         assertNotNull(record.thumbnailPath)
         assertTrue(File(record.thumbnailPath!!).exists())
@@ -390,7 +411,7 @@ class SearchableAndRoundTripInstrumentedTest {
         ImportFileUseCase(
             fileUtil = FileUtil(context, storageProvider, resourceProvider),
             pdfEditor = pdfEditor,
-            repository = ScanRepository(TrackingScanDao()),
+            repository = ScanRepository(scanDao),
             resourceProvider = resourceProvider
         )
 
@@ -605,72 +626,5 @@ private fun loadDeviceFont(document: PDDocument): PDFont {
     return fontFile.inputStream().use { input ->
         PDType0Font.load(document, input, true)
     }
-}
-
-private class TrackingScanDao : ScanDao {
-    data class SearchableUpdate(
-        val id: Long,
-        val fileSize: Long,
-        val text: String?,
-        val confidence: Float?,
-        val language: String?,
-        val pageTextJson: String?
-    )
-
-    val searchableUpdates = mutableListOf<SearchableUpdate>()
-    val inserted = mutableListOf<Document>()
-
-    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
-
-    override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
-
-    override suspend fun insert(record: ScanRecord): Long {
-        inserted.add(record.toDomain())
-        return inserted.size.toLong()
-    }
-
-    override suspend fun insertAll(records: List<ScanRecord>) {
-        inserted.addAll(records.map { it.toDomain() })
-    }
-
-    override suspend fun delete(record: ScanRecord) = Unit
-
-    override suspend fun markSearchable(id: Long, fileSize: Long) = Unit
-
-    override suspend fun markSearchableWithContent(
-        id: Long,
-        fileSize: Long,
-        text: String?,
-        tags: String?,
-        confidence: Float?,
-        language: String?,
-        pageTextJson: String?
-    ) {
-        searchableUpdates.add(SearchableUpdate(id, fileSize, text, confidence, language, pageTextJson))
-    }
-
-    override suspend fun updateExtractedTextAndOcrStats(
-        id: Long,
-        text: String?,
-        confidence: Float?,
-        language: String?,
-        pageTextJson: String?
-    ) = Unit
-
-    override suspend fun updateFileSize(id: Long, fileSize: Long) = Unit
-
-    override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) = Unit
-
-    override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) = Unit
-
-    override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) = Unit
-
-    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
-
-    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
-
-    override suspend fun moveScans(ids: List<Long>, folderId: Long?) = Unit
-
-    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) = Unit
 }
 

@@ -1,5 +1,6 @@
 package info.meuse24.pdf_scanner.ui.home
 
+import android.content.ClipData
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
@@ -17,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -25,6 +27,7 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -38,6 +41,7 @@ import info.meuse24.pdf_scanner.ui.entry.AppEntryAction
 import info.meuse24.pdf_scanner.ui.home.components.HomeArchiveContent
 import info.meuse24.pdf_scanner.ui.home.components.HomeDocxOcrPromptDialog
 import info.meuse24.pdf_scanner.ui.home.components.HomeErrorDialog
+import info.meuse24.pdf_scanner.ui.home.components.HomeHashOverlay
 import info.meuse24.pdf_scanner.ui.home.components.HomeLoadingDialog
 import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
 import info.meuse24.pdf_scanner.util.PdfPrintHelper
@@ -46,6 +50,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +67,9 @@ fun HomeScreen(
     val archiveUiState by viewModel.archiveUiState.collectAsStateWithLifecycle()
     val operationUiState by viewModel.operationUiState.collectAsStateWithLifecycle()
     val messageUiState by viewModel.messageUiState.collectAsStateWithLifecycle()
+    val hashUiState by viewModel.hashUiState.collectAsStateWithLifecycle()
+    val addedDocumentScrollRequest by
+        viewModel.addedDocumentScrollRequest.collectAsStateWithLifecycle()
     val selectedIds by viewModel.selectedIds.collectAsStateWithLifecycle()
     val pendingPrintDocument by viewModel.pendingPrintDocument.collectAsStateWithLifecycle()
 
@@ -70,9 +78,11 @@ fun HomeScreen(
     val clipboard = LocalClipboard.current
     val haptic = LocalHapticFeedback.current
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
     val sharePdfTitle = stringResource(R.string.share_pdf_title)
+    val hashCopiedMessage = stringResource(R.string.hash_copied)
     val undoLabel = stringResource(R.string.action_undo)
     val errorDeviceUnsupported = stringResource(R.string.error_device_unsupported)
     val errorScannerUnavailable = stringResource(R.string.error_scanner_unavailable)
@@ -206,7 +216,8 @@ fun HomeScreen(
         onRename = { record ->
             renameInput = record.filename
             recordToRename = record
-        }
+        },
+        onCalculateSha256 = viewModel::calculateSha256
     )
 
     HandleHomeAddActionEffect(
@@ -250,6 +261,26 @@ fun HomeScreen(
         onConsumed = viewModel::clearPlayReviewRequest
     )
     HandleHomeListHaptics(listState = listState, haptic = haptic)
+
+    LaunchedEffect(
+        addedDocumentScrollRequest,
+        archiveUiState.filteredScans,
+        archiveUiState.searchQuery,
+        archiveUiState.favoritesFilter,
+        archiveUiState.currentTagKey,
+        archiveUiState.currentFolderId
+    ) {
+        val request = addedDocumentScrollRequest ?: return@LaunchedEffect
+        when {
+            !request.matchesArchiveContext(archiveUiState) -> {
+                viewModel.consumeAddedDocumentScrollRequest(request)
+            }
+            archiveUiState.filteredScans.any { it.id == request.documentId } -> {
+                listState.scrollToItem(0)
+                viewModel.consumeAddedDocumentScrollRequest(request)
+            }
+        }
+    }
 
     BackHandler(enabled = isSelectionMode) { viewModel.clearSelectedIds() }
 
@@ -506,6 +537,18 @@ fun HomeScreen(
             }
         )
     }
+
+    HomeHashOverlay(
+        state = hashUiState,
+        onDismiss = viewModel::dismissHashResult,
+        onCopy = { hash ->
+            viewModel.dismissHashResult()
+            coroutineScope.launch {
+                clipboard.setClipEntry(ClipData.newPlainText("", hash).toClipEntry())
+                snackbarHostState.showSnackbar(hashCopiedMessage)
+            }
+        }
+    )
 
     messageUiState.error?.let { message ->
         HomeErrorDialog(message = message, onDismiss = viewModel::clearError)

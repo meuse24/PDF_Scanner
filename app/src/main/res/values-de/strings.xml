@@ -192,6 +192,7 @@
     <string name="ocr_model_downloading">OCR-Sprachmodell wird heruntergeladen…</string>
     <string name="ocr_model_installing">OCR-Sprachmodell wird installiert…</string>
     <string name="action_copy">Kopieren</string>
+    <string name="action_close">Schließen</string>
     <string name="action_share_text">Text teilen</string>
     <string name="ocr_copied">Text kopiert</string>
 

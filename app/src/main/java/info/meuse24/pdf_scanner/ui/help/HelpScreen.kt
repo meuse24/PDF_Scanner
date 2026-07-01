@@ -151,6 +151,7 @@ fun HelpScreen() {
                 actions = listOf(
                     HelpAction(Icons.Default.DriveFileRenameOutline, R.string.action_rename,       R.string.help_item_rename),
                     HelpAction(Icons.Default.Info,                   R.string.action_pdf_metadata, R.string.help_item_pdf_metadata),
+                    HelpAction(Icons.Default.FindInPage,             R.string.hash_action_calculate, R.string.help_item_sha256),
                     HelpAction(Icons.Default.Print,                  R.string.action_print_pdf,    R.string.help_item_print_pdf)
                 )
             ),

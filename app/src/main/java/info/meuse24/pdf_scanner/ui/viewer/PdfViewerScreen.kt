@@ -356,6 +356,7 @@ fun PdfViewerScreen(
                     showPrintAction = false,
                     showExportAsJpgAction = false,
                     showTextExportActions = false,
+                    showHashAction = false,
                     onAction = { action ->
                         editSheetVisible = false
                         when (action) {
@@ -386,7 +387,8 @@ fun PdfViewerScreen(
                             ScanAction.ExportDocx,
                             ScanAction.ExportOcrText,
                             ScanAction.Print,
-                            ScanAction.Rename -> Unit
+                            ScanAction.Rename,
+                            ScanAction.CalculateSha256 -> Unit
                         }
                     }
                 )

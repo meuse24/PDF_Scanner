@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hash_action_calculate">Вычислить SHA-256</string>
+    <string name="hash_dialog_title">Контрольная сумма SHA-256</string>
+    <string name="hash_algorithm_label">Алгоритм</string>
+    <string name="hash_value_label">Хеш-значение</string>
+    <string name="hash_calculating">Вычисление SHA-256…</string>
+    <string name="hash_copied">Хеш SHA-256 скопирован</string>
+    <string name="hash_error_file_not_found">Файл не найден</string>
+    <string name="hash_error_file_unreadable">Не удалось прочитать файл</string>
+    <string name="help_item_sha256">Вычисляет контрольную сумму SHA-256 непосредственно из байтов файла, не открывая PDF. Значение можно скопировать для локального сравнения или поиска в сервисе вроде VirusTotal. Приложение не загружает файл или хеш.</string>
+    <string name="info_feature_sha256">Контрольные суммы SHA-256 вычисляются локально из байтов документа и могут быть скопированы для внешнего сравнения. Приложение не загружает файл или хеш.</string>
+</resources>

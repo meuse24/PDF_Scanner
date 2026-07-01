@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hash_action_calculate">Calculer le SHA-256</string>
+    <string name="hash_dialog_title">Somme de contrôle SHA-256</string>
+    <string name="hash_algorithm_label">Algorithme</string>
+    <string name="hash_value_label">Valeur de hachage</string>
+    <string name="hash_calculating">Calcul du SHA-256…</string>
+    <string name="hash_copied">Hachage SHA-256 copié</string>
+    <string name="hash_error_file_not_found">Fichier introuvable</string>
+    <string name="hash_error_file_unreadable">Impossible de lire le fichier</string>
+    <string name="help_item_sha256">Calcule la somme SHA-256 directement à partir des octets du fichier sans ouvrir le PDF. Vous pouvez copier la valeur pour une comparaison locale ou la rechercher sur un service comme VirusTotal. L’application ne téléverse ni le fichier ni le hachage.</string>
+    <string name="info_feature_sha256">Les sommes SHA-256 sont calculées localement à partir des octets du document et peuvent être copiées pour une comparaison externe. L’application ne téléverse ni le fichier ni le hachage.</string>
+</resources>

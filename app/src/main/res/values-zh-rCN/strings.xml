@@ -187,6 +187,7 @@
     <string name="ocr_model_downloading">正在下载 OCR 语言模型…</string>
     <string name="ocr_model_installing">正在安装 OCR 语言模型…</string>
     <string name="action_copy">复制</string>
+    <string name="action_close">关闭</string>
     <string name="action_share_text">分享文本</string>
     <string name="ocr_copied">文本已复制</string>
 

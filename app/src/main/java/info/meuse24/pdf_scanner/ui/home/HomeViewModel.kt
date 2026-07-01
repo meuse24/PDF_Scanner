@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.usecase.CalculateSha256UseCase
+import info.meuse24.pdf_scanner.domain.usecase.FileHashUnreadableException
 import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
 import info.meuse24.pdf_scanner.domain.usecase.NoExportableTextException
@@ -37,7 +39,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import java.io.FileNotFoundException
 import java.util.Locale
 import javax.inject.Inject
 
@@ -49,7 +53,8 @@ class HomeViewModel @Inject constructor(
     private val archiveCoordinator: HomeArchiveCoordinator,
     private val workflowErrorMapper: WorkflowErrorMapper,
     private val resourceProvider: ResourceProvider,
-    private val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider,
+    private val calculateSha256UseCase: CalculateSha256UseCase
 ) : ViewModel() {
 
     private val archiveFilterFlow = archiveCoordinator.filter
@@ -71,6 +76,12 @@ class HomeViewModel @Inject constructor(
     val selectedIds: StateFlow<Set<Long>> = _selectedIds.asStateFlow()
     val pendingPrintDocument: StateFlow<Document?> = exportCoordinator.pendingPrintDocument
     val printRequests: SharedFlow<Document> = exportCoordinator.printRequests
+    private val _addedDocumentScrollRequest =
+        MutableStateFlow<AddedDocumentScrollRequest?>(null)
+    val addedDocumentScrollRequest: StateFlow<AddedDocumentScrollRequest?> =
+        _addedDocumentScrollRequest.asStateFlow()
+    private val _hashUiState = MutableStateFlow<HomeHashUiState>(HomeHashUiState.Idle)
+    val hashUiState: StateFlow<HomeHashUiState> = _hashUiState.asStateFlow()
 
     private val filteredScansFlow = combine(archiveFilterFlow, _searchQuery, _sortOrder) { filter, rawQuery, sortOrder ->
         SearchListRequest(filter, rawQuery.trim(), sortOrder)
@@ -130,6 +141,7 @@ class HomeViewModel @Inject constructor(
             } else {
                 null
             },
+            currentFolderId = (archiveFilter as? ArchiveFilter.Folder)?.folderId,
             favoritesFilter = archiveFilter is ArchiveFilter.Favorites,
             currentTagKey = (archiveFilter as? ArchiveFilter.Tag)?.key,
             availableTagKeys = availableTagKeys(scanData.allScans)
@@ -209,6 +221,12 @@ class HomeViewModel @Inject constructor(
         _pendingImageUris.value = emptyList()
     }
 
+    fun consumeAddedDocumentScrollRequest(request: AddedDocumentScrollRequest) {
+        if (_addedDocumentScrollRequest.value == request) {
+            _addedDocumentScrollRequest.value = null
+        }
+    }
+
     fun saveScan(
         pdfUri: Uri,
         pageCount: Int,
@@ -233,6 +251,7 @@ class HomeViewModel @Inject constructor(
                     onStatus = ::updateOcrStatus
                 )
                 assignToCurrentFolder(document.id)
+                requestScrollToAddedDocument(document.id)
                 maybeRequestPlayReview()
             } catch (_: OcrModelInstallException) {
                 _error.value = resourceProvider.getString(R.string.ocr_model_download_failed)
@@ -253,6 +272,7 @@ class HomeViewModel @Inject constructor(
             try {
                 val document = importCoordinator.importFile(pdfUri, filename)
                 assignToCurrentFolder(document.id)
+                requestScrollToAddedDocument(document.id)
                 maybeRequestPlayReview()
             } catch (exception: Exception) {
                 _error.value = exception.message ?: resourceProvider.getString(R.string.error_save_failed)
@@ -574,6 +594,34 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun calculateSha256(document: Document) {
+        if (_hashUiState.value !is HomeHashUiState.Idle) return
+
+        _hashUiState.value = HomeHashUiState.Calculating(document.filename)
+        viewModelScope.launch {
+            try {
+                val sha256 = calculateSha256UseCase(document)
+                _hashUiState.value = HomeHashUiState.Success(document.filename, sha256)
+            } catch (exception: CancellationException) {
+                _hashUiState.value = HomeHashUiState.Idle
+                throw exception
+            } catch (_: FileNotFoundException) {
+                _hashUiState.value = HomeHashUiState.Idle
+                _error.value = resourceProvider.getString(R.string.hash_error_file_not_found)
+            } catch (_: FileHashUnreadableException) {
+                _hashUiState.value = HomeHashUiState.Idle
+                _error.value = resourceProvider.getString(R.string.hash_error_file_unreadable)
+            } catch (_: Exception) {
+                _hashUiState.value = HomeHashUiState.Idle
+                _error.value = resourceProvider.getString(R.string.hash_error_file_unreadable)
+            }
+        }
+    }
+
+    fun dismissHashResult() {
+        _hashUiState.value = HomeHashUiState.Idle
+    }
+
     fun launchPlayReview(activity: Activity, onComplete: () -> Unit) {
         importCoordinator.launchReview(activity, onComplete)
     }
@@ -630,6 +678,26 @@ class HomeViewModel @Inject constructor(
         val filter = archiveFilterFlow.value
         if (documentId <= 0L || filter !is ArchiveFilter.Folder) return
         archiveCoordinator.move(listOf(documentId), filter.folderId)
+    }
+
+    private fun requestScrollToAddedDocument(documentId: Long) {
+        if (documentId <= 0L || _searchQuery.value.isNotBlank()) return
+        when (val filter = archiveFilterFlow.value) {
+            ArchiveFilter.AllDocuments -> {
+                _addedDocumentScrollRequest.value = AddedDocumentScrollRequest(
+                    documentId = documentId,
+                    folderId = null
+                )
+            }
+            is ArchiveFilter.Folder -> {
+                _addedDocumentScrollRequest.value = AddedDocumentScrollRequest(
+                    documentId = documentId,
+                    folderId = filter.folderId
+                )
+            }
+            ArchiveFilter.Favorites,
+            is ArchiveFilter.Tag -> Unit
+        }
     }
 
     private fun maybeRequestPlayReview() {

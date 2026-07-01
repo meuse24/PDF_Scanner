@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hash_action_calculate">حساب SHA-256</string>
+    <string name="hash_dialog_title">قيمة تحقق SHA-256</string>
+    <string name="hash_algorithm_label">الخوارزمية</string>
+    <string name="hash_value_label">قيمة التجزئة</string>
+    <string name="hash_calculating">جارٍ حساب SHA-256…</string>
+    <string name="hash_copied">تم نسخ تجزئة SHA-256</string>
+    <string name="hash_error_file_not_found">لم يتم العثور على الملف</string>
+    <string name="hash_error_file_unreadable">تعذرت قراءة الملف</string>
+    <string name="help_item_sha256">يحسب قيمة تحقق SHA-256 مباشرة من وحدات بايت الملف من دون فتح PDF. يمكنك نسخ القيمة للمقارنة محليًا أو البحث عنها في خدمة مثل VirusTotal. لا يرفع التطبيق الملف أو قيمة التجزئة.</string>
+    <string name="info_feature_sha256">تُحسب قيم تحقق SHA-256 محليًا من وحدات بايت المستند ويمكن نسخها للمقارنة الخارجية. لا يرفع التطبيق الملف أو قيمة التجزئة.</string>
+</resources>

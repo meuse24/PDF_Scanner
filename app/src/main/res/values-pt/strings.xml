@@ -189,6 +189,7 @@
     <string name="ocr_model_downloading">A transferir o modelo de idioma OCR…</string>
     <string name="ocr_model_installing">A instalar o modelo de idioma OCR…</string>
     <string name="action_copy">Copiar</string>
+    <string name="action_close">Fechar</string>
     <string name="action_share_text">Partilhar texto</string>
     <string name="ocr_copied">Texto copiado</string>
 

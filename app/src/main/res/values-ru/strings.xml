@@ -193,6 +193,7 @@
     <string name="ocr_model_downloading">Загрузка языковой модели OCR…</string>
     <string name="ocr_model_installing">Установка языковой модели OCR…</string>
     <string name="action_copy">Копировать</string>
+    <string name="action_close">Закрыть</string>
     <string name="action_share_text">Поделиться текстом</string>
     <string name="ocr_copied">Текст скопирован</string>
 

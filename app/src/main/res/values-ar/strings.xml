@@ -197,6 +197,7 @@
     <string name="ocr_model_downloading">جارٍ تنزيل نموذج لغة OCR…</string>
     <string name="ocr_model_installing">جارٍ تثبيت نموذج لغة OCR…</string>
     <string name="action_copy">نسخ</string>
+    <string name="action_close">إغلاق</string>
     <string name="action_share_text">مشاركة النص</string>
     <string name="ocr_copied">تم نسخ النص</string>
 

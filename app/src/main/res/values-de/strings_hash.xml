@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hash_action_calculate">SHA-256 berechnen</string>
+    <string name="hash_dialog_title">SHA-256-Prüfsumme</string>
+    <string name="hash_algorithm_label">Algorithmus</string>
+    <string name="hash_value_label">Hash-Wert</string>
+    <string name="hash_calculating">SHA-256 wird berechnet…</string>
+    <string name="hash_copied">SHA-256-Hash kopiert</string>
+    <string name="hash_error_file_not_found">Datei nicht gefunden</string>
+    <string name="hash_error_file_unreadable">Die Datei konnte nicht gelesen werden</string>
+    <string name="help_item_sha256">Berechnet die SHA-256-Prüfsumme direkt aus den Dateibytes, ohne die PDF zu öffnen. Der Wert kann für einen lokalen Vergleich kopiert oder bei einem Dienst wie VirusTotal gesucht werden. Die App lädt weder die Datei noch den Hash hoch.</string>
+    <string name="info_feature_sha256">SHA-256-Prüfsummen werden lokal aus den Dokumentbytes berechnet und können für externe Vergleiche kopiert werden. Die App lädt weder Datei noch Hash hoch.</string>
+</resources>

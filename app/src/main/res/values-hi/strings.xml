@@ -189,6 +189,7 @@
     <string name="ocr_model_downloading">OCR भाषा मॉडल डाउनलोड किया जा रहा है…</string>
     <string name="ocr_model_installing">OCR भाषा मॉडल इंस्टॉल किया जा रहा है…</string>
     <string name="action_copy">कॉपी करें</string>
+    <string name="action_close">बंद करें</string>
     <string name="action_share_text">टेक्स्ट साझा करें</string>
     <string name="ocr_copied">टेक्स्ट कॉपी हो गया</string>
 

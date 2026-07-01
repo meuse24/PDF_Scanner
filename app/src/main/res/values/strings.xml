@@ -214,6 +214,7 @@
     <string name="ocr_model_downloading">Downloading OCR language model…</string>
     <string name="ocr_model_installing">Installing OCR language model…</string>
     <string name="action_copy">Copy</string>
+    <string name="action_close">Close</string>
     <string name="action_share_text">Share text</string>
     <string name="ocr_copied">Text copied</string>
 

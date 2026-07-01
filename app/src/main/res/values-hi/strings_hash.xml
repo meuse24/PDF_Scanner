@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hash_action_calculate">SHA-256 की गणना करें</string>
+    <string name="hash_dialog_title">SHA-256 चेकसम</string>
+    <string name="hash_algorithm_label">एल्गोरिदम</string>
+    <string name="hash_value_label">हैश मान</string>
+    <string name="hash_calculating">SHA-256 की गणना हो रही है…</string>
+    <string name="hash_copied">SHA-256 हैश कॉपी हो गया</string>
+    <string name="hash_error_file_not_found">फ़ाइल नहीं मिली</string>
+    <string name="hash_error_file_unreadable">फ़ाइल पढ़ी नहीं जा सकी</string>
+    <string name="help_item_sha256">PDF खोले बिना फ़ाइल के बाइट से सीधे SHA-256 चेकसम की गणना करता है। आप मान को स्थानीय तुलना के लिए कॉपी कर सकते हैं या VirusTotal जैसी सेवा में खोज सकते हैं। ऐप फ़ाइल या हैश अपलोड नहीं करता।</string>
+    <string name="info_feature_sha256">SHA-256 चेकसम की गणना दस्तावेज़ के बाइट से डिवाइस पर स्थानीय रूप से की जाती है और बाहरी तुलना के लिए कॉपी की जा सकती है। ऐप फ़ाइल या हैश अपलोड नहीं करता।</string>
+</resources>

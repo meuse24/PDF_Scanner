@@ -467,6 +467,19 @@
     <string name="pdf_viewer_invalid_page">Diese Seite konnte nicht geöffnet werden.</string>
     <string name="pdf_viewer_out_of_memory">Diese Seite ist zu groß, um sie auf diesem Gerät zu rendern.</string>
     <string name="pdf_viewer_renderer_failed">Der PDF-Viewer konnte dieses Dokument nicht rendern.</string>
+    <string name="pdf_viewer_search">Dokument durchsuchen</string>
+    <string name="pdf_viewer_search_hint">Im Dokument suchen</string>
+    <string name="pdf_viewer_search_no_matches">Keine Treffer</string>
+    <string name="pdf_viewer_search_match_count">%1$d/%2$d</string>
+    <string name="pdf_viewer_search_previous">Vorheriger Treffer</string>
+    <string name="pdf_viewer_search_next">Nächster Treffer</string>
+    <string name="pdf_viewer_search_close">Suche schließen</string>
+    <string name="pdf_viewer_copy_iban">IBAN %1$s kopieren</string>
+    <string name="pdf_viewer_copy_iban_success">IBAN kopiert</string>
+    <string name="pdf_viewer_copy_amount">Betrag %1$s kopieren</string>
+    <string name="pdf_viewer_copy_amount_success">Betrag kopiert</string>
+    <string name="pdf_viewer_create_event">Kalendereintrag für %1$s erstellen</string>
+    <string name="pdf_viewer_no_calendar_app">Keine Kalender-App gefunden</string>
     <!-- PDF beschriften -->
     <!-- Navigation Drawer header -->
     <string name="drawer_version">Version %1$s</string>

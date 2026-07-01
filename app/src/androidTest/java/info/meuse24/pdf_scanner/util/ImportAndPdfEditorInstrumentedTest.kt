@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner
 
 import androidx.core.content.FileProvider
+import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.tom_roush.pdfbox.cos.COSArray
@@ -15,10 +16,8 @@ import com.tom_roush.pdfbox.pdmodel.common.PDMetadata
 import com.tom_roush.pdfbox.pdmodel.common.PDRectangle
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.data.local.AppDatabase
 import info.meuse24.pdf_scanner.data.local.ScanDao
-import info.meuse24.pdf_scanner.data.local.ScanRecord
-import info.meuse24.pdf_scanner.data.mapper.toDomain
-import info.meuse24.pdf_scanner.data.mapper.toEntity
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.AnnotationOval
@@ -34,8 +33,7 @@ import info.meuse24.pdf_scanner.util.AndroidResourceProvider
 import info.meuse24.pdf_scanner.util.AndroidStorageProvider
 import info.meuse24.pdf_scanner.util.FileUtil
 import info.meuse24.pdf_scanner.util.PdfEditor
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -57,16 +55,23 @@ class ImportAndPdfEditorInstrumentedTest {
     private val storageProvider = AndroidStorageProvider(context)
     private val resourceProvider = AndroidResourceProvider(context)
     private val pdfEditor = PdfEditor()
+    private lateinit var database: AppDatabase
+    private val scanDao: ScanDao
+        get() = database.scanDao()
     private val scansDir: File
         get() = storageProvider.scansDir()
 
     @Before
     fun setUp() {
+        database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
         cleanupTestArtifacts()
     }
 
     @After
     fun tearDown() {
+        database.close()
         cleanupTestArtifacts()
     }
 
@@ -86,7 +91,7 @@ class ImportAndPdfEditorInstrumentedTest {
         assertTrue(thumbnailFile.exists())
         assertTrue(thumbnailFile.length() > 0L)
 
-        val bitmap = pdfEditor.renderPageThumbnail(pdfFile, pageIndex = 1, maxSizePx = 96)
+        val bitmap = pdfEditor.renderPageThumbnail(pdfFile, pageIndex = 1, maxSizePx = 96) as? android.graphics.Bitmap
         assertNotNull(bitmap)
         bitmap!!.useBitmap {
             assertTrue(it.width in 1..96)
@@ -107,7 +112,7 @@ class ImportAndPdfEditorInstrumentedTest {
 
         val record = useCase(fileProviderUri(sourceFile), "androidtest_imported")
 
-        assertEquals(1, fakeDao.inserted.size)
+        assertEquals(1, scanDao.getAllScans().first().size)
         assertEquals("androidtest_imported", record.filename)
         assertEquals(2, record.pageCount)
         assertFalse(record.isEncrypted)
@@ -130,7 +135,7 @@ class ImportAndPdfEditorInstrumentedTest {
         assertEquals(context.getString(R.string.error_pdf_invalid), error?.message)
         assertFalse(File(scansDir, "androidtest_invalid_import.pdf").exists())
         assertFalse(File(scansDir, "androidtest_invalid_import.jpg").exists())
-        assertTrue(fakeDao.inserted.isEmpty())
+        assertTrue(scanDao.getAllScans().first().isEmpty())
     }
 
     @Test
@@ -148,7 +153,7 @@ class ImportAndPdfEditorInstrumentedTest {
         assertEquals(0, record.pageCount)
         assertNull(record.thumbnailPath)
         assertTrue(File(record.filepath).exists())
-        assertEquals(1, fakeDao.inserted.size)
+        assertEquals(1, scanDao.getAllScans().first().size)
     }
 
     @Test
@@ -166,7 +171,7 @@ class ImportAndPdfEditorInstrumentedTest {
         )
 
         val highlighted = pdfEditor.applyHighlight(input, scansDir, strokes = emptyList(), rects = listOf(rect))
-        val bitmap = pdfEditor.renderPageThumbnail(highlighted, pageIndex = 0, maxSizePx = 240)
+        val bitmap = pdfEditor.renderPageThumbnail(highlighted, pageIndex = 0, maxSizePx = 240) as? android.graphics.Bitmap
 
         assertNotNull(bitmap)
         bitmap!!.useBitmap {
@@ -240,7 +245,7 @@ class ImportAndPdfEditorInstrumentedTest {
             comments = emptyList()
         )
 
-        val bitmap = pdfEditor.renderPageThumbnail(annotated, pageIndex = 0, maxSizePx = 220)
+        val bitmap = pdfEditor.renderPageThumbnail(annotated, pageIndex = 0, maxSizePx = 220) as? android.graphics.Bitmap
         assertNotNull(bitmap)
         bitmap!!.useBitmap {
             val target = pixelAtNormalized(it, 0.32f, 0.32f)
@@ -279,7 +284,7 @@ class ImportAndPdfEditorInstrumentedTest {
 
         assertEquals(1, pdfEditor.getPageCount(withoutTextLayer))
         assertTrue(extractPdfText(withoutTextLayer).isBlank())
-        val bitmap = pdfEditor.renderPageThumbnail(withoutTextLayer, pageIndex = 0, maxSizePx = 180)
+        val bitmap = pdfEditor.renderPageThumbnail(withoutTextLayer, pageIndex = 0, maxSizePx = 180) as? android.graphics.Bitmap
         assertNotNull(bitmap)
         bitmap!!.useBitmap {
             assertTrue(it.width > 0)
@@ -322,7 +327,7 @@ class ImportAndPdfEditorInstrumentedTest {
         val redacted = pdfEditor.applySecureRedaction(annotated, scansDir, listOf(redactionRect))
 
         assertTrue(extractPdfText(redacted).isBlank())
-        val bitmap = pdfEditor.renderPageThumbnail(redacted, pageIndex = 0, maxSizePx = 220)
+        val bitmap = pdfEditor.renderPageThumbnail(redacted, pageIndex = 0, maxSizePx = 220) as? android.graphics.Bitmap
         assertNotNull(bitmap)
         bitmap!!.useBitmap {
             val redactedPixel = pixelAtNormalized(it, 0.30f, 0.26f)
@@ -398,7 +403,7 @@ class ImportAndPdfEditorInstrumentedTest {
         )
 
         assertFalse(extractPdfText(redacted).contains("ROTATE-SECRET"))
-        val bitmap = pdfEditor.renderPageThumbnail(redacted, pageIndex = 0, maxSizePx = 240)
+        val bitmap = pdfEditor.renderPageThumbnail(redacted, pageIndex = 0, maxSizePx = 240) as? android.graphics.Bitmap
         assertNotNull(bitmap)
         bitmap!!.useBitmap {
             assertTrue(it.width > it.height)
@@ -557,7 +562,7 @@ class ImportAndPdfEditorInstrumentedTest {
             assertEquals(0, page.rotation)
         }
 
-        val bitmap = pdfEditor.renderPageThumbnail(redacted, pageIndex = 0, maxSizePx = 240)
+        val bitmap = pdfEditor.renderPageThumbnail(redacted, pageIndex = 0, maxSizePx = 240) as? android.graphics.Bitmap
         assertNotNull(bitmap)
         bitmap!!.useBitmap {
             assertTrue(it.width > it.height)
@@ -588,13 +593,15 @@ class ImportAndPdfEditorInstrumentedTest {
                 )
             )
         )
-        val originalBitmap = pdfEditor.renderPageThumbnail(highlighted, pageIndex = 0, maxSizePx = 220)
+        val originalBitmap =
+            pdfEditor.renderPageThumbnail(highlighted, pageIndex = 0, maxSizePx = 220) as? android.graphics.Bitmap
         assertNotNull(originalBitmap)
         val originalColor = originalBitmap!!.useBitmap { pixelAtNormalized(it, 0.30f, 0.30f) }
         assertTrue(isYellowHighlight(originalColor))
 
         val grayscale = pdfEditor.convertToGrayscale(highlighted, scansDir)
-        val grayscaleBitmap = pdfEditor.renderPageThumbnail(grayscale, pageIndex = 0, maxSizePx = 220)
+        val grayscaleBitmap =
+            pdfEditor.renderPageThumbnail(grayscale, pageIndex = 0, maxSizePx = 220) as? android.graphics.Bitmap
 
         assertNotNull(grayscaleBitmap)
         grayscaleBitmap!!.useBitmap {
@@ -664,7 +671,7 @@ class ImportAndPdfEditorInstrumentedTest {
             outputFile
         )
 
-        val bitmap = pdfEditor.renderPageThumbnail(outputFile, pageIndex = 0, maxSizePx = 400)
+        val bitmap = pdfEditor.renderPageThumbnail(outputFile, pageIndex = 0, maxSizePx = 400) as? android.graphics.Bitmap
         assertNotNull(bitmap)
         bitmap!!.useBitmap { bmp ->
             // Slot 0 liegt in der oberen Hälfte → rötlich
@@ -711,17 +718,13 @@ class ImportAndPdfEditorInstrumentedTest {
         )
     }
 
-    private lateinit var fakeDao: InstrumentedFakeScanDao
-
-    private fun createImportFileUseCase(): ImportFileUseCase {
-        fakeDao = InstrumentedFakeScanDao()
-        return ImportFileUseCase(
+    private fun createImportFileUseCase(): ImportFileUseCase =
+        ImportFileUseCase(
             fileUtil = FileUtil(context, storageProvider, resourceProvider),
             pdfEditor = pdfEditor,
-            repository = ScanRepository(fakeDao),
+            repository = ScanRepository(scanDao),
             resourceProvider = resourceProvider
         )
-    }
 
     private fun fileProviderUri(file: File) = FileProvider.getUriForFile(
         context,
@@ -1018,59 +1021,4 @@ private inline fun <T> android.graphics.Bitmap.useBitmap(block: (android.graphic
     } finally {
         recycle()
     }
-
-private class InstrumentedFakeScanDao : ScanDao {
-    val inserted = mutableListOf<Document>()
-
-    override fun getAllScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
-
-    override fun searchScansFlow(query: String): Flow<List<ScanRecord>> = flowOf(emptyList())
-
-    override suspend fun insert(record: ScanRecord): Long {
-        inserted.add(record.toDomain())
-        return inserted.size.toLong()
-    }
-
-    override suspend fun insertAll(records: List<ScanRecord>) {
-        inserted.addAll(records.map { it.toDomain() })
-    }
-
-    override suspend fun delete(record: ScanRecord) = Unit
-
-    override suspend fun markSearchable(id: Long, fileSize: Long) = Unit
-
-    override suspend fun markSearchableWithContent(
-        id: Long,
-        fileSize: Long,
-        text: String?,
-        tags: String?,
-        confidence: Float?,
-        language: String?,
-        pageTextJson: String?
-    ) = Unit
-
-    override suspend fun updateExtractedTextAndOcrStats(
-        id: Long,
-        text: String?,
-        confidence: Float?,
-        language: String?,
-        pageTextJson: String?
-    ) = Unit
-
-    override suspend fun updateFileSize(id: Long, fileSize: Long) = Unit
-
-    override suspend fun updatePageMetrics(id: Long, pageCount: Int, fileSize: Long) = Unit
-
-    override suspend fun invalidateAfterAppend(id: Long, fileSize: Long, pageCount: Int) = Unit
-
-    override suspend fun updateFilenameAndPath(id: Long, filename: String, filepath: String, thumbnailPath: String?) = Unit
-
-    override fun getScansInFolder(folderId: Long): Flow<List<ScanRecord>> = flowOf(emptyList())
-
-    override fun getFavoriteScans(): Flow<List<ScanRecord>> = flowOf(emptyList())
-
-    override suspend fun moveScans(ids: List<Long>, folderId: Long?) = Unit
-
-    override suspend fun setFavorite(ids: List<Long>, favorite: Boolean) = Unit
-}
 

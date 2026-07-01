@@ -16,11 +16,11 @@ open class TranslateTextUseCase @Inject constructor(
         targetLanguage: String,
         onProgress: (current: Int, total: Int) -> Unit = { _, _ -> }
     ): TranslationResult {
-        val pageTexts = document.effectivePageTexts()
-        if (pageTexts.isEmpty()) throw TranslationNoTextException()
+        val sourcePages = document.effectiveSourcePages()
+        if (sourcePages.isEmpty()) throw TranslationNoTextException()
 
         val translations = textTranslator.translate(
-            pageTexts = pageTexts,
+            pageTexts = sourcePages.map { it.text },
             sourceLanguage = sourceLanguage,
             targetLanguage = targetLanguage,
             onProgress = onProgress
@@ -29,15 +29,20 @@ open class TranslateTextUseCase @Inject constructor(
         return TranslationResult(
             sourceLanguage = sourceLanguage,
             targetLanguage = targetLanguage,
-            pageTranslations = translations
+            pageTranslations = translations,
+            sourcePageIndices = sourcePages.map { it.index }
         )
     }
 }
 
-private fun Document.effectivePageTexts(): List<String> {
-    val filtered = pageTexts.map { it.trim() }.filter { it.isNotBlank() }
-    if (filtered.isNotEmpty()) return filtered
+private data class SourcePage(val index: Int, val text: String)
+
+private fun Document.effectiveSourcePages(): List<SourcePage> {
+    val nonBlankPages = pageTexts.mapIndexedNotNull { index, text ->
+        text.trim().takeIf { it.isNotBlank() }?.let { SourcePage(index, it) }
+    }
+    if (nonBlankPages.isNotEmpty()) return nonBlankPages
     val full = extractedText?.trim().orEmpty()
     if (full.isBlank()) return emptyList()
-    return listOf(full)
+    return listOf(SourcePage(index = 0, text = full))
 }

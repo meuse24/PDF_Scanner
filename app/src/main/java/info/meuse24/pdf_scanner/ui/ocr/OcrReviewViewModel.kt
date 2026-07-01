@@ -25,6 +25,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+data class OcrReviewPage(
+    val pageIndex: Int,
+    val text: String
+)
+
 @HiltViewModel
 class OcrReviewViewModel @Inject constructor(
     private val repository: DocumentRepository,
@@ -39,6 +44,7 @@ class OcrReviewViewModel @Inject constructor(
         val record: Document? = null,
         val text: String? = null,
         val pageTexts: List<String> = emptyList(),
+        val displayPages: List<OcrReviewPage> = emptyList(),
         val confidence: Float? = null,
         val recognizedLanguage: String? = null,
         val quality: OcrQuality = OcrQuality.UNKNOWN,
@@ -65,6 +71,9 @@ class OcrReviewViewModel @Inject constructor(
             record = record,
             text = record?.extractedText?.takeIf { it.isNotBlank() },
             pageTexts = pageTexts,
+            displayPages = pageTexts.mapIndexedNotNull { index, text ->
+                text.takeIf { it.isNotBlank() }?.let { OcrReviewPage(index, it) }
+            },
             confidence = record?.ocrConfidence,
             recognizedLanguage = record?.ocrLanguage,
             quality = record?.ocrConfidence.toQuality(),

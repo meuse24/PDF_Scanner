@@ -292,10 +292,10 @@ fun OcrReviewScreen(
                         style = MaterialTheme.typography.titleSmall
                     )
                     when {
-                        state.loading && state.pageTexts.isEmpty() -> {
+                        state.loading && state.displayPages.isEmpty() -> {
                             CircularProgressIndicator()
                         }
-                        state.pageTexts.isEmpty() -> {
+                        state.displayPages.isEmpty() -> {
                             Text(
                                 text = state.error ?: stringResource(R.string.ocr_review_no_text),
                                 style = MaterialTheme.typography.bodyMedium,
@@ -305,16 +305,19 @@ fun OcrReviewScreen(
                         else -> {
                             SelectionContainer {
                                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    state.pageTexts.forEachIndexed { index, pageText ->
-                                        if (state.pageTexts.size > 1) {
+                                    state.displayPages.forEach { page ->
+                                        if (state.displayPages.size > 1) {
                                             Text(
-                                                text = stringResource(R.string.ocr_review_page_header, index + 1),
+                                                text = stringResource(
+                                                    R.string.ocr_review_page_header,
+                                                    page.pageIndex + 1
+                                                ),
                                                 style = MaterialTheme.typography.labelLarge,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
                                         Text(
-                                            text = pageText,
+                                            text = page.text,
                                             style = MaterialTheme.typography.bodyMedium
                                         )
                                     }

@@ -1,5 +1,8 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
+import info.meuse24.pdf_scanner.domain.common.DetectedEntities
+import info.meuse24.pdf_scanner.domain.common.detectNormalizedDocumentEntities
+import info.meuse24.pdf_scanner.domain.common.normalizeOcrText
 import javax.inject.Inject
 
 /**
@@ -11,13 +14,14 @@ class AutoTagUseCase @Inject constructor() {
 
     fun extractTags(text: String): String? {
         if (text.isBlank()) return null
-        val normalized = normalizeText(text)
+        val normalized = normalizeOcrText(text)
+        val detectedEntities = detectNormalizedDocumentEntities(normalized)
         val found = mutableSetOf<String>()
 
         for ((tagKey, rules) in TAG_RULES) {
             val score = rules.sumOf { rule ->
                 if (WORD_PATTERNS.getValue(rule.keyword).containsMatchIn(normalized)) rule.score else 0
-            } + extraScore(tagKey, normalized)
+            } + extraScore(tagKey, detectedEntities)
             if (score >= TAG_THRESHOLD) {
                 found.add(tagKey)
             }
@@ -34,23 +38,11 @@ class AutoTagUseCase @Inject constructor() {
             val score: Int
         )
 
-        private val AMOUNT_REGEX = Regex("""(?<!\d)\d{1,3}(?:[.\s]\d{3})*[,.]\d{2}\s*(?:€|EUR)(?!\p{L})""")
-
-        // IBAN: country code + checksum + 15-34 alphanumeric chars in common grouped OCR form.
-        private val IBAN_REGEX = Regex("""(?<!\p{L})[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){3,7}(?!\p{L})""")
-        private val HYPHENATED_LINE_BREAK_REGEX = Regex("""(\w)-\s*\n\s*(\w)""")
-        private val WHITESPACE_REGEX = Regex("""\s+""")
-
         // Match full keyword boundaries so "Berechnung" and similar OCR fragments do not trigger tags.
         // \p{L} covers all Unicode letters including German umlauts.
-        private fun normalizeText(raw: String): String =
-            raw.replace(HYPHENATED_LINE_BREAK_REGEX, "$1$2")
-                .replace(WHITESPACE_REGEX, " ")
-                .trim()
-
-        private fun extraScore(tagKey: String, text: String): Int = when (tagKey) {
-            "invoice" -> if (AMOUNT_REGEX.containsMatchIn(text)) 2 else 0
-            "bank" -> if (IBAN_REGEX.containsMatchIn(text)) 3 else 0
+        private fun extraScore(tagKey: String, entities: DetectedEntities): Int = when (tagKey) {
+            "invoice" -> if (entities.amounts.isNotEmpty()) 2 else 0
+            "bank" -> if (entities.ibans.isNotEmpty()) 3 else 0
             else -> 0
         }
 

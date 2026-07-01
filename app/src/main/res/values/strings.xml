@@ -506,6 +506,19 @@
     <string name="pdf_viewer_invalid_page">This page could not be opened.</string>
     <string name="pdf_viewer_out_of_memory">This page is too large to render on this device.</string>
     <string name="pdf_viewer_renderer_failed">The PDF viewer could not render this document.</string>
+    <string name="pdf_viewer_search">Search document</string>
+    <string name="pdf_viewer_search_hint">Search in document</string>
+    <string name="pdf_viewer_search_no_matches">No matches</string>
+    <string name="pdf_viewer_search_match_count">%1$d/%2$d</string>
+    <string name="pdf_viewer_search_previous">Previous match</string>
+    <string name="pdf_viewer_search_next">Next match</string>
+    <string name="pdf_viewer_search_close">Close search</string>
+    <string name="pdf_viewer_copy_iban">Copy IBAN %1$s</string>
+    <string name="pdf_viewer_copy_iban_success">IBAN copied</string>
+    <string name="pdf_viewer_copy_amount">Copy amount %1$s</string>
+    <string name="pdf_viewer_copy_amount_success">Amount copied</string>
+    <string name="pdf_viewer_create_event">Create calendar event for %1$s</string>
+    <string name="pdf_viewer_no_calendar_app">No calendar app found</string>
     <!-- Annotate PDF -->
     <!-- Navigation Drawer header -->
     <string name="drawer_version">Version %1$s</string>

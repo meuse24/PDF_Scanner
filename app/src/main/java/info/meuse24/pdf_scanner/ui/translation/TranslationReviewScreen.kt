@@ -300,8 +300,10 @@ fun TranslationReviewScreen(
                         SelectionContainer {
                             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                                 result.pageTranslations.forEachIndexed { index, translation ->
+                                    val sourcePageIndex = result.sourcePageIndices
+                                        .getOrElse(index) { index }
                                     val originalText = state.record?.pageTexts
-                                        ?.getOrNull(index)
+                                        ?.getOrNull(sourcePageIndex)
                                         ?: state.record?.extractedText.orEmpty()
 
                                     if (result.pageTranslations.size > 1) {
@@ -319,7 +321,7 @@ fun TranslationReviewScreen(
                                         Text(
                                             text = stringResource(
                                                 R.string.translate_page_header,
-                                                index + 1,
+                                                sourcePageIndex + 1,
                                                 srcDisplay,
                                                 tgtDisplay
                                             ),

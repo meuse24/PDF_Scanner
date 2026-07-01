@@ -109,6 +109,27 @@ class OcrReviewViewModelTest {
     }
 
     @Test
+    fun `blank OCR pages stay hidden while retaining their physical page numbers`() = runTest(dispatcher) {
+        val record = scanRecord(
+            extractedText = "First page\n\n\n\nThird page",
+            pageTexts = listOf("First page", "", "Third page")
+        )
+        recordsFlow.value = listOf(record)
+        val viewModel = buildViewModel(RecordingExtractTextUseCase(), record.id)
+        val collection = backgroundScope.launch { viewModel.uiState.collect() }
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf(
+                OcrReviewPage(pageIndex = 0, text = "First page"),
+                OcrReviewPage(pageIndex = 2, text = "Third page")
+            ),
+            viewModel.uiState.value.displayPages
+        )
+        collection.cancel()
+    }
+
+    @Test
     fun `reExtract persists updated OCR data`() = runTest(dispatcher) {
         val record = scanRecord(
             extractedText = "Old text",

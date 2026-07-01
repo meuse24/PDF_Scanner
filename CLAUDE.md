@@ -95,7 +95,8 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 - Backup: `allowBackup=false`; `backup_rules.xml` + `data_extraction_rules.xml` schließen `filesDir/scans/` und DB-Dateien aus.
 - **OCR:** Domain nutzt `OcrDocumentTextExtractor`/`SearchablePdfGenerator`; ML-Kit-Implementierungen nutzen `OcrPipeline`, Auto-Default, manuelle Sprache und unbundled Modelle via `ModuleInstallClient`.
 - **AutoTags:** Scoring-basiertes lokales Keyword-Matching mit vorkompilierten Regexen; Tags als kommaseparierte Keys (`invoice`, `contract`, `insurance`, `certificate`, `bank`, `delivery`). Listenqueries laden nur `tags`, nicht `extracted_text`; automatische Vergabe respektiert `AppSettings.autoTaggingEnabled`.
-- **Viewer:** `PdfPageBitmapRenderer` (Mutex, ±1 Seiten rendern); Fit-width-Cache byte-budgetiert; Zoom-Renderings nicht gecacht; `CancellationException` nicht schlucken; `onCleared()` schließt File-Descriptors.
+- **Viewer:** `PdfPageBitmapRenderer` (Mutex, ±1 Seiten rendern); Fit-width-Cache byte-budgetiert; Zoom-Renderings nicht gecacht; `CancellationException` nicht schlucken; `onCleared()` schließt File-Descriptors. Die lokale Seitensuche nutzt nur exakt ausgerichtete OCR-Seitentexte (`pageTexts.size == pageCount`) und springt per `scrollToPageRequests`; Smart-Actions erkennen IBAN, Euro-Beträge und Datumswerte lokal.
+- **OCR-Seitenindex:** `toOcrPageTextJson()` und der PDF-Extraktionspfad müssen leere Seiteneinträge erhalten. Sonst stimmt der Listenindex nicht mehr mit dem PDF-Seitenindex überein; Altbestände mit abweichender Anzahl werden im Viewer bewusst nicht durchsucht.
 
 ## Mehrfachauswahl
 

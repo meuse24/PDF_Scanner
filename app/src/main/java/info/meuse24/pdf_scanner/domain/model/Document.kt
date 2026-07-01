@@ -41,3 +41,8 @@ data class Document(
 
 fun Document.hasDocxExportText(): Boolean =
     hasStoredOcrText || pageTexts.any { it.isNotBlank() } || !extractedText.isNullOrBlank()
+
+fun Document.hasAlignedOcrPageTexts(actualPageCount: Int = pageCount): Boolean =
+    actualPageCount > 0 &&
+        pageTexts.size == actualPageCount &&
+        pageTexts.any { it.isNotBlank() }

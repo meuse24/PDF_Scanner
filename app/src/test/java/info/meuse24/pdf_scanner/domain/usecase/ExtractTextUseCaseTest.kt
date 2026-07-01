@@ -178,6 +178,92 @@ class ExtractTextUseCaseTest {
         verify(recognizer).close()
     }
 
+    @Test
+    fun `thumbnail fallback preserves page alignment for multipage records`() = runTest(testDispatcher) {
+        val recognizer = mock(TextRecognizer::class.java)
+        val ocrPipeline = FakeOcrPipeline(recognizer)
+        val inputImageLoader = mock(OcrInputImageLoader::class.java)
+        val textRecognizerRunner = mock(TextRecognizerRunner::class.java)
+        val image = mock(InputImage::class.java)
+        val thumbnail = thumbnailFile("multipage.jpg")
+        val stats = OcrResultStats(0.9f, "en", 0f)
+        val recognizedText = mock(com.google.mlkit.vision.text.Text::class.java).apply {
+            `when`(text).thenReturn("Cover")
+        }
+        `when`(inputImageLoader.loadFromFile(thumbnail)).thenReturn(image)
+        `when`(textRecognizerRunner.recognizeWithStats(recognizer, image))
+            .thenReturn(recognizedText to stats)
+        val useCase = ExtractTextUseCase(
+            MlKitOcrDocumentTextExtractor(
+                ocrPipeline,
+                inputImageLoader,
+                TestDispatcherProvider(testDispatcher),
+                textRecognizerRunner
+            )
+        )
+
+        val result = useCase(
+            listOf(record("multipage", thumbnail).copy(pageCount = 3)),
+            "en"
+        ).single()
+
+        assertEquals(listOf("Cover", "", ""), result.pageTexts)
+    }
+
+    @Test
+    fun `PDF extraction preserves blank page positions`() = runTest(testDispatcher) {
+        val recognizer = mock(TextRecognizer::class.java)
+        val ocrPipeline = FakeOcrPipeline(recognizer)
+        val inputImageLoader = FailingOcrInputImageLoader()
+        val firstPage = mock(InputImage::class.java)
+        val blankPage = mock(InputImage::class.java)
+        val thirdPage = mock(InputImage::class.java)
+        val alphaText = mock(com.google.mlkit.vision.text.Text::class.java).apply {
+            `when`(text).thenReturn("Alpha")
+        }
+        val emptyText = mock(com.google.mlkit.vision.text.Text::class.java).apply {
+            `when`(text).thenReturn("")
+        }
+        val gammaText = mock(com.google.mlkit.vision.text.Text::class.java).apply {
+            `when`(text).thenReturn("Gamma")
+        }
+        val stats = OcrResultStats(0.9f, "en", 0f)
+        val textRecognizerRunner = FakeTextRecognizerRunner(
+            results = mapOf(
+                firstPage to (alphaText to stats),
+                blankPage to (emptyText to OcrResultStats(0f, null, 0f)),
+                thirdPage to (gammaText to stats)
+            ),
+            pageImages = listOf(firstPage, blankPage, thirdPage)
+        )
+        val pdfFile = tmpFolder.newFile("document-with-blank-page.pdf").apply { writeText("pdf") }
+        val useCase = ExtractTextUseCase(
+            ocrDocumentTextExtractor = MlKitOcrDocumentTextExtractor(
+                ocrPipeline = ocrPipeline,
+                inputImageLoader = inputImageLoader,
+                dispatcherProvider = TestDispatcherProvider(testDispatcher),
+                textRecognizerRunner = textRecognizerRunner
+            )
+        )
+
+        val result = useCase(
+            records = listOf(
+                Document(
+                    id = 1L,
+                    filename = "document",
+                    filepath = pdfFile.absolutePath,
+                    timestamp = 0L,
+                    pageCount = 3,
+                    fileSize = pdfFile.length()
+                )
+            ),
+            languageCode = "en"
+        ).single()
+
+        assertEquals(listOf("Alpha", "", "Gamma"), result.pageTexts)
+        assertEquals("Alpha\n\n\n\nGamma", result.fullText)
+    }
+
     private fun record(name: String, thumbnail: File): Document {
         return Document(
             id = 1L,

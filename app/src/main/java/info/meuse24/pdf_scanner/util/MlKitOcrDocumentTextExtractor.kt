@@ -49,8 +49,8 @@ class MlKitOcrDocumentTextExtractor @Inject constructor(
                 if (pdfFile.exists()) {
                     withContext(dispatcherProvider.io) {
                         textRecognizerRunner.processPages(pdfFile, recognizer) { text, ocrStats ->
+                            pageTexts += text
                             if (text.isNotBlank()) {
-                                pageTexts += text
                                 if (recordStats == null) recordStats = ocrStats
                             }
                         }
@@ -60,8 +60,11 @@ class MlKitOcrDocumentTextExtractor @Inject constructor(
                         inputImageLoader.loadFromFile(File(record.thumbnailPath))
                     }
                     val (ocrText, ocrStats) = textRecognizerRunner.recognizeWithStats(recognizer, image)
+                    pageTexts += ocrText.text
+                    repeat((record.pageCount.coerceAtLeast(1) - 1).coerceAtLeast(0)) {
+                        pageTexts += ""
+                    }
                     if (ocrText.text.isNotBlank()) {
-                        pageTexts += ocrText.text
                         recordStats = ocrStats
                     }
                 }

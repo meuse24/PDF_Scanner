@@ -1,5 +1,6 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
+import info.meuse24.pdf_scanner.domain.model.hasAlignedOcrPageTexts
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import kotlinx.coroutines.flow.first
@@ -26,7 +27,11 @@ class OcrBackfillUseCase @Inject constructor(
         } ?: return
 
         val candidates = allScans
-            .filter { it.isSearchable && it.extractedText == null && File(it.filepath).exists() }
+            .filter {
+                it.isSearchable &&
+                    (it.extractedText.isNullOrBlank() || !it.hasAlignedOcrPageTexts()) &&
+                    File(it.filepath).exists()
+            }
             .take(limit)
         if (candidates.isEmpty()) return
 

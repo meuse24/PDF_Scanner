@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.domain.usecase
 
 import android.content.Context
+import info.meuse24.pdf_scanner.domain.gateway.OcrDocumentTextExtractor
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
@@ -39,7 +40,8 @@ class MakeSearchableUseCaseTest {
             builder,
             repository,
             AutoTagUseCase(),
-            FakeSettingsRepository(settings)
+            FakeSettingsRepository(settings),
+            FakeExtractTextUseCase()
         ) to dao
     }
 
@@ -62,7 +64,8 @@ class MakeSearchableUseCaseTest {
             pageCount     = 1,
             fileSize      = 0L,
             isSearchable  = isSearchable,
-            extractedText = extractedText
+            extractedText = extractedText,
+            pageTexts = extractedText?.let(::listOf).orEmpty()
         )
     }
 
@@ -110,8 +113,22 @@ class MakeSearchableUseCaseTest {
         val (count, _) = useCase(listOf(legacyRecord), "de")
 
         assertEquals(1, count)
-        assertEquals(1, processedFiles.size)
+        assertTrue(processedFiles.isEmpty())
         assertEquals(1, dao.searchableWithContentUpdates.size)
+    }
+
+    @Test
+    fun `repariert falsch ausgerichtete Alt-OCR ohne neuen PDF-Textlayer`() = runTest {
+        val processedFiles = mutableListOf<File>()
+        val (useCase, dao) = makeUseCase(onMakeSearchable = { file, _ -> processedFiles.add(file) })
+        val legacyRecord = record(3L, isSearchable = true, extractedText = "Alter Text")
+            .copy(pageCount = 2, pageTexts = listOf("Alter Text"))
+
+        val (count, _) = useCase(listOf(legacyRecord), "de")
+
+        assertEquals(1, count)
+        assertTrue(processedFiles.isEmpty())
+        assertEquals("Recovered text", dao.searchableWithContentUpdates.single().text)
     }
 
     @Test
@@ -180,6 +197,37 @@ class FakeSearchablePdfBuilder(
             pageTexts = emptyList(),
             stats = null
         )
+    }
+}
+
+class FakeExtractTextUseCase(
+    private val fullText: String = "Recovered text",
+    private val pageTexts: List<String> = listOf(fullText)
+) : ExtractTextUseCase(
+    ocrDocumentTextExtractor = object : OcrDocumentTextExtractor {
+        override suspend fun extract(
+            records: List<Document>,
+            languageCode: String,
+            onStatus: (OcrPipelineStatus) -> Unit
+        ): List<OcrDocumentResult> = emptyList()
+    }
+) {
+    var invocationCount: Int = 0
+
+    override suspend fun invoke(
+        records: List<Document>,
+        languageCode: String,
+        onStatus: (OcrPipelineStatus) -> Unit
+    ): List<OcrDocumentResult> {
+        invocationCount++
+        return records.map { record ->
+            OcrDocumentResult(
+                recordId = record.id,
+                fullText = fullText,
+                pageTexts = pageTexts,
+                stats = null
+            )
+        }
     }
 }
 

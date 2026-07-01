@@ -1,5 +1,7 @@
 package info.meuse24.pdf_scanner.ui.viewer
 
+import android.content.ActivityNotFoundException
+import android.content.ClipData
 import android.content.Intent
 import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
@@ -7,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -24,21 +27,28 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FindInPage
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -67,9 +77,17 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
@@ -83,6 +101,8 @@ import info.meuse24.pdf_scanner.ui.components.DocumentEditSheet
 import info.meuse24.pdf_scanner.ui.components.PrintPageSizeWarningDialog
 import info.meuse24.pdf_scanner.ui.components.ScanAction
 import info.meuse24.pdf_scanner.ui.shared.clampPanOffset
+import info.meuse24.pdf_scanner.domain.common.DetectedEntities
+import info.meuse24.pdf_scanner.util.buildCalendarInsertIntent
 import info.meuse24.pdf_scanner.util.PdfPrintHelper
 import info.meuse24.pdf_scanner.util.buildPdfShareIntent
 import info.meuse24.pdf_scanner.util.openPdfExternally
@@ -94,6 +114,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -126,6 +149,8 @@ fun PdfViewerScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val clipboard = LocalClipboard.current
+    val resources = LocalResources.current
     val snackbarHostState = LocalAppSnackbarHostState.current
     val scope = rememberCoroutineScope()
     val pendingPrintDocument by viewModel.pendingPrintDocument.collectAsStateWithLifecycle()
@@ -144,6 +169,10 @@ fun PdfViewerScreen(
         mutableFloatStateOf(0f)
     }
     var activePointerCount by remember { mutableIntStateOf(0) }
+    val displayLocale = resources.configuration.locales[0]
+    val dateFormatter = remember(displayLocale) {
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(displayLocale)
+    }
 
     fun showMessage(message: String) {
         val hostState = snackbarHostState ?: return
@@ -159,8 +188,22 @@ fun PdfViewerScreen(
         )
     }
 
+    fun resetInlineZoom() {
+        inlineScale = 1f
+        inlineOffsetX = 0f
+        inlineOffsetY = 0f
+        viewModel.setZoomScale(1f)
+    }
+
     LaunchedEffect(viewModel) {
         viewModel.printRequests.collect(::printRecord)
+    }
+
+    LaunchedEffect(viewModel, listState) {
+        viewModel.scrollToPageRequests.collect { pageIndex ->
+            resetInlineZoom()
+            listState.animateScrollToItem(pageIndex)
+        }
     }
 
     if (pendingPrintDocument != null) {
@@ -198,11 +241,12 @@ fun PdfViewerScreen(
             viewModel.requestVisibleZoomRender(viewportWidthPx, newScale)
         }
 
-        BackHandler(enabled = inlineScale > 1f) {
-            inlineScale = 1f
-            inlineOffsetX = 0f
-            inlineOffsetY = 0f
-            viewModel.setZoomScale(1f)
+        BackHandler(enabled = state.searchActive || inlineScale > 1f) {
+            if (state.searchActive) {
+                viewModel.closeSearch()
+            } else {
+                resetInlineZoom()
+            }
         }
 
         LaunchedEffect(viewportWidthPx, state.pageCount) {
@@ -273,7 +317,12 @@ fun PdfViewerScreen(
                                 translationY = inlineOffsetY
                                 clip = true
                             },
-                        contentPadding = PaddingValues(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 96.dp),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            top = if (state.searchActive) 88.dp else 12.dp,
+                            end = 16.dp,
+                            bottom = if (state.detectedEntities.isEmpty) 96.dp else 152.dp
+                        ),
                         verticalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
                         items(
@@ -312,33 +361,83 @@ fun PdfViewerScreen(
                     }
                 }
 
-                PageIndicator(
-                    currentPage = state.currentPageIndex + 1,
-                    pageCount = state.pageCount,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 10.dp)
-                )
+                if (state.searchActive) {
+                    ViewerSearchToolbar(
+                        query = state.searchQuery,
+                        searching = state.searching,
+                        currentMatchIndex = state.searchCurrentIndex,
+                        matchCount = state.searchMatches.size,
+                        onQueryChange = viewModel::updateSearchQuery,
+                        onPrevious = viewModel::goToPreviousMatch,
+                        onNext = viewModel::goToNextMatch,
+                        onClose = viewModel::closeSearch,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(horizontal = 8.dp, vertical = 8.dp)
+                    )
+                } else {
+                    PageIndicator(
+                        currentPage = state.currentPageIndex + 1,
+                        pageCount = state.pageCount,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = 10.dp)
+                    )
+                }
 
                 state.record?.let { record ->
-                    ViewerActionBar(
-                        record = record,
-                        onEdit = { editSheetVisible = true },
-                        onShare = {
-                            val shareIntent = buildPdfShareIntent(context, listOf(record))
-                            if (shareIntent != null) {
-                                context.startActivity(Intent.createChooser(shareIntent, shareTitle))
+                    Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+                        if (!state.detectedEntities.isEmpty) {
+                            ViewerEntityActions(
+                                entities = state.detectedEntities,
+                                dateFormatter = dateFormatter,
+                                onCopyIban = { iban ->
+                                    scope.launch {
+                                        clipboard.setClipEntry(ClipData.newPlainText("IBAN", iban).toClipEntry())
+                                        viewModel.notifyIbanCopied()
+                                    }
+                                },
+                                onCopyAmount = { amount ->
+                                    scope.launch {
+                                        clipboard.setClipEntry(ClipData.newPlainText("Amount", amount).toClipEntry())
+                                        viewModel.notifyAmountCopied()
+                                    }
+                                },
+                                onCreateEvent = { date ->
+                                    try {
+                                        context.startActivity(buildCalendarInsertIntent(record.filename, date))
+                                    } catch (_: ActivityNotFoundException) {
+                                        viewModel.notifyCalendarAppMissing()
+                                    }
+                                }
+                            )
+                        }
+                        ViewerActionBar(
+                            record = record,
+                            onEdit = { editSheetVisible = true },
+                            onSearch = if (state.pageSearchAvailable && !state.searchActive) {
+                                {
+                                    resetInlineZoom()
+                                    viewModel.openSearch()
+                                }
+                            } else {
+                                null
+                            },
+                            onShare = {
+                                val shareIntent = buildPdfShareIntent(context, listOf(record))
+                                if (shareIntent != null) {
+                                    context.startActivity(Intent.createChooser(shareIntent, shareTitle))
+                                }
+                            },
+                            onExport = viewModel::exportCurrentPdf,
+                            onPrint = { viewModel.requestPrint(record) },
+                            onOpenExternal = {
+                                if (!openPdfExternally(context, record)) {
+                                    showMessage(errorNoPdfViewer)
+                                }
                             }
-                        },
-                        onExport = viewModel::exportCurrentPdf,
-                        onPrint = { viewModel.requestPrint(record) },
-                        onOpenExternal = {
-                            if (!openPdfExternally(context, record)) {
-                                showMessage(errorNoPdfViewer)
-                            }
-                        },
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -561,9 +660,147 @@ private fun PageIndicator(
 }
 
 @Composable
+private fun ViewerSearchToolbar(
+    query: String,
+    searching: Boolean,
+    currentMatchIndex: Int,
+    matchCount: Int,
+    onQueryChange: (String) -> Unit,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val hasMatches = matchCount > 0
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
+
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.98f),
+        shadowElevation = 3.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(start = 10.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = onQueryChange,
+                placeholder = { Text(stringResource(R.string.pdf_viewer_search_hint)) },
+                singleLine = true,
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester)
+            )
+            when {
+                searching -> CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp)
+                        .size(20.dp),
+                    strokeWidth = 2.dp
+                )
+                query.isNotBlank() && !hasMatches -> Text(
+                    text = stringResource(R.string.pdf_viewer_search_no_matches),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 6.dp)
+                )
+                hasMatches -> Text(
+                    text = stringResource(
+                        R.string.pdf_viewer_search_match_count,
+                        currentMatchIndex + 1,
+                        matchCount
+                    ),
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(horizontal = 6.dp)
+                )
+            }
+            IconButton(onClick = onPrevious, enabled = hasMatches && !searching) {
+                Icon(
+                    Icons.Default.KeyboardArrowUp,
+                    contentDescription = stringResource(R.string.pdf_viewer_search_previous)
+                )
+            }
+            IconButton(onClick = onNext, enabled = hasMatches && !searching) {
+                Icon(
+                    Icons.Default.KeyboardArrowDown,
+                    contentDescription = stringResource(R.string.pdf_viewer_search_next)
+                )
+            }
+            IconButton(
+                onClick = {
+                    keyboardController?.hide()
+                    onClose()
+                }
+            ) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = stringResource(R.string.pdf_viewer_search_close)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ViewerEntityActions(
+    entities: DetectedEntities,
+    dateFormatter: DateTimeFormatter,
+    onCopyIban: (String) -> Unit,
+    onCopyAmount: (String) -> Unit,
+    onCreateEvent: (LocalDate) -> Unit
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.96f)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            entities.ibans.forEach { iban ->
+                val description = stringResource(R.string.pdf_viewer_copy_iban, iban)
+                AssistChip(
+                    onClick = { onCopyIban(iban) },
+                    label = { Text(iban) },
+                    modifier = Modifier.semantics { contentDescription = description }
+                )
+            }
+            entities.amounts.forEach { amount ->
+                val description = stringResource(R.string.pdf_viewer_copy_amount, amount)
+                AssistChip(
+                    onClick = { onCopyAmount(amount) },
+                    label = { Text(amount) },
+                    modifier = Modifier.semantics { contentDescription = description }
+                )
+            }
+            entities.dates.forEach { date ->
+                val formattedDate = date.format(dateFormatter)
+                val description = stringResource(R.string.pdf_viewer_create_event, formattedDate)
+                AssistChip(
+                    onClick = { onCreateEvent(date) },
+                    label = { Text(formattedDate) },
+                    modifier = Modifier.semantics { contentDescription = description }
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun ViewerActionBar(
     record: Document,
     onEdit: () -> Unit,
+    onSearch: (() -> Unit)?,
     onShare: () -> Unit,
     onExport: () -> Unit,
     onPrint: () -> Unit,
@@ -585,6 +822,7 @@ private fun ViewerActionBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ViewerActionButton(Icons.Default.Edit, R.string.action_edit_pdf, onEdit)
+            onSearch?.let { ViewerActionButton(Icons.Default.FindInPage, R.string.pdf_viewer_search, it) }
             ViewerActionButton(Icons.Default.Share, R.string.cd_share, onShare)
             ViewerActionButton(Icons.Default.Download, R.string.action_export, onExport)
             ViewerActionButton(Icons.Default.Print, R.string.action_print_pdf, onPrint, enabled = !record.isEncrypted)

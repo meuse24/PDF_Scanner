@@ -32,9 +32,13 @@
     <string name="local_sync_web_locked_out_message">The PC connection was stopped for security reasons. Start it again on your phone with a new PIN.</string>
     <string name="local_sync_web_documents_title">M24 PDF Scanner – Archive</string>
     <string name="local_sync_web_documents_heading">Your archive</string>
+    <string name="local_sync_web_empty_state">No documents yet. Import a PDF on your phone or drop a file below.</string>
     <string name="local_sync_web_document_meta">%1$d pages, %2$s</string>
+    <string name="local_sync_web_download_label">Download %1$s</string>
+    <string name="local_sync_web_pin_digit_label">PIN digit %1$d of %2$d</string>
     <string name="local_sync_web_upload_heading">Upload PDF</string>
     <string name="local_sync_web_upload_hint">Maximum 25 MB per file.</string>
+    <string name="local_sync_web_upload_dropzone_label">Choose a PDF or drop it here</string>
     <string name="local_sync_web_upload_button">Upload</string>
     <string name="local_sync_web_upload_success">%1$s.pdf was imported.</string>
     <string name="local_sync_web_upload_not_pdf">The file is not a valid PDF.</string>

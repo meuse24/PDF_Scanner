@@ -32,9 +32,13 @@
     <string name="local_sync_web_locked_out_message">La connexion PC a été arrêtée pour des raisons de sécurité. Redémarre-la sur ton téléphone avec un nouveau code PIN.</string>
     <string name="local_sync_web_documents_title">M24 PDF Scanner – Archives</string>
     <string name="local_sync_web_documents_heading">Tes documents</string>
+    <string name="local_sync_web_empty_state">Pas encore de documents. Importe un PDF sur ton téléphone ou dépose un fichier ci-dessous.</string>
     <string name="local_sync_web_document_meta">%1$d pages, %2$s</string>
+    <string name="local_sync_web_download_label">Télécharger %1$s</string>
+    <string name="local_sync_web_pin_digit_label">Chiffre %1$d sur %2$d du code PIN</string>
     <string name="local_sync_web_upload_heading">Envoyer un PDF</string>
     <string name="local_sync_web_upload_hint">25 Mo maximum par fichier.</string>
+    <string name="local_sync_web_upload_dropzone_label">Choisis un PDF ou dépose-le ici</string>
     <string name="local_sync_web_upload_button">Envoyer</string>
     <string name="local_sync_web_upload_success">%1$s.pdf a été importé.</string>
     <string name="local_sync_web_upload_not_pdf">Le fichier n\'est pas un PDF valide.</string>

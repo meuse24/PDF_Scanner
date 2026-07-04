@@ -71,9 +71,13 @@ class LocalSyncRoutingTest {
             R.string.local_sync_web_locked_out_message to "The PC connection was stopped for security reasons.",
             R.string.local_sync_web_documents_title to "M24 PDF Scanner – Archive",
             R.string.local_sync_web_documents_heading to "Your archive",
+            R.string.local_sync_web_empty_state to "No documents yet.",
             R.string.local_sync_web_document_meta to "%1\$d pages, %2\$s",
+            R.string.local_sync_web_download_label to "Download %1\$s",
+            R.string.local_sync_web_pin_digit_label to "PIN digit %1\$d of %2\$d",
             R.string.local_sync_web_upload_heading to "Upload PDF",
             R.string.local_sync_web_upload_hint to "Maximum 25 MB per file.",
+            R.string.local_sync_web_upload_dropzone_label to "Choose a PDF or drop it here",
             R.string.local_sync_web_upload_button to "Upload",
             R.string.local_sync_web_upload_success to "%1\$s.pdf was imported.",
             R.string.local_sync_web_upload_not_pdf to "The file is not a valid PDF.",
@@ -347,8 +351,62 @@ class LocalSyncRoutingTest {
             }
 
             assertEquals(HttpStatusCode.OK, response.status)
-            assertTrue(response.bodyAsText().contains("not a valid PDF"))
+            val body = response.bodyAsText()
+            assertTrue(body.contains("not a valid PDF"))
+            assertTrue("rejected uploads must announce via role=\"alert\", not a status region", body.contains("role=\"alert\""))
             verifyNoInteractions(importFileUseCase)
+        }
+    }
+
+    @Test
+    fun `documents page shows an empty state when there are no documents`() = runTest {
+        testApplication {
+            val repository = repositoryWithDocuments()
+            val sessionStore = LocalSyncSessionStore()
+            application {
+                routing {
+                    localSyncRouting(
+                        PIN, repository, noOpImportFileUseCase(), testStorageProvider(),
+                        testResourceProvider(), sessionStore, LoginRateLimiter()
+                    )
+                }
+            }
+            val sessionId = sessionStore.createSession(System.currentTimeMillis())
+
+            val response = client.get("/documents") {
+                header(HttpHeaders.Cookie, "$LOCAL_SYNC_SESSION_COOKIE_NAME=$sessionId")
+            }
+
+            assertEquals(HttpStatusCode.OK, response.status)
+            assertTrue(response.bodyAsText().contains("No documents yet."))
+        }
+    }
+
+    @Test
+    fun `download link has a per-document accessible name instead of the generic heading`() = runTest {
+        testApplication {
+            val repository = repositoryWithDocuments(sampleDocument(id = 7))
+            val sessionStore = LocalSyncSessionStore()
+            application {
+                routing {
+                    localSyncRouting(
+                        PIN, repository, noOpImportFileUseCase(), testStorageProvider(),
+                        testResourceProvider(), sessionStore, LoginRateLimiter()
+                    )
+                }
+            }
+            val sessionId = sessionStore.createSession(System.currentTimeMillis())
+
+            val response = client.get("/documents") {
+                header(HttpHeaders.Cookie, "$LOCAL_SYNC_SESSION_COOKIE_NAME=$sessionId")
+            }
+
+            val body = response.bodyAsText()
+            assertTrue(body.contains("aria-label=\"Download &lt;Rechnung&gt; &amp; &quot;Q1&quot;.pdf\""))
+            assertFalse(
+                "download links must not all share the generic archive heading as their accessible name",
+                body.contains("aria-label=\"Your archive\"")
+            )
         }
     }
 }

@@ -32,9 +32,13 @@
     <string name="local_sync_web_locked_out_message">出于安全原因，电脑连接已停止。请在手机上使用新的 PIN 码重新启动连接。</string>
     <string name="local_sync_web_documents_title">M24 PDF Scanner – 存档</string>
     <string name="local_sync_web_documents_heading">你的存档</string>
+    <string name="local_sync_web_empty_state">暂无文档。请在手机上导入 PDF，或将文件拖放到下方。</string>
     <string name="local_sync_web_document_meta">%1$d 页，%2$s</string>
+    <string name="local_sync_web_download_label">下载 %1$s</string>
+    <string name="local_sync_web_pin_digit_label">PIN 第 %1$d 位（共 %2$d 位）</string>
     <string name="local_sync_web_upload_heading">上传 PDF</string>
     <string name="local_sync_web_upload_hint">每个文件最大 25 MB。</string>
+    <string name="local_sync_web_upload_dropzone_label">选择 PDF 或将其拖到此处</string>
     <string name="local_sync_web_upload_button">上传</string>
     <string name="local_sync_web_upload_success">%1$s.pdf 已导入。</string>
     <string name="local_sync_web_upload_not_pdf">该文件不是有效的 PDF。</string>

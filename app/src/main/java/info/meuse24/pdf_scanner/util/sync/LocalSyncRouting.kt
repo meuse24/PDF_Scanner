@@ -152,28 +152,28 @@ internal fun Route.localSyncRouting(
             return@post
         }
 
-        var message: String? = null
+        var feedback: UploadFeedback? = null
         val multipart = call.receiveMultipart()
         multipart.forEachPart { part ->
-            if (part is PartData.FileItem && message == null) {
+            if (part is PartData.FileItem && feedback == null) {
                 val originalName = part.originalFileName
                     ?.substringAfterLast('/')
                     ?.takeIf(String::isNotBlank)
                     ?: "Upload"
                 val tempFile = File.createTempFile("m24_sync_upload_", ".pdf", storageProvider.tempDir())
-                message = try {
+                feedback = try {
                     part.provider().copyToPdfFile(tempFile)
                     val imported = importFileUseCase(
                         Uri.fromFile(tempFile),
                         File(originalName).nameWithoutExtension.ifBlank { "Upload" }
                     )
-                    resourceProvider.getString(R.string.local_sync_web_upload_success, imported.filename)
+                    UploadFeedback.Success(resourceProvider.getString(R.string.local_sync_web_upload_success, imported.filename))
                 } catch (_: UploadNotAPdfException) {
-                    resourceProvider.getString(R.string.local_sync_web_upload_not_pdf)
+                    UploadFeedback.Error(resourceProvider.getString(R.string.local_sync_web_upload_not_pdf))
                 } catch (_: UploadTooLargeException) {
-                    resourceProvider.getString(R.string.local_sync_web_upload_too_large)
+                    UploadFeedback.Error(resourceProvider.getString(R.string.local_sync_web_upload_too_large))
                 } catch (_: Exception) {
-                    resourceProvider.getString(R.string.local_sync_web_upload_failed)
+                    UploadFeedback.Error(resourceProvider.getString(R.string.local_sync_web_upload_failed))
                 } finally {
                     tempFile.delete()
                 }
@@ -182,6 +182,6 @@ internal fun Route.localSyncRouting(
         }
 
         val documents = documentRepository.getAllScans().first()
-        call.respondText(renderDocumentsPage(resourceProvider, documents, message), ContentType.Text.Html)
+        call.respondText(renderDocumentsPage(resourceProvider, documents, feedback), ContentType.Text.Html)
     }
 }

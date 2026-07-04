@@ -32,9 +32,13 @@
     <string name="local_sync_web_locked_out_message">Подключение к ПК остановлено из соображений безопасности. Запустите его снова на телефоне с новым PIN-кодом.</string>
     <string name="local_sync_web_documents_title">M24 PDF Scanner – Архив</string>
     <string name="local_sync_web_documents_heading">Ваш архив</string>
+    <string name="local_sync_web_empty_state">Пока нет документов. Импортируйте PDF на телефоне или перетащите файл сюда.</string>
     <string name="local_sync_web_document_meta">%1$d стр., %2$s</string>
+    <string name="local_sync_web_download_label">Скачать %1$s</string>
+    <string name="local_sync_web_pin_digit_label">Цифра PIN-кода %1$d из %2$d</string>
     <string name="local_sync_web_upload_heading">Загрузить PDF</string>
     <string name="local_sync_web_upload_hint">Максимум 25 МБ на файл.</string>
+    <string name="local_sync_web_upload_dropzone_label">Выберите PDF или перетащите его сюда</string>
     <string name="local_sync_web_upload_button">Загрузить</string>
     <string name="local_sync_web_upload_success">%1$s.pdf импортирован.</string>
     <string name="local_sync_web_upload_not_pdf">Файл не является допустимым PDF.</string>

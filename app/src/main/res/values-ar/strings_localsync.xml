@@ -32,9 +32,13 @@
     <string name="local_sync_web_locked_out_message">تم إيقاف الاتصال بالكمبيوتر لأسباب أمنية. ابدأه مرة أخرى من هاتفك برمز جديد.</string>
     <string name="local_sync_web_documents_title">M24 PDF Scanner – الأرشيف</string>
     <string name="local_sync_web_documents_heading">أرشيفك</string>
+    <string name="local_sync_web_empty_state">لا توجد مستندات بعد. استورد ملف PDF على هاتفك أو أفلت ملفًا أدناه.</string>
     <string name="local_sync_web_document_meta">%1$d صفحة، %2$s</string>
+    <string name="local_sync_web_download_label">تنزيل %1$s</string>
+    <string name="local_sync_web_pin_digit_label">الرقم %1$d من %2$d من الرمز</string>
     <string name="local_sync_web_upload_heading">رفع ملف PDF</string>
     <string name="local_sync_web_upload_hint">الحد الأقصى 25 ميغابايت لكل ملف.</string>
+    <string name="local_sync_web_upload_dropzone_label">اختر ملف PDF أو أفلته هنا</string>
     <string name="local_sync_web_upload_button">رفع</string>
     <string name="local_sync_web_upload_success">تم استيراد %1$s.pdf.</string>
     <string name="local_sync_web_upload_not_pdf">الملف ليس ملف PDF صالحًا.</string>

@@ -20,4 +20,6 @@
     <string name="form_fill_page">الصفحة %1$d من %2$d</string>
     <string name="form_fill_select_option">اختيار %1$s</string>
     <string name="form_fill_reset">إعادة تعيين القيم</string>
+    <string name="help_item_fill_form">افتح ملف PDF يحتوي على حقول AcroForm في العارض واختر «تعبئة النموذج». أكمل حقول النص ومربعات الاختيار وأزرار الاختيار والقوائم، ثم احفظ نسخة جديدة. يمكنك اختياريًا تسطيح الحقول لتصبح القيم محتوى دائمًا. النماذج الموقعة للقراءة فقط، ونماذج XFA الديناميكية غير مدعومة.</string>
+    <string name="info_feature_formfill">يمكن تعبئة ملفات PDF التفاعلية من نوع AcroForm على الجهاز وحفظها كنسخة جديدة، مع تسطيح اختياري للحقول وخطوط Unicode احتياطية لعدة أنظمة كتابة.</string>
 </resources>

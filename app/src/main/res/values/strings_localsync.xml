@@ -44,4 +44,8 @@
     <string name="local_sync_web_upload_not_pdf">The file is not a valid PDF.</string>
     <string name="local_sync_web_upload_too_large">The file is larger than 25 MB.</string>
     <string name="local_sync_web_upload_failed">The upload failed.</string>
+    <string name="help_item_local_sync">Open PC connection from the side menu to exchange PDFs with a browser on the same local network. Start the connection, enter the displayed address and PIN on the PC, then download archive documents or upload PDFs up to 25 MB. The connection uses no cloud, stops after inactivity, network loss, or App Lock, and should only be used on a trusted local network.</string>
+    <string name="info_feature_local_sync">The local Wi-Fi PC connection transfers PDFs directly between the app and a browser on the same network. Access is protected by a temporary PIN and session, with automatic shutdown on inactivity, network loss, App Lock, or repeated failed logins.</string>
+    <string name="privacy_keyword_10">Local Wi-Fi transfer</string>
+    <string name="privacy_point_10">Only when you start PC connection, the app exposes active archive documents through a temporary local web server bound to the selected private network address. Transfer stays inside the local network and uses PIN/session protection, but HTTP is not TLS-encrypted; use it only on a trusted network. The server stops automatically on inactivity, network loss, App Lock, or too many failed PIN attempts.</string>
 </resources>

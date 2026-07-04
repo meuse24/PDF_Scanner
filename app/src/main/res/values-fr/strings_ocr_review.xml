@@ -14,4 +14,5 @@
     <string name="ocr_review_missing_record">Ce document n’est plus disponible.</string>
     <string name="ocr_quality_badge_percent">%1$d%%</string>
     <string name="ocr_quality_badge_unknown">OCR</string>
+    <string name="info_feature_ocr_delivery">Tous les moteurs OCR sont fournis sous forme de modules Google Play Services. Le module latin est normalement préchargé lors de l’installation ; si un modèle requis manque, l’app le télécharge avec une progression visible avant la reconnaissance. Le traitement OCR reste sur l’appareil.</string>
 </resources>

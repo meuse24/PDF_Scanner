@@ -40,7 +40,8 @@ class AndroidOcrModelInstaller @Inject constructor(
         script: OcrScript,
         onStatus: (OcrPipelineStatus) -> Unit
     ) {
-        if (!script.requiresModuleDownload()) return
+        // Seit der Umstellung auf play-services-mlkit-text-recognition kommt auch das
+        // Latin-Modell als GMS-Modul; der Verfügbarkeitscheck muss für jedes Skript laufen.
         ensureApiAvailable(recognizer, onStatus)
     }
 

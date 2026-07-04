@@ -20,4 +20,6 @@
     <string name="form_fill_page">%2$dページ中%1$dページ</string>
     <string name="form_fill_select_option">%1$sを選択</string>
     <string name="form_fill_reset">値をリセット</string>
+    <string name="help_item_fill_form">ビューアーで AcroForm フィールドを含む PDF を開き、「フォームに入力」を選択します。テキスト欄、チェックボックス、ラジオボタン、選択リストを入力して新しいコピーを保存します。フィールドをフラット化して値を恒久的な内容にすることもできます。署名済みフォームは読み取り専用で、動的 XFA フォームには対応していません。</string>
+    <string name="info_feature_formfill">インタラクティブな AcroForm PDF を端末上で入力して新しいコピーとして保存できます。任意のフィールドのフラット化と、複数の文字体系に対応する Unicode 代替フォントも利用できます。</string>
 </resources>

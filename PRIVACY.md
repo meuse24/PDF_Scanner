@@ -1,6 +1,6 @@
 # Datenschutzerklaerung fuer PDF Scanner
 
-Stand: 27. Juni 2026
+Stand: 4. Juli 2026
 
 Diese Datenschutzerklaerung gilt fuer die Android-App **PDF Scanner** mit dem Paketnamen `info.meuse24.pdf_scanner`.
 
@@ -57,7 +57,7 @@ Die App nutzt fuer das Scannen von Dokumenten die von Google bereitgestellte Kom
 Nach den offiziellen ML-Kit-Hinweisen von Google findet die Verarbeitung der Eingabedaten wie Bilder und Scan-Ergebnisse vollstaendig auf dem Geraet statt; diese Daten werden nicht an Google-Server gesendet. Google weist jedoch ebenfalls darauf hin, dass ML Kit APIs gelegentlich Google-Server kontaktieren koennen, um Fehlerbehebungen, aktualisierte Modelle oder Hardware-Kompatibilitaetsinformationen zu beziehen. Ausserdem koennen Leistungs- und Nutzungsmetriken der API an Google uebermittelt werden.
 
 ### ML Kit Text Recognition (OCR)
-Die App bietet eine optionale **Texterkennungs-Funktion (OCR)** auf Basis von **ML Kit Text Recognition**. Der automatische Modus verwendet ein integriertes Lateinmodell, das vollstaendig offline laeuft. Bei manueller Auswahl von *Hindi, Chinesisch, Japanisch oder Koreanisch* wird beim ersten Einsatz ein GMS-unbundled-Modell ueber Google Play Services heruntergeladen. Dokumentbilder werden weder an Google-Server noch an sonstige externe Dienste uebertragen. Erkannter Text kann optional lokal in der App-Datenbank gespeichert werden, wenn der Nutzer eine durchsuchbare PDF erstellt.
+Die App bietet eine optionale **Texterkennungs-Funktion (OCR)** auf Basis von **ML Kit Text Recognition**. Alle OCR-Erkenner, einschliesslich des im automatischen Modus verwendeten Latin-Modells, werden als GMS-unbundled-Module ueber Google Play Services bereitgestellt. Die App fordert den Hintergrund-Download des Latin-Modells bereits bei der Installation an. Fehlt ein benoetigtes Modell dennoch, etwa nach einer Installation ohne Netzwerkverbindung, wird es beim ersten OCR-Aufruf mit sichtbarer Fortschrittsanzeige nachgeladen. Fuer *Hindi, Chinesisch, Japanisch oder Koreanisch* erfolgt der Download bei der ersten Nutzung der jeweiligen Sprache. Dokumentbilder werden weder an Google-Server noch an sonstige externe Dienste uebertragen; die Erkennung selbst findet auf dem Geraet statt. Erkannter Text kann optional lokal in der App-Datenbank gespeichert werden, wenn der Nutzer eine durchsuchbare PDF erstellt.
 
 Die oben beschriebenen ML-Kit-Bedingungen fuer Updates und Metriken gelten gleichermassen fuer diese Komponente.
 

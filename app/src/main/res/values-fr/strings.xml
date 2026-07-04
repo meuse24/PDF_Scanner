@@ -134,7 +134,7 @@
     <string name="help_section_ocr">OCR et extraction de texte</string>
     <string name="help_item_extract_text">L\'extraction de texte (OCR) lit toutes les pages. Pour un seul document, elle ouvre la revue OCR avec le texte page par page, la langue reconnue, la qualité, les actions copier/partager et l\'export TXT. Pour plusieurs documents, elle affiche toujours un panneau combiné d\'où vous pouvez copier ou partager le résultat.</string>
     <string name="help_item_make_searchable">Rendre consultable ajoute une couche de texte invisible au PDF, enregistre localement le texte OCR extrait pour la recherche dans l’archive.</string>
-    <string name="help_item_ocr_language">L\'OCR automatique utilise hors ligne le modèle latin. Les modèles hindi, chinois, japonais et coréen sont téléchargés via Google Play Services lorsqu\'ils sont sélectionnés manuellement. Le PDF consultable prend en charge les écritures latines et le hindi ; pour l\'arabe, le chinois, le japonais ou le coréen, utilisez « Extraire le texte ».</string>
+    <string name="help_item_ocr_language">L\'OCR automatique utilise le moteur latin. Tous les moteurs OCR sont fournis sous forme de modules Google Play Services. Le module latin est normalement préchargé lors de l’installation ; si un modèle requis manque, l’app le télécharge avec une progression visible avant la reconnaissance. Le PDF consultable prend en charge les écritures latines et le hindi ; pour l’arabe, le chinois, le japonais ou le coréen, utilisez « Extraire le texte ».</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Utilisez le menu hamburger (en haut à gauche) pour accéder aux Archives, à la Corbeille, aux Paramètres, à l\'Aide, à l\'Info et à la Confidentialité.</string>
     <string name="help_section_notes">Remarques</string>
@@ -170,9 +170,9 @@
     <string name="privacy_keyword_4">Privé</string>
     <string name="privacy_point_1">Cette app stocke localement sur votre appareil les PDF, les aperçus, les copies caviardées et le texte OCR consultable optionnel.</string>
     <string name="privacy_point_2">Aucun document ni contenu n’est téléversé automatiquement. Le partage ou l’export n’ont lieu que lorsque vous les déclenchez explicitement. Le caviardage sécurisé crée une nouvelle copie ; l’original reste présent jusqu’à sa suppression.</string>
-    <string name="privacy_point_3">Les fonctions de numérisation et d’OCR utilisent Google Play Services. Des données techniques de diagnostic peuvent être transmises pour l’analyse d’erreurs. Le mode automatique utilise un reconnaisseur de texte latin intégré fonctionnant hors ligne. Les modèles de langue pour le hindi, le chinois, le japonais et le coréen peuvent être récupérés via Play Services lors de la première utilisation manuelle ; le contenu de vos documents n\’est pas envoyé par cette app.</string>
+    <string name="privacy_point_3">La numérisation et l’OCR utilisent Google Play Services. Tous les moteurs OCR, y compris le latin, sont fournis comme modules Play Services ; le module latin est demandé lors de l’installation et les modèles manquants sont téléchargés avec une progression visible avant la première utilisation. La reconnaissance reste sur l’appareil et l’app n’envoie aucun contenu de document. Google Play Services peut transmettre des données techniques de diagnostic.</string>
     <string name="privacy_point_4">L’app ne collecte aucune donnée personnelle et n’utilise ni analytique ni backend propres. Google Play Services / ML Kit peuvent ajouter des autorisations réseau pour les modèles, la compatibilité et les diagnostics.</string>
-    <string name="privacy_footer">Mise à jour : 4 juin 2026</string>
+    <string name="privacy_footer">Mise à jour : 4 juillet 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Extraire le texte</string>

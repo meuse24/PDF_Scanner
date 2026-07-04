@@ -20,4 +20,6 @@
     <string name="form_fill_page">第 %1$d 页，共 %2$d 页</string>
     <string name="form_fill_select_option">选择%1$s</string>
     <string name="form_fill_reset">重置值</string>
+    <string name="help_item_fill_form">在查看器中打开包含 AcroForm 字段的 PDF，然后选择“填写表单”。填写文本框、复选框、单选按钮和选择列表，再另存为新副本。您也可以选择展平字段，使填写内容成为永久页面内容。已签名的表单为只读，不支持动态 XFA 表单。</string>
+    <string name="info_feature_formfill">可在设备本地填写交互式 AcroForm PDF 并另存为新副本，支持可选字段展平，以及适用于多种文字系统的 Unicode 后备字体。</string>
 </resources>

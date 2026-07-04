@@ -20,4 +20,6 @@
     <string name="form_fill_page">Page %1$d of %2$d</string>
     <string name="form_fill_select_option">Select %1$s</string>
     <string name="form_fill_reset">Reset values</string>
+    <string name="help_item_fill_form">Open a PDF with AcroForm fields in the viewer and choose Fill form. Complete text fields, check boxes, radio buttons, and selection lists, then save a new copy. You can optionally flatten the fields so their values become permanent. Signed forms are read-only, and dynamic XFA forms are not supported.</string>
+    <string name="info_feature_formfill">Interactive AcroForm PDFs can be completed on-device and saved as a new copy, with optional field flattening and Unicode fallback fonts for multiple writing systems.</string>
 </resources>

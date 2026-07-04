@@ -14,4 +14,5 @@
     <string name="ocr_review_missing_record">This document is no longer available.</string>
     <string name="ocr_quality_badge_percent">%1$d%%</string>
     <string name="ocr_quality_badge_unknown">OCR</string>
+    <string name="info_feature_ocr_delivery">All OCR recognizers are delivered as Google Play Services modules. The Latin module is normally preloaded during app installation; if a required model is missing, the app downloads it with visible progress before recognition. OCR processing itself stays on-device.</string>
 </resources>

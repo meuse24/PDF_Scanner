@@ -7,7 +7,7 @@ private const val KEY_NOTICE_ACKNOWLEDGED = "first_use_notice_acknowledged"
 
 /**
  * Whether the user has already confirmed the local-network exposure notice once.
- * Scoped to this single feature on purpose (see plan1.md) instead of going through
+ * Scoped to this single feature on purpose (see local-wifi-pc-sync.md) instead of going through
  * the shared AppSettings/AppSettingsRepository plumbing for one narrow boolean.
  */
 class LocalSyncFirstUseStore(private val context: Context) {

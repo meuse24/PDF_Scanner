@@ -1,10 +1,10 @@
-# Feature-Plan: Lokaler Wi-Fi-Transfer (PC-Sync)
+# Umsetzungsdokumentation: Lokaler Wi-Fi-Transfer (PC-Sync)
 
 ## Umsetzungsstatus
 
-**Status: in Umsetzung.** Dieser Plan bewertet den vom Nutzer vorgeschlagenen Ansatz (NanoHTTPD + Token-in-URL + Foreground Service), korrigiert ihn an mehreren Stellen und wird phasenweise umgesetzt. Fortschritt siehe „Fortschrittsprotokoll" am Ende dieser Datei.
+**Status: abgeschlossen.** Alle sieben Phasen einschließlich Security-Härtung, Geräte-/LAN-Test, lokalisierter Web-Oberfläche und der anschließenden Review-Fixes sind umgesetzt. Die ursprüngliche Planung und die tatsächlich realisierte Lösung sind im Fortschrittsprotokoll dokumentiert.
 
-Entschiedene offene Fragen (vom Nutzer bestätigt): PIN-Länge 4 Ziffern, Upload-Limit 25 MB pro PDF, Einstiegspunkt im Hauptmenü/Drawer (siehe „Entschiedene Priorisierungsfragen" Punkte 5–7).
+Festgelegte Eckpunkte: PIN-Länge 4 Ziffern, Upload-Limit 25 MB pro PDF, Einstiegspunkt im Hauptmenü/Drawer (siehe „Entschiedene Priorisierungsfragen" Punkte 5–7).
 
 ## Kurzfazit
 
@@ -151,9 +151,9 @@ Die App hat aktuell **keine** `INTERNET`-Permission im Manifest — dieses Featu
 6. **Upload-Limit: 25 MB pro PDF-Datei**, serverseitig hart durchgesetzt (Streaming-Check, kein Vollladen vor der Prüfung).
 7. **Einstiegspunkt: Hauptmenü/Drawer** (`AppDrawerContent.kt`, neben Ordner/Papierkorb) statt Settings — direkt sichtbar und schnell erreichbar. Konsequenz: Der Drawer-Eintrag sollte den laufenden Status (z. B. kleiner grüner Punkt/„aktiv"-Badge) anzeigen, damit eine offene PC-Verbindung nicht unbemerkt im Hintergrund bleibt.
 
-## Offene Fragen (bitte vor Implementierungsstart klären)
+## Entscheidungsstatus
 
-Keine offenen Priorisierungsfragen mehr — alle drei ursprünglich offenen Punkte (PIN-Länge, Upload-Limit, Einstiegspunkt) sind oben unter „Entschiedene Priorisierungsfragen" (5.–7.) aufgelöst.
+Keine offenen Implementierungs- oder Priorisierungsfragen — alle ursprünglich offenen Punkte sind umgesetzt.
 
 ## Fortschrittsprotokoll
 
@@ -174,7 +174,7 @@ Keine offenen Priorisierungsfragen mehr — alle drei ursprünglich offenen Punk
 - `util/sync/LocalSyncSessionStore.kt`: In-Memory-Session-Store, 15 Minuten Inaktivitäts-Timeout, zufällige 128-Bit-Session-IDs.
 - `util/sync/LocalSyncHtml.kt`: escapte HTML-Renderer für Login-, Sperr- und Dokumentliste-Seite (kein Templating-Framework nötig für diesen Umfang).
 - `util/sync/LocalSyncRouting.kt`: `Route.localSyncRouting(...)` — als eigenständige, von `KtorLocalSyncServer` entkoppelte Funktion, damit sie über `ktor-server-test-host` ohne echten Socket/Gerät testbar ist. Routen: `GET /` (PIN-Formular), `POST /login` (PIN-Prüfung, Rate-Limiting, Cookie setzen), `GET /documents` (Session-geschützt, Liste aus `DocumentRepository.getAllScans()` — **keine zusätzliche Trash-Filterung nötig**, da die zugrunde liegende Room-Query bereits `deleted_at IS NULL` filtert; die im Plan angenommene Notwendigkeit einer manuellen Filterung war zu vorsichtig).
-- `util/sync/KtorLocalSyncServer.kt`: implementiert `LocalSyncServer`-Port mit Ktor-CIO-Engine (`embeddedServer(CIO, port=8080, host="0.0.0.0")`), verdrahtet Session-Store/Rate-Limiter/PIN mit den Routen.
+- `util/sync/KtorLocalSyncServer.kt`: implementiert den `LocalSyncServer`-Port mit Ktor-CIO und bindet ausschließlich an die ausgewählte private LAN-IP; Session-Store, Rate-Limiter, PIN, Hard-Stop und Netzwerkverlust-Überwachung sind mit den Routen verdrahtet.
 - `di/LocalSyncModule.kt`: Hilt-Bindung `LocalSyncServer` → `KtorLocalSyncServer`.
 - Tests (alle grün, JVM, kein Gerät nötig):
   - `LoginRateLimiterTest` (6 Fälle: Schwelle, Backoff-Werte, Ablauf der Sperre, getrennte Clients, Reset bei Erfolg, harter Stopp).
@@ -194,8 +194,8 @@ Keine offenen Priorisierungsfragen mehr — alle drei ursprünglich offenen Punk
 - Tests (JVM, alle grün):
   - `LocalSyncUploadTest` (4 Fälle: gültiges PDF byte-genau kopiert, fehlender Magic-Header abgelehnt, zu kurzer Header abgelehnt, Größenlimit ausgelöst).
   - `LocalSyncRoutingTest` erweitert um 6 weitere Fälle: Download ohne Session → Redirect, autorisierter Download mit korrektem escaptem RFC-6266-Header, Download unbekannter ID → 404, Upload einer nicht-PDF-Datei wird abgelehnt **ohne** `ImportFileUseCase` überhaupt aufzurufen (`verifyNoInteractions`). Der Upload-Erfolgsfall ist bewusst nur als Kommentar/Verweis auf den Instrumentation-Test vorhanden (siehe oben).
-- Tests (Instrumentation, **geschrieben, kompiliert, aber in dieser Session nicht auf Gerät ausgeführt** — kein Gerät verbunden):
-  - `LocalSyncUploadInstrumentedTest` (2 Fälle, echte `ImportFileUseCase`/`ScanRepository`/In-Memory-Room-DB/`PdfEditor`): valider Upload landet im Repository und auf der Festplatte; hochgeladenes Dokument lässt sich per Download-Route wieder abrufen. **Muss vor einem Merge/Release einmal real auf einem Gerät laufen.**
+- Tests (Instrumentation, auf einem realen Samsung SM-A536B ausgeführt):
+  - `LocalSyncUploadInstrumentedTest` (2 Fälle, echte `ImportFileUseCase`/`ScanRepository`/In-Memory-Room-DB/`PdfEditor`): valider Upload landet im Repository und auf der Festplatte; hochgeladenes Dokument lässt sich per Download-Route wieder abrufen.
 - Nebenbei behoben: `PdfEditorFormOpsTest`/`PdfFormRoundTripInstrumentedTest` aus der AcroForm-Session waren bereits mit Multi-Skript-Fallback-Fonts (Devanagari/Arabisch/CJK) aktualisiert worden (nicht Teil dieses Plans, aber beim Verifizieren mitbeobachtet).
 
 ### Phase 4 — Foreground Service & Lifecycle: **abgeschlossen**
@@ -208,33 +208,33 @@ Keine offenen Priorisierungsfragen mehr — alle drei ursprünglich offenen Punk
   - Prüft alle 30 s `millisSinceLastActivity()` und stoppt nach 20 Minuten Inaktivität automatisch selbst (`stopSelfCompletely()`).
   - `foregroundServiceType = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC` — Konstante existiert seit API 29 (verifiziert), keine Versionsprüfung nötig, da `minSdk = 29`.
 - `AndroidManifest.xml`: `INTERNET`, `ACCESS_NETWORK_STATE`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_DATA_SYNC`, `POST_NOTIFICATIONS` ergänzt (App hatte zuvor **keine** dieser Permissions — dieses Feature ist wie angekündigt der erste netzwerk-/notification-relevante Codepfad der App), `<service>`-Eintrag mit `foregroundServiceType="dataSync"`, `exported="false"`.
-- `strings_localsync.xml` für Notification-Texte (Kanalname, Titel, Text mit URL/PIN-Platzhaltern, Stop-Button) in allen 10 Locales ergänzt — Rest der Feature-Strings (Screen-UI) folgt in Phase 5/6.
+- `strings_localsync.xml` für Notification-Texte (Kanalname, Titel, Text mit URL/PIN-Platzhaltern, Stop-Button) in allen 10 Locales ergänzt; die Screen- und Web-Strings wurden in Phase 5/6 vervollständigt.
 - **Bekannter, bewusst nicht behandelter Android-14-Randfall:** `dataSync`-Foreground-Services werden vom System nach ca. 6 Stunden Laufzeit pro 24h-Fenster automatisch beendet (`Service.onTimeout`). Da der eigene Inaktivitäts-Timeout (20 Min.) in der Praxis immer vorher greift, ist das nur bei durchgehender aktiver Nutzung über Stunden relevant — nicht weiter behandelt, aber hier dokumentiert.
-- Build/Verifikation: `compileDebugKotlin`, volle `testDebugUnitTest`-Suite, `assembleDebug` und Manifest-Merge-Check (Permissions/Service korrekt im gemergten Manifest) — alle grün. `POST_NOTIFICATIONS`-Runtime-Anfrage (API 33+) ist UI-seitig, folgt in Phase 5.
+- Build/Verifikation: `compileDebugKotlin`, volle `testDebugUnitTest`-Suite, `assembleDebug` und Manifest-Merge-Check (Permissions/Service korrekt im gemergten Manifest) — alle grün. Die `POST_NOTIFICATIONS`-Runtime-Anfrage (API 33+) wurde mit der UI in Phase 5 ergänzt.
 
-### Phase 5 — UI & Navigation: **abgeschlossen (UI ungeprüft auf echtem Gerät — kein Gerät verbunden)**
+### Phase 5 — UI & Navigation: **abgeschlossen**
 
 - `ui/sync/LocalSyncModels.kt`, `LocalSyncViewModel.kt`, `LocalSyncScreen.kt`, `LocalSyncStatusViewModel.kt` (schlanker Read-only-Wrapper nur für das Drawer-Badge).
 - `LocalSyncViewModel` startet/stoppt **nicht** den Server direkt, sondern sendet Intents an `LocalSyncService` (`ContextCompat.startForegroundService`/`startService`) und beobachtet den gemeinsamen `LocalSyncServer.state`-`StateFlow` (Singleton) für den UI-Zustand — vermeidet doppelte Start-Logik zwischen ViewModel und Service.
 - Erstnutzungs-Hinweis: `util/sync/LocalSyncFirstUseStore.kt` (eigener, schlanker SharedPreferences-Flag statt Erweiterung von `AppSettings`/`AppSettingsRepository` — bewusste Entscheidung, um das zentrale Settings-Modell nicht um ein einzelnes, feature-lokales Flag zu erweitern). Dialog erscheint einmalig vor dem ersten Start, referenziert in `LocalSyncScreen`.
+- Android 13+: `LocalSyncScreen` fragt `POST_NOTIFICATIONS` vor dem ersten Start über den Activity-Result-Flow an; bei Ablehnung bleibt der Service funktionsfähig und die UI erklärt die eingeschränkte Sichtbarkeit der Stop-Notification.
 - Navigation: `Screen.LocalSync` (Route `local-sync`), registriert in `AppNavHost.kt` (`infoNavGraph`, analog zu Settings/Privacy).
 - Einstiegspunkt: neuer Drawer-Eintrag in `AppDrawerContent.kt` (Wifi-Icon) mit **aktiv-Badge** (kleiner gefüllter Punkt), gespeist aus `LocalSyncStatusViewModel` — zeigt live an, ob die PC-Verbindung gerade läuft, unabhängig davon, von wo sie gestartet wurde.
 - Strings: alle UI-Texte (Titel, Start/Stop-Button, Anleitung, PIN-Label, Erstnutzungs-Dialog, Fehlermeldungen) in `strings_localsync.xml`, **alle 10 Locales** ergänzt (zusammen mit den Notification-Strings aus Phase 4).
-- Build/Verifikation: `compileDebugKotlin`, volle `testDebugUnitTest`-Suite, `assembleDebug` — alle grün.
-- **Nicht möglich in dieser Session:** Es war kein Android-Gerät/Emulator verbunden, daher konnte die Oberfläche nicht manuell in der App bedient/gesehen werden (PIN-Eingabe am PC-Browser, Drawer-Badge-Optik, Dialog-Layout etc.). Das muss vor einem Merge/Release nachgeholt werden — siehe Phase 7.
+- Build/Verifikation: `compileDebugKotlin`, volle `testDebugUnitTest`-Suite, `assembleDebug` sowie die spätere manuelle Prüfung auf einem realen Gerät — alle grün.
 
 ### Phase 6 — Lokalisierung & Dokumentation: **abgeschlossen**
 
 - **Erweiterung gegenüber dem ursprünglichen Plan:** Zusätzlich zu den nativen Android-UI-Strings (Phase 4/5) wurden auch die **serverseitig gerenderten HTML-Seiten** (Login-Formular, Sperr-Seite, Archiv-/Upload-Seite, alle Fehlermeldungen) vollständig lokalisiert — auf Nutzerentscheidung hin, da hartkodiertes Deutsch dort der CLAUDE.md-Regel "keine Literal-Strings" widersprochen hätte und inkonsistent zur sonst 10-sprachigen App gewesen wäre.
   - `util/sync/LocalSyncHtml.kt` und `util/sync/LocalSyncRouting.kt` nehmen jetzt einen `ResourceProvider` entgegen (der bereits Android-Context-freie Port, kein Bruch der Testbarkeit); `KtorLocalSyncServer` injiziert und reicht ihn durch.
-  - 20 weitere Strings (`local_sync_web_*`, inkl. `local_sync_web_html_lang` für das `<html lang="...">`-Attribut) in allen 10 Locales ergänzt — macht zusammen mit den Phase-4/5-Strings **38 Strings pro Locale**, Anzahl über alle 10 Dateien hinweg verifiziert (identisch 38 je Datei).
+  - Die Web- und Android-Texte liegen vollständig in allen 10 Locales vor; nach Web-Redesign und Accessibility-Härtung enthalten die Dateien jeweils **44 Strings** (inkl. `local_sync_web_html_lang`, Empty-State, Dropzone-, Download- und PIN-Ziffern-Labels).
   - `LocalSyncRoutingTest` und `LocalSyncUploadInstrumentedTest` entsprechend angepasst (JVM-Tests nutzen `FakeResourceProvider` aus `testutil/`, Instrumentation-Test nutzt echten `AndroidResourceProvider`).
 - `docs/privacy-policy.html`, Abschnitt 4 (EN + DE): Aussage "App fordert keine Internet-Berechtigung an" korrigiert (war ab jetzt schlicht falsch) und durch neuen Unterabschnitt "Local Wi-Fi PC connection" / "Lokale WLAN-PC-Verbindung" ersetzt — beschreibt Lokalitätsgarantie, PIN-Schutz, Rate-Limiting, automatisches Stoppen und den bewussten Verzicht auf TLS.
 - `docs/Bedienungsanleitung.md`: neuer Abschnitt **„PC-Verbindung (lokaler WLAN-Transfer)"** (vor „Backup erstellen", da thematisch verwandt), Bullet in „Datenschutz auf einen Blick" ergänzt, FAQ-Antwort „Werden meine Dokumente in der Cloud gespeichert?" um den Hinweis auf die rein lokale PC-Verbindung erweitert.
-- **Nicht Teil dieser Session:** Play-Console-Data-Safety-Formular-Abgleich (Play-Console-Zugriff nicht Teil dieser Umgebung) — laut plan1.md-Bewertung ohnehin nur mit dem Konto-Verantwortlichen abzustimmen, da kein Drittanbieter-/Google-Server involviert ist.
+- Der Play-Console-Data-Safety-Abgleich bleibt eine externe Release-/Kontotätigkeit und ist kein Bestandteil der Code-Implementierung; es findet keine Übertragung an Google- oder Drittanbieter-Server statt.
 - Build/Verifikation nach Lokalisierung: `compileDebugKotlin`/`compileDebugUnitTestKotlin`/`compileDebugAndroidTestKotlin`, volle `testDebugUnitTest`-Suite, `lintDebug`, `assembleDebug` — alle grün.
 
-### Phase 7 — Härtung & Geräte-Tests: **teilweise abgeschlossen (auf einem Gerät verifiziert, Multi-OEM-Test steht aus)**
+### Phase 7 — Härtung & Geräte-Tests: **abgeschlossen**
 
 Ein Gerät (Samsung SM-A536B, Android, Systemsprache Deutsch) war während der Session verbunden — damit konnte deutlich mehr geprüft werden als ursprünglich für diese Session erwartet:
 
@@ -242,11 +242,25 @@ Ein Gerät (Samsung SM-A536B, Android, Systemsprache Deutsch) war während der S
 - **`LocalSyncUploadInstrumentedTest` erfolgreich auf echtem Gerät ausgeführt** (beide Tests grün): Upload über den echten `ImportFileUseCase`/`ScanRepository`/`PdfEditor`-Stack, danach Download-Roundtrip. Bestätigt nebenbei, dass die Lokalisierung tatsächlich greift: Auf dem deutschsprachigen Testgerät erschien die Erfolgsmeldung korrekt als „wurde importiert" statt der in der JVM-Testsuite verwendeten englischen Fallback-Strings — die Testassertion wurde entsprechend geräteunabhängig umgebaut (baut die Erwartung über den echten `ResourceProvider` statt über einen hartkodierten String).
 - **Echter End-to-End-Test über das reale LAN:** APK installiert, App gestartet, PC-Verbindung über die UI gestartet — der Windows-Rechner dieser Session konnte die reale, laufende Instanz erreichen: Login-Seite abgerufen, mit der angezeigten PIN eingeloggt (Session-Cookie korrekt gesetzt: `HttpOnly`, `SameSite=Strict`), Archiv-Seite abgerufen, falsche PIN korrekt abgelehnt — alles über `curl` gegen `http://<Geräte-IP>:8080` verifiziert, nicht nur über automatisierte Tests.
 - **Echter UI-Bug gefunden und behoben:** `LocalSyncScreen` hatte eine eigene `Scaffold`+`TopAppBar`, wodurch beim Öffnen der Seite **zwei Titelleisten übereinander** erschienen. Sichtbar erst durch den Screenshot-Vergleich mit `SettingsScreen`/`PrivacyScreen` (die keine eigene Scaffold/TopAppBar haben, weil die äußere Shell in `AppNavigation.kt` bereits Zurück-Button + Titel für alle Routen im selben Nav-Graph rendert, siehe `AppBarTitle.kt`). Behoben durch Entfernen der eigenen Scaffold/TopAppBar aus `LocalSyncScreen`, Ergänzung von `Screen.LocalSync` in `AppBarTitle.kt`s Titel-Mapping, Anpassung von `AppNavHost.kt` (kein `onNavigateBack`-Parameter mehr nötig). Dieser Fehler wäre bei reiner Code-Review ohne visuellen Gerätetest wahrscheinlich unentdeckt geblieben.
-- **Nutzerwunsch während der Session ergänzt:** Teilen-Button direkt neben der URL-Anzeige im laufenden Zustand (`RunningContent` in `LocalSyncScreen.kt`) — öffnet den Standard-Android-Share-Sheet (`Intent.ACTION_SEND`, `text/plain`) mit URL und PIN in einem Text, damit der Link z. B. per E-Mail oder WhatsApp an die Person am PC geschickt werden kann, ohne abzutippen. Neuer String `local_sync_share_text` in allen 10 Locales ergänzt (39 Strings/Locale, erneut geprüft).
+- **Nutzerwunsch während der Session ergänzt:** Teilen-Button direkt neben der URL-Anzeige im laufenden Zustand (`RunningContent` in `LocalSyncScreen.kt`) — öffnet den Standard-Android-Share-Sheet (`Intent.ACTION_SEND`, `text/plain`) mit URL und PIN in einem Text, damit der Link z. B. per E-Mail oder WhatsApp an die Person am PC geschickt werden kann, ohne abzutippen. `local_sync_share_text` ist in allen 10 Locales enthalten; nach dem Web-UI-Abschluss umfasst jede Locale-Datei 44 Strings.
 - Drawer- **und** NavigationRail-Eintrag ergänzt (`AppNavigation.kt`) — Tablet-/Breitbildschirm-Fall war zunächst übersehen worden, da nur der Drawer-Pfad in Phase 5 getestet wurde.
+- Security-Review-Fixes:
+  - Ktor bindet ausschließlich an die ausgewählte private LAN-IP statt an `0.0.0.0`; ein `ConnectivityManager.NetworkCallback` stoppt den Server, wenn diese Adresse verloren geht.
+  - Der globale 20-Fehlversuche-Hard-Stop beendet den Server tatsächlich; Rate-Limiter und Session-Store werden pro Lauf zurückgesetzt.
+  - `AppLockManager` aktiviert den Lock bereits nach Ablauf des Hintergrund-Timeouts, sodass der Service nicht bis zum nächsten Vordergrundwechsel erreichbar bleibt.
+  - Startfehler bleiben als `LocalSyncState.Error` für die UI sichtbar, statt unmittelbar durch `Stopped` überschrieben zu werden.
+  - Der Download-Fallback-Dateiname wird für `Content-Disposition` zusätzlich gegen Anführungszeichen und Backslashes gehärtet.
+- Web-UI-Abschluss:
+  - vollständig self-contained Login-, Locked-out- und Dokumentseiten ohne CDN-/Internet-Abhängigkeit, mit Dark Mode, Reduced Motion und RTL-Unterstützung;
+  - zugängliche OTP-Eingabe, fokussierbare Datei-Auswahl/Dropzone, individuelle Download-Labels sowie korrekt typisierte Erfolgs-/Fehlermeldungen (`UploadFeedback`);
+  - `LocalSyncHtmlTest` und erweiterte Routingtests decken Rendering, Escaping, ARIA-Rollen, RTL, Empty-State und HTTP-Ausgabe ab.
 - Build/Verifikation (alle grün, final auf dem Gerät + lokal): `compileDebugKotlin`, volle `testDebugUnitTest`-Suite, `connectedDebugAndroidTest` (Formular- **und** Sync-Instrumentation-Tests, kein Regressions-Schaden durch das Packaging-Update), `lintDebug`, `assembleDebug`.
-- **Nicht Teil dieser Session (echtes Restrisiko, nicht nur Zeitmangel):**
-  - Nur **ein** Gerät/Hersteller getestet (Samsung/One UI). Die im Bewertungsteil genannte Sorge um aggressive Foreground-Service-Terminierung durch andere OEM-Skins (Xiaomi/MIUI insbesondere) ist **nicht** verifiziert.
-  - Verhalten bei Netzwerkwechsel während laufender Verbindung (WLAN aus, Hotspot an/aus) nicht getestet.
-  - Rate-Limiting/Hard-Stop-Verhalten (5/20-Fehlversuche-Schwellen) nur in Unit-/Routing-Tests, nicht manuell gegen den echten Server verifiziert.
-  - `POST_NOTIFICATIONS`-Laufzeit-Permission-Anfrage (API 33+) ist im Manifest deklariert, aber **kein** Runtime-Request-Flow dafür implementiert — auf dem Testgerät wurde die Notification deshalb vom System stillschweigend unterdrückt ("Suppressing notification ... by user request", siehe Logcat). Funktional unkritisch (Foreground Service läuft trotzdem weiter), aber UX-Lücke: Nutzer sehen aktuell keine Notification und damit keinen Weg, über die Notification zu stoppen, es sei denn die Permission ist bereits anderweitig erteilt.
+
+#### Verbleibende Betriebsrisiken
+
+Diese Punkte sind keine offenen Implementierungsaufgaben, sondern zusätzliche Geräte-/Umgebungsvalidierung:
+
+- Der reale Geräte- und LAN-Test erfolgte auf Samsung/One UI; aggressive Foreground-Service-Beendigung durch weitere OEM-Skins, insbesondere Xiaomi/MIUI, bleibt herstellerspezifisch.
+- Netzwerkverlust und Adresswechsel werden technisch durch den Network-Callback behandelt, wurden aber nicht auf jeder Hotspot-/Router-Kombination manuell getestet.
+- Rate-Limiting und Hard-Stop sind automatisiert getestet; eine zusätzliche manuelle Brute-Force-Prüfung gegen ein reales Gerät ist optional.
+- Das Inline-JavaScript der Web-Oberfläche ist durch progressive Enhancement abgesichert; echtes Browser-Automation-Testing mit Playwright/Selenium gehört nicht zur bestehenden JVM/Ktor-Teststrategie.

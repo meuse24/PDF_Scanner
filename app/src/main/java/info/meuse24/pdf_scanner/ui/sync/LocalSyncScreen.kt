@@ -1,7 +1,9 @@
 package info.meuse24.pdf_scanner.ui.sync
 
 import android.Manifest
+import android.content.ClipData
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -169,7 +171,9 @@ private fun RunningContent(session: LocalSyncSession, onDisconnect: () -> Unit) 
                     onClick = {
                         val sendIntent = Intent(Intent.ACTION_SEND).apply {
                             type = "text/plain"
-                            putExtra(Intent.EXTRA_TEXT, shareText)
+                            putExtra(Intent.EXTRA_TEXT, session.url)
+                            putExtra(Intent.EXTRA_SUBJECT, shareText)
+                            clipData = ClipData.newRawUri(shareTitle, Uri.parse(session.url))
                         }
                         context.startActivity(Intent.createChooser(sendIntent, shareTitle))
                     }

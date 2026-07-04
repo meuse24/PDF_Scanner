@@ -8,7 +8,7 @@ New in 2.3:
 • Export PDFs as Word documents or save individual pages as JPG.
 • Improved PDF viewer with smoother zoom and continuous page scrolling.
 • New photo page modes, printing, and page-size presets.
-• Better security, stability, memory use, and accessibility.
+• Smaller installation through on-demand OCR components, plus better security, stability, memory use, and accessibility.
 </en-US>
 <de-DE>
 Neu in 2.3:
@@ -16,5 +16,5 @@ Neu in 2.3:
 • PDFs als Word-Dokumente exportieren oder einzelne Seiten als JPG speichern.
 • Verbesserter PDF-Viewer mit flüssigerem Zoom und fortlaufendem Scrollen.
 • Neue Foto-Seitenmodi, Druckfunktion und Seitenformat-Voreinstellungen.
-• Mehr Sicherheit, Stabilität, Speichereffizienz und Barrierefreiheit.
+• Kleinere Installation durch nachgeladene OCR-Komponenten sowie mehr Sicherheit, Stabilität, Speichereffizienz und Barrierefreiheit.
 </de-DE>

@@ -20,4 +20,6 @@
     <string name="form_fill_page">पृष्ठ %1$d / %2$d</string>
     <string name="form_fill_select_option">%1$s चुनें</string>
     <string name="form_fill_reset">मान रीसेट करें</string>
+    <string name="help_item_fill_form">व्यूअर में AcroForm फ़ील्ड वाला PDF खोलें और «फ़ॉर्म भरें» चुनें। टेक्स्ट फ़ील्ड, चेकबॉक्स, रेडियो बटन और चयन सूचियाँ भरें, फिर नई कॉपी सहेजें। आप फ़ील्ड को फ़्लैटन भी कर सकते हैं ताकि मान स्थायी सामग्री बन जाएँ। हस्ताक्षरित फ़ॉर्म केवल पढ़ने योग्य हैं और डायनेमिक XFA फ़ॉर्म समर्थित नहीं हैं।</string>
+    <string name="info_feature_formfill">इंटरैक्टिव AcroForm PDF को डिवाइस पर भरकर नई कॉपी के रूप में सहेजा जा सकता है, वैकल्पिक फ़ील्ड फ़्लैटनिंग और कई लिपियों के लिए Unicode फ़ॉलबैक फ़ॉन्ट के साथ।</string>
 </resources>

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -50,6 +51,7 @@ fun PrivacyScreen() {
         Triple(Icons.Default.Lock,         stringResource(R.string.privacy_keyword_7), stringResource(R.string.privacy_point_7)),
         Triple(Icons.Default.Lock,         stringResource(R.string.privacy_keyword_8), stringResource(R.string.privacy_point_8)),
         Triple(Icons.Default.Translate,    stringResource(R.string.privacy_keyword_9), stringResource(R.string.privacy_point_9)),
+        Triple(Icons.Default.Wifi,         stringResource(R.string.privacy_keyword_10), stringResource(R.string.privacy_point_10)),
     )
 
     LazyColumn(

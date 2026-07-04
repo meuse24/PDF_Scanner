@@ -14,4 +14,5 @@
     <string name="ocr_review_missing_record">このドキュメントは利用できなくなりました。</string>
     <string name="ocr_quality_badge_percent">%1$d%%</string>
     <string name="ocr_quality_badge_unknown">OCR</string>
+    <string name="info_feature_ocr_delivery">すべての OCR 認識機能は Google Play Services モジュールとして提供されます。ラテン文字モジュールは通常アプリのインストール時に事前取得されます。必要なモデルがない場合は、認識前に進捗を表示してダウンロードします。OCR 処理自体は端末上で行われます。</string>
 </resources>

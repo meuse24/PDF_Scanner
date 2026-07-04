@@ -132,7 +132,7 @@
     <string name="help_section_ocr">OCR 与文本提取</string>
     <string name="help_item_extract_text">文本提取（OCR）会读取全部页面。对于单个文档，它会打开 OCR 审核界面，显示逐页文本、识别语言、质量、复制/分享操作和 TXT 导出。对于多个文档，仍会显示一个合并面板，你可以从中复制或分享结果。</string>
     <string name="help_item_make_searchable">设为可搜索会为 PDF 添加不可见文本层，将提取出的 OCR 文本本地保存用于档案搜索。</string>
-    <string name="help_item_ocr_language">自动 OCR 离线使用拉丁文字模型。手动选择印地语、中文、日语或韩语时，会通过 Google Play Services 下载相应模型。可搜索 PDF 支持拉丁文字和印地语；对于阿拉伯语、中文、日语或韩语，请使用“提取文字”。</string>
+    <string name="help_item_ocr_language">自动 OCR 使用拉丁文字识别器。所有 OCR 识别器均以 Google Play 服务模块提供。拉丁文字模块通常会在安装应用时预加载；如果缺少所需模型，应用会在识别前显示进度并下载。可搜索 PDF 支持拉丁文字和印地语；对于阿拉伯语、中文、日语或韩语，请使用“提取文字”。</string>
     <string name="help_section_navigation">导航</string>
     <string name="help_nav_text">通过左上角的汉堡菜单可访问文件库、回收站、设置、帮助、关于和隐私页面。</string>
     <string name="help_section_notes">注意事项</string>
@@ -168,9 +168,9 @@
     <string name="privacy_keyword_4">私密</string>
     <string name="privacy_point_1">本应用会将 PDF、预览图、已遮蔽副本和可选的可搜索 OCR 文本保存在您的设备本地。</string>
     <string name="privacy_point_2">不会自动上传任何文档或内容。只有在您明确触发时才会进行分享或导出。安全遮蔽会创建一份新副本；原始文件会一直保留，直到您删除它。</string>
-    <string name="privacy_point_3">扫描和 OCR 功能使用 Google Play 服务。为进行错误分析，可能会传输技术诊断数据。自动模式使用内置的拉丁文字识别器，可离线工作。印地语、中文、日语和韩语的语言模型可能会在首次手动使用时通过 Play Services 获取；本应用不会发送您的文档内容。</string>
+    <string name="privacy_point_3">扫描和 OCR 功能使用 Google Play 服务。包括拉丁文字在内的所有 OCR 识别器均作为 Play 服务模块提供；安装时会请求预加载拉丁文字模块，缺少的模型会在首次使用前显示进度并下载。识别在设备上完成，本应用不会发送文档内容。Google Play 服务可能会传输技术诊断数据。</string>
     <string name="privacy_point_4">应用本身不收集个人数据，也不使用自有分析服务或后端。Google Play Services / ML Kit 可能会为模型、兼容性和诊断添加网络权限。</string>
-    <string name="privacy_footer">更新时间：2026年6月4日</string>
+    <string name="privacy_footer">更新时间：2026年7月4日</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">提取文本</string>

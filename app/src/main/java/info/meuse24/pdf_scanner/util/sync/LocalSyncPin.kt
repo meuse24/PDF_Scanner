@@ -5,7 +5,7 @@ import java.security.SecureRandom
 private const val PIN_DIGITS = 4
 private const val PIN_UPPER_BOUND = 10_000
 
-/** 4-digit numeric PIN (see plan1.md: memorability wins over entropy, offset by [LoginRateLimiter]). */
+/** 4-digit numeric PIN (see local-wifi-pc-sync.md: memorability wins over entropy, offset by [LoginRateLimiter]). */
 fun generateLocalSyncPin(random: SecureRandom = SecureRandom()): String =
     random.nextInt(PIN_UPPER_BOUND).toString().padStart(PIN_DIGITS, '0')
 

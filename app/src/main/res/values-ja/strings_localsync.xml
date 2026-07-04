@@ -44,4 +44,8 @@
     <string name="local_sync_web_upload_not_pdf">このファイルは有効なPDFではありません。</string>
     <string name="local_sync_web_upload_too_large">ファイルが25MBを超えています。</string>
     <string name="local_sync_web_upload_failed">アップロードに失敗しました。</string>
+    <string name="help_item_local_sync">サイドメニューの「PC 接続」を開き、同じローカルネットワーク上のブラウザと PDF を交換できます。接続を開始し、表示されたアドレスと PIN を PC に入力すると、アーカイブ文書のダウンロードや 25 MB までの PDF のアップロードができます。クラウドは使用せず、無操作、ネットワーク切断、アプリロック時に停止します。信頼できるローカルネットワークでのみ使用してください。</string>
+    <string name="info_feature_local_sync">ローカル Wi-Fi PC 接続は、同じネットワーク上のアプリとブラウザの間で PDF を直接転送します。一時的な PIN とセッションでアクセスを保護し、無操作、ネットワーク切断、アプリロック、ログイン失敗の繰り返しで自動停止します。</string>
+    <string name="privacy_keyword_10">ローカル Wi-Fi 転送</string>
+    <string name="privacy_point_10">PC 接続を開始した場合にのみ、選択したプライベートネットワークアドレスに紐づく一時的なローカル Web サーバーを通じて、アーカイブ内の有効な文書を提供します。転送はローカルネットワーク内に留まり、PIN とセッションで保護されますが、HTTP は TLS で暗号化されません。信頼できるネットワークでのみ使用してください。無操作、ネットワーク切断、アプリロック、PIN の失敗回数超過でサーバーは自動停止します。</string>
 </resources>

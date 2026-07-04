@@ -132,7 +132,7 @@
     <string name="help_section_ocr">OCRとテキスト抽出</string>
     <string name="help_item_extract_text">テキスト抽出（OCR）はすべてのページを読み取ります。単一のドキュメントでは、ページごとのテキスト、認識言語、品質、コピー/共有、TXT エクスポートを確認できる OCR レビューが開きます。複数ドキュメントでは、結果をコピーまたは共有できる統合パネルが引き続き表示されます。</string>
     <string name="help_item_make_searchable">検索可能にするでは、PDF に不可視のテキストレイヤーを追加し、抽出した OCR テキストをアーカイブ検索用にローカル保存。</string>
-    <string name="help_item_ocr_language">自動OCRはオフラインのラテン文字モデルを使用します。ヒンディー語・中国語・日本語・韓国語のモデルは、手動で選択したときに Google Play Services 経由でダウンロードされます。検索可能PDFはラテン文字とヒンディー語に対応しています。アラビア語・中国語・日本語・韓国語には「テキストを抽出」をご利用ください。</string>
+    <string name="help_item_ocr_language">自動 OCR はラテン文字認識機能を使用します。すべての OCR 認識機能は Google Play Services モジュールとして提供されます。ラテン文字モジュールは通常アプリのインストール時に事前取得され、必要なモデルがない場合は認識前に進捗を表示してダウンロードします。検索可能 PDF はラテン文字とヒンディー語に対応しています。アラビア語・中国語・日本語・韓国語には「テキストを抽出」をご利用ください。</string>
     <string name="help_section_navigation">ナビゲーション</string>
     <string name="help_nav_text">左上のハンバーガーメニューから、アーカイブ、ゴミ箱、設定、ヘルプ、情報、プライバシーにアクセスできます。</string>
     <string name="help_section_notes">注意事項</string>
@@ -168,9 +168,9 @@
     <string name="privacy_keyword_4">プライベート</string>
     <string name="privacy_point_1">このアプリは PDF、プレビュー画像、黒塗りコピー、任意の検索可能 OCR テキストを端末上にローカル保存します。</string>
     <string name="privacy_point_2">文書や内容が自動的にアップロードされることはありません。共有やエクスポートは、ユーザーが明示的に実行した場合にのみ行われます。安全な黒塗りでは新しいコピーが作成され、元ファイルは削除するまで残ります。</string>
-    <string name="privacy_point_3">スキャンおよび OCR 機能は Google Play Services を使用します。エラー解析のために技術的な診断データが送信される場合があります。自動モードはオフラインで動作する組み込みのラテン文字認識モデルを使用します。ヒンディー語・中国語・日本語・韓国語の言語モデルは初回の手動使用時に Play Services 経由で取得されることがありますが、文書の内容がこのアプリから送信されることはありません。</string>
+    <string name="privacy_point_3">スキャンと OCR は Google Play Services を使用します。ラテン文字を含むすべての OCR 認識機能は Play Services モジュールとして提供され、インストール時にラテン文字モジュールの事前取得を要求し、不足するモデルは初回使用前に進捗を表示してダウンロードします。認識は端末上で行われ、このアプリが文書内容を送信することはありません。Google Play Services が技術的な診断データを送信する場合があります。</string>
     <string name="privacy_point_4">アプリ自体は個人データを収集せず、独自の分析やバックエンドも使用しません。Google Play Services / ML Kit は、モデル、互換性、診断のためにネットワーク権限を追加する場合があります。</string>
-    <string name="privacy_footer">最終更新：2026年6月4日</string>
+    <string name="privacy_footer">最終更新：2026年7月4日</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">テキストを抽出</string>

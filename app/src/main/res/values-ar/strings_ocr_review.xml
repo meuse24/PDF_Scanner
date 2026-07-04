@@ -14,4 +14,5 @@
     <string name="ocr_review_missing_record">لم يعد هذا المستند متاحًا.</string>
     <string name="ocr_quality_badge_percent">%1$d%%</string>
     <string name="ocr_quality_badge_unknown">OCR</string>
+    <string name="info_feature_ocr_delivery">تُوفَّر جميع أدوات OCR كوحدات عبر Google Play Services. عادةً ما تُحمَّل وحدة الأحرف اللاتينية مسبقًا أثناء تثبيت التطبيق؛ وإذا كان نموذج مطلوب مفقودًا، ينزّله التطبيق مع عرض التقدم قبل التعرف. تبقى معالجة OCR على الجهاز.</string>
 </resources>

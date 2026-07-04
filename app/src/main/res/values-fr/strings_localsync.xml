@@ -44,4 +44,8 @@
     <string name="local_sync_web_upload_not_pdf">Le fichier n\'est pas un PDF valide.</string>
     <string name="local_sync_web_upload_too_large">Le fichier dépasse 25 Mo.</string>
     <string name="local_sync_web_upload_failed">L\'envoi a échoué.</string>
+    <string name="help_item_local_sync">Ouvrez « Connexion PC » dans le menu latéral pour échanger des PDF avec un navigateur du même réseau local. Démarrez la connexion, saisissez sur le PC l’adresse et le code PIN affichés, puis téléchargez des documents de l’archive ou envoyez des PDF jusqu’à 25 Mo. Aucun cloud n’est utilisé ; la connexion s’arrête en cas d’inactivité, de perte du réseau ou de verrouillage de l’app et ne doit être utilisée que sur un réseau local de confiance.</string>
+    <string name="info_feature_local_sync">La connexion Wi-Fi locale au PC transfère directement les PDF entre l’app et un navigateur du même réseau. Un code PIN et une session temporaires protègent l’accès, avec arrêt automatique en cas d’inactivité, de perte du réseau, de verrouillage de l’app ou d’échecs répétés.</string>
+    <string name="privacy_keyword_10">Transfert Wi-Fi local</string>
+    <string name="privacy_point_10">Uniquement lorsque vous démarrez la connexion PC, l’app expose les documents actifs de l’archive via un serveur web local temporaire lié à l’adresse réseau privée sélectionnée. Le transfert reste dans le réseau local et est protégé par un code PIN et une session, mais HTTP n’est pas chiffré par TLS ; utilisez cette fonction uniquement sur un réseau de confiance. Le serveur s’arrête automatiquement en cas d’inactivité, de perte du réseau, de verrouillage de l’app ou de trop nombreux codes PIN incorrects.</string>
 </resources>

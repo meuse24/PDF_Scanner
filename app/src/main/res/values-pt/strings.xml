@@ -134,7 +134,7 @@
     <string name="help_section_ocr">OCR e extração de texto</string>
     <string name="help_item_extract_text">A Extração de texto (OCR) lê todas as páginas. Para um único documento, abre a revisão OCR com texto por página, idioma reconhecido, qualidade, copiar/partilhar e exportação TXT. Para vários documentos, continua a mostrar um painel combinado de onde pode copiar ou partilhar o resultado.</string>
     <string name="help_item_make_searchable">Tornar pesquisável adiciona uma camada de texto invisível ao PDF, guarda localmente o texto OCR extraído para pesquisa no arquivo.</string>
-    <string name="help_item_ocr_language">O OCR automático usa offline o modelo latino. Os modelos de hindi, chinês, japonês e coreano são baixados pelo Google Play Services quando selecionados manualmente. O PDF pesquisável suporta escritas latinas e hindi; para árabe, chinês, japonês ou coreano, use «Extrair texto».</string>
+    <string name="help_item_ocr_language">O OCR automático usa o reconhecedor latino. Todos os reconhecedores OCR são fornecidos como módulos dos Google Play Services. O módulo latino é normalmente pré-carregado durante a instalação; se faltar um modelo, a app transfere-o com progresso visível antes do reconhecimento. O PDF pesquisável suporta escritas latinas e hindi; para árabe, chinês, japonês ou coreano, use «Extrair texto».</string>
     <string name="help_section_navigation">Navegação</string>
     <string name="help_nav_text">Use o menu hambúrguer (canto superior esquerdo) para acessar o Arquivo, a Lixeira, Configurações, Ajuda, Info e Privacidade.</string>
     <string name="help_section_notes">Observações</string>
@@ -170,9 +170,9 @@
     <string name="privacy_keyword_4">Privado</string>
     <string name="privacy_point_1">Esta app guarda localmente no seu dispositivo PDFs, imagens de pré-visualização, cópias redigidas e texto OCR pesquisável opcional.</string>
     <string name="privacy_point_2">Nenhum documento ou conteúdo é carregado automaticamente. Partilhar ou exportar só acontece quando o utilizador o desencadeia explicitamente. A redação segura cria uma nova cópia; o original permanece até ser eliminado.</string>
-    <string name="privacy_point_3">As funções de digitalização e OCR utilizam os Google Play Services. Dados técnicos de diagnóstico podem ser transmitidos para análise de erros. O modo automático usa um reconhecedor de texto latino integrado que funciona offline. Os modelos de idioma para hindi, chinês, japonês e coreano podem ser obtidos via Play Services na primeira utilização manual; o conteúdo dos seus documentos não é enviado por esta app.</string>
+    <string name="privacy_point_3">A digitalização e o OCR usam os Google Play Services. Todos os reconhecedores OCR, incluindo o latino, são fornecidos como módulos Play Services; o latino é solicitado durante a instalação e os modelos em falta são transferidos com progresso visível antes da primeira utilização. O reconhecimento ocorre no dispositivo e a app não envia conteúdo dos documentos. Os Google Play Services podem transmitir dados técnicos de diagnóstico.</string>
     <string name="privacy_point_4">A app não recolhe dados pessoais e não usa analítica nem backend próprios. Os Google Play Services / ML Kit podem adicionar permissões de rede para modelos, compatibilidade e diagnósticos.</string>
-    <string name="privacy_footer">Atualizado: 4 de junho de 2026</string>
+    <string name="privacy_footer">Atualizado: 4 de julho de 2026</string>
 
     <!-- OCR -->
     <string name="cd_extract_text">Extrair texto</string>

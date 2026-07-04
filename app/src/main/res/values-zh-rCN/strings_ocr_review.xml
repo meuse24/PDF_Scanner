@@ -14,4 +14,5 @@
     <string name="ocr_review_missing_record">此文档已不可用。</string>
     <string name="ocr_quality_badge_percent">%1$d%%</string>
     <string name="ocr_quality_badge_unknown">OCR</string>
+    <string name="info_feature_ocr_delivery">所有 OCR 识别器均以 Google Play 服务模块提供。拉丁文字模块通常会在安装应用时预加载；如果缺少所需模型，应用会在识别前显示进度并下载。OCR 处理本身始终在设备上完成。</string>
 </resources>

@@ -12,7 +12,7 @@ sealed interface LoginAttemptResult {
  * Guards the PIN login endpoint against brute-forcing. The 4-digit PIN only has
  * 10,000 combinations, so per-client exponential backoff alone is not enough –
  * a hard stop across all clients bounds the total number of guesses during a
- * single server run (see plan1.md, "Sicherheitskonzept").
+ * single server run (see local-wifi-pc-sync.md, "Sicherheitskonzept").
  */
 class LoginRateLimiter(
     private val failuresBeforeLockout: Int = 5,

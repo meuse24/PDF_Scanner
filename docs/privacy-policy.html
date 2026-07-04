@@ -230,7 +230,7 @@
                 </div>
                 <div class="card">
                     <strong>Last updated</strong>
-                    June 27, 2026
+                    July 4, 2026
                 </div>
             </div>
         </div>
@@ -255,7 +255,7 @@
                 </div>
                 <div class="card">
                     <strong>Stand</strong>
-                    27. Juni 2026
+                    4. Juli 2026
                 </div>
             </div>
         </div>
@@ -566,12 +566,15 @@
             <h3 style="font-size:1.05rem;margin:16px 0 6px;">ML Kit Text Recognition (OCR)</h3>
             <p>
                 The app includes an optional <strong>text extraction (OCR)</strong> feature powered by
-                <strong>ML Kit Text Recognition</strong>. The <em>automatic</em> mode uses a bundled
-                Latin text recognizer that works fully offline — no download required. Selecting
-                <em>Hindi, Chinese, Japanese, or Korean</em> manually triggers a GMS-unbundled model
-                download via Google Play Services on first use. Document images are never transmitted
-                to Google servers or any other external service. Extracted text can optionally be
-                stored locally in the app database when the user creates a searchable PDF.
+                <strong>ML Kit Text Recognition</strong>. All OCR recognizers, including the Latin
+                recognizer used by <em>automatic</em> mode, are delivered as GMS-unbundled modules
+                through Google Play Services. The app requests background preloading of the Latin
+                module during installation. If a required module is still missing, for example after
+                installation without network access, it is downloaded with visible progress on the
+                first OCR request. The Hindi, Chinese, Japanese, and Korean modules are downloaded on
+                first use of the respective language. Recognition runs on-device; document images are
+                never transmitted to Google servers or any other external service. Extracted text can
+                optionally be stored locally in the app database when the user creates a searchable PDF.
             </p>
             <p>
                 The same ML Kit update and metrics conditions described above also apply to this component.
@@ -630,11 +633,15 @@
             <h3 style="font-size:1.05rem;margin:16px 0 6px;">ML Kit Text Recognition (OCR)</h3>
             <p>
                 Die App bietet eine optionale <strong>Texterkennungs-Funktion (OCR)</strong> auf Basis
-                von <strong>ML Kit Text Recognition</strong>. Der automatische Modus verwendet ein
-                integriertes Lateinmodell, das vollstaendig offline laeuft. Bei manueller Auswahl von
-                <em>Hindi, Chinesisch, Japanisch oder Koreanisch</em> wird beim ersten Einsatz ein
-                GMS-unbundled-Modell ueber Google Play Services heruntergeladen.
-                Dokumentbilder werden weder an Google-Server noch an sonstige externe Dienste uebertragen.
+                von <strong>ML Kit Text Recognition</strong>. Alle OCR-Erkenner, einschliesslich des
+                im automatischen Modus verwendeten Latin-Modells, werden als GMS-unbundled-Module ueber
+                Google Play Services bereitgestellt. Die App fordert den Hintergrund-Download des
+                Latin-Moduls bereits bei der Installation an. Fehlt ein benoetigtes Modul dennoch,
+                etwa nach einer Installation ohne Netzwerkverbindung, wird es beim ersten OCR-Aufruf
+                mit sichtbarer Fortschrittsanzeige nachgeladen. Die Module fuer Hindi, Chinesisch,
+                Japanisch und Koreanisch werden bei der ersten Nutzung der jeweiligen Sprache geladen.
+                Die Erkennung erfolgt auf dem Geraet; Dokumentbilder werden weder an Google-Server noch
+                an sonstige externe Dienste uebertragen.
                 Erkannter Text kann optional lokal in der App-Datenbank gespeichert werden, wenn der
                 Nutzer eine durchsuchbare PDF erstellt.
             </p>
@@ -864,8 +871,8 @@
     </section>
 
     <footer>
-        <span data-lang-content="en">M24 PDF-Scanner Privacy Policy, last updated June 27, 2026.</span>
-        <span data-lang-content="de">M24 PDF-Scanner Datenschutzerklaerung, Stand 27. Juni 2026.</span>
+        <span data-lang-content="en">M24 PDF-Scanner Privacy Policy, last updated July 4, 2026.</span>
+        <span data-lang-content="de">M24 PDF-Scanner Datenschutzerklaerung, Stand 4. Juli 2026.</span>
     </footer>
 </main>
 

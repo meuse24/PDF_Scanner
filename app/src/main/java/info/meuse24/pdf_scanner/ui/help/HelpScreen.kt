@@ -59,6 +59,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.UploadFile
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -104,6 +105,7 @@ fun HelpScreen() {
                 titleRes = R.string.help_group_drawer_menu,
                 actions = listOf(
                     HelpAction(Icons.Default.FolderOpen, R.string.nav_archive, R.string.help_desc_archive),
+                    HelpAction(Icons.Default.Wifi, R.string.local_sync_drawer_label, R.string.help_item_local_sync),
                     HelpAction(Icons.Default.Delete, R.string.nav_trash, R.string.trash_empty_body),
                     HelpAction(Icons.AutoMirrored.Filled.Help, R.string.nav_help, R.string.help_desc_help),
                     HelpAction(Icons.Default.Info, R.string.nav_info, R.string.help_desc_info),
@@ -173,6 +175,7 @@ fun HelpScreen() {
                 titleRes = R.string.sheet_section_edit,
                 actions = listOf(
                     HelpAction(Icons.Default.BorderColor,                       R.string.action_annotate_pdf,   R.string.help_item_annotate_pdf),
+                    HelpAction(Icons.Default.DriveFileRenameOutline,            R.string.form_fill_action,      R.string.help_item_fill_form),
                     HelpAction(Icons.Default.Draw,                              R.string.action_sign_pdf,       R.string.help_item_sign_pdf),
                     HelpAction(Icons.Default.FormatListNumbered,               R.string.action_page_numbers,  R.string.help_item_page_numbers),
                     HelpAction(Icons.AutoMirrored.Filled.BrandingWatermark,    R.string.action_text_watermark, R.string.help_item_watermark),

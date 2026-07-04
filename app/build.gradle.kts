@@ -71,10 +71,21 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     androidResources {
-        // TFLite-Modelle (ML Kit) und Noto-Fonts komprimieren schlecht (binäre Gewichte /
-        // Font-Bytecode) und verursachten 7-8 s in compressDebugAssets. Unkomprimiert
-        // ermöglicht das OS zudem direktes mmap → schnellerer App-Start.
-        noCompress += listOf("tflite", "ttf", "otf")
+        // AndroidX/ML-Kit/Play bringen Übersetzungen für 85+ Locales mit. Play liefert per
+        // Language-Split ohnehin nur die Gerätesprache aus; dieser Filter entfernt die nicht
+        // unterstützten Locales auch aus Universal-/Debug-APKs (~1-2 MB).
+        localeFilters += listOf("en", "de", "es", "fr", "pt", "zh-rCN", "ar", "ja", "ru", "hi")
+        // TFLite-Modelle (falls von gebündelten Libs mitgeliefert) und die kleinen
+        // Noto-Fallback-Fonts bleiben unkomprimiert (mmap). Die 36 MB grosse
+        // NotoSansCJKjp-VF.ttf ist bewusst NICHT gelistet: sie wird nur lazy beim
+        // Formular-Speichern via InputStream gelesen, Kompression spart ~16 MB im APK und
+        // kostet beim Lesen nur Millisekunden.
+        noCompress += listOf(
+            "tflite",
+            "NotoSans-Regular.ttf",
+            "NotoSansArabic-Regular.ttf",
+            "NotoSansDevanagari-Regular.ttf"
+        )
     }
     packaging {
         // ktor-server-test-host (androidTest only) pulls in Apache HttpComponents 5 as its
@@ -88,7 +99,13 @@ android {
                 "META-INF/NOTICE",
                 "META-INF/NOTICE.txt",
                 "META-INF/AL2.0",
-                "META-INF/LGPL2.1"
+                "META-INF/LGPL2.1",
+                // BouncyCastle Post-Quantum-Krypto (Picnic/SIKE): ~8 MB Konstanten-Properties,
+                // die via pdfbox-android → bcprov mitkommen. PdfBox nutzt BouncyCastle nur für
+                // klassische PDF-Verschlüsselung (RC4/AES/PKCS), niemals PQC; SIKE ist zudem
+                // seit 2022 kryptografisch gebrochen. Reines totes Gewicht.
+                "org/bouncycastle/pqc/crypto/picnic/**",
+                "org/bouncycastle/pqc/crypto/sike/**"
             )
         }
     }
@@ -166,13 +183,17 @@ dependencies {
     // Google ML Kit Document Scanner
     implementation(libs.document.scanner)
 
-    // Google ML Kit Text Recognition (on-device, Latin bundled)
+    // Google ML Kit Text Recognition – GMS unbundled (Latin model provided by Play Services;
+    // preloaded at install time via the com.google.mlkit.vision.DEPENDENCIES manifest entry,
+    // saves ~13 MB per device vs. the bundled artifact)
     implementation(libs.mlkit.text.recognition)
     // ML Kit Text Recognition – GMS unbundled (model downloaded on first use)
     implementation(libs.mlkit.text.chinese)
     implementation(libs.mlkit.text.japanese)
     implementation(libs.mlkit.text.devanagari)
     implementation(libs.mlkit.text.korean)
+    // Barcode-Scanning – GMS unbundled (libbarhopper via Play Services statt gebündelt,
+    // spart ~5,6 MB pro Gerät; Modell wird via ModuleInstall bei Bedarf geladen)
     implementation(libs.mlkit.barcode.scanning)
     // ML Kit Translate – models downloaded on demand, NOT bundled in APK
     implementation(libs.mlkit.translate)

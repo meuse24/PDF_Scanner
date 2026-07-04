@@ -1,7 +1,7 @@
 ---
 title: "M24 PDF Scanner"
 subtitle: "Vollständige Bedienungsanleitung"
-date: "Version 2.1 · Juni 2026"
+date: "Version 2.1 · Juli 2026"
 lang: de-DE
 toc: true
 toc-depth: 3
@@ -80,7 +80,7 @@ M24 PDF Scanner ist eine datenschutzorientierte Android-App zum Scannen, Verwalt
 
 - Android 10 oder neuer (API 29+)
 - Google Play Services (für ML Kit)
-- Rund 50 MB freier Speicher für die App; OCR-Modelle und Übersetzungsmodelle belegen zusätzlich je 15–30 MB und werden bei Bedarf heruntergeladen
+- Ausreichend freier Speicher für die App und zusätzliche ML-Kit-Modelle; das Latin-OCR-Modell wird normalerweise schon bei der Installation über Google Play Services vorgeladen, weitere OCR- und Übersetzungsmodelle werden bei Bedarf heruntergeladen
 
 \newpage
 
@@ -303,20 +303,20 @@ M24 PDF Scanner unterstützt folgende OCR-Sprachen:
 
 | Sprachcode | Sprache | Modell |
 |---|---|---|
-| `de` | Deutsch | Integriert |
-| `en` | Englisch | Integriert |
-| `es` | Spanisch | Integriert |
-| `fr` | Französisch | Integriert |
-| `it` | Italienisch | Integriert |
-| `pt` | Portugiesisch | Integriert |
-| `hi` | Hindi | On-Demand |
-| `zh` | Chinesisch | On-Demand |
-| `ja` | Japanisch | On-Demand |
-| `ko` | Koreanisch | On-Demand |
+| `de` | Deutsch | GMS-Modul (Latin, bei Installation vorgeladen) |
+| `en` | Englisch | GMS-Modul (Latin, bei Installation vorgeladen) |
+| `es` | Spanisch | GMS-Modul (Latin, bei Installation vorgeladen) |
+| `fr` | Französisch | GMS-Modul (Latin, bei Installation vorgeladen) |
+| `it` | Italienisch | GMS-Modul (Latin, bei Installation vorgeladen) |
+| `pt` | Portugiesisch | GMS-Modul (Latin, bei Installation vorgeladen) |
+| `hi` | Hindi | GMS-Modul (bei Bedarf) |
+| `zh` | Chinesisch | GMS-Modul (bei Bedarf) |
+| `ja` | Japanisch | GMS-Modul (bei Bedarf) |
+| `ko` | Koreanisch | GMS-Modul (bei Bedarf) |
 
-Auf-Demand-Modelle werden über Google Play Services geladen, wenn Sie die jeweilige Sprache erstmals manuell auswählen.
+Alle OCR-Erkenner werden über Google Play Services bereitgestellt. Das Latin-Modell wird bereits während der App-Installation im Hintergrund angefordert. Falls es zu diesem Zeitpunkt nicht geladen werden konnte, etwa weil das Gerät offline war, lädt die App es beim ersten OCR-Aufruf mit Fortschrittsanzeige nach. Die Modelle für Hindi, Chinesisch, Japanisch und Koreanisch werden bei der ersten Verwendung der jeweiligen Sprache geladen.
 
-Der Automatikmodus verwendet ausschließlich das integrierte, offline verfügbare Latin-Modell. Für Hindi, Chinesisch, Japanisch oder Koreanisch wählen Sie die Sprache manuell unter **Aktions-Sheet → Analyse → OCR-Sprache**. Bei einer entsprechenden Systemsprache wird dieses Modell als Standard vorbelegt.
+Der Automatikmodus verwendet ausschließlich das Latin-Modell. Sobald das benötigte Modul auf dem Gerät vorhanden ist, arbeitet die Texterkennung offline. Für Hindi, Chinesisch, Japanisch oder Koreanisch wählen Sie die Sprache manuell unter **Aktions-Sheet → Analyse → OCR-Sprache**. Bei einer entsprechenden Systemsprache wird dieses Modell als Standard vorbelegt.
 
 ## OCR-Review-Screen
 
@@ -903,9 +903,9 @@ Beim ersten Einsatz einer neuen Sprache muss das Sprachmodell (~15–30 MB) heru
 
 Nein. Das Backup-Passwort wird weder gespeichert noch kann es zurückgesetzt werden. Ohne das richtige Passwort ist das Backup nicht entschlüsselbar.
 
-## Warum sind manche OCR-Sprachen nicht sofort verfügbar?
+## Warum ist ein OCR-Modell nicht sofort verfügbar?
 
-Für Hindi, Chinesisch, Japanisch und Koreanisch werden On-Demand-Modelle von Google Play Services heruntergeladen. Der Download erfolgt bei der ersten manuellen Auswahl der Sprache und erfordert eine Internetverbindung.
+Alle OCR-Modelle werden über Google Play Services bereitgestellt. Das Latin-Modell wird normalerweise bereits bei der App-Installation vorgeladen. Nach einer Installation ohne Netzwerkverbindung kann deshalb auch der erste automatische OCR-Lauf zunächst einen Download benötigen. Hindi, Chinesisch, Japanisch und Koreanisch werden bei der ersten Nutzung der jeweiligen Sprache geladen. Nach erfolgreichem Download arbeitet die Erkennung offline.
 
 ## Werden meine Dokumente in der Cloud gespeichert?
 
@@ -923,6 +923,6 @@ Alle Dokumente im internen App-Speicher werden beim Deinstallieren der App gelö
 
 \vspace{2em}
 \begin{center}
-\textcolor{mittelgrau}{\small M24 PDF Scanner · Version 2.1 · Juni 2026}\\
+\textcolor{mittelgrau}{\small M24 PDF Scanner · Version 2.1 · Juli 2026}\\
 \textcolor{mittelgrau}{\small Datenschutzrichtlinie und Quellcode: \texttt{https://github.com/meuse24/PDF\_Scanner}}
 \end{center}

@@ -44,4 +44,8 @@
     <string name="local_sync_web_upload_not_pdf">O arquivo não é um PDF válido.</string>
     <string name="local_sync_web_upload_too_large">O arquivo é maior que 25 MB.</string>
     <string name="local_sync_web_upload_failed">Falha no envio.</string>
+    <string name="help_item_local_sync">Abra «Ligação ao PC» no menu lateral para trocar PDFs com um navegador na mesma rede local. Inicie a ligação, introduza no PC o endereço e o PIN apresentados e transfira documentos do arquivo ou envie PDFs até 25 MB. Não utiliza a nuvem, para por inatividade, perda de rede ou bloqueio da app e só deve ser usada numa rede local de confiança.</string>
+    <string name="info_feature_local_sync">A ligação Wi-Fi local ao PC transfere PDFs diretamente entre a app e um navegador na mesma rede. Um PIN e uma sessão temporários protegem o acesso, com paragem automática por inatividade, perda de rede, bloqueio da app ou tentativas falhadas repetidas.</string>
+    <string name="privacy_keyword_10">Transferência Wi-Fi local</string>
+    <string name="privacy_point_10">Apenas quando inicia a ligação ao PC, a app disponibiliza os documentos ativos do arquivo através de um servidor web local temporário associado ao endereço de rede privada selecionado. A transferência permanece na rede local e é protegida por PIN e sessão, mas o HTTP não é encriptado por TLS; use apenas numa rede de confiança. O servidor para automaticamente por inatividade, perda de rede, bloqueio da app ou demasiadas tentativas de PIN falhadas.</string>
 </resources>

@@ -35,7 +35,7 @@ private const val INACTIVITY_CHECK_INTERVAL_MILLIS = 30_000L
 /**
  * Foreground service hosting the PC-Sync HTTP server so it survives screen-off.
  * Stops itself when the app is locked (App-Lock is a UI gate that a background
- * server would otherwise bypass, see plan1.md) or after [INACTIVITY_TIMEOUT_MILLIS]
+ * server would otherwise bypass, see local-wifi-pc-sync.md) or after [INACTIVITY_TIMEOUT_MILLIS]
  * without a request.
  */
 @AndroidEntryPoint

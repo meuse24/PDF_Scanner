@@ -10,7 +10,7 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - Accept PDFs and images from other Android apps via Share or Open with
 - View PDFs directly in the app with PdfRenderer, page scrolling, inline pinch-to-zoom, double-tap zoom toggle, cross-page scroll while zoomed, print, share, export, and external-open fallback
 - Search stored OCR text inside the PDF viewer, jump between matching pages, and use locally detected IBAN, amount, and date actions
-- Extract OCR text and create searchable PDFs with automatic/manual language selection and on-demand ML Kit model downloads
+- Extract OCR text and create searchable PDFs with automatic/manual language selection; all OCR recognizers are delivered as Google Play Services modules, with Latin requested for background preload during app installation and an on-demand fallback when a model is missing
 - Review OCR text per page with recognized language, quality badges, copy/share actions, and TXT export to Downloads
 - Assign optional on-device automatic document tags from OCR text and filter the archive by invoice, contract, insurance, certificate, bank, or delivery tags
 - Create PDFs from gallery images with A4 layouts:

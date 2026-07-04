@@ -20,4 +20,6 @@
     <string name="form_fill_page">Page %1$d sur %2$d</string>
     <string name="form_fill_select_option">Sélectionner %1$s</string>
     <string name="form_fill_reset">Réinitialiser les valeurs</string>
+    <string name="help_item_fill_form">Ouvrez un PDF contenant des champs AcroForm dans la visionneuse et choisissez « Remplir le formulaire ». Complétez les champs de texte, cases à cocher, boutons radio et listes, puis enregistrez une nouvelle copie. Vous pouvez aussi aplatir les champs pour rendre leurs valeurs permanentes. Les formulaires signés sont en lecture seule et les formulaires XFA dynamiques ne sont pas pris en charge.</string>
+    <string name="info_feature_formfill">Les PDF AcroForm interactifs peuvent être remplis sur l’appareil et enregistrés dans une nouvelle copie, avec aplatissement facultatif et polices Unicode de secours pour plusieurs systèmes d’écriture.</string>
 </resources>

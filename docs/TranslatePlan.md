@@ -12,7 +12,7 @@ Nutzer können den OCR-Text eines Dokuments mit einem Tippen in eine Zielsprache
 
 ## APK-Größe
 
-`com.google.mlkit:translate` (~1 MB) enthält **keine** Sprachdaten. Modelle (~15–30 MB pro Sprache) werden ausschließlich via `downloadModelIfNeeded()` on-demand von GMS-Servern geladen und gerätelokal gecacht — identisch zum OCR-unbundled-Pattern des Projekts. Die APK bleibt schlank.
+`com.google.mlkit:translate` bündelt die Translate-Laufzeitbibliothek (`libtranslate_jni.so`, rund 16,4 MB für arm64). Google bietet dafür keine GMS-unbundled-Alternative an. Die eigentlichen Sprachmodelle (~15–30 MB pro Sprache) sind dagegen **nicht** im APK enthalten: Sie werden ausschließlich via `downloadModelIfNeeded()` on-demand von GMS-Servern geladen und gerätelokal gecacht. Das Feature bleibt unverändert erhalten; nur die benötigten Sprachmodelle werden nachgeladen.
 
 ---
 
@@ -42,7 +42,7 @@ mlkit-translate = { group = "com.google.mlkit", name = "translate", version.ref 
 
 ```kotlin
 // app/build.gradle.kts
-// ML Kit Translate – models downloaded on demand, NOT bundled in APK
+// ML Kit Translate – runtime bundled; language models downloaded on demand
 implementation(libs.mlkit.translate)
 ```
 

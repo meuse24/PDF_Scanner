@@ -14,4 +14,5 @@
     <string name="ocr_review_missing_record">यह दस्तावेज़ अब उपलब्ध नहीं है।</string>
     <string name="ocr_quality_badge_percent">%1$d%%</string>
     <string name="ocr_quality_badge_unknown">OCR</string>
+    <string name="info_feature_ocr_delivery">सभी OCR पहचानकर्ता Google Play Services मॉड्यूल के रूप में उपलब्ध होते हैं। लैटिन मॉड्यूल आम तौर पर ऐप इंस्टॉल होते समय पहले से डाउनलोड होता है; आवश्यक मॉडल न होने पर ऐप पहचान से पहले प्रगति दिखाते हुए उसे डाउनलोड करता है। OCR प्रोसेसिंग डिवाइस पर ही रहती है।</string>
 </resources>

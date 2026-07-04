@@ -61,7 +61,7 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 
 **`di/`** — Hilt-Module: `DatabaseModule`, `RepositoryModule`, `PdfOperationsModule`, `AppProvidersModule`.
 
-**`util/`** — Android-/PdfBox-/ML-Kit-Implementierungen hinter Domain-Ports: `OcrPipeline`, `OcrManager` (ML-Kit, unbundled für HI/ZH/JA/KO), `OcrModelInstaller`, `MlKitOcrDocumentTextExtractor`, `QrCodeScanner`, `FileUtil`, `PlayReviewPromptManager`, `PdfPageBitmapRenderer` (Mutex, OOM-Fallback), `PdfPageBitmapCache` (Byte-Budget), `AppLockManager` (ProcessLifecycle-Gate, BiometricPrompt), `PdfDocumentIntents`, `PdfPrintHelper`.
+**`util/`** — Android-/PdfBox-/ML-Kit-Implementierungen hinter Domain-Ports: `OcrPipeline`, `OcrManager` (alle OCR-Skripte GMS-unbundled), `OcrModelInstaller`, `MlKitOcrDocumentTextExtractor`, `QrCodeScanner`, `FileUtil`, `PlayReviewPromptManager`, `PdfPageBitmapRenderer` (Mutex, OOM-Fallback), `PdfPageBitmapCache` (Byte-Budget), `AppLockManager` (ProcessLifecycle-Gate, BiometricPrompt), `PdfDocumentIntents`, `PdfPrintHelper`.
 
 `PDFBoxResourceLoader.init(this)` muss in `PdfScannerApp.onCreate()` aufgerufen werden.
 
@@ -93,7 +93,7 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 - Export: `MediaStore.Downloads` IS_PENDING-Pattern; bei Fehler `resolver.delete()`.
 - OCR-TXT-Export: `ExportOcrTextUseCase` schreibt gespeicherten OCR-Text via `DownloadsStorage`; Home-Bulk-Export lädt vollständige Records gezielt per `DocumentRepository.getScansByIds()`, nicht über `ScanListItem`.
 - Backup: `allowBackup=false`; `backup_rules.xml` + `data_extraction_rules.xml` schließen `filesDir/scans/` und DB-Dateien aus.
-- **OCR:** Domain nutzt `OcrDocumentTextExtractor`/`SearchablePdfGenerator`; ML-Kit-Implementierungen nutzen `OcrPipeline`, offline Latin-only im Automatikmodus, manuelle Sprache und unbundled Modelle via `ModuleInstallClient`.
+- **OCR:** Domain nutzt `OcrDocumentTextExtractor`/`SearchablePdfGenerator`; ML-Kit-Implementierungen nutzen `OcrPipeline`, Latin-only im Automatikmodus. Alle Modelle inkl. Latin sind GMS-unbundled und durchlaufen dieselbe `ModuleInstallClient`-Verfügbarkeits-/Downloadkette mit Status-UI. `com.google.mlkit.vision.DEPENDENCIES = "ocr"` fordert das Latin-Modell bereits bei der App-Installation zum Hintergrund-Preload an; fehlt es trotzdem, wird es beim ersten OCR-Lauf nachgeladen.
 - **AutoTags:** Scoring-basiertes lokales Keyword-Matching mit vorkompilierten Regexen; Tags als kommaseparierte Keys (`invoice`, `contract`, `insurance`, `certificate`, `bank`, `delivery`). Listenqueries laden nur `tags`, nicht `extracted_text`; automatische Vergabe respektiert `AppSettings.autoTaggingEnabled`.
 - **Viewer:** `PdfPageBitmapRenderer` (Mutex, ±1 Seiten rendern); Fit-width-Cache byte-budgetiert; Zoom-Renderings nicht gecacht; `CancellationException` nicht schlucken; `onCleared()` schließt File-Descriptors. Die lokale Seitensuche nutzt nur exakt ausgerichtete OCR-Seitentexte (`pageTexts.size == pageCount`) und springt per `scrollToPageRequests`; Smart-Actions erkennen IBAN, Euro-Beträge und Datumswerte lokal.
 - **OCR-Seitenindex:** `toOcrPageTextJson()` und der PDF-Extraktionspfad müssen leere Seiteneinträge erhalten. Sonst stimmt der Listenindex nicht mehr mit dem PDF-Seitenindex überein; Altbestände mit abweichender Anzahl werden im Viewer bewusst nicht durchsucht.
@@ -141,9 +141,10 @@ Testabhängigkeiten: `junit:4.13.2`, `kotlinx-coroutines-test:1.10.1`, `mockito-
 | Room | 2.8.4 |
 | Navigation Compose | 2.9.7 |
 | ML Kit Document Scanner | 16.0.0 |
-| ML Kit Barcode Scanning | 17.3.0 |
-| ML Kit Text Recognition | 16.0.1 |
+| ML Kit Barcode Scanning | 18.3.1 (GMS unbundled) |
+| ML Kit Text Recognition (Latin) | 19.0.1 (GMS unbundled) |
 | ML Kit Text (HI/ZH/JA/KO) | 16.0.1 (GMS unbundled) |
+| ML Kit Translate | 17.0.3 (Runtime gebündelt, Sprachmodelle on-demand) |
 | PdfBox-Android | 2.0.27.0 |
 | Compose BOM | 2026.03.00 |
 
@@ -151,6 +152,8 @@ Versionen in `gradle/libs.versions.toml`. Gradle-Besonderheiten:
 - `android.disallowKotlinSourceSets=false` with `android.suppressUnsupportedOptionWarnings` (KSP + AGP 9), `ksp.workers.max=1` (KSP Worker-Race-Workaround)
 - `org.gradle.caching=true`, `org.gradle.parallel=true`, `org.gradle.configuration-cache=true`
 - Bei Cache-Problemen: `--no-configuration-cache`
+
+APK-Größe (siehe Abschlussbericht `apk-size-optimization-report.md`): Latin-OCR und Barcode sind GMS-unbundled (Modelle via Play Services, `DEPENDENCIES="ocr,barcode"`-Preload); BouncyCastle-PQC-Ressourcen (`org/bouncycastle/pqc/crypto/{picnic,sike}/**`) via `packaging.excludes` entfernt; `localeFilters` auf die 10 Locales; `NotoSansCJKjp-VF.ttf` bewusst NICHT in `noCompress` (36→21 MB komprimiert), die kleinen Noto-Fallback-Fonts bleiben unkomprimiert.
 
 ## Schrift & Design
 

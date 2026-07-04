@@ -155,6 +155,24 @@ fun InfoScreen() {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.info_feature_formfill),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.info_feature_local_sync),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.info_feature_ocr_delivery),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
         item {
@@ -167,9 +185,11 @@ fun InfoScreen() {
                 InfoRow("AndroidX Biometric",               "1.4.0-alpha04")
                 InfoRow("Kotlinx Serialization",            "1.8.1")
                 InfoRow("Google ML Kit Document Scanner",   "16.0.0")
-                InfoRow("Google ML Kit Barcode Scanning",   "17.3.0")
-                InfoRow("Google ML Kit Text Recognition",   "16.0.1")
+                InfoRow("Google ML Kit Barcode Scanning",   "18.3.1 (GMS)")
+                InfoRow("Google ML Kit Text Recognition (Latin)", "19.0.1 (GMS)")
+                InfoRow("Google ML Kit Text Recognition (HI/ZH/JA/KO)", "16.0.1 (GMS)")
                 InfoRow("Google ML Kit Translate",          "17.0.3")
+                InfoRow("Ktor Server (CIO)",                "3.4.2")
                 InfoRow("PdfBox Android",                   "2.0.27.0")
                 InfoRow("Reorderable",                      "2.4.3")
                 InfoRow("Google Tink",                      "1.19.0")

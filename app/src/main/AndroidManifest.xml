@@ -53,6 +53,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Latin-OCR und Barcode-Scanning sind GMS-unbundled (spart ~13 + ~5,6 MB APK); dieser
+             Eintrag lässt Play Services die Modelle direkt bei der App-Installation im Hintergrund
+             laden, damit OCR-Automatik und QR-Scan wie bisher sofort offline funktionieren. -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="ocr,barcode" />
+
         <!-- Override: ML Kit Document Scanner setzt screenOrientation="portrait" im Library-Manifest.
              Ab Android 16 ignoriert das System diese Einschränkung auf Large Displays; der Override
              stellt sicher, dass Play Console keine Warnung mehr ausgibt. -->

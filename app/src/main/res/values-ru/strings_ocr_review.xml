@@ -14,4 +14,5 @@
     <string name="ocr_review_missing_record">Этот документ больше недоступен.</string>
     <string name="ocr_quality_badge_percent">%1$d%%</string>
     <string name="ocr_quality_badge_unknown">OCR</string>
+    <string name="info_feature_ocr_delivery">Все OCR-распознаватели поставляются как модули Google Play Services. Модуль латиницы обычно предварительно загружается при установке; если нужной модели нет, приложение загружает её с отображением прогресса перед распознаванием. OCR выполняется на устройстве.</string>
 </resources>

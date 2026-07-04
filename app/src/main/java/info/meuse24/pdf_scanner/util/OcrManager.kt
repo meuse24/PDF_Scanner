@@ -15,13 +15,17 @@ import javax.inject.Singleton
 /**
  * Liefert den passenden ML Kit TextRecognizer für einen ISO-639-1-Sprachcode.
  *
- * ZH/JA/KO/HI: GMS-unbundled (Modell beim ersten Aufruf automatisch heruntergeladen).
- * RU: Latin-Recognizer — ML Kit v2 (16.x) unterstützt Kyrillisch im Latin-Bundle.
+ * Alle Skripte inkl. Latin sind GMS-unbundled: die Modelle liegen bei Play Services,
+ * nicht im APK. Das Latin-Modell wird über den `com.google.mlkit.vision.DEPENDENCIES`-
+ * Manifest-Eintrag bereits bei der App-Installation im Hintergrund geladen, sodass der
+ * Automatik-Modus in der Praxis weiterhin sofort offline funktioniert; `OcrPipeline`
+ * prüft die Verfügbarkeit vor jeder Erkennung und lädt bei Bedarf nach.
+ *
+ * RU: Latin-Recognizer — ML Kit v2 unterstützt Kyrillisch im Latin-Modell.
  * AR: Latin-Fallback — ein dediziertes `text-recognition-arabic`-Artifact ist in
- *     Google Maven (16.x) nicht veröffentlicht; OCR-Qualität für Arabisch ist
+ *     Google Maven nicht veröffentlicht; OCR-Qualität für Arabisch ist
  *     dadurch eingeschränkt (bekannte v1-Limitierung).
- * EN/DE/ES/FR/PT: Latin-Recognizer (gebündelt, immer offline verfügbar).
- * "auto" (OCR_LANGUAGE_AUTO): Latin-Recognizer — Standard-Automatik-Modus, offline.
+ * "auto" (OCR_LANGUAGE_AUTO): Latin-Recognizer — Standard-Automatik-Modus.
  */
 @Singleton
 class OcrManager @Inject constructor() {
@@ -50,8 +54,9 @@ class OcrManager @Inject constructor() {
         if (manualScript != null) return listOf(manualScript)
 
         return when (usage) {
-            // Automatik bleibt offline und verwendet ausschließlich das gebündelte Latin-Modell.
-            // Nicht-lateinische Modelle werden nur durch eine konkrete Sprachauswahl aktiviert.
+            // Automatik verwendet ausschließlich das Latin-Modell (via GMS bei Installation
+            // vorgeladen). Nicht-lateinische Modelle werden nur durch eine konkrete
+            // Sprachauswahl aktiviert.
             OcrUsage.EXTRACT_TEXT,
             OcrUsage.SEARCHABLE_PDF -> listOf(OcrScript.LATIN)
             // Barcode-Scanning nutzt keinen TextRecognizer — kein Fallback erforderlich.
@@ -69,4 +74,3 @@ class OcrManager @Inject constructor() {
     }
 }
 
-fun OcrScript.requiresModuleDownload(): Boolean = this != OcrScript.LATIN

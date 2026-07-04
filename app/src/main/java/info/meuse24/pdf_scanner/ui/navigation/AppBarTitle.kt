@@ -47,6 +47,7 @@ internal fun AppBarTitle(
         currentRoute == Screen.Settings.route -> stringResource(R.string.nav_settings)
         currentRoute == Screen.Info.route -> stringResource(R.string.nav_info)
         currentRoute == Screen.Privacy.route -> stringResource(R.string.nav_privacy)
+        currentRoute == Screen.LocalSync.route -> stringResource(R.string.local_sync_title)
         currentRoute?.startsWith("ocr-review/") == true -> stringResource(R.string.ocr_review_title)
         currentRoute?.startsWith("viewer/") == true -> stringResource(R.string.pdf_viewer_screen_title)
         currentRoute?.startsWith("split/") == true -> stringResource(R.string.split_screen_title)

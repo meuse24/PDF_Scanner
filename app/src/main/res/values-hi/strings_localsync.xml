@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="local_sync_notification_channel">पीसी कनेक्शन</string>
+    <string name="local_sync_notification_title">M24 पीसी कनेक्शन सक्रिय है</string>
+    <string name="local_sync_notification_text">%1$s (पिन: %2$s)</string>
+    <string name="local_sync_notification_stop">रोकें</string>
+    <string name="local_sync_drawer_label">पीसी कनेक्शन</string>
+    <string name="local_sync_title">पीसी कनेक्शन</string>
+    <string name="local_sync_start_button">पीसी से जोड़ें</string>
+    <string name="local_sync_stop_button">डिस्कनेक्ट करें</string>
+    <string name="local_sync_instructions">अपने पीसी के ब्राउज़र में यह पता खोलें और पिन दर्ज करें:</string>
+    <string name="local_sync_pin_label">पिन</string>
+    <string name="local_sync_share_text">मेरे फ़ोन से कनेक्ट करें: %1$s (पिन: %2$s)</string>
+    <string name="local_sync_starting">शुरू हो रहा है…</string>
+    <string name="local_sync_first_use_title">लोकल नेटवर्क एक्सेस</string>
+    <string name="local_sync_first_use_message">इससे एक लोकल वेब सर्वर शुरू होता है ताकि आपका पीसी वाई-फाई के ज़रिए PDF देख और आदान-प्रदान कर सके। यह केवल आपके लोकल नेटवर्क में काम करता है; इंटरनेट पर कुछ भी नहीं भेजा जाता। एक्सेस पिन से सुरक्षित है, लेकिन कनेक्शन सक्रिय रहने के दौरान उसी नेटवर्क पर पिन जानने वाला कोई भी व्यक्ति आपके दस्तावेज़ों तक पहुँच सकता है।</string>
+    <string name="local_sync_first_use_confirm">कनेक्शन शुरू करें</string>
+    <string name="local_sync_first_use_cancel">रद्द करें</string>
+    <string name="local_sync_error_no_network">कोई लोकल नेटवर्क (वाई-फाई) उपलब्ध नहीं है।</string>
+    <string name="local_sync_error_port_unavailable">लोकल सर्वर शुरू नहीं किया जा सका।</string>
+    <string name="local_sync_error_unknown">पीसी कनेक्शन शुरू करते समय एक त्रुटि हुई।</string>
+    <string name="local_sync_error_hard_stopped">बहुत अधिक गलत पिन प्रयासों के बाद पीसी कनेक्शन रोक दिया गया है। इसे नए पिन के साथ फिर से शुरू करें।</string>
+    <string name="local_sync_web_html_lang">hi</string>
+    <string name="local_sync_web_login_title">M24 PDF Scanner – पीसी कनेक्शन</string>
+    <string name="local_sync_web_login_heading">पीसी कनेक्शन</string>
+    <string name="local_sync_web_login_instructions">अपने फ़ोन पर दिखाया गया 4 अंकों का पिन दर्ज करें।</string>
+    <string name="local_sync_web_login_button">कनेक्ट करें</string>
+    <string name="local_sync_web_error_wrong_pin">गलत पिन।</string>
+    <string name="local_sync_web_error_locked_out">बहुत अधिक असफल प्रयास। कृपया %1$d सेकंड बाद फिर से कोशिश करें।</string>
+    <string name="local_sync_web_locked_out_title">M24 PDF Scanner – लॉक</string>
+    <string name="local_sync_web_locked_out_heading">बहुत अधिक असफल प्रयास</string>
+    <string name="local_sync_web_locked_out_message">सुरक्षा कारणों से पीसी कनेक्शन रोक दिया गया है। इसे अपने फ़ोन पर नए पिन के साथ फिर से शुरू करें।</string>
+    <string name="local_sync_web_documents_title">M24 PDF Scanner – संग्रह</string>
+    <string name="local_sync_web_documents_heading">आपका संग्रह</string>
+    <string name="local_sync_web_document_meta">%1$d पेज, %2$s</string>
+    <string name="local_sync_web_upload_heading">PDF अपलोड करें</string>
+    <string name="local_sync_web_upload_hint">प्रति फ़ाइल अधिकतम 25 MB।</string>
+    <string name="local_sync_web_upload_button">अपलोड करें</string>
+    <string name="local_sync_web_upload_success">%1$s.pdf आयात किया गया।</string>
+    <string name="local_sync_web_upload_not_pdf">यह फ़ाइल मान्य PDF नहीं है।</string>
+    <string name="local_sync_web_upload_too_large">फ़ाइल 25 MB से बड़ी है।</string>
+    <string name="local_sync_web_upload_failed">अपलोड विफल रहा।</string>
+</resources>

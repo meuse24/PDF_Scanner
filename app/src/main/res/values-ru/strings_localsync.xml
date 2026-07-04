@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="local_sync_notification_channel">Подключение к ПК</string>
+    <string name="local_sync_notification_title">Подключение M24 к ПК активно</string>
+    <string name="local_sync_notification_text">%1$s (PIN: %2$s)</string>
+    <string name="local_sync_notification_stop">Остановить</string>
+    <string name="local_sync_drawer_label">Подключение к ПК</string>
+    <string name="local_sync_title">Подключение к ПК</string>
+    <string name="local_sync_start_button">Подключиться к ПК</string>
+    <string name="local_sync_stop_button">Отключить</string>
+    <string name="local_sync_instructions">Откройте этот адрес в браузере на ПК и введите PIN-код:</string>
+    <string name="local_sync_pin_label">PIN-код</string>
+    <string name="local_sync_share_text">Подключитесь к моему телефону: %1$s (PIN: %2$s)</string>
+    <string name="local_sync_starting">Запуск…</string>
+    <string name="local_sync_first_use_title">Доступ по локальной сети</string>
+    <string name="local_sync_first_use_message">Будет запущен локальный веб-сервер, чтобы ваш ПК мог просматривать и обмениваться PDF-файлами по Wi-Fi. Это работает только в вашей локальной сети, ничего не передаётся в интернет. Доступ защищён PIN-кодом, но любой в той же сети, кто узнает PIN-код, сможет получить доступ к вашим документам, пока соединение активно.</string>
+    <string name="local_sync_first_use_confirm">Начать подключение</string>
+    <string name="local_sync_first_use_cancel">Отмена</string>
+    <string name="local_sync_error_no_network">Локальная сеть (Wi-Fi) недоступна.</string>
+    <string name="local_sync_error_port_unavailable">Не удалось запустить локальный сервер.</string>
+    <string name="local_sync_error_unknown">Не удалось запустить подключение к ПК.</string>
+    <string name="local_sync_error_hard_stopped">Подключение к ПК остановлено после слишком большого числа неверных попыток ввода PIN-кода. Запустите его снова с новым PIN-кодом.</string>
+    <string name="local_sync_web_html_lang">ru</string>
+    <string name="local_sync_web_login_title">M24 PDF Scanner – подключение к ПК</string>
+    <string name="local_sync_web_login_heading">Подключение к ПК</string>
+    <string name="local_sync_web_login_instructions">Введите 4-значный PIN-код, показанный на вашем телефоне.</string>
+    <string name="local_sync_web_login_button">Подключиться</string>
+    <string name="local_sync_web_error_wrong_pin">Неверный PIN-код.</string>
+    <string name="local_sync_web_error_locked_out">Слишком много неудачных попыток. Повторите через %1$d с.</string>
+    <string name="local_sync_web_locked_out_title">M24 PDF Scanner – заблокировано</string>
+    <string name="local_sync_web_locked_out_heading">Слишком много неудачных попыток</string>
+    <string name="local_sync_web_locked_out_message">Подключение к ПК остановлено из соображений безопасности. Запустите его снова на телефоне с новым PIN-кодом.</string>
+    <string name="local_sync_web_documents_title">M24 PDF Scanner – Архив</string>
+    <string name="local_sync_web_documents_heading">Ваш архив</string>
+    <string name="local_sync_web_document_meta">%1$d стр., %2$s</string>
+    <string name="local_sync_web_upload_heading">Загрузить PDF</string>
+    <string name="local_sync_web_upload_hint">Максимум 25 МБ на файл.</string>
+    <string name="local_sync_web_upload_button">Загрузить</string>
+    <string name="local_sync_web_upload_success">%1$s.pdf импортирован.</string>
+    <string name="local_sync_web_upload_not_pdf">Файл не является допустимым PDF.</string>
+    <string name="local_sync_web_upload_too_large">Файл больше 25 МБ.</string>
+    <string name="local_sync_web_upload_failed">Не удалось загрузить файл.</string>
+</resources>

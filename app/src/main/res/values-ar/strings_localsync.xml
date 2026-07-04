@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="local_sync_notification_channel">الاتصال بالكمبيوتر</string>
+    <string name="local_sync_notification_title">اتصال M24 بالكمبيوتر نشط</string>
+    <string name="local_sync_notification_text">%1$s (الرمز: %2$s)</string>
+    <string name="local_sync_notification_stop">إيقاف</string>
+    <string name="local_sync_drawer_label">الاتصال بالكمبيوتر</string>
+    <string name="local_sync_title">الاتصال بالكمبيوتر</string>
+    <string name="local_sync_start_button">الاتصال بالكمبيوتر</string>
+    <string name="local_sync_stop_button">قطع الاتصال</string>
+    <string name="local_sync_instructions">افتح هذا العنوان في متصفح الكمبيوتر وأدخل الرمز:</string>
+    <string name="local_sync_pin_label">الرمز</string>
+    <string name="local_sync_share_text">اتصل بهاتفي: %1$s (الرمز: %2$s)</string>
+    <string name="local_sync_starting">جارٍ البدء…</string>
+    <string name="local_sync_first_use_title">الوصول عبر الشبكة المحلية</string>
+    <string name="local_sync_first_use_message">سيؤدي هذا إلى تشغيل خادم ويب محلي حتى يتمكن الكمبيوتر من تصفح ملفات PDF وتبادلها عبر الواي فاي. يعمل هذا فقط ضمن شبكتك المحلية، ولا يتم إرسال أي شيء إلى الإنترنت. الوصول محمي برمز، لكن أي شخص على نفس الشبكة يعرف الرمز يمكنه الوصول إلى مستنداتك أثناء تفعيل الاتصال.</string>
+    <string name="local_sync_first_use_confirm">بدء الاتصال</string>
+    <string name="local_sync_first_use_cancel">إلغاء</string>
+    <string name="local_sync_error_no_network">لا تتوفر شبكة محلية (واي فاي).</string>
+    <string name="local_sync_error_port_unavailable">تعذر تشغيل الخادم المحلي.</string>
+    <string name="local_sync_error_unknown">حدث خطأ أثناء بدء الاتصال بالكمبيوتر.</string>
+    <string name="local_sync_error_hard_stopped">تم إيقاف الاتصال بالكمبيوتر بعد عدد كبير جدًا من محاولات الرمز الفاشلة. ابدأه مرة أخرى برمز جديد.</string>
+    <string name="local_sync_web_html_lang">ar</string>
+    <string name="local_sync_web_login_title">M24 PDF Scanner – الاتصال بالكمبيوتر</string>
+    <string name="local_sync_web_login_heading">الاتصال بالكمبيوتر</string>
+    <string name="local_sync_web_login_instructions">أدخل الرمز المكوّن من 4 أرقام الظاهر على هاتفك.</string>
+    <string name="local_sync_web_login_button">اتصال</string>
+    <string name="local_sync_web_error_wrong_pin">الرمز غير صحيح.</string>
+    <string name="local_sync_web_error_locked_out">عدد كبير جدًا من المحاولات الفاشلة. يرجى المحاولة مرة أخرى بعد %1$d ثانية.</string>
+    <string name="local_sync_web_locked_out_title">M24 PDF Scanner – مقفل</string>
+    <string name="local_sync_web_locked_out_heading">عدد كبير جدًا من المحاولات الفاشلة</string>
+    <string name="local_sync_web_locked_out_message">تم إيقاف الاتصال بالكمبيوتر لأسباب أمنية. ابدأه مرة أخرى من هاتفك برمز جديد.</string>
+    <string name="local_sync_web_documents_title">M24 PDF Scanner – الأرشيف</string>
+    <string name="local_sync_web_documents_heading">أرشيفك</string>
+    <string name="local_sync_web_document_meta">%1$d صفحة، %2$s</string>
+    <string name="local_sync_web_upload_heading">رفع ملف PDF</string>
+    <string name="local_sync_web_upload_hint">الحد الأقصى 25 ميغابايت لكل ملف.</string>
+    <string name="local_sync_web_upload_button">رفع</string>
+    <string name="local_sync_web_upload_success">تم استيراد %1$s.pdf.</string>
+    <string name="local_sync_web_upload_not_pdf">الملف ليس ملف PDF صالحًا.</string>
+    <string name="local_sync_web_upload_too_large">حجم الملف أكبر من 25 ميغابايت.</string>
+    <string name="local_sync_web_upload_failed">فشل الرفع.</string>
+</resources>

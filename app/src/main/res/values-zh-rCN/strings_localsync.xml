@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="local_sync_notification_channel">电脑连接</string>
+    <string name="local_sync_notification_title">M24 电脑连接已启用</string>
+    <string name="local_sync_notification_text">%1$s（PIN 码：%2$s）</string>
+    <string name="local_sync_notification_stop">停止</string>
+    <string name="local_sync_drawer_label">电脑连接</string>
+    <string name="local_sync_title">电脑连接</string>
+    <string name="local_sync_start_button">连接电脑</string>
+    <string name="local_sync_stop_button">断开连接</string>
+    <string name="local_sync_instructions">在电脑浏览器中打开以下地址并输入 PIN 码：</string>
+    <string name="local_sync_pin_label">PIN 码</string>
+    <string name="local_sync_share_text">连接到我的手机：%1$s（PIN 码：%2$s）</string>
+    <string name="local_sync_starting">正在启动…</string>
+    <string name="local_sync_first_use_title">本地网络访问</string>
+    <string name="local_sync_first_use_message">此操作会启动一个本地网页服务器，让你的电脑可以通过 Wi-Fi 浏览和交换 PDF 文件。此功能仅在本地网络中有效，不会向互联网发送任何数据。访问受 PIN 码保护，但在连接处于活动状态时，同一网络中知道该 PIN 码的任何人都可以访问你的文档。</string>
+    <string name="local_sync_first_use_confirm">开始连接</string>
+    <string name="local_sync_first_use_cancel">取消</string>
+    <string name="local_sync_error_no_network">没有可用的本地网络（Wi-Fi）。</string>
+    <string name="local_sync_error_port_unavailable">无法启动本地服务器。</string>
+    <string name="local_sync_error_unknown">启动电脑连接时出错。</string>
+    <string name="local_sync_error_hard_stopped">由于 PIN 码输入错误次数过多，电脑连接已停止。请使用新的 PIN 码重新启动连接。</string>
+    <string name="local_sync_web_html_lang">zh-CN</string>
+    <string name="local_sync_web_login_title">M24 PDF Scanner – 电脑连接</string>
+    <string name="local_sync_web_login_heading">电脑连接</string>
+    <string name="local_sync_web_login_instructions">请输入手机上显示的 4 位 PIN 码。</string>
+    <string name="local_sync_web_login_button">连接</string>
+    <string name="local_sync_web_error_wrong_pin">PIN 码错误。</string>
+    <string name="local_sync_web_error_locked_out">失败次数过多，请在 %1$d 秒后重试。</string>
+    <string name="local_sync_web_locked_out_title">M24 PDF Scanner – 已锁定</string>
+    <string name="local_sync_web_locked_out_heading">失败次数过多</string>
+    <string name="local_sync_web_locked_out_message">出于安全原因，电脑连接已停止。请在手机上使用新的 PIN 码重新启动连接。</string>
+    <string name="local_sync_web_documents_title">M24 PDF Scanner – 存档</string>
+    <string name="local_sync_web_documents_heading">你的存档</string>
+    <string name="local_sync_web_document_meta">%1$d 页，%2$s</string>
+    <string name="local_sync_web_upload_heading">上传 PDF</string>
+    <string name="local_sync_web_upload_hint">每个文件最大 25 MB。</string>
+    <string name="local_sync_web_upload_button">上传</string>
+    <string name="local_sync_web_upload_success">%1$s.pdf 已导入。</string>
+    <string name="local_sync_web_upload_not_pdf">该文件不是有效的 PDF。</string>
+    <string name="local_sync_web_upload_too_large">文件大小超过 25 MB。</string>
+    <string name="local_sync_web_upload_failed">上传失败。</string>
+</resources>

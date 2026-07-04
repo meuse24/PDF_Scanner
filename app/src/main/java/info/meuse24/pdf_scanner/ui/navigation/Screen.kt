@@ -8,6 +8,7 @@ sealed class Screen(val route: String) {
     data object Help    : Screen("help")
     data object Info    : Screen("info")
     data object Privacy : Screen("privacy")
+    data object LocalSync : Screen("local-sync")
     data object Viewer : Screen("viewer/{scanId}") {
         fun createRoute(scanId: Long) = "viewer/$scanId"
     }

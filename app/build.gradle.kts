@@ -76,6 +76,22 @@ android {
         // ermöglicht das OS zudem direktes mmap → schnellerer App-Start.
         noCompress += listOf("tflite", "ttf", "otf")
     }
+    packaging {
+        // ktor-server-test-host (androidTest only) pulls in Apache HttpComponents 5 as its
+        // default test-client engine; those jars duplicate these META-INF files, which only
+        // the androidTest APK actually merges (main/unit-test builds never see this).
+        resources {
+            excludes += listOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1"
+            )
+        }
+    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -170,12 +186,19 @@ dependencies {
     // Drag & Drop for Reorder screen
     implementation(libs.reorderable)
 
+    // Ktor – embedded local HTTP server for Wi-Fi PC-Sync (LAN only, no client engine needed)
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.cio)
+    implementation(libs.ktor.server.sessions)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockito.inline)
+    testImplementation(libs.ktor.server.test.host)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.room.testing)
+    androidTestImplementation(libs.ktor.server.test.host)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)

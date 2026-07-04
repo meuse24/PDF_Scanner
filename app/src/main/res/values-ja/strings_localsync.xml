@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="local_sync_notification_channel">PC接続</string>
+    <string name="local_sync_notification_title">M24 PC接続が有効です</string>
+    <string name="local_sync_notification_text">%1$s（PIN: %2$s）</string>
+    <string name="local_sync_notification_stop">停止</string>
+    <string name="local_sync_drawer_label">PC接続</string>
+    <string name="local_sync_title">PC接続</string>
+    <string name="local_sync_start_button">PCに接続</string>
+    <string name="local_sync_stop_button">切断</string>
+    <string name="local_sync_instructions">PCのブラウザでこのアドレスを開き、PINを入力してください：</string>
+    <string name="local_sync_pin_label">PIN</string>
+    <string name="local_sync_share_text">私のスマートフォンに接続: %1$s（PIN: %2$s）</string>
+    <string name="local_sync_starting">起動中…</string>
+    <string name="local_sync_first_use_title">ローカルネットワークへのアクセス</string>
+    <string name="local_sync_first_use_message">これによりローカルWebサーバーが起動し、PCがWi-Fi経由でPDFを閲覧・交換できるようになります。ローカルネットワーク内でのみ動作し、インターネットには何も送信されません。アクセスはPINで保護されますが、接続が有効な間は、同じネットワーク上でPINを知っている人が文書にアクセスできる可能性があります。</string>
+    <string name="local_sync_first_use_confirm">接続を開始</string>
+    <string name="local_sync_first_use_cancel">キャンセル</string>
+    <string name="local_sync_error_no_network">利用可能なローカルネットワーク（Wi-Fi）がありません。</string>
+    <string name="local_sync_error_port_unavailable">ローカルサーバーを起動できませんでした。</string>
+    <string name="local_sync_error_unknown">PC接続の開始中にエラーが発生しました。</string>
+    <string name="local_sync_error_hard_stopped">PINの入力に何度も失敗したため、PC接続を停止しました。新しいPINで再度開始してください。</string>
+    <string name="local_sync_web_html_lang">ja</string>
+    <string name="local_sync_web_login_title">M24 PDF Scanner – PC接続</string>
+    <string name="local_sync_web_login_heading">PC接続</string>
+    <string name="local_sync_web_login_instructions">スマートフォンに表示されている4桁のPINを入力してください。</string>
+    <string name="local_sync_web_login_button">接続</string>
+    <string name="local_sync_web_error_wrong_pin">PINが違います。</string>
+    <string name="local_sync_web_error_locked_out">失敗回数が多すぎます。%1$d秒後にもう一度お試しください。</string>
+    <string name="local_sync_web_locked_out_title">M24 PDF Scanner – ロック中</string>
+    <string name="local_sync_web_locked_out_heading">失敗回数が多すぎます</string>
+    <string name="local_sync_web_locked_out_message">セキュリティ上の理由によりPC接続を停止しました。スマートフォンで新しいPINを使って再度開始してください。</string>
+    <string name="local_sync_web_documents_title">M24 PDF Scanner – アーカイブ</string>
+    <string name="local_sync_web_documents_heading">あなたのアーカイブ</string>
+    <string name="local_sync_web_document_meta">%1$dページ、%2$s</string>
+    <string name="local_sync_web_upload_heading">PDFをアップロード</string>
+    <string name="local_sync_web_upload_hint">1ファイルにつき最大25MB。</string>
+    <string name="local_sync_web_upload_button">アップロード</string>
+    <string name="local_sync_web_upload_success">%1$s.pdf をインポートしました。</string>
+    <string name="local_sync_web_upload_not_pdf">このファイルは有効なPDFではありません。</string>
+    <string name="local_sync_web_upload_too_large">ファイルが25MBを超えています。</string>
+    <string name="local_sync_web_upload_failed">アップロードに失敗しました。</string>
+</resources>

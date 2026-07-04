@@ -26,6 +26,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -56,13 +59,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Folder
+import info.meuse24.pdf_scanner.domain.model.LocalSyncState
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.ui.entry.AppEntryAction
 import info.meuse24.pdf_scanner.ui.home.ArchiveFilter
+import info.meuse24.pdf_scanner.ui.sync.LocalSyncStatusViewModel
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.util.AppLockManager
 import kotlinx.coroutines.launch
@@ -357,6 +364,15 @@ private fun AppNavigationRail(
                 selected = currentRoute == Screen.Trash.route,
                 onClick = { onNavigateToTopLevel(Screen.Trash) }
             )
+            val syncStatusViewModel: LocalSyncStatusViewModel = hiltViewModel()
+            val syncState by syncStatusViewModel.state.collectAsStateWithLifecycle()
+            RailItem(
+                icon = Icons.Default.Wifi,
+                label = stringResource(R.string.local_sync_drawer_label),
+                selected = currentRoute == Screen.LocalSync.route,
+                showActiveBadge = syncState is LocalSyncState.Running,
+                onClick = { onNavigateToTopLevel(Screen.LocalSync) }
+            )
             RailItem(
                 icon = Icons.Default.Settings,
                 label = stringResource(R.string.nav_settings),
@@ -378,12 +394,21 @@ private fun RailItem(
     icon: ImageVector,
     label: String,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    showActiveBadge: Boolean = false
 ) {
     NavigationRailItem(
         selected = selected,
         onClick = onClick,
-        icon = { Icon(icon, contentDescription = label) },
+        icon = {
+            if (showActiveBadge) {
+                BadgedBox(badge = { Badge() }) {
+                    Icon(icon, contentDescription = label)
+                }
+            } else {
+                Icon(icon, contentDescription = label)
+            }
+        },
         label = { androidx.compose.material3.Text(label) }
     )
 }

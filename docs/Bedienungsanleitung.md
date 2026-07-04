@@ -69,6 +69,7 @@ M24 PDF Scanner ist eine datenschutzorientierte Android-App zum Scannen, Verwalt
 ## Datenschutz auf einen Blick
 
 - **Kein Cloud-Upload** – kein Konto, keine Serververbindung für Dokumente
+- **PC-Verbindung optional lokal** – der WLAN-Dateitransfer zum PC läuft ausschließlich im lokalen Netzwerk, ohne Internet- oder Cloud-Beteiligung
 - **Lokale Verarbeitung** – OCR, Übersetzung und alle Bearbeitungen laufen auf dem Gerät
 - **Exportkontrolle** – Dateien verlassen die App nur durch explizite Benutzeraktion (Teilen, Exportieren, Backup)
 - **App-Lock** – lokale UI-Sperre mit Biometrie oder Geräte-PIN; verschlüsselt keine Daten
@@ -765,6 +766,21 @@ Ein Backup enthält:
 - App-Einstellungen
 - Passwörter für geschützte PDFs
 
+## PC-Verbindung (lokaler WLAN-Transfer)
+
+Über das Hauptmenü (☰) erreichen Sie **PC-Verbindung** – einen kabellosen Dateitransfer zu einem Computer im selben WLAN, ganz ohne Zusatzsoftware am PC.
+
+1. Öffnen Sie das Hauptmenü und tippen Sie auf **PC-Verbindung**
+2. Bestätigen Sie beim ersten Start den Hinweis zum lokalen Netzwerkzugriff
+3. Tippen Sie auf **Mit PC verbinden** – die App zeigt eine Adresse (z. B. `http://192.168.178.20:8080`) und eine 4-stellige PIN
+4. Öffnen Sie diese Adresse im Browser Ihres PCs und geben Sie die PIN ein
+5. Im Browser sehen Sie Ihr Archiv, können Dokumente herunterladen und per Formular neue PDFs hochladen (maximal 25 MB pro Datei)
+6. Tippen Sie auf **Trennen**, um die Verbindung zu beenden, oder verwenden Sie die Stopp-Aktion in der Benachrichtigung
+
+\begin{hinweis}
+\textbf{Hinweis:} Die Verbindung funktioniert ausschließlich im lokalen WLAN – es werden keine Daten ins Internet übertragen. Da für eine geräteinterne IP-Adresse kein gültiges TLS-Zertifikat ausgestellt werden kann, ist die Verbindung unverschlüsselt; nutzen Sie das Feature daher nur in vertrauenswürdigen Netzwerken. Die Verbindung stoppt automatisch, wenn die App-Sperre aktiviert wird oder 20 Minuten lang keine Anfrage eingeht, und lässt sich jederzeit manuell beenden.
+\end{hinweis}
+
 ## Backup erstellen
 
 1. Öffnen Sie **Einstellungen → Backup & Wiederherstellung**
@@ -893,7 +909,7 @@ Für Hindi, Chinesisch, Japanisch und Koreanisch werden On-Demand-Modelle von Go
 
 ## Werden meine Dokumente in der Cloud gespeichert?
 
-Nein. Alle Dokumente verbleiben im internen App-Speicher des Geräts. Es gibt keine Server-Verbindung für Dokumente. Nur ML Kit-Modelle werden über das Netzwerk geladen.
+Nein. Alle Dokumente verbleiben im internen App-Speicher des Geräts. Es gibt keine Cloud- oder Internet-Serververbindung für Dokumente. Nur ML Kit-Modelle werden über das Netzwerk geladen. Die optionale PC-Verbindung überträgt Dokumente ausschließlich innerhalb des lokalen WLANs, ohne Internet-Beteiligung.
 
 ## Wie entferne ich ein Dokument dauerhaft?
 

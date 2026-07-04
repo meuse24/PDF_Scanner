@@ -12,7 +12,9 @@ import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,11 +46,14 @@ class AppLockManager @Inject constructor(
     val isLocked: StateFlow<Boolean> = _isLocked.asStateFlow()
 
     private var lastBackgroundedAtMillis: Long? = null
+    private var lockTimeoutJob: Job? = null
 
     init {
         scope.launch {
             settingsRepository.settings.collect { settings ->
                 if (!settings.appLockEnabled) {
+                    lockTimeoutJob?.cancel()
+                    lockTimeoutJob = null
                     _isLocked.value = false
                     lastBackgroundedAtMillis = null
                 }
@@ -57,6 +62,9 @@ class AppLockManager @Inject constructor(
     }
 
     override fun onStart(owner: LifecycleOwner) {
+        lockTimeoutJob?.cancel()
+        lockTimeoutJob = null
+
         val settings = settingsRepository.settings.value
         if (!settings.appLockEnabled) {
             _isLocked.value = false
@@ -73,8 +81,19 @@ class AppLockManager @Inject constructor(
     }
 
     override fun onStop(owner: LifecycleOwner) {
-        if (settingsRepository.settings.value.appLockEnabled) {
-            lastBackgroundedAtMillis = System.currentTimeMillis()
+        val settings = settingsRepository.settings.value
+        if (!settings.appLockEnabled) return
+
+        lastBackgroundedAtMillis = System.currentTimeMillis()
+
+        // A background server (e.g. PC-Sync) only observes isLocked, so the timeout must
+        // elapse on its own timer here instead of waiting for the next onStart() – otherwise
+        // it would keep running in the background well past the configured lock timeout.
+        val timeoutMillis = settings.appLockTimeoutSeconds.coerceAtLeast(0) * 1000L
+        lockTimeoutJob?.cancel()
+        lockTimeoutJob = scope.launch {
+            delay(timeoutMillis)
+            _isLocked.value = true
         }
     }
 

@@ -40,6 +40,7 @@ import info.meuse24.pdf_scanner.ui.home.HomeNavigationCallbacks
 import info.meuse24.pdf_scanner.ui.imagestopdf.ImagesToPdfScreen
 import info.meuse24.pdf_scanner.ui.backup.BackupSettingsSection
 import info.meuse24.pdf_scanner.ui.info.InfoScreen
+import info.meuse24.pdf_scanner.ui.sync.LocalSyncScreen
 import info.meuse24.pdf_scanner.ui.ocr.OcrReviewScreen
 import info.meuse24.pdf_scanner.ui.translation.TranslationReviewScreen
 import info.meuse24.pdf_scanner.ui.overlay.PageNumbersScreen
@@ -227,6 +228,9 @@ private fun NavGraphBuilder.infoNavGraph(
     }
     composable(Screen.Info.route) { InfoScreen() }
     composable(Screen.Privacy.route) { PrivacyScreen() }
+    composable(Screen.LocalSync.route) {
+        LocalSyncScreen()
+    }
 }
 
 private fun NavGraphBuilder.viewerNavGraph(

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="local_sync_notification_channel">PC-Verbindung</string>
+    <string name="local_sync_notification_title">M24 PC-Verbindung aktiv</string>
+    <string name="local_sync_notification_text">%1$s (PIN: %2$s)</string>
+    <string name="local_sync_notification_stop">Beenden</string>
+    <string name="local_sync_drawer_label">PC-Verbindung</string>
+    <string name="local_sync_title">PC-Verbindung</string>
+    <string name="local_sync_start_button">Mit PC verbinden</string>
+    <string name="local_sync_stop_button">Trennen</string>
+    <string name="local_sync_instructions">Öffne diese Adresse im Browser deines PCs und gib die PIN ein:</string>
+    <string name="local_sync_pin_label">PIN</string>
+    <string name="local_sync_share_text">Verbindung zu meinem Handy: %1$s (PIN: %2$s)</string>
+    <string name="local_sync_starting">Wird gestartet…</string>
+    <string name="local_sync_first_use_title">Zugriff im lokalen Netzwerk</string>
+    <string name="local_sync_first_use_message">Dadurch wird ein lokaler Webserver gestartet, damit dein PC per WLAN auf deine PDFs zugreifen und sie austauschen kann. Das funktioniert nur im lokalen Netzwerk, es wird nichts ins Internet übertragen. Der Zugriff ist per PIN geschützt, aber jeder im selben Netzwerk, der die PIN kennt, könnte während der aktiven Verbindung auf deine Dokumente zugreifen.</string>
+    <string name="local_sync_first_use_confirm">Verbindung starten</string>
+    <string name="local_sync_first_use_cancel">Abbrechen</string>
+    <string name="local_sync_error_no_network">Kein lokales Netzwerk (WLAN) verfügbar.</string>
+    <string name="local_sync_error_port_unavailable">Der lokale Server konnte nicht gestartet werden.</string>
+    <string name="local_sync_error_unknown">Beim Starten der PC-Verbindung ist ein Fehler aufgetreten.</string>
+    <string name="local_sync_error_hard_stopped">Die PC-Verbindung wurde nach zu vielen falschen PIN-Eingaben beendet. Starte sie mit einer neuen PIN erneut.</string>
+    <string name="local_sync_web_html_lang">de</string>
+    <string name="local_sync_web_login_title">M24 PDF Scanner – PC-Verbindung</string>
+    <string name="local_sync_web_login_heading">PC-Verbindung</string>
+    <string name="local_sync_web_login_instructions">Gib die 4-stellige PIN ein, die auf deinem Handy angezeigt wird.</string>
+    <string name="local_sync_web_login_button">Verbinden</string>
+    <string name="local_sync_web_error_wrong_pin">Falsche PIN.</string>
+    <string name="local_sync_web_error_locked_out">Zu viele Fehlversuche. Bitte in %1$d Sekunden erneut versuchen.</string>
+    <string name="local_sync_web_locked_out_title">M24 PDF Scanner – gesperrt</string>
+    <string name="local_sync_web_locked_out_heading">Zu viele Fehlversuche</string>
+    <string name="local_sync_web_locked_out_message">Die PC-Verbindung wurde aus Sicherheitsgründen beendet. Starte sie auf dem Handy erneut mit einer neuen PIN.</string>
+    <string name="local_sync_web_documents_title">M24 PDF Scanner – Archiv</string>
+    <string name="local_sync_web_documents_heading">Dein Archiv</string>
+    <string name="local_sync_web_document_meta">%1$d Seiten, %2$s</string>
+    <string name="local_sync_web_upload_heading">PDF hochladen</string>
+    <string name="local_sync_web_upload_hint">Maximal 25 MB pro Datei.</string>
+    <string name="local_sync_web_upload_button">Hochladen</string>
+    <string name="local_sync_web_upload_success">%1$s.pdf wurde importiert.</string>
+    <string name="local_sync_web_upload_not_pdf">Die Datei ist keine gültige PDF-Datei.</string>
+    <string name="local_sync_web_upload_too_large">Die Datei ist größer als 25 MB.</string>
+    <string name="local_sync_web_upload_failed">Der Upload ist fehlgeschlagen.</string>
+</resources>

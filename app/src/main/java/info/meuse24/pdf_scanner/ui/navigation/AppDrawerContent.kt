@@ -1,5 +1,6 @@
 package info.meuse24.pdf_scanner.ui.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,9 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,16 +30,22 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.BuildConfig
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Folder
+import info.meuse24.pdf_scanner.domain.model.LocalSyncState
 import info.meuse24.pdf_scanner.ui.home.ArchiveFilter
+import info.meuse24.pdf_scanner.ui.sync.LocalSyncStatusViewModel
 
 @Composable
 internal fun AppDrawerContent(
@@ -119,6 +129,15 @@ internal fun AppDrawerContent(
         HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(8.dp))
 
+        val syncStatusViewModel: LocalSyncStatusViewModel = hiltViewModel()
+        val syncState by syncStatusViewModel.state.collectAsStateWithLifecycle()
+        DrawerItem(
+            icon = Icons.Default.Wifi,
+            label = stringResource(R.string.local_sync_drawer_label),
+            selected = currentRoute == Screen.LocalSync.route,
+            showActiveBadge = syncState is LocalSyncState.Running,
+            onClick = { onNavigateToTopLevel(Screen.LocalSync) }
+        )
         DrawerItem(
             icon = Icons.Default.Settings,
             label = stringResource(R.string.nav_settings),
@@ -151,11 +170,25 @@ private fun DrawerItem(
     icon: ImageVector,
     label: String,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    showActiveBadge: Boolean = false
 ) {
     NavigationDrawerItem(
         icon = { Icon(icon, contentDescription = label) },
-        label = { Text(label) },
+        label = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(label)
+                if (showActiveBadge) {
+                    Spacer(Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary)
+                    )
+                }
+            }
+        },
         selected = selected,
         onClick = onClick,
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="form_fill_action">Formular ausfüllen</string>
+    <string name="form_fill_title">PDF-Formular ausfüllen</string>
+    <string name="form_fill_save">Kopie speichern</string>
+    <string name="form_fill_flatten">Formularfelder festschreiben</string>
+    <string name="form_fill_flatten_description">Die Werte werden dauerhafter PDF-Inhalt und können nicht mehr bearbeitet werden.</string>
+    <string name="form_fill_loading">Formular wird geladen…</string>
+    <string name="form_fill_no_fields">Diese PDF-Datei enthält keine ausfüllbaren Formularfelder.</string>
+    <string name="form_fill_not_fillable">Diese PDF-Datei enthält kein ausfüllbares AcroForm.</string>
+    <string name="form_fill_xfa_unsupported">Dynamische XFA-Formulare werden nicht unterstützt.</string>
+    <string name="form_fill_signed_locked">Dieses signierte Formular ist schreibgeschützt, da Änderungen die Signatur ungültig machen würden.</string>
+    <string name="form_fill_required_missing">Fülle alle Pflichtfelder aus.</string>
+    <string name="form_fill_error">Das Formular konnte nicht gespeichert werden.</string>
+    <string name="form_fill_saved">Das ausgefüllte Formular wurde als neues Dokument gespeichert.</string>
+    <string name="form_fill_required">Pflichtfeld</string>
+    <string name="form_fill_read_only">Schreibgeschützt</string>
+    <string name="form_fill_previous_page">Vorherige Seite</string>
+    <string name="form_fill_next_page">Nächste Seite</string>
+    <string name="form_fill_page">Seite %1$d von %2$d</string>
+    <string name="form_fill_select_option">%1$s auswählen</string>
+    <string name="form_fill_reset">Werte zurücksetzen</string>
+</resources>

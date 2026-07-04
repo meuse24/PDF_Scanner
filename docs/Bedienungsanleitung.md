@@ -60,7 +60,7 @@ M24 PDF Scanner ist eine datenschutzorientierte Android-App zum Scannen, Verwalt
 | **Texterkennung** | OCR in 13 Sprachen, durchsuchbare PDFs, TXT-Export, Auto-Tags |
 | **Übersetzung** | On-device-Übersetzung in 10 Sprachen via ML Kit |
 | **Seiten** | Umsortieren, Drehen, Anhängen, Aufteilen, Löschen, Duplizieren |
-| **Bearbeiten** | Annotieren, Signieren, Wasserzeichen, Seitenzahlen, Schwärzen |
+| **Bearbeiten** | PDF-Formulare ausfüllen, Annotieren, Signieren, Wasserzeichen, Seitenzahlen, Schwärzen |
 | **Exportieren** | Word (.docx), Graustufen, Komprimieren, Als JPG |
 | **Analyse** | QR-Codes, Visitenkarten mit vCard-Export |
 | **Sicherheit** | PDF-Passwortschutz, App-Lock (Biometrie), verschlüsselte Backups |
@@ -313,9 +313,9 @@ M24 PDF Scanner unterstützt folgende OCR-Sprachen:
 | `ja` | Japanisch | On-Demand |
 | `ko` | Koreanisch | On-Demand |
 
-Auf-Demand-Modelle werden automatisch über Google Play Services geladen, wenn Sie die jeweilige Sprache zum ersten Mal verwenden.
+Auf-Demand-Modelle werden über Google Play Services geladen, wenn Sie die jeweilige Sprache erstmals manuell auswählen.
 
-Standardmäßig erkennt die App die Sprache automatisch. Sie können die Sprache manuell festlegen: **Aktions-Sheet → Analyse → OCR-Sprache**.
+Der Automatikmodus verwendet ausschließlich das integrierte, offline verfügbare Latin-Modell. Für Hindi, Chinesisch, Japanisch oder Koreanisch wählen Sie die Sprache manuell unter **Aktions-Sheet → Analyse → OCR-Sprache**. Bei einer entsprechenden Systemsprache wird dieses Modell als Standard vorbelegt.
 
 ## OCR-Review-Screen
 
@@ -342,7 +342,7 @@ Eine durchsuchbare PDF enthält eine unsichtbare Textschicht, die Suche in exter
 3. Die verarbeitete PDF wird lokal gespeichert
 
 \begin{hinweis}
-\textbf{Hinweis:} Für Chinesisch, Japanisch und Koreanisch wird der OCR-Text gespeichert, aber keine Textschicht in die PDF eingebettet (Schriftart-Kompatibilitätsproblem).
+\textbf{Hinweis:} Durchsuchbare PDFs unterstützen lateinische Schriften und Hindi. Für Arabisch, Chinesisch, Japanisch und Koreanisch kann OCR-Text über „Text extrahieren“ für die App-Suche gespeichert werden, es wird jedoch keine PDF-Textschicht eingebettet.
 \end{hinweis}
 
 Mit der Funktion **„Textschicht entfernen"** (Aktions-Sheet → Analyse) können Sie eine vorhandene Textschicht wieder aus der PDF löschen.
@@ -520,6 +520,25 @@ Fügen Sie eine handschriftliche Unterschrift ein:
 2. Zeichnen Sie Ihre Unterschrift auf dem Unterschriften-Pad
 3. Positionieren und skalieren Sie die Unterschrift auf der Zielseite
 4. Bestätigen Sie mit **Einfügen**
+
+## PDF-Formulare ausfüllen
+
+Enthält das geöffnete Dokument ein unterstütztes AcroForm, erscheint im PDF-Viewer die Aktion **Formular ausfüllen**.
+
+1. Öffnen Sie das PDF im integrierten Viewer
+2. Tippen Sie auf **Formular ausfüllen**
+3. Füllen Sie Textfelder, Kontrollkästchen, Optionsfelder sowie Auswahl- und Listenfelder aus
+4. Wechseln Sie bei mehrseitigen Formularen mit den Pfeilen zwischen den Seiten
+5. Aktivieren Sie optional **Formularfelder festschreiben**, wenn die Werte danach nicht mehr bearbeitbar sein sollen
+6. Tippen Sie auf **Kopie speichern**
+
+Das ausgefüllte Formular wird als neues Dokument im Archiv gespeichert; das Original bleibt unverändert. Alle Verarbeitung erfolgt lokal auf dem Gerät.
+
+Für Formulareingaben mit Devanagari, Arabisch, Chinesisch, Japanisch oder Koreanisch bettet die App bei Bedarf einen passenden Font in die erzeugte PDF-Kopie ein. Dadurch kann die Ausgabedatei insbesondere bei ostasiatischen Schriften deutlich größer werden.
+
+\begin{hinweis}
+\textbf{Hinweis:} Dynamische XFA-Formulare werden nicht unterstützt. Bereits digital signierte Formulare sind schreibgeschützt, weil jede Änderung die vorhandene Signatur ungültig machen würde.
+\end{hinweis}
 
 ## Seitenzahlen
 
@@ -870,7 +889,7 @@ Nein. Das Backup-Passwort wird weder gespeichert noch kann es zurückgesetzt wer
 
 ## Warum sind manche OCR-Sprachen nicht sofort verfügbar?
 
-Für Hindi, Chinesisch, Japanisch und Koreanisch werden On-Demand-Modelle von Google Play Services heruntergeladen. Der Download erfolgt automatisch beim ersten Einsatz der Sprache und erfordert eine Internetverbindung.
+Für Hindi, Chinesisch, Japanisch und Koreanisch werden On-Demand-Modelle von Google Play Services heruntergeladen. Der Download erfolgt bei der ersten manuellen Auswahl der Sprache und erfordert eine Internetverbindung.
 
 ## Werden meine Dokumente in der Cloud gespeichert?
 

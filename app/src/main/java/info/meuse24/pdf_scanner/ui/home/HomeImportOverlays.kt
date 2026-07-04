@@ -16,6 +16,7 @@ import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.ui.home.components.HomeAddDocumentSheet
 import info.meuse24.pdf_scanner.ui.home.components.HomeOcrResultSheet
 import info.meuse24.pdf_scanner.ui.home.components.HomeSaveImportDialog
+import info.meuse24.pdf_scanner.ui.ocr.searchablePdfLanguageOrAuto
 import kotlinx.coroutines.launch
 
 @Composable
@@ -104,7 +105,12 @@ internal fun HomeImportOverlays(
             languageMenuExpanded = langMenuExpanded,
             ocrLanguages = ocrLanguages,
             onFilenameChange = onFilenameInputChange,
-            onMakeSearchableChange = onMakeSearchableChange,
+            onMakeSearchableChange = { enabled ->
+                onMakeSearchableChange(enabled)
+                if (enabled) {
+                    onSelectedLangChange(searchablePdfLanguageOrAuto(selectedLang))
+                }
+            },
             onLanguageMenuExpandedChange = onLangMenuExpandedChange,
             onLanguageSelected = {
                 onSelectedLangChange(it)
@@ -122,7 +128,7 @@ internal fun HomeImportOverlays(
                                 filenameInput.trim(),
                                 import.result.pages?.firstOrNull()?.imageUri,
                                 makeSearchable,
-                                selectedLang
+                                searchablePdfLanguageOrAuto(selectedLang)
                             )
                             onShowSaveDialogChange(false)
                             onPendingImportChange(null)

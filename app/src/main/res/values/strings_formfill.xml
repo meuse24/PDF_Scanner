@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="form_fill_action">Fill form</string>
+    <string name="form_fill_title">Fill PDF form</string>
+    <string name="form_fill_save">Save copy</string>
+    <string name="form_fill_flatten">Flatten form fields</string>
+    <string name="form_fill_flatten_description">Values become permanent PDF content and can no longer be edited.</string>
+    <string name="form_fill_loading">Loading form…</string>
+    <string name="form_fill_no_fields">This PDF has no fillable form fields.</string>
+    <string name="form_fill_not_fillable">This PDF does not contain a fillable AcroForm.</string>
+    <string name="form_fill_xfa_unsupported">Dynamic XFA forms are not supported.</string>
+    <string name="form_fill_signed_locked">This signed form is read-only because changes would invalidate its signature.</string>
+    <string name="form_fill_required_missing">Complete all required form fields.</string>
+    <string name="form_fill_error">The form could not be saved.</string>
+    <string name="form_fill_saved">The completed form was saved as a new document.</string>
+    <string name="form_fill_required">Required</string>
+    <string name="form_fill_read_only">Read only</string>
+    <string name="form_fill_previous_page">Previous page</string>
+    <string name="form_fill_next_page">Next page</string>
+    <string name="form_fill_page">Page %1$d of %2$d</string>
+    <string name="form_fill_select_option">Select %1$s</string>
+    <string name="form_fill_reset">Reset values</string>
+</resources>

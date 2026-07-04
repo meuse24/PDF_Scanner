@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="form_fill_action">填写表单</string>
+    <string name="form_fill_title">填写 PDF 表单</string>
+    <string name="form_fill_save">保存副本</string>
+    <string name="form_fill_flatten">固定表单字段</string>
+    <string name="form_fill_flatten_description">字段值将成为永久 PDF 内容，之后无法编辑。</string>
+    <string name="form_fill_loading">正在加载表单…</string>
+    <string name="form_fill_no_fields">此 PDF 没有可填写的表单字段。</string>
+    <string name="form_fill_not_fillable">此 PDF 不包含可填写的 AcroForm。</string>
+    <string name="form_fill_xfa_unsupported">不支持动态 XFA 表单。</string>
+    <string name="form_fill_signed_locked">此表单已签名，只能读取，因为修改会使签名失效。</string>
+    <string name="form_fill_required_missing">请填写所有必填字段。</string>
+    <string name="form_fill_error">无法保存表单。</string>
+    <string name="form_fill_saved">已将填写后的表单保存为新文档。</string>
+    <string name="form_fill_required">必填</string>
+    <string name="form_fill_read_only">只读</string>
+    <string name="form_fill_previous_page">上一页</string>
+    <string name="form_fill_next_page">下一页</string>
+    <string name="form_fill_page">第 %1$d 页，共 %2$d 页</string>
+    <string name="form_fill_select_option">选择%1$s</string>
+    <string name="form_fill_reset">重置值</string>
+</resources>

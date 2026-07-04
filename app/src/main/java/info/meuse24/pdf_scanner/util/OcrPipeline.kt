@@ -6,7 +6,6 @@ import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import info.meuse24.pdf_scanner.domain.model.OcrResultStats
 import info.meuse24.pdf_scanner.domain.model.OcrScript
 import info.meuse24.pdf_scanner.domain.model.OcrUsage
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,7 +22,7 @@ open class OcrPipeline @Inject constructor(
         isSuccess: (T, OcrResultStats?) -> Boolean,
         block: suspend (recognizer: TextRecognizer, script: OcrScript) -> Pair<T, OcrResultStats?>
     ): OcrPipelineResult<T> {
-        val plan = ocrManager.recognitionPlan(languageCode, usage, Locale.getDefault())
+        val plan = ocrManager.recognitionPlan(languageCode, usage)
         // Bestes Ergebnis tracken: höchste Konfidenz gewinnt, falls kein Skript isSuccess besteht.
         var bestValue = emptyValue()
         var bestStats: OcrResultStats? = null

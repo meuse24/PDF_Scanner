@@ -1,8 +1,9 @@
 package info.meuse24.pdf_scanner.domain.workflow
 
 import info.meuse24.pdf_scanner.domain.model.Document
-import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
 import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
+import info.meuse24.pdf_scanner.domain.model.supportsSearchablePdfTextLayer
+import info.meuse24.pdf_scanner.domain.usecase.MakeSearchableUseCase
 import kotlinx.coroutines.CancellationException
 import java.io.File
 import java.io.IOException
@@ -28,10 +29,10 @@ class MakeSearchableWorkflow @Inject constructor(
             return WorkflowResult.Failure(ScanWorkflowError.NothingSelected)
         }
 
-        // CJK-Schriften können nicht zuverlässig per PdfBox in einen Textlayer eingebettet werden.
-        // Durchsuchbares PDF für zh/ja/ko wird daher nicht unterstützt.
+        // Arabische OCR ist mit dem Latin-Fallback nicht zuverlässig genug für einen Textlayer.
+        // CJK-Schriften können nicht zuverlässig per PdfBox eingebettet werden.
         // Nutzer können stattdessen „Text extrahieren" verwenden, um den Text für die App-Suche zu indexieren.
-        if (languageCode in setOf("zh", "ja", "ko")) {
+        if (!languageCode.supportsSearchablePdfTextLayer()) {
             return WorkflowResult.Failure(ScanWorkflowError.SearchableUnsupportedForScript)
         }
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="form_fill_action">फ़ॉर्म भरें</string>
+    <string name="form_fill_title">PDF फ़ॉर्म भरें</string>
+    <string name="form_fill_save">कॉपी सहेजें</string>
+    <string name="form_fill_flatten">फ़ॉर्म फ़ील्ड स्थायी करें</string>
+    <string name="form_fill_flatten_description">मान स्थायी PDF सामग्री बन जाएंगे और फिर संपादित नहीं किए जा सकेंगे।</string>
+    <string name="form_fill_loading">फ़ॉर्म लोड हो रहा है…</string>
+    <string name="form_fill_no_fields">इस PDF में भरने योग्य फ़ॉर्म फ़ील्ड नहीं हैं।</string>
+    <string name="form_fill_not_fillable">इस PDF में भरने योग्य AcroForm नहीं है।</string>
+    <string name="form_fill_xfa_unsupported">डायनेमिक XFA फ़ॉर्म समर्थित नहीं हैं।</string>
+    <string name="form_fill_signed_locked">यह हस्ताक्षरित फ़ॉर्म केवल पढ़ने योग्य है क्योंकि बदलाव हस्ताक्षर को अमान्य कर देंगे।</string>
+    <string name="form_fill_required_missing">सभी आवश्यक फ़ील्ड भरें।</string>
+    <string name="form_fill_error">फ़ॉर्म सहेजा नहीं जा सका।</string>
+    <string name="form_fill_saved">भरा हुआ फ़ॉर्म नए दस्तावेज़ के रूप में सहेजा गया।</string>
+    <string name="form_fill_required">आवश्यक</string>
+    <string name="form_fill_read_only">केवल पढ़ने योग्य</string>
+    <string name="form_fill_previous_page">पिछला पृष्ठ</string>
+    <string name="form_fill_next_page">अगला पृष्ठ</string>
+    <string name="form_fill_page">पृष्ठ %1$d / %2$d</string>
+    <string name="form_fill_select_option">%1$s चुनें</string>
+    <string name="form_fill_reset">मान रीसेट करें</string>
+</resources>

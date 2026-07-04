@@ -49,6 +49,11 @@ enum class StringResource {
     MetadataError,
     AppendTargetEncrypted,
     AppendError,
+    FormNotFillable,
+    FormXfaUnsupported,
+    FormSignedLocked,
+    FormRequiredMissing,
+    FormFillError,
     OcrModelDownloadFailed,
     SearchableFailed
 }

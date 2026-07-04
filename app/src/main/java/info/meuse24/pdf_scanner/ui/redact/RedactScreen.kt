@@ -75,7 +75,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.usecase.RedactionRect
 import info.meuse24.pdf_scanner.ui.documentaction.DocumentEditViewModel
-import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
+import info.meuse24.pdf_scanner.ui.ocr.buildSearchablePdfLanguageOptions
+import info.meuse24.pdf_scanner.ui.ocr.searchablePdfLanguageOrAuto
 import info.meuse24.pdf_scanner.ui.settings.SettingsViewModel
 import info.meuse24.pdf_scanner.ui.shared.clampPanOffset
 import info.meuse24.pdf_scanner.ui.shared.formatZoomScale
@@ -101,7 +102,9 @@ fun RedactScreen(
     val resources = LocalResources.current
     val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
     val ocrAutoLabel = stringResource(R.string.ocr_language_auto)
-    val ocrLanguages = remember(displayLocale, ocrAutoLabel) { buildOcrLanguageOptions(ocrAutoLabel, displayLocale) }
+    val ocrLanguages = remember(displayLocale, ocrAutoLabel) {
+        buildSearchablePdfLanguageOptions(ocrAutoLabel, displayLocale)
+    }
 
     LaunchedEffect(success) {
         if (success) onNavigateBack()
@@ -118,7 +121,9 @@ fun RedactScreen(
     var showSaveOptionsDialog by rememberSaveable { mutableStateOf(false) }
     var isZoomMode by rememberSaveable { mutableStateOf(false) }
     var makeSearchable by rememberSaveable { mutableStateOf(settings.defaultMakeSearchable) }
-    var selectedLanguage by rememberSaveable { mutableStateOf(settings.defaultOcrLanguage) }
+    var selectedLanguage by rememberSaveable {
+        mutableStateOf(searchablePdfLanguageOrAuto(settings.defaultOcrLanguage))
+    }
     var languageMenuExpanded by remember { mutableStateOf(false) }
     val currentCanvasSize by rememberUpdatedState(canvasSize)
 

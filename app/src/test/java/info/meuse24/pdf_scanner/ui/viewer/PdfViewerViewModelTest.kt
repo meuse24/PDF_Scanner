@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.AcroFormCapability
 import info.meuse24.pdf_scanner.domain.model.PdfMetadata
 import info.meuse24.pdf_scanner.domain.model.PdfPageSizeCategory
 import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
@@ -117,6 +118,20 @@ class PdfViewerViewModelTest {
         assertEquals("Encrypted PDF", state.errorMessage)
         assertEquals(0, state.pageCount)
         assertTrue(renderer.openedFiles.isEmpty())
+    }
+
+    @Test
+    fun `fillable AcroForm capability is exposed to viewer`() = runTest(testDispatcher) {
+        val pdf = tmpFolder.newFile("form.pdf").apply { writeText("pdf") }
+        val viewModel = buildViewModel(
+            records = listOf(scanRecord(filepath = pdf.absolutePath)),
+            renderer = FakePdfPageBitmapRenderer(FakePdfDocumentBitmapHandle(pageCount = 1)),
+            formCapability = AcroFormCapability.FILLABLE
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(AcroFormCapability.FILLABLE, viewModel.uiState.value.formCapability)
     }
 
     @Test
@@ -435,12 +450,14 @@ class PdfViewerViewModelTest {
         renderer: PdfPageBitmapRenderer,
         scanId: Long = 1L,
         savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("scanId" to scanId)),
-        pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD }
+        pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD },
+        formCapability: AcroFormCapability = AcroFormCapability.NONE
     ): PdfViewerViewModel = buildViewModel(
         recordsFlow = flowOf(records),
         renderer = renderer,
         savedStateHandle = savedStateHandle,
-        pdfMetadataOps = pdfMetadataOps
+        pdfMetadataOps = pdfMetadataOps,
+        formCapability = formCapability
     )
 
     private fun buildViewModel(
@@ -448,7 +465,8 @@ class PdfViewerViewModelTest {
         renderer: PdfPageBitmapRenderer,
         scanId: Long = 1L,
         savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("scanId" to scanId)),
-        pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD }
+        pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD },
+        formCapability: AcroFormCapability = AcroFormCapability.NONE
     ): PdfViewerViewModel {
         val repository = mock(ScanRepository::class.java)
         `when`(repository.getAllScans()).thenReturn(recordsFlow)
@@ -463,6 +481,20 @@ class PdfViewerViewModelTest {
             ),
             resourceProvider = resourceProvider,
             dispatcherProvider = TestDispatcherProvider(testDispatcher),
+            pdfFormOps = object : info.meuse24.pdf_scanner.domain.pdf.PdfFormOps {
+                override fun detectFormCapability(file: File) =
+                    formCapability
+
+                override fun readFormFields(file: File) =
+                    emptyList<info.meuse24.pdf_scanner.domain.model.FormField>()
+
+                override fun fillFormFields(
+                    input: File,
+                    outputDir: File,
+                    values: Map<String, info.meuse24.pdf_scanner.domain.model.FormFieldValue>,
+                    flatten: Boolean
+                ): File = input
+            },
             savedStateHandle = savedStateHandle
         )
     }

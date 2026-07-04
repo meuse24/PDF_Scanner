@@ -77,6 +77,11 @@ private fun StringResource.toAndroidResId(): Int = when (this) {
     StringResource.MetadataError -> R.string.metadata_error
     StringResource.AppendTargetEncrypted -> R.string.append_target_encrypted
     StringResource.AppendError -> R.string.append_error
+    StringResource.FormNotFillable -> R.string.form_fill_not_fillable
+    StringResource.FormXfaUnsupported -> R.string.form_fill_xfa_unsupported
+    StringResource.FormSignedLocked -> R.string.form_fill_signed_locked
+    StringResource.FormRequiredMissing -> R.string.form_fill_required_missing
+    StringResource.FormFillError -> R.string.form_fill_error
     StringResource.OcrModelDownloadFailed -> R.string.ocr_model_download_failed
     StringResource.SearchableFailed -> R.string.searchable_failed
 }

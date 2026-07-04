@@ -9,6 +9,8 @@ import info.meuse24.pdf_scanner.domain.common.DetectedEntities
 import info.meuse24.pdf_scanner.domain.common.detectDocumentEntities
 import info.meuse24.pdf_scanner.domain.common.findMatchingPages
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.AcroFormCapability
+import info.meuse24.pdf_scanner.domain.pdf.PdfFormOps
 import info.meuse24.pdf_scanner.domain.model.hasAlignedOcrPageTexts
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
@@ -56,6 +58,7 @@ class PdfViewerViewModel @Inject constructor(
     checkPrintPageSizeWarningUseCase: CheckPrintPageSizeWarningUseCase,
     private val resourceProvider: ResourceProvider,
     private val dispatcherProvider: DispatcherProvider,
+    private val pdfFormOps: PdfFormOps,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -129,7 +132,8 @@ class PdfViewerViewModel @Inject constructor(
                             searchQuery = "",
                             searchMatches = emptyList(),
                             searchCurrentIndex = -1,
-                            searching = false
+                            searching = false,
+                            formCapability = AcroFormCapability.NONE
                         )
                     }
                 } else {
@@ -373,6 +377,9 @@ class PdfViewerViewModel @Inject constructor(
         openDocumentJob?.cancel()
         openDocumentJob = viewModelScope.launch(dispatcherProvider.io) {
             try {
+                val formCapability = runCatching {
+                    pdfFormOps.detectFormCapability(file)
+                }.getOrDefault(AcroFormCapability.NONE)
                 val handle = pageBitmapRenderer.openDocument(file)
                 if (documentKey != nextKey) {
                     handle.close()
@@ -405,7 +412,8 @@ class PdfViewerViewModel @Inject constructor(
                         searchQuery = if (pageSearchAvailable) it.searchQuery else "",
                         searchMatches = if (pageSearchAvailable) it.searchMatches else emptyList(),
                         searchCurrentIndex = if (pageSearchAvailable) it.searchCurrentIndex else -1,
-                        searching = if (pageSearchAvailable) it.searching else false
+                        searching = if (pageSearchAvailable) it.searching else false,
+                        formCapability = formCapability
                     )
                 }
                 renderVisiblePages()

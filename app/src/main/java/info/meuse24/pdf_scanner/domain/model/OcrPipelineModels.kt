@@ -14,6 +14,11 @@ enum class OcrScript {
     KOREAN
 }
 
+private val unsupportedSearchablePdfLanguages = setOf("ar", "zh", "ja", "ko")
+
+fun String.supportsSearchablePdfTextLayer(): Boolean =
+    this !in unsupportedSearchablePdfLanguages
+
 sealed interface OcrPipelineStatus {
     data object PreparingModel : OcrPipelineStatus
     data object DownloadingModel : OcrPipelineStatus

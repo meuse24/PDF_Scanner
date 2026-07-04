@@ -14,6 +14,7 @@ import info.meuse24.pdf_scanner.domain.model.OcrPipelineStatus
 import info.meuse24.pdf_scanner.domain.model.OcrResultStats
 import info.meuse24.pdf_scanner.domain.model.OcrThresholds
 import info.meuse24.pdf_scanner.domain.model.OcrUsage
+import info.meuse24.pdf_scanner.domain.model.supportsSearchablePdfTextLayer
 import info.meuse24.pdf_scanner.domain.usecase.SearchableResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.tom_roush.pdfbox.pdmodel.PDDocument
@@ -66,6 +67,9 @@ open class SearchablePdfBuilder @Inject constructor(
         onProgress: (current: Int, total: Int) -> Unit,
         onStatus: (OcrPipelineStatus) -> Unit
     ): SearchableResult = withContext(dispatcherProvider.io) {
+        require(languageCode.supportsSearchablePdfTextLayer()) {
+            "Searchable PDF text layer is not supported for language: $languageCode"
+        }
 
         val pdfFile = inputFile
         val result = ocrPipeline.runWithFallback(
@@ -126,14 +130,6 @@ open class SearchablePdfBuilder @Inject constructor(
                         val pdfX    = word.bbox.left   * scaleX
                         val pdfY    = pageH - word.bbox.bottom * scaleY
 
-                        // RTL-Anker (Arabisch) auf Elementebene prüfen
-                        val isRtl = if (languageCode == "auto") word.language == "ar" else languageCode == "ar"
-                        val anchorX = if (isRtl) {
-                            (word.bbox.right * scaleX).coerceAtLeast(0f)
-                        } else {
-                            pdfX
-                        }
-
                         try {
                             val safeText = sanitizeForFont(word.text, font)
                             if (safeText.isEmpty()) continue
@@ -155,7 +151,7 @@ open class SearchablePdfBuilder @Inject constructor(
                             cs.setTextMatrix(Matrix(
                                 hScale * cos, hScale * sin,
                                 fontSize * -sin, fontSize * cos,
-                                anchorX, pdfY
+                                pdfX, pdfY
                             ))
                             cs.showText(safeText)
 
@@ -242,7 +238,6 @@ open class SearchablePdfBuilder @Inject constructor(
         val assetCandidates = buildList {
             when (languageCode) {
                 "hi" -> add("fonts/NotoSansDevanagari-Regular.ttf")
-                "ar" -> add("fonts/NotoSansArabic-Regular.ttf")
                 else -> Unit
             }
             add("fonts/NotoSans-Regular.ttf")
@@ -262,25 +257,6 @@ open class SearchablePdfBuilder @Inject constructor(
                     add("/system/fonts/NotoSansDevanagari-VF.ttf")
                     add("/system/fonts/NotoSansDevanagari-Regular.ttf")
                     add("/system/fonts/NotoSans-Regular.ttf")
-                }
-                "ar" -> {
-                    add("/system/fonts/NotoSansArabic-Regular.ttf")
-                    add("/system/fonts/NotoNaskhArabic-Regular.ttf")
-                    add("/system/fonts/DroidSansArabic.ttf")
-                    add("/system/fonts/NotoSansArabic-VF.ttf")
-                }
-                "zh", "ja", "ko" -> {
-                    // Hinweis: Dieser Zweig ist aktuell nicht erreichbar, da CJK-Sprachen
-                    // bereits in MakeSearchableWorkflow abgefangen werden
-                    // (ScanWorkflowError.SearchableUnsupportedForScript).
-                    // Verbleibt als Vorbereitung für zukünftige CJK-Unterstützung.
-                    // CJK-Fonts auf Android sind herstellerabhängig; .ttc-Collections
-                    // werden von PdfBox-Android nicht nativ unterstützt.
-                    add("/system/fonts/NotoSansCJK-Regular.ttc")
-                    add("/system/fonts/NotoSansSC-Regular.otf")
-                    add("/system/fonts/NotoSansJP-Regular.otf")
-                    add("/system/fonts/NotoSansKR-Regular.otf")
-                    add("/system/fonts/DroidSansFallback.ttf")
                 }
                 else -> Unit
             }

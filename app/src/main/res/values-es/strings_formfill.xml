@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="form_fill_action">Rellenar formulario</string>
+    <string name="form_fill_title">Rellenar formulario PDF</string>
+    <string name="form_fill_save">Guardar copia</string>
+    <string name="form_fill_flatten">Fijar campos del formulario</string>
+    <string name="form_fill_flatten_description">Los valores pasan a ser contenido permanente del PDF y ya no se pueden editar.</string>
+    <string name="form_fill_loading">Cargando formulario…</string>
+    <string name="form_fill_no_fields">Este PDF no contiene campos de formulario rellenables.</string>
+    <string name="form_fill_not_fillable">Este PDF no contiene un AcroForm rellenable.</string>
+    <string name="form_fill_xfa_unsupported">Los formularios XFA dinámicos no son compatibles.</string>
+    <string name="form_fill_signed_locked">Este formulario firmado es de solo lectura porque los cambios invalidarían la firma.</string>
+    <string name="form_fill_required_missing">Completa todos los campos obligatorios.</string>
+    <string name="form_fill_error">No se pudo guardar el formulario.</string>
+    <string name="form_fill_saved">El formulario completado se guardó como documento nuevo.</string>
+    <string name="form_fill_required">Obligatorio</string>
+    <string name="form_fill_read_only">Solo lectura</string>
+    <string name="form_fill_previous_page">Página anterior</string>
+    <string name="form_fill_next_page">Página siguiente</string>
+    <string name="form_fill_page">Página %1$d de %2$d</string>
+    <string name="form_fill_select_option">Seleccionar %1$s</string>
+    <string name="form_fill_reset">Restablecer valores</string>
+</resources>

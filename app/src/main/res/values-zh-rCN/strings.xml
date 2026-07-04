@@ -132,7 +132,7 @@
     <string name="help_section_ocr">OCR 与文本提取</string>
     <string name="help_item_extract_text">文本提取（OCR）会读取全部页面。对于单个文档，它会打开 OCR 审核界面，显示逐页文本、识别语言、质量、复制/分享操作和 TXT 导出。对于多个文档，仍会显示一个合并面板，你可以从中复制或分享结果。</string>
     <string name="help_item_make_searchable">设为可搜索会为 PDF 添加不可见文本层，将提取出的 OCR 文本本地保存用于档案搜索。</string>
-    <string name="help_item_ocr_language">OCR 和设为可搜索默认使用自动模式——对拉丁文字可离线使用。印地语、中文、日语和韩语模型首次使用时通过 Google Play Services 下载。CJK 文字不支持可搜索 PDF——请使用"提取文字"来为其建立索引。</string>
+    <string name="help_item_ocr_language">自动 OCR 离线使用拉丁文字模型。手动选择印地语、中文、日语或韩语时，会通过 Google Play Services 下载相应模型。可搜索 PDF 支持拉丁文字和印地语；对于阿拉伯语、中文、日语或韩语，请使用“提取文字”。</string>
     <string name="help_section_navigation">导航</string>
     <string name="help_nav_text">通过左上角的汉堡菜单可访问文件库、回收站、设置、帮助、关于和隐私页面。</string>
     <string name="help_section_notes">注意事项</string>
@@ -179,7 +179,7 @@
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">没有可用于文本提取的图片</string>
     <string name="ocr_no_text_found">此文档中未找到文本</string>
-    <string name="ocr_no_text_auto_hint">未识别到文本。对于印地语文档，请手动选择印地语作为语言。</string>
+    <string name="ocr_no_text_auto_hint">未识别到文本。对于印地语、中文、日语或韩语文档，请手动选择语言。</string>
     <string name="ocr_auto_detection_uncertain">自动检测不确定。请手动选择语言。</string>
     <string name="ocr_model_download_failed">语言模型下载失败。请检查 Google Play 服务后重试。</string>
     <string name="ocr_failed">文本提取失败</string>
@@ -206,7 +206,7 @@
     <string name="searchable_success_multi">%1$d 个 PDF 现在可搜索</string>
     <string name="searchable_failed">无法创建可搜索 PDF</string>
     <string name="searchable_nothing_to_do">所选PDF已可搜索</string>
-    <string name="searchable_unsupported_script">不支持为中文、日文或韩文创建可搜索PDF——CJK字体无法可靠地嵌入PDF文本层。请使用”提取文字”将内容索引到应用内搜索。</string>
+    <string name="searchable_unsupported_script">不支持为阿拉伯语、中文、日语或韩语创建可搜索 PDF。请使用“提取文字”将内容索引到应用内搜索。</string>
     <string name="searchable_blank_ocr_warning">OCR已完成，但%1$d个文档未能识别到文本。请尝试手动选择语言以获得更好的结果。</string>
     <string name="searchable_badge">可搜索</string>
 

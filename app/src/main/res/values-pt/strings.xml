@@ -134,7 +134,7 @@
     <string name="help_section_ocr">OCR e extração de texto</string>
     <string name="help_item_extract_text">A Extração de texto (OCR) lê todas as páginas. Para um único documento, abre a revisão OCR com texto por página, idioma reconhecido, qualidade, copiar/partilhar e exportação TXT. Para vários documentos, continua a mostrar um painel combinado de onde pode copiar ou partilhar o resultado.</string>
     <string name="help_item_make_searchable">Tornar pesquisável adiciona uma camada de texto invisível ao PDF, guarda localmente o texto OCR extraído para pesquisa no arquivo.</string>
-    <string name="help_item_ocr_language">OCR e Tornar pesquisável usam o modo Automático por padrão — funciona offline para scripts latinos. Os modelos para hindi, chinês, japonês e coreano são baixados no primeiro uso via Google Play Services. Scripts CJK não são suportados para PDF pesquisável — use «Extrair texto» para indexá-los.</string>
+    <string name="help_item_ocr_language">O OCR automático usa offline o modelo latino. Os modelos de hindi, chinês, japonês e coreano são baixados pelo Google Play Services quando selecionados manualmente. O PDF pesquisável suporta escritas latinas e hindi; para árabe, chinês, japonês ou coreano, use «Extrair texto».</string>
     <string name="help_section_navigation">Navegação</string>
     <string name="help_nav_text">Use o menu hambúrguer (canto superior esquerdo) para acessar o Arquivo, a Lixeira, Configurações, Ajuda, Info e Privacidade.</string>
     <string name="help_section_notes">Observações</string>
@@ -181,7 +181,7 @@
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">Nenhuma imagem disponível para extração de texto</string>
     <string name="ocr_no_text_found">Nenhum texto encontrado neste documento</string>
-    <string name="ocr_no_text_auto_hint">Nenhum texto reconhecido. Para documentos em hindi, selecione Hindi manualmente como idioma.</string>
+    <string name="ocr_no_text_auto_hint">Nenhum texto reconhecido. Para documentos em hindi, chinês, japonês ou coreano, selecione o idioma manualmente.</string>
     <string name="ocr_auto_detection_uncertain">A deteção automática é incerta. Tente selecionar o idioma manualmente.</string>
     <string name="ocr_model_download_failed">Falha ao transferir o modelo de idioma. Verifique os Google Play Services e tente novamente.</string>
     <string name="ocr_failed">Falha na extração de texto</string>
@@ -208,7 +208,7 @@
     <string name="searchable_success_multi">%1$d PDFs agora são pesquisáveis</string>
     <string name="searchable_failed">Não foi possível criar o PDF pesquisável</string>
     <string name="searchable_nothing_to_do">Os PDFs selecionados já permitem pesquisa</string>
-    <string name="searchable_unsupported_script">PDF pesquisável não é suportado para chinês, japonês ou coreano — fontes CJK não podem ser incorporadas de forma confiável em uma camada de texto PDF. Use “Extrair texto” para indexar o conteúdo na pesquisa do app.</string>
+    <string name="searchable_unsupported_script">PDF pesquisável não é suportado para árabe, chinês, japonês ou coreano. Use “Extrair texto” para indexar o conteúdo na pesquisa do app.</string>
     <string name="searchable_blank_ocr_warning">OCR concluído, mas nenhum texto foi reconhecido em %1$d documento(s). Tente selecionar o idioma manualmente.</string>
     <string name="searchable_badge">Pesquisável</string>
 

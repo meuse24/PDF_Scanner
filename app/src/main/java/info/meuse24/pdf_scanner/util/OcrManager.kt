@@ -9,7 +9,6 @@ import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import info.meuse24.pdf_scanner.domain.model.OcrScript
 import info.meuse24.pdf_scanner.domain.model.OcrUsage
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -45,30 +44,18 @@ class OcrManager @Inject constructor() {
 
     fun recognitionPlan(
         languageCode: String,
-        usage: OcrUsage,
-        systemLocale: Locale = Locale.getDefault()
+        usage: OcrUsage
     ): List<OcrScript> {
         val manualScript = scriptForLanguageCode(languageCode)
         if (manualScript != null) return listOf(manualScript)
 
-        val fallbackScripts = when (usage) {
-            OcrUsage.EXTRACT_TEXT -> listOf(
-                OcrScript.DEVANAGARI,
-                OcrScript.JAPANESE,
-                OcrScript.CHINESE,
-                OcrScript.KOREAN
-            )
-            OcrUsage.SEARCHABLE_PDF -> listOf(OcrScript.DEVANAGARI)
+        return when (usage) {
+            // Automatik bleibt offline und verwendet ausschließlich das gebündelte Latin-Modell.
+            // Nicht-lateinische Modelle werden nur durch eine konkrete Sprachauswahl aktiviert.
+            OcrUsage.EXTRACT_TEXT,
+            OcrUsage.SEARCHABLE_PDF -> listOf(OcrScript.LATIN)
             // Barcode-Scanning nutzt keinen TextRecognizer — kein Fallback erforderlich.
             OcrUsage.SCAN_BARCODES -> emptyList()
-        }
-        val preferredScript = scriptForLanguageCode(systemLocale.language)
-            ?.takeIf { it != OcrScript.LATIN && it in fallbackScripts }
-
-        return buildList {
-            add(OcrScript.LATIN)
-            if (preferredScript != null) add(preferredScript)
-            addAll(fallbackScripts.filterNot { it == preferredScript })
         }
     }
 

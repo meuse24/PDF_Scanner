@@ -1,5 +1,6 @@
 package info.meuse24.pdf_scanner.ui.ocr
 
+import info.meuse24.pdf_scanner.domain.model.supportsSearchablePdfTextLayer
 import java.util.Locale
 
 /** Sprachcode für den automatischen Erkennungsmodus (Latin-Recognizer, geeignet für die meisten Schriften). */
@@ -21,6 +22,16 @@ fun buildOcrLanguageOptions(autoLabel: String, displayLocale: Locale): List<Pair
     }
     return listOf(OCR_LANGUAGE_AUTO to autoLabel) + manual
 }
+
+fun buildSearchablePdfLanguageOptions(
+    autoLabel: String,
+    displayLocale: Locale
+): List<Pair<String, String>> =
+    buildOcrLanguageOptions(autoLabel, displayLocale)
+        .filter { (code, _) -> code.supportsSearchablePdfTextLayer() }
+
+fun searchablePdfLanguageOrAuto(languageCode: String): String =
+    languageCode.takeIf(String::supportsSearchablePdfTextLayer) ?: OCR_LANGUAGE_AUTO
 
 /**
  * Gibt den Standard-OCR-Sprachcode zurück.

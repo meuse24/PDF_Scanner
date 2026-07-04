@@ -44,6 +44,8 @@ import info.meuse24.pdf_scanner.ui.home.components.HomeErrorDialog
 import info.meuse24.pdf_scanner.ui.home.components.HomeHashOverlay
 import info.meuse24.pdf_scanner.ui.home.components.HomeLoadingDialog
 import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
+import info.meuse24.pdf_scanner.ui.ocr.buildSearchablePdfLanguageOptions
+import info.meuse24.pdf_scanner.ui.ocr.searchablePdfLanguageOrAuto
 import info.meuse24.pdf_scanner.util.PdfPrintHelper
 import info.meuse24.pdf_scanner.util.buildPdfShareIntent
 import java.io.File
@@ -90,6 +92,9 @@ fun HomeScreen(
     val ocrAutoLabel = stringResource(R.string.ocr_language_auto)
     val ocrLanguages = remember(displayLocale, ocrAutoLabel) {
         buildOcrLanguageOptions(ocrAutoLabel, displayLocale)
+    }
+    val searchablePdfLanguages = remember(displayLocale, ocrAutoLabel) {
+        buildSearchablePdfLanguageOptions(ocrAutoLabel, displayLocale)
     }
 
     fun printRecord(record: Document) {
@@ -178,7 +183,7 @@ fun HomeScreen(
                 SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             )
             makeSearchable = archiveUiState.settings.defaultMakeSearchable
-            selectedLang = archiveUiState.settings.defaultOcrLanguage
+            selectedLang = searchablePdfLanguageOrAuto(archiveUiState.settings.defaultOcrLanguage)
             showSaveDialog = true
         },
         onPdfImported = ::preparePdfImport,
@@ -324,7 +329,8 @@ fun HomeScreen(
                         if (selectedRecords.none { !it.isSearchable || it.extractedText == null }) {
                             viewModel.reportError(resources.getString(R.string.searchable_nothing_to_do))
                         } else {
-                            selectedBulkLang = archiveUiState.settings.defaultOcrLanguage
+                            selectedBulkLang =
+                                searchablePdfLanguageOrAuto(archiveUiState.settings.defaultOcrLanguage)
                             bulkLangForSearchable = true
                             showBulkLangDialog = true
                         }
@@ -407,7 +413,8 @@ fun HomeScreen(
                     if (selectedRecords.none { !it.isSearchable || it.extractedText == null }) {
                         viewModel.reportError(resources.getString(R.string.searchable_nothing_to_do))
                     } else {
-                        selectedBulkLang = archiveUiState.settings.defaultOcrLanguage
+                        selectedBulkLang =
+                            searchablePdfLanguageOrAuto(archiveUiState.settings.defaultOcrLanguage)
                         bulkLangForSearchable = true
                         showBulkLangDialog = true
                     }
@@ -468,7 +475,7 @@ fun HomeScreen(
         selectedBulkLang = selectedBulkLang,
         onSelectedBulkLangChange = { selectedBulkLang = it },
         bulkLangForSearchable = bulkLangForSearchable,
-        ocrLanguages = ocrLanguages,
+        ocrLanguages = if (bulkLangForSearchable) searchablePdfLanguages else ocrLanguages,
         viewModel = viewModel
     )
 
@@ -488,7 +495,7 @@ fun HomeScreen(
         langMenuExpanded = langMenuExpanded,
         onLangMenuExpandedChange = { langMenuExpanded = it },
         settings = archiveUiState.settings,
-        ocrLanguages = ocrLanguages,
+        ocrLanguages = searchablePdfLanguages,
         ocrText = operationUiState.ocrText,
         clipboard = clipboard,
         haptic = haptic,

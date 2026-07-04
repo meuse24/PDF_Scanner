@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="form_fill_action">Заполнить форму</string>
+    <string name="form_fill_title">Заполнение PDF-формы</string>
+    <string name="form_fill_save">Сохранить копию</string>
+    <string name="form_fill_flatten">Закрепить поля формы</string>
+    <string name="form_fill_flatten_description">Значения станут постоянным содержимым PDF и больше не смогут редактироваться.</string>
+    <string name="form_fill_loading">Загрузка формы…</string>
+    <string name="form_fill_no_fields">В этом PDF нет заполняемых полей формы.</string>
+    <string name="form_fill_not_fillable">В этом PDF нет заполняемой формы AcroForm.</string>
+    <string name="form_fill_xfa_unsupported">Динамические формы XFA не поддерживаются.</string>
+    <string name="form_fill_signed_locked">Эта подписанная форма доступна только для чтения: изменения сделают подпись недействительной.</string>
+    <string name="form_fill_required_missing">Заполните все обязательные поля.</string>
+    <string name="form_fill_error">Не удалось сохранить форму.</string>
+    <string name="form_fill_saved">Заполненная форма сохранена как новый документ.</string>
+    <string name="form_fill_required">Обязательное поле</string>
+    <string name="form_fill_read_only">Только чтение</string>
+    <string name="form_fill_previous_page">Предыдущая страница</string>
+    <string name="form_fill_next_page">Следующая страница</string>
+    <string name="form_fill_page">Страница %1$d из %2$d</string>
+    <string name="form_fill_select_option">Выбрать %1$s</string>
+    <string name="form_fill_reset">Сбросить значения</string>
+</resources>

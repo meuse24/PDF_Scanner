@@ -132,7 +132,7 @@
     <string name="help_section_ocr">OCRとテキスト抽出</string>
     <string name="help_item_extract_text">テキスト抽出（OCR）はすべてのページを読み取ります。単一のドキュメントでは、ページごとのテキスト、認識言語、品質、コピー/共有、TXT エクスポートを確認できる OCR レビューが開きます。複数ドキュメントでは、結果をコピーまたは共有できる統合パネルが引き続き表示されます。</string>
     <string name="help_item_make_searchable">検索可能にするでは、PDF に不可視のテキストレイヤーを追加し、抽出した OCR テキストをアーカイブ検索用にローカル保存。</string>
-    <string name="help_item_ocr_language">OCRと検索可能にする機能はデフォルトで自動モードを使用します — ラテン文字の文書でオフラインで動作します。ヒンディー語・中国語・日本語・韓国語のモデルは Google Play Services 経由で初回使用時にダウンロードされます。CJK文字は検索可能PDFに対応していません — インデックス化には「テキストを抽出」をご利用ください。</string>
+    <string name="help_item_ocr_language">自動OCRはオフラインのラテン文字モデルを使用します。ヒンディー語・中国語・日本語・韓国語のモデルは、手動で選択したときに Google Play Services 経由でダウンロードされます。検索可能PDFはラテン文字とヒンディー語に対応しています。アラビア語・中国語・日本語・韓国語には「テキストを抽出」をご利用ください。</string>
     <string name="help_section_navigation">ナビゲーション</string>
     <string name="help_nav_text">左上のハンバーガーメニューから、アーカイブ、ゴミ箱、設定、ヘルプ、情報、プライバシーにアクセスできます。</string>
     <string name="help_section_notes">注意事項</string>
@@ -179,7 +179,7 @@
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">テキスト抽出に使用できる画像がありません</string>
     <string name="ocr_no_text_found">このドキュメントにテキストが見つかりません</string>
-    <string name="ocr_no_text_auto_hint">テキストを認識できませんでした。ヒンディー語の文書の場合は、言語としてヒンディー語を手動で選択してください。</string>
+    <string name="ocr_no_text_auto_hint">テキストを認識できませんでした。ヒンディー語・中国語・日本語・韓国語の文書では、言語を手動で選択してください。</string>
     <string name="ocr_auto_detection_uncertain">自動検出が不確実です。言語を手動で選択してください。</string>
     <string name="ocr_model_download_failed">言語モデルのダウンロードに失敗しました。Google Play Services を確認して再試行してください。</string>
     <string name="ocr_failed">テキスト抽出に失敗しました</string>
@@ -206,7 +206,7 @@
     <string name="searchable_success_multi">%1$d 件の PDF が検索可能になりました</string>
     <string name="searchable_failed">検索可能な PDF を作成できませんでした</string>
     <string name="searchable_nothing_to_do">選択したPDFは既に検索可能です</string>
-    <string name="searchable_unsupported_script">中国語、日本語、韓国語では検索可能PDFはサポートされていません—CJKフォントをPDFテキストレイヤーに確実に埋め込むことができないためです。「テキストを抽出」を使用してアプリ内検索用にコンテンツをインデックスしてください。</string>
+    <string name="searchable_unsupported_script">アラビア語、中国語、日本語、韓国語では検索可能PDFはサポートされていません。「テキストを抽出」を使用してアプリ内検索用にコンテンツをインデックスしてください。</string>
     <string name="searchable_blank_ocr_warning">OCRが完了しましたが、%1$d件のドキュメントでテキストが認識されませんでした。より良い結果を得るには、言語を手動で選択してみてください。</string>
     <string name="searchable_badge">検索可能</string>
 

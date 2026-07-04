@@ -134,7 +134,7 @@
     <string name="help_section_ocr">OCR और टेक्स्ट निष्कर्षण</string>
     <string name="help_item_extract_text">टेक्स्ट निष्कर्षण (OCR) सभी पृष्ठ पढ़ता है। एकल दस्तावेज़ के लिए यह OCR समीक्षा खोलता है, जहाँ पेज-दर-पेज टेक्स्ट, पहचानी गई भाषा, गुणवत्ता, कॉपी/शेयर और TXT निर्यात दिखाई जाते हैं। कई दस्तावेज़ों के लिए यह अब भी एक संयुक्त पैनल दिखाता है, जहाँ से आप परिणाम कॉपी या साझा कर सकते हैं।</string>
     <string name="help_item_make_searchable">खोज योग्य बनाएं PDF में एक अदृश्य टेक्स्ट लेयर जोड़ता है, निकाले गए OCR टेक्स्ट को आर्काइव खोज के लिए स्थानीय रूप से सहेजता है।</string>
-    <string name="help_item_ocr_language">OCR और खोज योग्य बनाएं डिफ़ॉल्ट रूप से स्वचालित मोड का उपयोग करते हैं — लैटिन लिपि के दस्तावेज़ों के लिए ऑफ़लाइन काम करता है। हिंदी, चीनी, जापानी और कोरियाई मॉडल Google Play Services के ज़रिए पहले उपयोग पर डाउनलोड होते हैं। CJK लिपियाँ खोज योग्य PDF के लिए समर्थित नहीं हैं — अनुक्रमण के लिए «टेक्स्ट निकालें» का उपयोग करें।</string>
+    <string name="help_item_ocr_language">स्वचालित OCR ऑफ़लाइन लैटिन मॉडल का उपयोग करता है। हिंदी, चीनी, जापानी और कोरियाई मॉडल मैन्युअल रूप से चुने जाने पर Google Play Services से डाउनलोड होते हैं। खोज योग्य PDF लैटिन लिपियों और हिंदी का समर्थन करता है; अरबी, चीनी, जापानी या कोरियाई के लिए «टेक्स्ट निकालें» का उपयोग करें।</string>
     <string name="help_section_navigation">नेविगेशन</string>
     <string name="help_nav_text">ऊपर बाईं ओर हैमबर्गर मेनू से संग्रह, ट्रैश, सेटिंग्स, सहायता, जानकारी और गोपनीयता तक पहुँचें।</string>
     <string name="help_section_notes">नोट्स</string>
@@ -181,7 +181,7 @@
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">टेक्स्ट निष्कर्षण के लिए कोई छवि उपलब्ध नहीं</string>
     <string name="ocr_no_text_found">इस दस्तावेज़ में कोई टेक्स्ट नहीं मिला</string>
-    <string name="ocr_no_text_auto_hint">कोई टेक्स्ट नहीं पहचाना गया। हिंदी दस्तावेज़ों के लिए हिंदी को मैन्युअल रूप से भाषा के रूप में चुनें।</string>
+    <string name="ocr_no_text_auto_hint">कोई टेक्स्ट नहीं पहचाना गया। हिंदी, चीनी, जापानी या कोरियाई दस्तावेज़ों के लिए भाषा मैन्युअल रूप से चुनें।</string>
     <string name="ocr_auto_detection_uncertain">स्वचालित पहचान अनिश्चित है। कृपया भाषा मैन्युअल रूप से चुनें।</string>
     <string name="ocr_model_download_failed">भाषा मॉडल डाउनलोड विफल रहा। कृपया Google Play Services जांचें और फिर से प्रयास करें।</string>
     <string name="ocr_failed">टेक्स्ट निष्कर्षण विफल</string>
@@ -208,7 +208,7 @@
     <string name="searchable_success_multi">%1$d PDF अब खोज योग्य हैं</string>
     <string name="searchable_failed">खोज योग्य PDF बनाने में विफल</string>
     <string name="searchable_nothing_to_do">चुने गए PDF पहले से खोज योग्य हैं</string>
-    <string name="searchable_unsupported_script">चीनी, जापानी या कोरियाई के लिए सर्चेबल PDF समर्थित नहीं है — CJK फ़ॉन्ट को PDF टेक्स्ट लेयर में विश्वसनीय रूप से एम्बेड नहीं किया जा सकता। आत्मा खोज के लिए सामग्री इंडेक्स करने हेतु “टेक्स्ट निकालें” का उपयोग करें।</string>
+    <string name="searchable_unsupported_script">अरबी, चीनी, जापानी या कोरियाई के लिए खोज योग्य PDF समर्थित नहीं है। ऐप में खोज के लिए सामग्री इंडेक्स करने हेतु “टेक्स्ट निकालें” का उपयोग करें।</string>
     <string name="searchable_blank_ocr_warning">OCR पूर्ण हुआ, लेकिन %1$d दस्तावेज़ में कोई टेक्स्ट नहीं पहचाना गया। बेहतर परिणाम के लिए भाषा मैन्युअल रूप से चुनने का प्रयास करें।</string>
     <string name="searchable_badge">खोज योग्य</string>
 

@@ -32,6 +32,7 @@ import info.meuse24.pdf_scanner.ui.documentaction.RemoveTextLayerScreen
 import info.meuse24.pdf_scanner.ui.documentaction.RestrictUsageScreen
 import info.meuse24.pdf_scanner.ui.documentaction.UnlockPdfScreen
 import info.meuse24.pdf_scanner.ui.folders.FolderManagementScreen
+import info.meuse24.pdf_scanner.ui.formfill.FormFillScreen
 import info.meuse24.pdf_scanner.ui.help.HelpScreen
 import info.meuse24.pdf_scanner.ui.home.HomeScreen
 import info.meuse24.pdf_scanner.ui.home.HomeViewModel
@@ -262,6 +263,7 @@ private fun NavGraphBuilder.viewerNavGraph(
             onNavigateToProtectPdf = { scanId -> navController.navigate(Screen.ProtectPdf.createRoute(scanId)) },
             onNavigateToUnlockPdf = { scanId -> navController.navigate(Screen.UnlockPdf.createRoute(scanId)) },
             onNavigateToSignature = { scanId -> navController.navigate(Screen.Signature.createRoute(scanId)) },
+            onNavigateToFormFill = { scanId -> navController.navigate(Screen.FormFill.createRoute(scanId)) },
             onNavigateToRemoveTextLayer = { scanId -> navController.navigate(Screen.RemoveTextLayer.createRoute(scanId)) },
             onNavigateToRemovePassword = { scanId -> navController.navigate(Screen.RemovePassword.createRoute(scanId)) },
             onNavigateToRestrictUsage = { scanId -> navController.navigate(Screen.RestrictUsage.createRoute(scanId)) },
@@ -314,6 +316,9 @@ private fun NavGraphBuilder.editNavGraph(
     }
     composable(Screen.Signature.route, listOf(navArgument("scanId") { type = NavType.LongType })) {
         SignatureScreen(onNavigateBack = { navController.navigateUp() })
+    }
+    composable(Screen.FormFill.route, listOf(navArgument("scanId") { type = NavType.LongType })) {
+        FormFillScreen(onNavigateBack = { navController.navigateUp() })
     }
     composable(Screen.RemoveTextLayer.route, listOf(navArgument("scanId") { type = NavType.LongType })) {
         RemoveTextLayerScreen(onNavigateBack = { navController.navigateUp() })

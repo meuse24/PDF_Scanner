@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -97,6 +98,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.AcroFormCapability
 import info.meuse24.pdf_scanner.ui.components.DocumentEditSheet
 import info.meuse24.pdf_scanner.ui.components.PrintPageSizeWarningDialog
 import info.meuse24.pdf_scanner.ui.components.ScanAction
@@ -135,6 +137,7 @@ fun PdfViewerScreen(
     onNavigateToProtectPdf: (Long) -> Unit,
     onNavigateToUnlockPdf: (Long) -> Unit,
     onNavigateToSignature: (Long) -> Unit,
+    onNavigateToFormFill: (Long) -> Unit,
     onNavigateToRemoveTextLayer: (Long) -> Unit,
     onNavigateToRemovePassword: (Long) -> Unit,
     onNavigateToRestrictUsage: (Long) -> Unit,
@@ -415,6 +418,11 @@ fun PdfViewerScreen(
                         ViewerActionBar(
                             record = record,
                             onEdit = { editSheetVisible = true },
+                            onFillForm = if (state.formCapability == AcroFormCapability.FILLABLE) {
+                                { onNavigateToFormFill(record.id) }
+                            } else {
+                                null
+                            },
                             onSearch = if (state.pageSearchAvailable && !state.searchActive) {
                                 {
                                     resetInlineZoom()
@@ -800,6 +808,7 @@ private fun ViewerEntityActions(
 private fun ViewerActionBar(
     record: Document,
     onEdit: () -> Unit,
+    onFillForm: (() -> Unit)?,
     onSearch: (() -> Unit)?,
     onShare: () -> Unit,
     onExport: () -> Unit,
@@ -817,11 +826,15 @@ private fun ViewerActionBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
                 .padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ViewerActionButton(Icons.Default.Edit, R.string.action_edit_pdf, onEdit)
+            onFillForm?.let {
+                ViewerActionButton(Icons.Default.EditNote, R.string.form_fill_action, it)
+            }
             onSearch?.let { ViewerActionButton(Icons.Default.FindInPage, R.string.pdf_viewer_search, it) }
             ViewerActionButton(Icons.Default.Share, R.string.cd_share, onShare)
             ViewerActionButton(Icons.Default.Download, R.string.action_export, onExport)

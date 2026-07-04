@@ -5,12 +5,14 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import info.meuse24.pdf_scanner.domain.pdf.PdfAnnotationOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfFormOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfRenderingOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfSecurityOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfStructureOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfTextOps
 import info.meuse24.pdf_scanner.util.PdfEditor
+import info.meuse24.pdf_scanner.util.PdfEditorFormOps
 import javax.inject.Singleton
 
 @Module
@@ -52,4 +54,10 @@ abstract class PdfOperationsModule {
     abstract fun bindPdfMetadataOps(
         impl: PdfEditor
     ): PdfMetadataOps
+
+    @Binds
+    @Singleton
+    abstract fun bindPdfFormOps(
+        impl: PdfEditorFormOps
+    ): PdfFormOps
 }

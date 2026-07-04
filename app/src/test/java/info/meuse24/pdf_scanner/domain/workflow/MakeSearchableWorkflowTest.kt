@@ -67,6 +67,26 @@ class MakeSearchableWorkflowTest {
     }
 
     @Test
+    fun `nicht unterstuetzte Textlayer Sprachen starten keinen OCR Lauf`() = runTest {
+        val unsupportedLanguages = listOf("ar", "zh", "ja", "ko")
+        var invocations = 0
+
+        unsupportedLanguages.forEachIndexed { index, language ->
+            val result = workflow { _, _ -> invocations++ }(
+                listOf(record(index.toLong() + 1L, isSearchable = false)),
+                language
+            )
+
+            assertTrue(result is WorkflowResult.Failure)
+            assertEquals(
+                ScanWorkflowError.SearchableUnsupportedForScript,
+                (result as WorkflowResult.Failure).error
+            )
+        }
+        assertEquals(0, invocations)
+    }
+
+    @Test
     fun `bereits durchsuchbare Auswahl liefert NoEligibleScans`() = runTest {
         // isSearchable=true + extractedText gesetzt → vollständig verarbeitet → NoEligibleScans
         val result = workflow()(listOf(record(1L, isSearchable = true, extractedText = "Rechnung")), "de")

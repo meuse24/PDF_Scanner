@@ -142,7 +142,7 @@
     <string name="help_section_ocr">OCR واستخراج النص</string>
     <string name="help_item_extract_text">يقوم استخراج النص (OCR) بقراءة جميع الصفحات. بالنسبة لمستند واحد، يفتح مراجعة OCR مع نص لكل صفحة واللغة المكتشفة والجودة وإجراءات النسخ/المشاركة وتصدير TXT. وبالنسبة لعدة مستندات، يستمر في عرض لوحة مجمعة يمكنك منها نسخ النتيجة أو مشاركتها.</string>
     <string name="help_item_make_searchable">يضيف جعل الملف قابلاً للبحث طبقة نص غير مرئية إلى ملف PDF، ويخزن نص OCR المستخرج محلياً للبحث في الأرشيف.</string>
-    <string name="help_item_ocr_language">يستخدم OCR وجعل الملف قابلاً للبحث الوضع التلقائي افتراضياً — يعمل بدون إنترنت للخطوط اللاتينية. يتم تنزيل نماذج الهندية والصينية واليابانية والكورية عند أول استخدام عبر Google Play Services. لا تدعم الخطوط CJK ملفات PDF القابلة للبحث — استخدم «استخراج النص» لفهرستها.</string>
+    <string name="help_item_ocr_language">يستخدم OCR التلقائي نموذج الأحرف اللاتينية دون اتصال. يتم تنزيل نماذج الهندية والصينية واليابانية والكورية عبر Google Play Services عند اختيارها يدوياً. يدعم PDF القابل للبحث الأحرف اللاتينية والهندية؛ وللعربية أو الصينية أو اليابانية أو الكورية استخدم «استخراج النص».</string>
     <string name="help_section_navigation">التنقل</string>
     <string name="help_nav_text">استخدم قائمة الهامبرغر (أعلى اليسار) للوصول إلى الأرشيف وسلة المهملات والإعدادات والمساعدة والمعلومات والخصوصية.</string>
     <string name="help_section_notes">ملاحظات</string>
@@ -189,7 +189,7 @@
     <string name="ocr_bulk_separator">— %1$s —</string>
     <string name="ocr_no_image">لا توجد صورة متاحة لاستخراج النص</string>
     <string name="ocr_no_text_found">لم يُعثر على نص في هذا المستند</string>
-    <string name="ocr_no_text_auto_hint">لم يُتعرَّف على أي نص. للمستندات بالهندية، اختر الهندية يدوياً كلغة.</string>
+    <string name="ocr_no_text_auto_hint">لم يُتعرَّف على أي نص. للمستندات بالهندية أو الصينية أو اليابانية أو الكورية، اختر اللغة يدوياً.</string>
     <string name="ocr_auto_detection_uncertain">الكشف التلقائي غير مؤكد. يرجى اختيار اللغة يدويًا.</string>
     <string name="ocr_model_download_failed">فشل تنزيل نموذج اللغة. تحقّق من Google Play Services وحاول مرة أخرى.</string>
     <string name="ocr_failed">فشل استخراج النص</string>
@@ -216,7 +216,7 @@
     <string name="searchable_success_multi">%1$d ملفات PDF أصبحت قابلة للبحث</string>
     <string name="searchable_failed">فشل إنشاء PDF قابل للبحث</string>
     <string name="searchable_nothing_to_do">ملفات PDF المحددة قابلة للبحث بالفعل</string>
-    <string name="searchable_unsupported_script">لا يدعم PDF القابل للبحث اللغة الصينية أو اليابانية أو الكورية — لا يمكن تضمين خطوط CJK بشكل موثوق. استخدم "استخراج النص" لفهرسة المحتوى للبحث داخل التطبيق.</string>
+    <string name="searchable_unsupported_script">لا يدعم PDF القابل للبحث العربية أو الصينية أو اليابانية أو الكورية. استخدم "استخراج النص" لفهرسة المحتوى للبحث داخل التطبيق.</string>
     <string name="searchable_blank_ocr_warning">اكتمل التعرف الضوئي، لكن لم يُتعرَّف على نص في %1$d مستند(ات). جرِّب اختيار اللغة يدويًا للحصول على نتائج أفضل.</string>
     <string name="searchable_badge">قابل للبحث</string>
 

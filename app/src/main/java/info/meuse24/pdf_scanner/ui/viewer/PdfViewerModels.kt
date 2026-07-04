@@ -3,6 +3,7 @@ package info.meuse24.pdf_scanner.ui.viewer
 import android.graphics.Bitmap
 import info.meuse24.pdf_scanner.domain.common.DetectedEntities
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.AcroFormCapability
 
 data class PdfViewerUiState(
     val record: Document? = null,
@@ -19,7 +20,8 @@ data class PdfViewerUiState(
     val searchQuery: String = "",
     val searchMatches: List<Int> = emptyList(),
     val searchCurrentIndex: Int = -1,
-    val searching: Boolean = false
+    val searching: Boolean = false,
+    val formCapability: AcroFormCapability = AcroFormCapability.NONE
 )
 
 data class PdfViewerPageState(

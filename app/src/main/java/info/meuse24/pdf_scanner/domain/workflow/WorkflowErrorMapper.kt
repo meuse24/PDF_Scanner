@@ -60,6 +60,12 @@ class WorkflowErrorMapper @Inject constructor(
         ScanWorkflowError.AppendTargetEncrypted -> resourceProvider.getString(StringResource.AppendTargetEncrypted)
         ScanWorkflowError.AppendSourceEncrypted -> resourceProvider.getString(StringResource.AppendTargetEncrypted)
         is ScanWorkflowError.AppendFailed -> resourceProvider.getString(StringResource.AppendError)
+        ScanWorkflowError.FormNotFillable -> resourceProvider.getString(StringResource.FormNotFillable)
+        ScanWorkflowError.FormXfaUnsupported -> resourceProvider.getString(StringResource.FormXfaUnsupported)
+        ScanWorkflowError.FormSignedLocked -> resourceProvider.getString(StringResource.FormSignedLocked)
+        is ScanWorkflowError.RequiredFormFieldsMissing ->
+            resourceProvider.getString(StringResource.FormRequiredMissing)
+        is ScanWorkflowError.FormFillFailed -> resourceProvider.getString(StringResource.FormFillError)
     }
 
     private fun mapOcrFailed(error: ScanWorkflowError.OcrFailed): String {

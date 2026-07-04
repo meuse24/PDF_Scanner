@@ -156,7 +156,7 @@
     <string name="help_section_ocr">OCR and Text Extraction</string>
     <string name="help_item_extract_text">Text Extraction (OCR) reads all pages. For a single document it opens OCR Review with per-page text, recognized language, quality, copy/share actions, and TXT export. For multiple documents it shows a combined panel where you can copy or share the result.</string>
     <string name="help_item_make_searchable">Make Searchable adds an invisible text layer to the PDF, stores the extracted OCR text locally for archive search.</string>
-    <string name="help_item_ocr_language">OCR and Make Searchable use Automatic mode by default — works offline for Latin-script documents. Hindi, Chinese, Japanese, and Korean models are downloaded on first use via Google Play Services. Chinese, Japanese, and Korean are not supported for searchable PDF — use Extract Text to index them for search.</string>
+    <string name="help_item_ocr_language">Automatic OCR uses the offline Latin model. Hindi, Chinese, Japanese, and Korean models are downloaded via Google Play Services when selected manually. Searchable PDF supports Latin scripts and Hindi; for Arabic, Chinese, Japanese, or Korean, use Extract Text to index the content.</string>
     <string name="help_section_navigation">Navigation</string>
     <string name="help_nav_text">Use the hamburger menu (top left) to access the Archive, Trash, Settings, Help, Info, and Privacy screens.</string>
     <string name="help_section_notes">Notes</string>
@@ -228,7 +228,7 @@
     <string name="searchable_success_multi">%1$d PDFs are now searchable</string>
     <string name="searchable_failed">Failed to create searchable PDF</string>
     <string name="searchable_nothing_to_do">Selected PDFs are already searchable</string>
-    <string name="searchable_unsupported_script">Searchable PDF is not supported for Chinese, Japanese, or Korean — CJK fonts cannot be reliably embedded in a PDF text layer. Use “Extract Text” to index the content for in-app search.</string>
+    <string name="searchable_unsupported_script">Searchable PDF is not supported for Arabic, Chinese, Japanese, or Korean. Use “Extract Text” to index the content for in-app search.</string>
     <string name="searchable_blank_ocr_warning">OCR complete, but no text was recognized for %1$d document(s). Try selecting the language manually for better results.</string>
     <string name="searchable_badge">Searchable</string>
 

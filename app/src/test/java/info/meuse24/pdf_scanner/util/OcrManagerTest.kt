@@ -2,7 +2,6 @@ package info.meuse24.pdf_scanner.util
 
 import info.meuse24.pdf_scanner.domain.model.OcrScript
 import info.meuse24.pdf_scanner.domain.model.OcrUsage
-import java.util.Locale
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -11,38 +10,32 @@ class OcrManagerTest {
     private val manager = OcrManager()
 
     @Test
-    fun `auto extract keeps latin first and prefers system locale script next`() {
+    fun `auto extract uses bundled latin recognizer only`() {
         val plan = manager.recognitionPlan(
             languageCode = "auto",
-            usage = OcrUsage.EXTRACT_TEXT,
-            systemLocale = Locale.JAPANESE
+            usage = OcrUsage.EXTRACT_TEXT
         )
 
-        assertEquals(
-            listOf(OcrScript.LATIN, OcrScript.JAPANESE, OcrScript.DEVANAGARI, OcrScript.CHINESE, OcrScript.KOREAN),
-            plan
-        )
+        assertEquals(listOf(OcrScript.LATIN), plan)
     }
 
     @Test
-    fun `auto searchable limits fallback to latin and devanagari`() {
+    fun `auto searchable uses bundled latin recognizer only`() {
         val plan = manager.recognitionPlan(
             languageCode = "auto",
-            usage = OcrUsage.SEARCHABLE_PDF,
-            systemLocale = Locale.JAPANESE
+            usage = OcrUsage.SEARCHABLE_PDF
         )
 
-        assertEquals(listOf(OcrScript.LATIN, OcrScript.DEVANAGARI), plan)
+        assertEquals(listOf(OcrScript.LATIN), plan)
     }
 
     @Test
-    fun `manual non latin language keeps dedicated recognizer`() {
+    fun `manual korean keeps dedicated recognizer`() {
         val plan = manager.recognitionPlan(
-            languageCode = "hi",
-            usage = OcrUsage.EXTRACT_TEXT,
-            systemLocale = Locale.ENGLISH
+            languageCode = "ko",
+            usage = OcrUsage.EXTRACT_TEXT
         )
 
-        assertEquals(listOf(OcrScript.DEVANAGARI), plan)
+        assertEquals(listOf(OcrScript.KOREAN), plan)
     }
 }

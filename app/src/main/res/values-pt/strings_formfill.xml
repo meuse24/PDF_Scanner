@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="form_fill_action">Preencher formulário</string>
+    <string name="form_fill_title">Preencher formulário PDF</string>
+    <string name="form_fill_save">Guardar cópia</string>
+    <string name="form_fill_flatten">Fixar campos do formulário</string>
+    <string name="form_fill_flatten_description">Os valores tornam-se conteúdo permanente do PDF e deixam de poder ser editados.</string>
+    <string name="form_fill_loading">A carregar formulário…</string>
+    <string name="form_fill_no_fields">Este PDF não contém campos de formulário preenchíveis.</string>
+    <string name="form_fill_not_fillable">Este PDF não contém um AcroForm preenchível.</string>
+    <string name="form_fill_xfa_unsupported">Formulários XFA dinâmicos não são suportados.</string>
+    <string name="form_fill_signed_locked">Este formulário assinado é só de leitura porque alterações invalidariam a assinatura.</string>
+    <string name="form_fill_required_missing">Preencha todos os campos obrigatórios.</string>
+    <string name="form_fill_error">Não foi possível guardar o formulário.</string>
+    <string name="form_fill_saved">O formulário preenchido foi guardado como novo documento.</string>
+    <string name="form_fill_required">Obrigatório</string>
+    <string name="form_fill_read_only">Só de leitura</string>
+    <string name="form_fill_previous_page">Página anterior</string>
+    <string name="form_fill_next_page">Página seguinte</string>
+    <string name="form_fill_page">Página %1$d de %2$d</string>
+    <string name="form_fill_select_option">Selecionar %1$s</string>
+    <string name="form_fill_reset">Repor valores</string>
+</resources>

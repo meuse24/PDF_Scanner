@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="form_fill_action">フォームに入力</string>
+    <string name="form_fill_title">PDFフォームに入力</string>
+    <string name="form_fill_save">コピーを保存</string>
+    <string name="form_fill_flatten">フォーム項目を固定</string>
+    <string name="form_fill_flatten_description">値はPDFの固定コンテンツになり、編集できなくなります。</string>
+    <string name="form_fill_loading">フォームを読み込み中…</string>
+    <string name="form_fill_no_fields">このPDFには入力可能なフォーム項目がありません。</string>
+    <string name="form_fill_not_fillable">このPDFには入力可能なAcroFormがありません。</string>
+    <string name="form_fill_xfa_unsupported">動的XFAフォームには対応していません。</string>
+    <string name="form_fill_signed_locked">変更すると署名が無効になるため、この署名済みフォームは読み取り専用です。</string>
+    <string name="form_fill_required_missing">必須項目をすべて入力してください。</string>
+    <string name="form_fill_error">フォームを保存できませんでした。</string>
+    <string name="form_fill_saved">入力済みフォームを新しい文書として保存しました。</string>
+    <string name="form_fill_required">必須</string>
+    <string name="form_fill_read_only">読み取り専用</string>
+    <string name="form_fill_previous_page">前のページ</string>
+    <string name="form_fill_next_page">次のページ</string>
+    <string name="form_fill_page">%2$dページ中%1$dページ</string>
+    <string name="form_fill_select_option">%1$sを選択</string>
+    <string name="form_fill_reset">値をリセット</string>
+</resources>

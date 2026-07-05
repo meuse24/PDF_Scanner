@@ -546,6 +546,7 @@
             <h2>4. Network, advertising, accounts, and permissions</h2>
             <ul>
                 <li>The app requests the internet permission only for the optional local Wi-Fi PC connection feature described below; it is not used for any other network traffic.</li>
+                <li>The app requests <code>FOREGROUND_SERVICE</code>, <code>FOREGROUND_SERVICE_DATA_SYNC</code>, and <code>POST_NOTIFICATIONS</code> solely to keep the local Wi-Fi PC connection running and visible (as a persistent notification) while a computer may be transferring files; none of these permissions are used for any other purpose.</li>
                 <li>The app contains no advertising.</li>
                 <li>The app uses no own analytics or crash reporting service.</li>
                 <li>The app requires no user account and no subscription.</li>
@@ -568,11 +569,19 @@
                 valid TLS certificate for a private, device-local IP address), it should only be used on trusted
                 private networks.
             </p>
+            <p>
+                While this feature is running, Android requires the app to show a persistent, ongoing
+                notification and to hold the <code>FOREGROUND_SERVICE_DATA_SYNC</code> permission so the
+                local file-transfer connection is not interrupted by the system while the screen is off
+                or another app is in use. The notification and the underlying network connection stop as
+                soon as the feature is stopped, the app is locked, or the inactivity timeout is reached.
+            </p>
         </div>
         <div data-lang-content="de">
             <h2>4. Netzwerk, Werbung, Konten und Berechtigungen</h2>
             <ul>
                 <li>Die App fordert die Internet-Berechtigung ausschliesslich fuer die optionale lokale WLAN-PC-Verbindung (siehe unten) an; sie wird fuer keinen anderen Netzwerkverkehr verwendet.</li>
+                <li>Die App fordert <code>FOREGROUND_SERVICE</code>, <code>FOREGROUND_SERVICE_DATA_SYNC</code> und <code>POST_NOTIFICATIONS</code> ausschliesslich dazu an, die lokale WLAN-PC-Verbindung waehrend eines laufenden Dateitransfers aktiv und ueber eine dauerhafte Benachrichtigung sichtbar zu halten; keine dieser Berechtigungen wird fuer einen anderen Zweck verwendet.</li>
                 <li>Die App enthaelt keine Werbung.</li>
                 <li>Die App verwendet kein eigenes Analytics- oder Crash-Reporting-System.</li>
                 <li>Die App verlangt kein Benutzerkonto und kein Abonnement.</li>
@@ -595,6 +604,14 @@
                 Benachrichtigung beendet werden. Da die Verbindung unverschluesselt ist (fuer eine private,
                 geraetelokale IP-Adresse laesst sich kein gueltiges TLS-Zertifikat ausstellen), sollte sie nur in
                 vertrauenswuerdigen privaten Netzwerken genutzt werden.
+            </p>
+            <p>
+                Waehrend diese Funktion laeuft, verlangt Android von der App, eine dauerhafte, laufende
+                Benachrichtigung anzuzeigen und die Berechtigung <code>FOREGROUND_SERVICE_DATA_SYNC</code>
+                zu halten, damit die lokale Dateitransfer-Verbindung nicht vom System unterbrochen wird,
+                waehrend der Bildschirm aus ist oder eine andere App genutzt wird. Die Benachrichtigung und
+                die zugrunde liegende Netzwerkverbindung enden, sobald die Funktion gestoppt wird, die App
+                gesperrt wird oder die Inaktivitaets-Zeitspanne erreicht ist.
             </p>
         </div>
     </section>

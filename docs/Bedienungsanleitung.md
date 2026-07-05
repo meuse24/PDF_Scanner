@@ -584,6 +584,22 @@ Exportiert den gespeicherten OCR-Text als bearbeitbares Word-Dokument:
 
 Bei Mehrfachauswahl: **Massenaktionen → Mehr → Word-Export**. Dokumente ohne OCR-Text werden übersprungen; die App fragt, ob für Dokumente ohne Text zuerst OCR ausgeführt werden soll.
 
+## Als Tabelle exportieren (CSV/TSV)
+
+Erkennt Tabellen auf einer PDF-Seite per Texterkennung und exportiert sie als CSV- oder TSV-Datei für Tabellenprogramme wie Excel oder LibreOffice Calc:
+
+1. **Aktions-Sheet → Export → Tabelle als CSV/TSV exportieren**
+2. Die App erkennt pro Seite die auffälligste Tabelle direkt auf dem Gerät; während der Erkennung zeigt der Screen den Modellstatus und den Seitenfortschritt an
+3. Prüfen Sie das Ergebnis im Review-Raster: tippen Sie auf eine Zelle, um ihren Text zu korrigieren, schließen Sie unsichere oder nicht benötigte Zeilen über die Checkbox am Zeilenanfang aus, und wählen Sie bei mehreren Seiten aus, welche exportiert werden sollen
+4. Wählen Sie das Trennzeichen (Komma, Semikolon oder Tabulator) und ob Zellinhalte, die wie Tabellenkalkulations-Formeln aussehen (`=`, `+`, `-`, `@`), automatisch geschützt werden sollen
+5. **In Downloads speichern** oder **Teilen** – bei mehreren Seiten entsteht eine eigene Datei pro Seite (`_p001`, `_p002`, …)
+
+\begin{hinweis}
+\textbf{Hinweis:} Die Tabellenerkennung läuft bei jedem Aufruf neu und ausschließlich auf dem Gerät; es werden keine Erkennungsdaten dauerhaft gespeichert. Ein Korrekturentwurf wird lediglich als Komfortfunktion im App-Cache zwischengespeichert, damit er einen App-Neustart übersteht – er ist jederzeit vom Betriebssystem entfernbar und kein Ersatz für einen Export.
+\end{hinweis}
+
+Die Funktion ist nur bei unverschlüsselten PDFs verfügbar. Findet keine Seite eine zuverlässige Tabellenstruktur, zeigt die App einen entsprechenden Hinweis und erlaubt, die Erkennungssprache zu wechseln und es erneut zu versuchen. Mehrere getrennte Tabellen auf derselben Seite sowie strukturelle Änderungen (Zeilen/Spalten hinzufügen oder verbinden) werden nicht unterstützt – dafür bleibt Zelltextkorrektur und Zeilenauswahl vorgesehen.
+
 ## Graustufen konvertieren
 
 Reduziert die Dateigröße bei farbigen Scans:

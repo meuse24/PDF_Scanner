@@ -30,8 +30,33 @@ class HomeActionDispatcherTest {
         assertSame(document, receivedDocument)
     }
 
+    @Test
+    fun `export table csv forwards scan id`() {
+        val document = Document(
+            id = 23L,
+            filename = "invoice",
+            filepath = "/scans/invoice.pdf",
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = 42L
+        )
+        var receivedScanId: Long? = null
+
+        dispatchHomeScanAction(
+            record = document,
+            action = ScanAction.ExportTableCsv,
+            navigator = navigator(
+                onCalculateSha256 = {},
+                onExportTableCsv = { receivedScanId = it }
+            )
+        )
+
+        assertSame(document.id, receivedScanId)
+    }
+
     private fun navigator(
-        onCalculateSha256: (Document) -> Unit
+        onCalculateSha256: (Document) -> Unit,
+        onExportTableCsv: (Long) -> Unit = {}
     ) = HomeScanActionNavigator(
         onSplit = {},
         onReorder = {},
@@ -56,6 +81,7 @@ class HomeActionDispatcherTest {
         onQrScan = {},
         onBusinessCard = {},
         onTranslateText = {},
+        onExportTableCsv = onExportTableCsv,
         onExportAsJpg = {},
         onExportDocx = {},
         onExportOcrText = {},

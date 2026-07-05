@@ -199,6 +199,7 @@ fun HelpScreen() {
                 actions = listOf(
                     HelpAction(Icons.Default.Image, R.string.action_export_as_jpg, R.string.help_item_export_pages_to_folder),
                     HelpAction(Icons.AutoMirrored.Filled.TextSnippet, R.string.docx_export_action, R.string.help_item_export_docx),
+                    HelpAction(Icons.Default.FormatListNumbered, R.string.table_export_action_label, R.string.help_item_export_table),
                     HelpAction(Icons.Default.InvertColors, R.string.action_grayscale_pdf, R.string.help_item_grayscale_pdf),
                     HelpAction(Icons.Default.Compress,     R.string.action_compress_pdf,  R.string.help_item_compress_pdf)
                 )

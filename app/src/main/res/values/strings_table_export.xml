@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="table_extraction_no_table">No page contains a reliable table structure</string>
+    <string name="table_extraction_error">Table extraction failed</string>
+    <string name="table_export_save_success">%1$d file(s) saved to Downloads</string>
+    <string name="table_export_save_error">Saving the table failed</string>
+    <string name="table_export_share_error">Preparing the table for sharing failed</string>
+    <string name="table_export_page_tab">Page %1$d</string>
+    <string name="table_export_quality_warning">Some cells could not be recognized reliably. Please check them.</string>
+    <string name="table_export_save_downloads">Save to Downloads</string>
+    <string name="table_export_status_preparing_model">Preparing recognition model…</string>
+    <string name="table_export_status_downloading_model">Downloading recognition model…</string>
+    <string name="table_export_status_installing_model">Installing recognition model…</string>
+    <string name="table_export_status_page_progress">Analyzing page %1$d of %2$d…</string>
+    <string name="table_export_status_analyzing">Analyzing document…</string>
+    <string name="table_export_retry">Try again</string>
+    <string name="table_export_restore_draft_title">Continue previous draft?</string>
+    <string name="table_export_restore_draft_message">You have unsaved edits from a previous session for this table. Continue with them or detect the table again?</string>
+    <string name="table_export_restore_draft_continue">Continue</string>
+    <string name="table_export_restore_draft_discard">Detect again</string>
+    <string name="table_export_include_page">Include this page in export</string>
+    <string name="table_export_reset_page">Reset page</string>
+    <string name="table_export_delimiter_label">Delimiter</string>
+    <string name="table_export_protect_formulas">Protect against spreadsheet formulas</string>
+    <string name="table_export_delimiter_comma">Comma (,)</string>
+    <string name="table_export_delimiter_semicolon">Semicolon (;)</string>
+    <string name="table_export_delimiter_tab">Tab</string>
+    <string name="table_export_cell_issue_description">Cell content is uncertain</string>
+    <string name="table_export_row_included">Row included in export</string>
+    <string name="table_export_cell_edit_title">Edit cell</string>
+    <string name="table_export_action_label">Export table as CSV/TSV</string>
+    <string name="table_export_screen_title">Table export</string>
+    <string name="help_item_export_table">Detects table-like content on a page using on-device OCR and lets you review, correct, and export it as a CSV or TSV file for spreadsheet apps.</string>
+    <string name="info_feature_table_export">Table export reconstructs rows and columns from on-device OCR and lets you review and correct them before exporting as CSV or TSV. Recognition runs on demand and results stay local until you save or share them.</string>
+</resources>

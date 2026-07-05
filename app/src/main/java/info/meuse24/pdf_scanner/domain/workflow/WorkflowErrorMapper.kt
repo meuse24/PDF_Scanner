@@ -66,6 +66,8 @@ class WorkflowErrorMapper @Inject constructor(
         is ScanWorkflowError.RequiredFormFieldsMissing ->
             resourceProvider.getString(StringResource.FormRequiredMissing)
         is ScanWorkflowError.FormFillFailed -> resourceProvider.getString(StringResource.FormFillError)
+        ScanWorkflowError.NoTableFound -> resourceProvider.getString(StringResource.TableExtractionNoTable)
+        is ScanWorkflowError.TableExtractionFailed -> mapTableExtractionFailed(error)
     }
 
     private fun mapOcrFailed(error: ScanWorkflowError.OcrFailed): String {
@@ -73,6 +75,14 @@ class WorkflowErrorMapper @Inject constructor(
             resourceProvider.getString(StringResource.OcrModelDownloadFailed)
         } else {
             resourceProvider.getString(StringResource.SearchableFailed)
+        }
+    }
+
+    private fun mapTableExtractionFailed(error: ScanWorkflowError.TableExtractionFailed): String {
+        return if (error.cause is OcrModelInstallException) {
+            resourceProvider.getString(StringResource.OcrModelDownloadFailed)
+        } else {
+            resourceProvider.getString(StringResource.TableExtractionError)
         }
     }
 }

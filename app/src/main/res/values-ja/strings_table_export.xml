@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="table_extraction_no_table">信頼できる表構造を含むページがありません</string>
+    <string name="table_extraction_error">表の抽出に失敗しました</string>
+    <string name="table_export_save_success">%1$d 個のファイルをダウンロードに保存しました</string>
+    <string name="table_export_save_error">表の保存に失敗しました</string>
+    <string name="table_export_share_error">共有用の表の準備に失敗しました</string>
+    <string name="table_export_page_tab">%1$d ページ</string>
+    <string name="table_export_quality_warning">一部のセルを確実に認識できませんでした。内容をご確認ください。</string>
+    <string name="table_export_save_downloads">ダウンロードに保存</string>
+    <string name="table_export_status_preparing_model">認識モデルを準備しています…</string>
+    <string name="table_export_status_downloading_model">認識モデルをダウンロードしています…</string>
+    <string name="table_export_status_installing_model">認識モデルをインストールしています…</string>
+    <string name="table_export_status_page_progress">%1$d / %2$d ページを解析しています…</string>
+    <string name="table_export_status_analyzing">ドキュメントを解析しています…</string>
+    <string name="table_export_retry">再試行</string>
+    <string name="table_export_restore_draft_title">前回の下書きを続けますか？</string>
+    <string name="table_export_restore_draft_message">この表には前回のセッションからの未保存の変更があります。続けますか、それとも表を再検出しますか？</string>
+    <string name="table_export_restore_draft_continue">続ける</string>
+    <string name="table_export_restore_draft_discard">再検出する</string>
+    <string name="table_export_include_page">このページをエクスポートに含める</string>
+    <string name="table_export_reset_page">ページをリセット</string>
+    <string name="table_export_delimiter_label">区切り文字</string>
+    <string name="table_export_protect_formulas">表計算ソフトの数式インジェクションから保護する</string>
+    <string name="table_export_delimiter_comma">カンマ (,)</string>
+    <string name="table_export_delimiter_semicolon">セミコロン (;)</string>
+    <string name="table_export_delimiter_tab">タブ</string>
+    <string name="table_export_cell_issue_description">セルの内容が不確実です</string>
+    <string name="table_export_row_included">この行はエクスポートに含まれています</string>
+    <string name="table_export_cell_edit_title">セルを編集</string>
+    <string name="table_export_action_label">表を CSV/TSV としてエクスポート</string>
+    <string name="table_export_screen_title">表のエクスポート</string>
+    <string name="help_item_export_table">デバイス内 OCR を使ってページ内の表のような内容を検出し、確認・修正したうえで表計算アプリ用の CSV または TSV ファイルとしてエクスポートできます。</string>
+    <string name="info_feature_table_export">表エクスポートはデバイス内 OCR から行と列を再構築し、CSV または TSV としてエクスポートする前に確認・修正できます。認識はオンデマンドで実行され、保存または共有するまで結果はローカルに保持されます。</string>
+</resources>

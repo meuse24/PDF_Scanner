@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="table_extraction_no_table">Aucune page ne contient de structure de tableau fiable</string>
+    <string name="table_extraction_error">Échec de l\'extraction du tableau</string>
+    <string name="table_export_save_success">%1$d fichier(s) enregistré(s) dans Téléchargements</string>
+    <string name="table_export_save_error">Échec de l\'enregistrement du tableau</string>
+    <string name="table_export_share_error">Échec de la préparation du tableau pour le partage</string>
+    <string name="table_export_page_tab">Page %1$d</string>
+    <string name="table_export_quality_warning">Certaines cellules n\'ont pas pu être reconnues de manière fiable. Veuillez les vérifier.</string>
+    <string name="table_export_save_downloads">Enregistrer dans Téléchargements</string>
+    <string name="table_export_status_preparing_model">Préparation du modèle de reconnaissance…</string>
+    <string name="table_export_status_downloading_model">Téléchargement du modèle de reconnaissance…</string>
+    <string name="table_export_status_installing_model">Installation du modèle de reconnaissance…</string>
+    <string name="table_export_status_page_progress">Analyse de la page %1$d sur %2$d…</string>
+    <string name="table_export_status_analyzing">Analyse du document…</string>
+    <string name="table_export_retry">Réessayer</string>
+    <string name="table_export_restore_draft_title">Continuer le brouillon précédent ?</string>
+    <string name="table_export_restore_draft_message">Des modifications non enregistrées d\'une session précédente existent pour ce tableau. Voulez-vous les reprendre ou détecter le tableau à nouveau ?</string>
+    <string name="table_export_restore_draft_continue">Continuer</string>
+    <string name="table_export_restore_draft_discard">Détecter à nouveau</string>
+    <string name="table_export_include_page">Inclure cette page dans l\'export</string>
+    <string name="table_export_reset_page">Réinitialiser la page</string>
+    <string name="table_export_delimiter_label">Séparateur</string>
+    <string name="table_export_protect_formulas">Protéger contre les formules de tableur</string>
+    <string name="table_export_delimiter_comma">Virgule (,)</string>
+    <string name="table_export_delimiter_semicolon">Point-virgule (;)</string>
+    <string name="table_export_delimiter_tab">Tabulation</string>
+    <string name="table_export_cell_issue_description">Le contenu de la cellule est incertain</string>
+    <string name="table_export_row_included">Ligne incluse dans l\'export</string>
+    <string name="table_export_cell_edit_title">Modifier la cellule</string>
+    <string name="table_export_action_label">Exporter le tableau en CSV/TSV</string>
+    <string name="table_export_screen_title">Export de tableau</string>
+    <string name="help_item_export_table">Détecte un contenu de type tableau sur une page via l’OCR sur l’appareil et vous permet de le vérifier, de le corriger et de l’exporter en fichier CSV ou TSV pour tableurs.</string>
+    <string name="info_feature_table_export">L’export de tableaux reconstruit les lignes et les colonnes à partir de l’OCR sur l’appareil et vous permet de les vérifier et de les corriger avant de les exporter en CSV ou TSV. La reconnaissance s’exécute à la demande et les résultats restent locaux jusqu’à ce que vous les enregistriez ou les partagiez.</string>
+</resources>

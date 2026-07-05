@@ -30,6 +30,16 @@ class OcrManagerTest {
     }
 
     @Test
+    fun `auto table extraction uses bundled latin recognizer only`() {
+        val plan = manager.recognitionPlan(
+            languageCode = "auto",
+            usage = OcrUsage.TABLE_EXTRACTION
+        )
+
+        assertEquals(listOf(OcrScript.LATIN), plan)
+    }
+
+    @Test
     fun `manual korean keeps dedicated recognizer`() {
         val plan = manager.recognitionPlan(
             languageCode = "ko",

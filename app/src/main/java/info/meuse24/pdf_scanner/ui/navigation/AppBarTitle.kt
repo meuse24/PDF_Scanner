@@ -72,6 +72,7 @@ internal fun AppBarTitle(
         currentRoute?.startsWith("pdf-metadata/") == true -> stringResource(R.string.metadata_screen_title)
         currentRoute?.startsWith("qr-scan/") == true -> stringResource(R.string.qr_scan_title)
         currentRoute?.startsWith("business-card/") == true -> stringResource(R.string.business_card_title)
+        currentRoute?.startsWith("table-export/") == true -> stringResource(R.string.table_export_screen_title)
         currentRoute == Screen.ImagesToPdf.route -> stringResource(R.string.images_to_pdf_title)
         else -> suffix.ifBlank { appName }
     }

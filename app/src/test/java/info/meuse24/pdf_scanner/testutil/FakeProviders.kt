@@ -84,6 +84,8 @@ private fun StringResource.toAndroidResId(): Int = when (this) {
     StringResource.FormFillError -> R.string.form_fill_error
     StringResource.OcrModelDownloadFailed -> R.string.ocr_model_download_failed
     StringResource.SearchableFailed -> R.string.searchable_failed
+    StringResource.TableExtractionNoTable -> R.string.table_extraction_no_table
+    StringResource.TableExtractionError -> R.string.table_extraction_error
 }
 
 class TestDispatcherProvider(

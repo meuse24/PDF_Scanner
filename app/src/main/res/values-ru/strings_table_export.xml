@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="table_extraction_no_table">Ни на одной странице нет надёжной структуры таблицы</string>
+    <string name="table_extraction_error">Не удалось извлечь таблицу</string>
+    <string name="table_export_save_success">Сохранено файлов: %1$d (в Загрузки)</string>
+    <string name="table_export_save_error">Не удалось сохранить таблицу</string>
+    <string name="table_export_share_error">Не удалось подготовить таблицу для отправки</string>
+    <string name="table_export_page_tab">Страница %1$d</string>
+    <string name="table_export_quality_warning">Некоторые ячейки не удалось распознать надёжно. Пожалуйста, проверьте их.</string>
+    <string name="table_export_save_downloads">Сохранить в Загрузки</string>
+    <string name="table_export_status_preparing_model">Подготовка модели распознавания…</string>
+    <string name="table_export_status_downloading_model">Загрузка модели распознавания…</string>
+    <string name="table_export_status_installing_model">Установка модели распознавания…</string>
+    <string name="table_export_status_page_progress">Анализ страницы %1$d из %2$d…</string>
+    <string name="table_export_status_analyzing">Анализ документа…</string>
+    <string name="table_export_retry">Повторить</string>
+    <string name="table_export_restore_draft_title">Продолжить предыдущий черновик?</string>
+    <string name="table_export_restore_draft_message">Для этой таблицы есть несохранённые изменения из предыдущего сеанса. Продолжить с ними или распознать таблицу заново?</string>
+    <string name="table_export_restore_draft_continue">Продолжить</string>
+    <string name="table_export_restore_draft_discard">Распознать заново</string>
+    <string name="table_export_include_page">Включить эту страницу в экспорт</string>
+    <string name="table_export_reset_page">Сбросить страницу</string>
+    <string name="table_export_delimiter_label">Разделитель</string>
+    <string name="table_export_protect_formulas">Защита от формул электронных таблиц</string>
+    <string name="table_export_delimiter_comma">Запятая (,)</string>
+    <string name="table_export_delimiter_semicolon">Точка с запятой (;)</string>
+    <string name="table_export_delimiter_tab">Табуляция</string>
+    <string name="table_export_cell_issue_description">Содержимое ячейки под вопросом</string>
+    <string name="table_export_row_included">Строка включена в экспорт</string>
+    <string name="table_export_cell_edit_title">Изменить ячейку</string>
+    <string name="table_export_action_label">Экспортировать таблицу как CSV/TSV</string>
+    <string name="table_export_screen_title">Экспорт таблицы</string>
+    <string name="help_item_export_table">Обнаруживает содержимое, похожее на таблицу, на странице с помощью локального OCR и позволяет проверить, исправить и экспортировать его в файл CSV или TSV для табличных приложений.</string>
+    <string name="info_feature_table_export">Экспорт таблиц восстанавливает строки и столбцы на основе локального OCR и позволяет проверить и исправить их перед экспортом в CSV или TSV. Распознавание выполняется по запросу, а результаты остаются локальными, пока вы их не сохраните или не поделитесь ими.</string>
+</resources>

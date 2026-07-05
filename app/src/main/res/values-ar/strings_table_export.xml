@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="table_extraction_no_table">لا تحتوي أي صفحة على بنية جدول موثوقة</string>
+    <string name="table_extraction_error">فشل استخراج الجدول</string>
+    <string name="table_export_save_success">تم حفظ %1$d ملف(ات) في التنزيلات</string>
+    <string name="table_export_save_error">فشل حفظ الجدول</string>
+    <string name="table_export_share_error">فشل تجهيز الجدول للمشاركة</string>
+    <string name="table_export_page_tab">الصفحة %1$d</string>
+    <string name="table_export_quality_warning">تعذر التعرف على بعض الخلايا بشكل موثوق. يُرجى مراجعتها.</string>
+    <string name="table_export_save_downloads">الحفظ في التنزيلات</string>
+    <string name="table_export_status_preparing_model">جارٍ تجهيز نموذج التعرف…</string>
+    <string name="table_export_status_downloading_model">جارٍ تنزيل نموذج التعرف…</string>
+    <string name="table_export_status_installing_model">جارٍ تثبيت نموذج التعرف…</string>
+    <string name="table_export_status_page_progress">جارٍ تحليل الصفحة %1$d من %2$d…</string>
+    <string name="table_export_status_analyzing">جارٍ تحليل المستند…</string>
+    <string name="table_export_retry">إعادة المحاولة</string>
+    <string name="table_export_restore_draft_title">متابعة المسودة السابقة؟</string>
+    <string name="table_export_restore_draft_message">توجد تعديلات غير محفوظة من جلسة سابقة لهذا الجدول. هل تريد المتابعة بها أم إعادة اكتشاف الجدول؟</string>
+    <string name="table_export_restore_draft_continue">متابعة</string>
+    <string name="table_export_restore_draft_discard">إعادة الاكتشاف</string>
+    <string name="table_export_include_page">تضمين هذه الصفحة في التصدير</string>
+    <string name="table_export_reset_page">إعادة تعيين الصفحة</string>
+    <string name="table_export_delimiter_label">الفاصل</string>
+    <string name="table_export_protect_formulas">الحماية من صيغ جداول البيانات</string>
+    <string name="table_export_delimiter_comma">فاصلة (,)</string>
+    <string name="table_export_delimiter_semicolon">فاصلة منقوطة (;)</string>
+    <string name="table_export_delimiter_tab">علامة جدولة</string>
+    <string name="table_export_cell_issue_description">محتوى الخلية غير مؤكد</string>
+    <string name="table_export_row_included">الصف مضمّن في التصدير</string>
+    <string name="table_export_cell_edit_title">تعديل الخلية</string>
+    <string name="table_export_action_label">تصدير الجدول كـ CSV/TSV</string>
+    <string name="table_export_screen_title">تصدير الجدول</string>
+    <string name="help_item_export_table">يكتشف محتوى يشبه الجدول في الصفحة باستخدام التعرف الضوئي على الأحرف (OCR) على الجهاز، ويتيح لك مراجعته وتصحيحه وتصديره كملف CSV أو TSV لبرامج الجداول الحسابية.</string>
+    <string name="info_feature_table_export">يعيد تصدير الجداول بناء الصفوف والأعمدة من التعرف الضوئي على الأحرف على الجهاز، ويتيح لك مراجعتها وتصحيحها قبل تصديرها بصيغة CSV أو TSV. يعمل التعرف عند الطلب وتبقى النتائج محلية حتى تحفظها أو تشاركها.</string>
+</resources>

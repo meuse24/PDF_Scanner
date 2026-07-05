@@ -148,6 +148,7 @@ fun PdfViewerScreen(
     onNavigateToQrScan: (Long) -> Unit,
     onNavigateToBusinessCard: (Long) -> Unit,
     onNavigateToTranslation: (Long) -> Unit,
+    onNavigateToTableExport: (Long) -> Unit,
     viewModel: PdfViewerViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -490,6 +491,7 @@ fun PdfViewerScreen(
                             ScanAction.ScanQrCodes -> onNavigateToQrScan(record.id)
                             ScanAction.ScanBusinessCard -> onNavigateToBusinessCard(record.id)
                             ScanAction.TranslateText -> onNavigateToTranslation(record.id)
+                            ScanAction.ExportTableCsv -> onNavigateToTableExport(record.id)
                             ScanAction.ExportAsJpg,
                             ScanAction.ExportDocx,
                             ScanAction.ExportOcrText,

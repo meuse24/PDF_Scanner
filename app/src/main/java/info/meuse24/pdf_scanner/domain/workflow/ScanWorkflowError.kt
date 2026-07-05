@@ -57,4 +57,6 @@ sealed interface ScanWorkflowError {
     data object FormSignedLocked : ScanWorkflowError
     data class RequiredFormFieldsMissing(val fieldLabels: List<String>) : ScanWorkflowError
     data class FormFillFailed(override val cause: Throwable) : ScanWorkflowError
+    data object NoTableFound : ScanWorkflowError
+    data class TableExtractionFailed(override val cause: Throwable) : ScanWorkflowError
 }

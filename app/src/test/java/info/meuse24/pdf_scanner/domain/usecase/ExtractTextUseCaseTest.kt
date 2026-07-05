@@ -348,5 +348,17 @@ private class FakeTextRecognizerRunner(
             onPage(text.text, stats)
         }
     }
+
+    override suspend fun processPagesFullText(
+        pdfFile: File,
+        recognizer: TextRecognizer,
+        renderScale: Float,
+        onPage: suspend (pageIndex: Int, pageCount: Int, bitmapWidth: Int, bitmapHeight: Int, text: com.google.mlkit.vision.text.Text) -> Unit
+    ) {
+        sourceFiles += pdfFile
+        pageImages.forEachIndexed { index, image ->
+            onPage(index, pageImages.size, 0, 0, recognizeFullText(recognizer, image))
+        }
+    }
 }
 

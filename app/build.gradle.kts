@@ -77,7 +77,7 @@ android {
         localeFilters += listOf("en", "de", "es", "fr", "pt", "zh-rCN", "ar", "ja", "ru", "hi")
         // TFLite-Modelle (falls von gebündelten Libs mitgeliefert) und die kleinen
         // Noto-Fallback-Fonts bleiben unkomprimiert (mmap). Die 36 MB grosse
-        // NotoSansCJKjp-VF.ttf ist bewusst NICHT gelistet: sie wird nur lazy beim
+        // NotoSansCJKjp-VF.ttf ist bewusst NICHT gelistet: Sie wird nur lazy beim
         // Formular-Speichern via InputStream gelesen, Kompression spart ~16 MB im APK und
         // kostet beim Lesen nur Millisekunden.
         noCompress += listOf(

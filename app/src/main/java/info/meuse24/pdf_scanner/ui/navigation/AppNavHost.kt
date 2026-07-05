@@ -57,6 +57,7 @@ import info.meuse24.pdf_scanner.ui.settings.SettingsScreen
 import info.meuse24.pdf_scanner.ui.settings.SettingsViewModel
 import info.meuse24.pdf_scanner.ui.signature.SignatureScreen
 import info.meuse24.pdf_scanner.ui.split.SplitScreen
+import info.meuse24.pdf_scanner.ui.tableexport.TableExportScreen
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.ui.trash.TrashScreen
 import info.meuse24.pdf_scanner.ui.viewer.PdfViewerScreen
@@ -148,6 +149,7 @@ private fun NavGraphBuilder.homeNavGraph(
                 onBusinessCard = { scanId -> navController.navigate(Screen.BusinessCard.createRoute(scanId)) },
                 onOcrReview = { scanId -> navController.navigate(Screen.OcrReview.createRoute(scanId)) },
                 onTranslation = { scanId -> navController.navigate(Screen.Translation.createRoute(scanId)) },
+                onExportTableCsv = { scanId -> navController.navigate(Screen.TableExport.createRoute(scanId)) },
                 onViewer = { scanId -> navController.navigate(Screen.Viewer.createRoute(scanId)) },
                 onImagesToPdf = { navController.navigate(Screen.ImagesToPdf.route) }
             )
@@ -277,8 +279,15 @@ private fun NavGraphBuilder.viewerNavGraph(
             onNavigateToPdfMetadata = { scanId -> navController.navigate(Screen.PdfMetadata.createRoute(scanId)) },
             onNavigateToQrScan = { scanId -> navController.navigate(Screen.QrScan.createRoute(scanId)) },
             onNavigateToBusinessCard = { scanId -> navController.navigate(Screen.BusinessCard.createRoute(scanId)) },
-            onNavigateToTranslation = { scanId -> navController.navigate(Screen.Translation.createRoute(scanId)) }
+            onNavigateToTranslation = { scanId -> navController.navigate(Screen.Translation.createRoute(scanId)) },
+            onNavigateToTableExport = { scanId -> navController.navigate(Screen.TableExport.createRoute(scanId)) }
         )
+    }
+    composable(
+        route = Screen.TableExport.route,
+        arguments = listOf(navArgument("scanId") { type = NavType.LongType })
+    ) {
+        TableExportScreen()
     }
 }
 

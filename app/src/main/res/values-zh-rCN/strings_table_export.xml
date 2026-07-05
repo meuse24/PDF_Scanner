@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="table_extraction_no_table">没有任何页面包含可靠的表格结构</string>
+    <string name="table_extraction_error">表格提取失败</string>
+    <string name="table_export_save_success">已保存 %1$d 个文件到下载目录</string>
+    <string name="table_export_save_error">保存表格失败</string>
+    <string name="table_export_share_error">准备分享表格失败</string>
+    <string name="table_export_page_tab">第 %1$d 页</string>
+    <string name="table_export_quality_warning">部分单元格无法可靠识别，请检查。</string>
+    <string name="table_export_save_downloads">保存到下载目录</string>
+    <string name="table_export_status_preparing_model">正在准备识别模型…</string>
+    <string name="table_export_status_downloading_model">正在下载识别模型…</string>
+    <string name="table_export_status_installing_model">正在安装识别模型…</string>
+    <string name="table_export_status_page_progress">正在分析第 %1$d 页，共 %2$d 页…</string>
+    <string name="table_export_status_analyzing">正在分析文档…</string>
+    <string name="table_export_retry">重试</string>
+    <string name="table_export_restore_draft_title">继续之前的草稿？</string>
+    <string name="table_export_restore_draft_message">此表格存在上次会话中未保存的更改。是继续使用这些更改，还是重新识别表格？</string>
+    <string name="table_export_restore_draft_continue">继续</string>
+    <string name="table_export_restore_draft_discard">重新识别</string>
+    <string name="table_export_include_page">在导出中包含此页</string>
+    <string name="table_export_reset_page">重置此页</string>
+    <string name="table_export_delimiter_label">分隔符</string>
+    <string name="table_export_protect_formulas">防止电子表格公式注入</string>
+    <string name="table_export_delimiter_comma">逗号 (,)</string>
+    <string name="table_export_delimiter_semicolon">分号 (;)</string>
+    <string name="table_export_delimiter_tab">制表符</string>
+    <string name="table_export_cell_issue_description">单元格内容不确定</string>
+    <string name="table_export_row_included">该行已包含在导出中</string>
+    <string name="table_export_cell_edit_title">编辑单元格</string>
+    <string name="table_export_action_label">以 CSV/TSV 格式导出表格</string>
+    <string name="table_export_screen_title">表格导出</string>
+    <string name="help_item_export_table">通过设备端 OCR 检测页面中的表格内容，并允许你在导出为 CSV 或 TSV 文件（供电子表格应用使用）之前查看和更正它。</string>
+    <string name="info_feature_table_export">表格导出功能根据设备端 OCR 重建行和列，并允许你在导出为 CSV 或 TSV 之前查看和更正。识别按需运行，结果在你保存或分享之前保持在本地。</string>
+</resources>

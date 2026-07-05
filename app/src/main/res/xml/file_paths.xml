@@ -2,4 +2,5 @@
 <paths>
     <files-path name="scans" path="scans/" />
     <cache-path name="vcards" path="vcards/" />
+    <cache-path name="csv" path="csv/" />
 </paths>

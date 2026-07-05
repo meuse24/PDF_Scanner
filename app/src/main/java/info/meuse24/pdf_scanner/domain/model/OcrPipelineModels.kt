@@ -3,7 +3,8 @@ package info.meuse24.pdf_scanner.domain.model
 enum class OcrUsage {
     EXTRACT_TEXT,
     SEARCHABLE_PDF,
-    SCAN_BARCODES
+    SCAN_BARCODES,
+    TABLE_EXTRACTION
 }
 
 enum class OcrScript {

@@ -23,15 +23,19 @@ class DocumentWorkflowGuard @Inject constructor(
             return WorkflowResult.Failure(ScanWorkflowError.MissingFiles(listOf(record.filename)))
         }
 
-        validate(input)?.let { error ->
-            return WorkflowResult.Failure(error)
-        }
-
-        if (requireUnencrypted && pdfSecurityOps.isPdfEncrypted(input)) {
-            return WorkflowResult.Failure(ScanWorkflowError.ProtectedPdfUnsupported)
-        }
-
+        // validate()/isPdfEncrypted() laufen bewusst im selben try wie block(): ein
+        // beschädigtes PDF kann z. B. beim Encrypted-Check eine IOException auslösen (PDFBox
+        // parst dabei die Datei), die sonst ungefiltert aus dem Workflow werfen würde, statt als
+        // WorkflowResult.Failure zurückzukommen.
         return try {
+            validate(input)?.let { error ->
+                return WorkflowResult.Failure(error)
+            }
+
+            if (requireUnencrypted && pdfSecurityOps.isPdfEncrypted(input)) {
+                return WorkflowResult.Failure(ScanWorkflowError.ProtectedPdfUnsupported)
+            }
+
             WorkflowResult.Success(block())
         } catch (exception: CancellationException) {
             throw exception

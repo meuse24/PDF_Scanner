@@ -102,6 +102,7 @@ sealed interface ScanAction {
     data object ScanBusinessCard : ScanAction
     data object TranslateText : ScanAction
     data object Print : ScanAction
+    data object ExportTableCsv : ScanAction
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -146,6 +147,7 @@ fun DocumentEditSheet(
     val showExportAsJpg = showExportAsJpgAction && notEncrypted
     val showExportDocx = showTextExportActions
     val showExportOcrText = showTextExportActions && !record.extractedText.isNullOrBlank()
+    val showExportTableCsv = notEncrypted && record.pageCount >= 1
     val showReorder = notEncrypted && multiPage
     val showRotate = notEncrypted
     val showAppend = notEncrypted
@@ -174,7 +176,8 @@ fun DocumentEditSheet(
         showDuplicatePages || showSplit || showDeletePages
     val showEditSection = showAnnotate || showSignature || showPageNumbers || showTextWatermark || showRedact
     val showAnalyseSection = showQrScan || showBusinessCard || showTranslateText || showRemoveTextLayer
-    val showExportSection = showExportAsJpg || showGrayscale || showCompress || showExportDocx || showExportOcrText
+    val showExportSection = showExportAsJpg || showGrayscale || showCompress || showExportDocx ||
+        showExportOcrText || showExportTableCsv
     val showSecuritySection = showProtect || showRestrictUsage || showUnlock || showRemovePassword
 
     LazyColumn(
@@ -391,6 +394,13 @@ fun DocumentEditSheet(
             item {
                 SheetItem(Icons.Default.Download, R.string.ocr_export_as_file, true) {
                     onAction(ScanAction.ExportOcrText)
+                }
+            }
+        }
+        if (showExportTableCsv) {
+            item {
+                SheetItem(Icons.Default.FormatListNumbered, R.string.table_export_action_label, true) {
+                    onAction(ScanAction.ExportTableCsv)
                 }
             }
         }

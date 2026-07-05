@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="table_extraction_no_table">Keine Seite enthält eine zuverlässig erkennbare Tabellenstruktur</string>
+    <string name="table_extraction_error">Tabellenerkennung fehlgeschlagen</string>
+    <string name="table_export_save_success">%1$d Datei(en) in Downloads gespeichert</string>
+    <string name="table_export_save_error">Speichern der Tabelle fehlgeschlagen</string>
+    <string name="table_export_share_error">Tabelle konnte nicht zum Teilen vorbereitet werden</string>
+    <string name="table_export_page_tab">Seite %1$d</string>
+    <string name="table_export_quality_warning">Einige Zellen konnten nicht zuverlässig erkannt werden. Bitte prüfen.</string>
+    <string name="table_export_save_downloads">In Downloads speichern</string>
+    <string name="table_export_status_preparing_model">Erkennungsmodell wird vorbereitet …</string>
+    <string name="table_export_status_downloading_model">Erkennungsmodell wird heruntergeladen …</string>
+    <string name="table_export_status_installing_model">Erkennungsmodell wird installiert …</string>
+    <string name="table_export_status_page_progress">Seite %1$d von %2$d wird analysiert …</string>
+    <string name="table_export_status_analyzing">Dokument wird analysiert …</string>
+    <string name="table_export_retry">Erneut versuchen</string>
+    <string name="table_export_restore_draft_title">Vorherigen Entwurf fortsetzen?</string>
+    <string name="table_export_restore_draft_message">Für diese Tabelle liegen ungespeicherte Änderungen aus einer vorherigen Sitzung vor. Damit fortfahren oder die Tabelle neu erkennen?</string>
+    <string name="table_export_restore_draft_continue">Fortsetzen</string>
+    <string name="table_export_restore_draft_discard">Neu erkennen</string>
+    <string name="table_export_include_page">Diese Seite in den Export einschließen</string>
+    <string name="table_export_reset_page">Seite zurücksetzen</string>
+    <string name="table_export_delimiter_label">Trennzeichen</string>
+    <string name="table_export_protect_formulas">Vor Tabellenkalkulations-Formeln schützen</string>
+    <string name="table_export_delimiter_comma">Komma (,)</string>
+    <string name="table_export_delimiter_semicolon">Semikolon (;)</string>
+    <string name="table_export_delimiter_tab">Tabulator</string>
+    <string name="table_export_cell_issue_description">Zellinhalt ist unsicher</string>
+    <string name="table_export_row_included">Zeile im Export enthalten</string>
+    <string name="table_export_cell_edit_title">Zelle bearbeiten</string>
+    <string name="table_export_action_label">Tabelle als CSV/TSV exportieren</string>
+    <string name="table_export_screen_title">Tabellenexport</string>
+    <string name="help_item_export_table">Erkennt tabellenartige Inhalte auf einer Seite per On-Device-OCR und lässt dich sie vor dem Export als CSV- oder TSV-Datei für Tabellenprogramme prüfen und korrigieren.</string>
+    <string name="info_feature_table_export">Der Tabellenexport rekonstruiert Zeilen und Spalten aus On-Device-OCR und lässt dich sie vor dem Export als CSV oder TSV prüfen und korrigieren. Die Erkennung läuft bei Bedarf, Ergebnisse bleiben lokal, bis du sie speicherst oder teilst.</string>
+</resources>

@@ -58,7 +58,8 @@ class OcrManager @Inject constructor() {
             // vorgeladen). Nicht-lateinische Modelle werden nur durch eine konkrete
             // Sprachauswahl aktiviert.
             OcrUsage.EXTRACT_TEXT,
-            OcrUsage.SEARCHABLE_PDF -> listOf(OcrScript.LATIN)
+            OcrUsage.SEARCHABLE_PDF,
+            OcrUsage.TABLE_EXTRACTION -> listOf(OcrScript.LATIN)
             // Barcode-Scanning nutzt keinen TextRecognizer — kein Fallback erforderlich.
             OcrUsage.SCAN_BARCODES -> emptyList()
         }

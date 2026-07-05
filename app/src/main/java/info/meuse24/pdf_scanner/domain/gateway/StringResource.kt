@@ -55,5 +55,7 @@ enum class StringResource {
     FormRequiredMissing,
     FormFillError,
     OcrModelDownloadFailed,
-    SearchableFailed
+    SearchableFailed,
+    TableExtractionNoTable,
+    TableExtractionError
 }

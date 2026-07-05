@@ -20,10 +20,24 @@ import javax.inject.Inject
 internal const val PDF_OCR_RENDER_SCALE   = 150f / 72f   // ≈ 2.083
 internal const val PDF_OCR_MAX_BITMAP_SIDE = 3_000
 
-/** Berechnet Bitmap-Dimensionen für OCR: 150-DPI-Skalierung + Größen-Cap. */
-internal fun ocrBitmapSize(pageWidthPts: Int, pageHeightPts: Int): Pair<Int, Int> {
-    val rawW  = (pageWidthPts  * PDF_OCR_RENDER_SCALE).toInt().coerceAtLeast(1)
-    val rawH  = (pageHeightPts * PDF_OCR_RENDER_SCALE).toInt().coerceAtLeast(1)
+/**
+ * Eigener Render-Standard für den Tabellenpfad: 220 DPI statt 150 DPI. Bei eng gedruckten
+ * Kontoauszügen (~6-pt-Schrift) liegen Zeichen bei 150 DPI nur bei ~12 px Höhe — unter der
+ * ML-Kit-Empfehlung von ~16 px, wodurch benachbarte Spalten schon auf Bitmap-Ebene zu einer
+ * Line verschmelzen können. 220 DPI bleibt unter dem 3 000-px-Cap (siehe
+ * docs/table-extraction-csv-implementation-plan.md, Abschnitt "Render-Auflösung des
+ * Tabellenpfads").
+ */
+internal const val PDF_TABLE_RENDER_SCALE = 220f / 72f
+
+/** Berechnet Bitmap-Dimensionen für OCR: DPI-Skalierung (Default: 150 DPI) + Größen-Cap. */
+internal fun ocrBitmapSize(
+    pageWidthPts: Int,
+    pageHeightPts: Int,
+    renderScale: Float = PDF_OCR_RENDER_SCALE
+): Pair<Int, Int> {
+    val rawW  = (pageWidthPts  * renderScale).toInt().coerceAtLeast(1)
+    val rawH  = (pageHeightPts * renderScale).toInt().coerceAtLeast(1)
     val longer = maxOf(rawW, rawH)
     return if (longer > PDF_OCR_MAX_BITMAP_SIDE) {
         rawW * PDF_OCR_MAX_BITMAP_SIDE / longer to rawH * PDF_OCR_MAX_BITMAP_SIDE / longer
@@ -33,27 +47,35 @@ internal fun ocrBitmapSize(pageWidthPts: Int, pageHeightPts: Int): Pair<Int, Int
 }
 
 interface PdfPageInputImageLoader {
+    /**
+     * @param onPageImage erhält zusätzlich zum Bild den nullbasierten Seitenindex, die
+     * Gesamtseitenzahl und die tatsächlichen Bitmap-Abmessungen — benötigt für Positionsmodelle
+     * (Tabellenpfad) und Seitenfortschritt.
+     */
     suspend fun forEachPageImage(
         sourceFile: File,
-        onPageImage: suspend (InputImage) -> Unit
+        renderScale: Float = PDF_OCR_RENDER_SCALE,
+        onPageImage: suspend (pageIndex: Int, pageCount: Int, bitmapWidth: Int, bitmapHeight: Int, image: InputImage) -> Unit
     )
 }
 
 class AndroidPdfPageInputImageLoader @Inject constructor() : PdfPageInputImageLoader {
     override suspend fun forEachPageImage(
         sourceFile: File,
-        onPageImage: suspend (InputImage) -> Unit
+        renderScale: Float,
+        onPageImage: suspend (pageIndex: Int, pageCount: Int, bitmapWidth: Int, bitmapHeight: Int, image: InputImage) -> Unit
     ) {
         ParcelFileDescriptor.open(sourceFile, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
             PdfRenderer(pfd).use { renderer ->
-                repeat(renderer.pageCount) { pageIndex ->
+                val pageCount = renderer.pageCount
+                repeat(pageCount) { pageIndex ->
                     renderer.openPage(pageIndex).use { page ->
-                        val (bitmapW, bitmapH) = ocrBitmapSize(page.width, page.height)
+                        val (bitmapW, bitmapH) = ocrBitmapSize(page.width, page.height, renderScale)
                         val bitmap = createBitmap(bitmapW, bitmapH, Bitmap.Config.ARGB_8888)
                         try {
                             bitmap.eraseColor(Color.WHITE)
                             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                            onPageImage(InputImage.fromBitmap(bitmap, 0))
+                            onPageImage(pageIndex, pageCount, bitmapW, bitmapH, InputImage.fromBitmap(bitmap, 0))
                         } finally {
                             bitmap.recycle()
                         }

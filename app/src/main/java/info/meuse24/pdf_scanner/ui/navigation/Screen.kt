@@ -88,4 +88,7 @@ sealed class Screen(val route: String) {
     data object Translation : Screen("translation/{scanId}") {
         fun createRoute(scanId: Long) = "translation/$scanId"
     }
+    data object TableExport : Screen("table-export/{scanId}") {
+        fun createRoute(scanId: Long) = "table-export/$scanId"
+    }
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="table_extraction_no_table">Nenhuma página contém uma estrutura de tabela fiável</string>
+    <string name="table_extraction_error">Falha ao extrair a tabela</string>
+    <string name="table_export_save_success">%1$d ficheiro(s) guardado(s) em Downloads</string>
+    <string name="table_export_save_error">Falha ao guardar a tabela</string>
+    <string name="table_export_share_error">Falha ao preparar a tabela para partilha</string>
+    <string name="table_export_page_tab">Página %1$d</string>
+    <string name="table_export_quality_warning">Algumas células não puderam ser reconhecidas com fiabilidade. Por favor, verifique-as.</string>
+    <string name="table_export_save_downloads">Guardar em Downloads</string>
+    <string name="table_export_status_preparing_model">A preparar o modelo de reconhecimento…</string>
+    <string name="table_export_status_downloading_model">A transferir o modelo de reconhecimento…</string>
+    <string name="table_export_status_installing_model">A instalar o modelo de reconhecimento…</string>
+    <string name="table_export_status_page_progress">A analisar a página %1$d de %2$d…</string>
+    <string name="table_export_status_analyzing">A analisar o documento…</string>
+    <string name="table_export_retry">Tentar novamente</string>
+    <string name="table_export_restore_draft_title">Continuar rascunho anterior?</string>
+    <string name="table_export_restore_draft_message">Existem alterações não guardadas de uma sessão anterior para esta tabela. Pretende continuar com elas ou detetar a tabela novamente?</string>
+    <string name="table_export_restore_draft_continue">Continuar</string>
+    <string name="table_export_restore_draft_discard">Detetar novamente</string>
+    <string name="table_export_include_page">Incluir esta página na exportação</string>
+    <string name="table_export_reset_page">Repor página</string>
+    <string name="table_export_delimiter_label">Delimitador</string>
+    <string name="table_export_protect_formulas">Proteger contra fórmulas de folhas de cálculo</string>
+    <string name="table_export_delimiter_comma">Vírgula (,)</string>
+    <string name="table_export_delimiter_semicolon">Ponto e vírgula (;)</string>
+    <string name="table_export_delimiter_tab">Tabulação</string>
+    <string name="table_export_cell_issue_description">O conteúdo da célula é incerto</string>
+    <string name="table_export_row_included">Linha incluída na exportação</string>
+    <string name="table_export_cell_edit_title">Editar célula</string>
+    <string name="table_export_action_label">Exportar tabela como CSV/TSV</string>
+    <string name="table_export_screen_title">Exportação de tabela</string>
+    <string name="help_item_export_table">Detecta conteúdo em formato de tabela em uma página por meio de OCR no dispositivo e permite revisar, corrigir e exportar como arquivo CSV ou TSV para planilhas.</string>
+    <string name="info_feature_table_export">A exportação de tabelas reconstrói linhas e colunas a partir do OCR no dispositivo e permite revisá-las e corrigi-las antes de exportar como CSV ou TSV. O reconhecimento é executado sob demanda e os resultados permanecem locais até que você os salve ou compartilhe.</string>
+</resources>

@@ -25,6 +25,7 @@ data class HomeNavigationCallbacks(
     val onBusinessCard: (Long) -> Unit = {},
     val onOcrReview: (Long) -> Unit = {},
     val onTranslation: (Long) -> Unit = {},
+    val onExportTableCsv: (Long) -> Unit = {},
     val onViewer: (Long) -> Unit = {},
     val onImagesToPdf: () -> Unit = {}
 )

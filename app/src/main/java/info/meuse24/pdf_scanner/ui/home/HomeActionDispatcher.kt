@@ -27,6 +27,7 @@ internal data class HomeScanActionNavigator(
     val onQrScan: (Long) -> Unit,
     val onBusinessCard: (Long) -> Unit,
     val onTranslateText: (Long) -> Unit,
+    val onExportTableCsv: (Long) -> Unit,
     val onExportAsJpg: (Document) -> Unit,
     val onExportDocx: (Document) -> Unit,
     val onExportOcrText: (Document) -> Unit,
@@ -65,6 +66,7 @@ internal fun dispatchHomeScanAction(
         ScanAction.Grayscale -> navigator.onGrayscale(record.id)
         ScanAction.PdfMetadata -> navigator.onPdfMetadata(record.id)
         ScanAction.TranslateText -> navigator.onTranslateText(record.id)
+        ScanAction.ExportTableCsv -> navigator.onExportTableCsv(record.id)
         ScanAction.ScanQrCodes -> navigator.onQrScan(record.id)
         ScanAction.ScanBusinessCard -> navigator.onBusinessCard(record.id)
         ScanAction.Print -> navigator.onPrint(record)

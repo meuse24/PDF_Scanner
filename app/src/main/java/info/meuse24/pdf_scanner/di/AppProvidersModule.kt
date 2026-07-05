@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import info.meuse24.pdf_scanner.util.AndroidResourceProvider
 import info.meuse24.pdf_scanner.util.AndroidStorageProvider
+import info.meuse24.pdf_scanner.util.AndroidCsvShareFileStore
 import info.meuse24.pdf_scanner.util.AndroidDownloadsStorage
 import info.meuse24.pdf_scanner.util.AndroidOcrInputImageLoader
 import info.meuse24.pdf_scanner.util.AndroidPdfPageInputImageLoader
@@ -16,10 +17,13 @@ import info.meuse24.pdf_scanner.domain.gateway.DocumentFileStore
 import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
 import info.meuse24.pdf_scanner.domain.gateway.DocxBuilder
 import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
+import info.meuse24.pdf_scanner.domain.gateway.CsvShareFileStore
 import info.meuse24.pdf_scanner.domain.gateway.OcrDocumentTextExtractor
+import info.meuse24.pdf_scanner.domain.gateway.OcrPositionedTextExtractor
 import info.meuse24.pdf_scanner.domain.gateway.PdfPageJpgRenderer
 import info.meuse24.pdf_scanner.domain.gateway.QrCodeReader
 import info.meuse24.pdf_scanner.domain.gateway.ReviewPromptPolicy
+import info.meuse24.pdf_scanner.domain.gateway.TableDraftStore
 import info.meuse24.pdf_scanner.util.OcrInputImageLoader
 import info.meuse24.pdf_scanner.util.OcrModelInstaller
 import info.meuse24.pdf_scanner.util.PdfPageInputImageLoader
@@ -27,8 +31,10 @@ import info.meuse24.pdf_scanner.util.PdfPageBitmapRenderer
 import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import info.meuse24.pdf_scanner.domain.gateway.SearchablePdfGenerator
 import info.meuse24.pdf_scanner.domain.gateway.StorageProvider
+import info.meuse24.pdf_scanner.util.FileTableDraftStore
 import info.meuse24.pdf_scanner.util.FileUtil
 import info.meuse24.pdf_scanner.util.MlKitOcrDocumentTextExtractor
+import info.meuse24.pdf_scanner.util.MlKitOcrPositionedTextExtractor
 import info.meuse24.pdf_scanner.util.MlKitTextRecognizerRunner
 import info.meuse24.pdf_scanner.util.QrCodeScanner
 import info.meuse24.pdf_scanner.util.SearchablePdfBuilder
@@ -129,6 +135,24 @@ abstract class AppProvidersModule {
     abstract fun bindOcrDocumentTextExtractor(
         impl: MlKitOcrDocumentTextExtractor
     ): OcrDocumentTextExtractor
+
+    @Binds
+    @Singleton
+    abstract fun bindOcrPositionedTextExtractor(
+        impl: MlKitOcrPositionedTextExtractor
+    ): OcrPositionedTextExtractor
+
+    @Binds
+    @Singleton
+    abstract fun bindCsvShareFileStore(
+        impl: AndroidCsvShareFileStore
+    ): CsvShareFileStore
+
+    @Binds
+    @Singleton
+    abstract fun bindTableDraftStore(
+        impl: FileTableDraftStore
+    ): TableDraftStore
 
     @Binds
     @Singleton

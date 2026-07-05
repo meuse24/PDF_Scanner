@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="table_extraction_no_table">किसी भी पेज में विश्वसनीय तालिका संरचना नहीं मिली</string>
+    <string name="table_extraction_error">तालिका निकालना विफल रहा</string>
+    <string name="table_export_save_success">%1$d फ़ाइल(ें) डाउनलोड्स में सहेजी गईं</string>
+    <string name="table_export_save_error">तालिका सहेजना विफल रहा</string>
+    <string name="table_export_share_error">साझा करने के लिए तालिका तैयार करना विफल रहा</string>
+    <string name="table_export_page_tab">पेज %1$d</string>
+    <string name="table_export_quality_warning">कुछ सेल विश्वसनीय रूप से पहचाने नहीं जा सके। कृपया उन्हें जाँचें।</string>
+    <string name="table_export_save_downloads">डाउनलोड्स में सहेजें</string>
+    <string name="table_export_status_preparing_model">पहचान मॉडल तैयार किया जा रहा है…</string>
+    <string name="table_export_status_downloading_model">पहचान मॉडल डाउनलोड किया जा रहा है…</string>
+    <string name="table_export_status_installing_model">पहचान मॉडल इंस्टॉल किया जा रहा है…</string>
+    <string name="table_export_status_page_progress">पेज %1$d / %2$d का विश्लेषण किया जा रहा है…</string>
+    <string name="table_export_status_analyzing">दस्तावेज़ का विश्लेषण किया जा रहा है…</string>
+    <string name="table_export_retry">पुनः प्रयास करें</string>
+    <string name="table_export_restore_draft_title">पिछला ड्राफ़्ट जारी रखें?</string>
+    <string name="table_export_restore_draft_message">इस तालिका के लिए पिछले सत्र से असहेजे गए बदलाव मौजूद हैं। क्या आप उनके साथ जारी रखना चाहते हैं या तालिका को फिर से पहचानना चाहते हैं?</string>
+    <string name="table_export_restore_draft_continue">जारी रखें</string>
+    <string name="table_export_restore_draft_discard">फिर से पहचानें</string>
+    <string name="table_export_include_page">इस पेज को निर्यात में शामिल करें</string>
+    <string name="table_export_reset_page">पेज रीसेट करें</string>
+    <string name="table_export_delimiter_label">विभाजक</string>
+    <string name="table_export_protect_formulas">स्प्रेडशीट फ़ॉर्मूला से सुरक्षा करें</string>
+    <string name="table_export_delimiter_comma">अल्पविराम (,)</string>
+    <string name="table_export_delimiter_semicolon">अर्धविराम (;)</string>
+    <string name="table_export_delimiter_tab">टैब</string>
+    <string name="table_export_cell_issue_description">सेल की सामग्री अनिश्चित है</string>
+    <string name="table_export_row_included">पंक्ति निर्यात में शामिल है</string>
+    <string name="table_export_cell_edit_title">सेल संपादित करें</string>
+    <string name="table_export_action_label">तालिका को CSV/TSV के रूप में निर्यात करें</string>
+    <string name="table_export_screen_title">तालिका निर्यात</string>
+    <string name="help_item_export_table">ऑन-डिवाइस OCR की मदद से पेज पर तालिका जैसी सामग्री का पता लगाता है और उसे स्प्रेडशीट ऐप के लिए CSV या TSV फ़ाइल के रूप में निर्यात करने से पहले जाँचने और सुधारने देता है।</string>
+    <string name="info_feature_table_export">तालिका निर्यात ऑन-डिवाइस OCR से पंक्तियाँ और स्तंभ पुनर्निर्मित करता है और CSV या TSV के रूप में निर्यात करने से पहले उन्हें जाँचने और सुधारने देता है। पहचान माँग पर चलती है, और जब तक आप परिणाम सहेजें या साझा न करें, वे स्थानीय बने रहते हैं।</string>
+</resources>

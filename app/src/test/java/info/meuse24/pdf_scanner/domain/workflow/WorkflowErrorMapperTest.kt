@@ -49,6 +49,42 @@ class WorkflowErrorMapperTest {
     }
 
     @Test
+    fun `maps TableExtractionFailed with model install cause to model download message`() {
+        val mapper = WorkflowErrorMapper(
+            FakeResourceProvider(
+                strings = mapOf(
+                    R.string.ocr_model_download_failed to "model download failed",
+                    R.string.table_extraction_error to "table extraction failed"
+                )
+            )
+        )
+
+        val message = mapper.map(
+            ScanWorkflowError.TableExtractionFailed(OcrModelInstallException("install failed"))
+        )
+
+        assertEquals("model download failed", message)
+    }
+
+    @Test
+    fun `maps TableExtractionFailed with generic cause to generic table extraction message`() {
+        val mapper = WorkflowErrorMapper(
+            FakeResourceProvider(
+                strings = mapOf(
+                    R.string.ocr_model_download_failed to "model download failed",
+                    R.string.table_extraction_error to "table extraction failed"
+                )
+            )
+        )
+
+        val message = mapper.map(
+            ScanWorkflowError.TableExtractionFailed(java.io.IOException("boom"))
+        )
+
+        assertEquals("table extraction failed", message)
+    }
+
+    @Test
     fun `maps AppendSourceEncrypted to append encrypted message`() {
         val mapper = WorkflowErrorMapper(
             FakeResourceProvider(

@@ -10,7 +10,9 @@
     <string name="local_sync_stop_button">Trennen</string>
     <string name="local_sync_instructions">Öffne diese Adresse im Browser deines PCs und gib die PIN ein:</string>
     <string name="local_sync_pin_label">PIN</string>
-    <string name="local_sync_share_text">Verbindung zu meinem Handy: %1$s (PIN: %2$s)</string>
+    <string name="local_sync_share_text">%1$s\n\nPIN: %2$s</string>
+    <string name="local_sync_copy_url">Adresse kopieren</string>
+    <string name="local_sync_copied">Adresse kopiert</string>
     <string name="local_sync_starting">Wird gestartet…</string>
     <string name="local_sync_first_use_title">Zugriff im lokalen Netzwerk</string>
     <string name="local_sync_first_use_message">Dadurch wird ein lokaler Webserver gestartet, damit dein PC per WLAN auf deine PDFs zugreifen und sie austauschen kann. Das funktioniert nur im lokalen Netzwerk, es wird nichts ins Internet übertragen. Der Zugriff ist per PIN geschützt, aber jeder im selben Netzwerk, der die PIN kennt, könnte während der aktiven Verbindung auf deine Dokumente zugreifen.</string>

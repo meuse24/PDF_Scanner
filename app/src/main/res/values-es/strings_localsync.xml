@@ -10,7 +10,9 @@
     <string name="local_sync_stop_button">Desconectar</string>
     <string name="local_sync_instructions">Abre esta dirección en el navegador de tu PC e introduce el PIN:</string>
     <string name="local_sync_pin_label">PIN</string>
-    <string name="local_sync_share_text">Conéctate a mi teléfono: %1$s (PIN: %2$s)</string>
+    <string name="local_sync_share_text">%1$s\n\nPIN: %2$s</string>
+    <string name="local_sync_copy_url">Copiar dirección</string>
+    <string name="local_sync_copied">Dirección copiada</string>
     <string name="local_sync_starting">Iniciando…</string>
     <string name="local_sync_first_use_title">Acceso en la red local</string>
     <string name="local_sync_first_use_message">Esto inicia un servidor web local para que tu PC pueda explorar e intercambiar PDFs por Wi-Fi. Solo funciona en tu red local; no se envía nada a internet. El acceso está protegido por un PIN, pero cualquiera en la misma red que conozca el PIN podría acceder a tus documentos mientras la conexión esté activa.</string>

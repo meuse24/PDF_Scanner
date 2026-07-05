@@ -6,7 +6,10 @@ data class LocalSyncSession(
     val pin: String,
     val startedAt: Long
 ) {
-    val url: String get() = "http://$ipAddress:$port"
+    // Trailing slash on purpose: it gives the URL an explicit path so link parsers in chat
+    // apps (WhatsApp etc.) claim the whole "http://ip:port/" as a single tappable link instead
+    // of splitting off the ":port" as a separate number. The server serves "/" anyway.
+    val url: String get() = "http://$ipAddress:$port/"
 }
 
 sealed interface LocalSyncState {

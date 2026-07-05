@@ -10,7 +10,9 @@
     <string name="local_sync_stop_button">قطع الاتصال</string>
     <string name="local_sync_instructions">افتح هذا العنوان في متصفح الكمبيوتر وأدخل الرمز:</string>
     <string name="local_sync_pin_label">الرمز</string>
-    <string name="local_sync_share_text">اتصل بهاتفي: %1$s (الرمز: %2$s)</string>
+    <string name="local_sync_share_text">%1$s\n\nالرمز: %2$s</string>
+    <string name="local_sync_copy_url">نسخ العنوان</string>
+    <string name="local_sync_copied">تم نسخ العنوان</string>
     <string name="local_sync_starting">جارٍ البدء…</string>
     <string name="local_sync_first_use_title">الوصول عبر الشبكة المحلية</string>
     <string name="local_sync_first_use_message">سيؤدي هذا إلى تشغيل خادم ويب محلي حتى يتمكن الكمبيوتر من تصفح ملفات PDF وتبادلها عبر الواي فاي. يعمل هذا فقط ضمن شبكتك المحلية، ولا يتم إرسال أي شيء إلى الإنترنت. الوصول محمي برمز، لكن أي شخص على نفس الشبكة يعرف الرمز يمكنه الوصول إلى مستنداتك أثناء تفعيل الاتصال.</string>

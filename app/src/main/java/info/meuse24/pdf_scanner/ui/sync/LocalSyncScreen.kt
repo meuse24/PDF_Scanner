@@ -2,8 +2,8 @@ package info.meuse24.pdf_scanner.ui.sync
 
 import android.Manifest
 import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -43,6 +45,7 @@ import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.LocalSyncSession
 import info.meuse24.pdf_scanner.domain.model.LocalSyncState
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
+import kotlinx.coroutines.launch
 
 /**
  * No own Scaffold/TopAppBar here on purpose: the shared shell in AppNavigation.kt already
@@ -141,7 +144,12 @@ private fun LocalSyncContent(
 private fun RunningContent(session: LocalSyncSession, onDisconnect: () -> Unit) {
     val context = LocalContext.current
     val shareTitle = stringResource(R.string.cd_share)
+    val shareSubject = stringResource(R.string.local_sync_title)
     val shareText = stringResource(R.string.local_sync_share_text, session.url, session.pin)
+    val copyLabel = stringResource(R.string.local_sync_copy_url)
+    val copiedMessage = stringResource(R.string.local_sync_copied)
+    val snackbarHostState = LocalAppSnackbarHostState.current
+    val scope = rememberCoroutineScope()
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -167,13 +175,34 @@ private fun RunningContent(session: LocalSyncSession, onDisconnect: () -> Unit) 
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
+                // Kopieren als zuverlässiger Weg zum PC: Messenger wie WhatsApp verlinken rohe
+                // IP:Port-Adressen nicht klickbar (der Port wird als Telefonnummer fehlgedeutet),
+                // Einfügen aus der Zwischenablage funktioniert dagegen immer.
                 IconButton(
                     onClick = {
+                        val clipboard = context.getSystemService(ClipboardManager::class.java)
+                        clipboard.setPrimaryClip(ClipData.newPlainText(shareSubject, session.url))
+                        // Ab Android 13 bestätigt das System den Kopiervorgang selbst per Overlay.
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                            snackbarHostState?.let { host ->
+                                scope.launch { host.showSnackbar(copiedMessage) }
+                            }
+                        }
+                    }
+                ) {
+                    Icon(Icons.Default.ContentCopy, contentDescription = copyLabel)
+                }
+                IconButton(
+                    onClick = {
+                        // Der Text beginnt mit der nackten URL (eigene Zeile), damit sie in jeder
+                        // Ziel-App als tippbarer Link erkannt wird; die PIN folgt darunter. ClipData
+                        // als text/plain hält Intent-Typ und Vorschau konsistent.
                         val sendIntent = Intent(Intent.ACTION_SEND).apply {
                             type = "text/plain"
-                            putExtra(Intent.EXTRA_TEXT, session.url)
-                            putExtra(Intent.EXTRA_SUBJECT, shareText)
-                            clipData = ClipData.newRawUri(shareTitle, Uri.parse(session.url))
+                            putExtra(Intent.EXTRA_SUBJECT, shareSubject)
+                            putExtra(Intent.EXTRA_TITLE, shareSubject)
+                            putExtra(Intent.EXTRA_TEXT, shareText)
+                            clipData = ClipData.newPlainText(shareSubject, shareText)
                         }
                         context.startActivity(Intent.createChooser(sendIntent, shareTitle))
                     }

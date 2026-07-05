@@ -10,7 +10,9 @@
     <string name="local_sync_stop_button">Отключить</string>
     <string name="local_sync_instructions">Откройте этот адрес в браузере на ПК и введите PIN-код:</string>
     <string name="local_sync_pin_label">PIN-код</string>
-    <string name="local_sync_share_text">Подключитесь к моему телефону: %1$s (PIN: %2$s)</string>
+    <string name="local_sync_share_text">%1$s\n\nPIN: %2$s</string>
+    <string name="local_sync_copy_url">Скопировать адрес</string>
+    <string name="local_sync_copied">Адрес скопирован</string>
     <string name="local_sync_starting">Запуск…</string>
     <string name="local_sync_first_use_title">Доступ по локальной сети</string>
     <string name="local_sync_first_use_message">Будет запущен локальный веб-сервер, чтобы ваш ПК мог просматривать и обмениваться PDF-файлами по Wi-Fi. Это работает только в вашей локальной сети, ничего не передаётся в интернет. Доступ защищён PIN-кодом, но любой в той же сети, кто узнает PIN-код, сможет получить доступ к вашим документам, пока соединение активно.</string>

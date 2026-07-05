@@ -10,7 +10,9 @@
     <string name="local_sync_stop_button">断开连接</string>
     <string name="local_sync_instructions">在电脑浏览器中打开以下地址并输入 PIN 码：</string>
     <string name="local_sync_pin_label">PIN 码</string>
-    <string name="local_sync_share_text">连接到我的手机：%1$s（PIN 码：%2$s）</string>
+    <string name="local_sync_share_text">%1$s\n\nPIN 码：%2$s</string>
+    <string name="local_sync_copy_url">复制地址</string>
+    <string name="local_sync_copied">地址已复制</string>
     <string name="local_sync_starting">正在启动…</string>
     <string name="local_sync_first_use_title">本地网络访问</string>
     <string name="local_sync_first_use_message">此操作会启动一个本地网页服务器，让你的电脑可以通过 Wi-Fi 浏览和交换 PDF 文件。此功能仅在本地网络中有效，不会向互联网发送任何数据。访问受 PIN 码保护，但在连接处于活动状态时，同一网络中知道该 PIN 码的任何人都可以访问你的文档。</string>

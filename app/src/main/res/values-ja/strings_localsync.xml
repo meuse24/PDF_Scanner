@@ -10,7 +10,9 @@
     <string name="local_sync_stop_button">切断</string>
     <string name="local_sync_instructions">PCのブラウザでこのアドレスを開き、PINを入力してください：</string>
     <string name="local_sync_pin_label">PIN</string>
-    <string name="local_sync_share_text">私のスマートフォンに接続: %1$s（PIN: %2$s）</string>
+    <string name="local_sync_share_text">%1$s\n\nPIN: %2$s</string>
+    <string name="local_sync_copy_url">アドレスをコピー</string>
+    <string name="local_sync_copied">アドレスをコピーしました</string>
     <string name="local_sync_starting">起動中…</string>
     <string name="local_sync_first_use_title">ローカルネットワークへのアクセス</string>
     <string name="local_sync_first_use_message">これによりローカルWebサーバーが起動し、PCがWi-Fi経由でPDFを閲覧・交換できるようになります。ローカルネットワーク内でのみ動作し、インターネットには何も送信されません。アクセスはPINで保護されますが、接続が有効な間は、同じネットワーク上でPINを知っている人が文書にアクセスできる可能性があります。</string>

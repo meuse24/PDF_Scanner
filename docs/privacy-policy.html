@@ -230,7 +230,7 @@
                 </div>
                 <div class="card">
                     <strong>Last updated</strong>
-                    July 4, 2026
+                    July 5, 2026
                 </div>
             </div>
         </div>
@@ -255,7 +255,7 @@
                 </div>
                 <div class="card">
                     <strong>Stand</strong>
-                    4. Juli 2026
+                    5. Juli 2026
                 </div>
             </div>
         </div>
@@ -290,6 +290,21 @@
                 The optional secure redaction feature also runs locally. It creates a separate redacted
                 copy, rebuilds affected pages as image-only output, and removes OCR text, metadata,
                 forms, links, attachments, and actions from the saved redacted result where applicable.
+            </p>
+            <p>
+                The optional <strong>table extraction</strong> feature detects table-like content on a
+                page using on-device ML Kit OCR and lets the user review and correct it before exporting
+                as CSV or TSV. Recognition and reconstruction run entirely on-device; no document content
+                is transmitted. While reviewing, a small draft of the current edits may be cached
+                temporarily in the app's cache folder so it survives an unexpected app restart; this
+                cache is not a permanent record. It is deleted after a successful export or automatically
+                after 24 hours, and the operating system may clear it at any time.
+            </p>
+            <p>
+                The optional <strong>PDF form-filling</strong> feature and the optional
+                <strong>SHA-256 file-hash</strong> calculation also run entirely locally: form field
+                values are written directly into the PDF file on the device, and file hashes are computed
+                directly from the file's bytes. Neither feature transmits any data.
             </p>
             <p>
                 Folders, favorites, app shortcuts, the Quick Settings tile, the home-screen widget,
@@ -344,6 +359,22 @@
                 Anhaenge und Aktionen.
             </p>
             <p>
+                Die optionale <strong>Tabellenextraktion</strong> erkennt tabellenartige Inhalte auf einer
+                Seite mittels ML Kit OCR auf dem Geraet und ermoeglicht deren Pruefung und Korrektur vor
+                dem Export als CSV oder TSV. Erkennung und Rekonstruktion laufen vollstaendig auf dem
+                Geraet; es werden keine Dokumentinhalte uebertragen. Waehrend der Bearbeitung kann ein
+                kleiner Entwurf der aktuellen Aenderungen voruebergehend im App-Cache zwischengespeichert
+                werden, damit er einen unerwarteten Neustart der App uebersteht; dieser Zwischenspeicher
+                ist keine dauerhafte Aufzeichnung. Er wird nach erfolgreichem Export bzw. automatisch nach
+                24 Stunden geloescht, und das Betriebssystem kann ihn jederzeit raeumen.
+            </p>
+            <p>
+                Auch die optionale Funktion zum Ausfuellen von <strong>PDF-Formularen</strong> sowie die
+                optionale Berechnung des <strong>SHA-256-Datei-Hashes</strong> laufen vollstaendig lokal:
+                Formularwerte werden direkt in die PDF-Datei auf dem Geraet geschrieben, Datei-Hashes
+                werden direkt aus den Dateibytes berechnet. Beide Funktionen uebertragen keine Daten.
+            </p>
+            <p>
                 Ordner, Favoriten, App-Shortcuts, Schnelleinstellungskachel, Homescreen-Widget,
                 Android-Share-Import, Android-Drucken und Visitenkarten-vCard-Export sind lokale
                 App- bzw. Android-Systemintegrationen. Die optionale App-Sperre ist ein UI-Gate ueber
@@ -388,6 +419,9 @@
                 <li>optional redacted PDF copies created by the user</li>
                 <li>optional business-card contact fields and generated vCard files</li>
                 <li>optional app-lock setting and timeout</li>
+                <li>optional filled PDF form field values (stored in the PDF file itself)</li>
+                <li>optional temporary table-extraction draft cache (deleted after export or after 24 hours)</li>
+                <li>optional generated CSV/TSV table-export files</li>
             </ul>
             <p>
                 This information is stored locally in app storage and in a local database on the device
@@ -422,6 +456,9 @@
                 <li>optional vom Nutzer erzeugte geschwaerzte PDF-Kopien</li>
                 <li>optionale Visitenkarten-Kontaktfelder und erzeugte vCard-Dateien</li>
                 <li>optionale App-Sperren-Einstellung und Timeout</li>
+                <li>optional ausgefuellte PDF-Formularwerte (gespeichert in der PDF-Datei selbst)</li>
+                <li>optionaler temporaerer Tabellenextraktions-Zwischenspeicher (geloescht nach Export bzw. nach 24 Stunden)</li>
+                <li>optional erzeugte CSV-/TSV-Exportdateien</li>
             </ul>
             <p>
                 Diese Informationen werden lokal im App-Speicher und in einer lokalen Datenbank auf dem
@@ -461,6 +498,13 @@
                 App-lock preferences are stored locally in SharedPreferences.
             </p>
             <p>
+                Table-extraction drafts are cached temporarily in the app's cache directory
+                (<code>cacheDir/table_drafts</code>), and CSV/TSV files prepared for sharing are cached
+                in <code>cacheDir/csv</code>. Both are cleared automatically (drafts after 24 hours or a
+                successful export, share files after 24 hours) and may also be cleared by the operating
+                system at any time.
+            </p>
+            <p>
                 In the current implementation, scanned PDFs and the local database are also explicitly
                 excluded from Android cloud backups and device-to-device transfer.
             </p>
@@ -482,6 +526,13 @@
             <p>
                 Erzeugte vCard-Dateien werden zum Teilen oder Hinzufuegen zu Kontakten im App-Cache
                 geschrieben. App-Sperren-Einstellungen werden lokal in SharedPreferences gespeichert.
+            </p>
+            <p>
+                Tabellenextraktions-Entwuerfe werden voruebergehend im App-Cache-Verzeichnis
+                (<code>cacheDir/table_drafts</code>) zwischengespeichert, zum Teilen vorbereitete
+                CSV-/TSV-Dateien im Verzeichnis <code>cacheDir/csv</code>. Beide werden automatisch
+                geraeumt (Entwuerfe nach 24 Stunden oder erfolgreichem Export, Teilen-Dateien nach
+                24 Stunden) und koennen zudem jederzeit vom Betriebssystem geleert werden.
             </p>
             <p>
                 Nach der aktuellen Implementierung sind die gescannten PDFs und die lokale Datenbank
@@ -871,8 +922,8 @@
     </section>
 
     <footer>
-        <span data-lang-content="en">M24 PDF-Scanner Privacy Policy, last updated July 4, 2026.</span>
-        <span data-lang-content="de">M24 PDF-Scanner Datenschutzerklaerung, Stand 4. Juli 2026.</span>
+        <span data-lang-content="en">M24 PDF-Scanner Privacy Policy, last updated July 5, 2026.</span>
+        <span data-lang-content="de">M24 PDF-Scanner Datenschutzerklaerung, Stand 5. Juli 2026.</span>
     </footer>
 </main>
 

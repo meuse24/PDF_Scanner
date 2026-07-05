@@ -10,6 +10,10 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - Accept PDFs and images from other Android apps via Share or Open with
 - View PDFs directly in the app with PdfRenderer, page scrolling, inline pinch-to-zoom, double-tap zoom toggle, cross-page scroll while zoomed, print, share, export, and external-open fallback
 - Search stored OCR text inside the PDF viewer, jump between matching pages, and use locally detected IBAN, amount, and date actions
+- Detect tables on a scanned page with on-device OCR, review and correct cells in an editable grid, and export them as CSV or TSV files for spreadsheet apps
+- Fill out PDF form fields (text, checkboxes, radio buttons, dropdowns, list boxes) directly on the device, with script-specific fallback fonts (Latin/Cyrillic, Devanagari, Arabic, CJK) for non-Latin form text
+- Calculate a document's SHA-256 file hash locally for integrity checks, without opening it in the viewer
+- Transfer files to and from a PC over the local Wi-Fi network through a PIN-protected local web server; no cloud or internet connection involved
 - Extract OCR text and create searchable PDFs with automatic/manual language selection; all OCR recognizers are delivered as Google Play Services modules, with Latin requested for background preload during app installation and an on-demand fallback when a model is missing
 - Review OCR text per page with recognized language, quality badges, copy/share actions, and TXT export to Downloads
 - Assign optional on-device automatic document tags from OCR text and filter the archive by invoice, contract, insurance, certificate, bank, or delivery tags
@@ -44,6 +48,7 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - Incoming shared or opened files are copied into the archive only after user confirmation
 - App Lock is a local UI gate; it does not encrypt PDFs or the database
 - No own backend or document upload; Google Play Services / ML Kit SDKs may declare network permissions for model, compatibility, and diagnostics traffic
+- The local Wi-Fi PC-Sync server only listens on the local network, requires a random 4-digit PIN (rate-limited against guessing), and runs only while explicitly started by the user; it never contacts the internet
 - Backup/export of internal app data is disabled
 
 ## Encrypted backups
@@ -108,6 +113,9 @@ Main editor flows:
 - `redact/` secure redaction editor
 - `imagestopdf/` gallery images to PDF flow
 - `viewer/` in-app PDF reader backed by Android PdfRenderer
+- `tableexport/` on-device table detection review and CSV/TSV export
+- `formfill/` AcroForm field editor
+- `sync/` local Wi-Fi PC-Sync screen
 - `businesscard/`, `folders/`, `lock/` feature screens
 - `shared/` viewport math and text-snap helpers reused by editors
 
@@ -125,6 +133,11 @@ Recent structure work:
 - String resources split by feature with `strings_annotate.xml`, `strings_images_to_pdf.xml`, `strings_shortcuts.xml`, `strings_folders.xml`, `strings_lock.xml`, and `strings_businesscard.xml` in every locale
 - Legacy `HighlightScreen` removed; active editing now lives in `annotate/` and `redact/`
 - Added on-device PDF text translation via ML Kit Translate with `TextTranslator` domain gateway, `TranslateTextUseCase`, and `TranslationReviewScreen`; models downloaded on demand, no language data bundled in the APK
+- Added AcroForm form filling (`PdfFormOps` port, `FormFillWorkflow`, `formfill/` UI) for text/checkbox/radio/combo/listbox fields, with multi-script Unicode fallback fonts chosen per field
+- Added local full-text search across OCR page text in the viewer with jump-to-match navigation, plus local IBAN/amount/date detection with copy and calendar-event actions
+- Added local SHA-256 file hash calculation (`CalculateSha256UseCase`) computed directly from file bytes, independent of the viewer
+- Added a local Wi-Fi PC-Sync feature: a PIN-protected Ktor (CIO) web server running as a foreground service (`LocalSyncService`) lets a PC on the same network browse, download, and upload documents; no cloud or internet involved
+- Added on-device table extraction and CSV/TSV export (`domain/common/TableReconstructor.kt`, `ui/tableexport/`): renders each page at 220 DPI, runs ML Kit OCR, reconstructs rows/columns purely from OCR geometry (no persisted bounding boxes), and offers an editable review grid before exporting; a JSON draft cache in `cacheDir` survives process death during review
 
 ## Testing
 
@@ -134,7 +147,9 @@ Recent structure work:
 - Business-card parsing/vCard generation and Room migrations are covered by unit or instrumentation tests where practical
 - Viewer JVM tests cover `PdfViewerViewModel` render-window behavior and the bitmap cache
 - JVM tests cover `TranslateTextUseCase` (page-text selection, blank-page filtering, fallback to `extractedText`, progress forwarding) and `TranslationReviewViewModel` (load record, translate success/error, progress cleared, duplicate-call guard)
-- Instrumentation tests cover Android-specific paths such as `PdfRenderer`, URI import, MediaStore export, annotation rendering, redaction, and image-to-PDF generation
+- JVM tests cover the table reconstruction algorithm (`TableReconstructorTest`, synthetic layouts: grids, wrapped rows, deskew, competing regions), CSV/TSV encoding, delimiter defaults, export filenames, the draft store/codec, and `TableExportViewModel` (draft restore incl. stale-source detection, debounced draft saves, concurrency guards against double-tap re-extract and dialect races during export)
+- JVM tests cover local Wi-Fi PC-Sync HTTP routing, HTML rendering, session/PIN handling, and rate limiting
+- Instrumentation tests cover Android-specific paths such as `PdfRenderer`, URI import, MediaStore export, annotation rendering, redaction, image-to-PDF generation, and end-to-end table extraction against a real PDF via real ML Kit OCR
 
 ## Tech stack
 
@@ -146,5 +161,6 @@ Recent structure work:
 - ML Kit Text Recognition
 - ML Kit Translate
 - PdfBox-Android
+- Ktor Server (CIO) for the local Wi-Fi PC-Sync web server
 
 Detailed engineering notes live in `CLAUDE.md`.

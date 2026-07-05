@@ -1,20 +1,22 @@
 Release name:
-2.3 – Translation, Export & Viewer
+2.5 – Table Export, PC-Sync & PDF Forms
 
 Release notes:
 <en-US>
-New in 2.3:
-• Translate OCR text on-device in 10 languages.
-• Export PDFs as Word documents or save individual pages as JPG.
-• Improved PDF viewer with smoother zoom and continuous page scrolling.
-• New photo page modes, printing, and page-size presets.
-• Smaller installation through on-demand OCR components, plus better security, stability, memory use, and accessibility.
+New in 2.5:
+• Extract tables from scanned pages and export them as CSV or TSV for spreadsheets, with an editable review before exporting.
+• Fill out PDF forms (text, checkboxes, radio buttons, dropdowns) directly on your device.
+• Search OCR text inside the viewer and jump straight to matches; tap detected IBANs, amounts, and dates for quick copy or calendar actions.
+• Transfer files to and from a PC over your local Wi-Fi network - no cloud, no internet required.
+• Calculate SHA-256 file hashes for any document.
+• Smaller app size through on-demand OCR and barcode components, plus improved security, stability, and performance.
 </en-US>
 <de-DE>
-Neu in 2.3:
-• OCR-Texte lokal auf dem Gerät in 10 Sprachen übersetzen.
-• PDFs als Word-Dokumente exportieren oder einzelne Seiten als JPG speichern.
-• Verbesserter PDF-Viewer mit flüssigerem Zoom und fortlaufendem Scrollen.
-• Neue Foto-Seitenmodi, Druckfunktion und Seitenformat-Voreinstellungen.
-• Kleinere Installation durch nachgeladene OCR-Komponenten sowie mehr Sicherheit, Stabilität, Speichereffizienz und Barrierefreiheit.
+Neu in 2.5:
+• Tabellen aus gescannten Seiten erkennen und als CSV oder TSV für Tabellenprogramme exportieren, mit editierbarer Vorschau vor dem Export.
+• PDF-Formulare (Text, Kontrollkästchen, Optionsfelder, Dropdown-Listen) direkt am Gerät ausfüllen.
+• OCR-Text im Viewer durchsuchen und direkt zu Treffern springen; erkannte IBANs, Beträge und Datumsangaben antippen für schnelles Kopieren oder Kalendereinträge.
+• Dateien lokal per WLAN zum und vom PC übertragen – ganz ohne Cloud oder Internet.
+• SHA-256-Prüfsumme für jedes Dokument berechnen.
+• Kleinere App durch nachgeladene OCR- und Barcode-Komponenten sowie mehr Sicherheit, Stabilität und Performance.
 </de-DE>

@@ -32,7 +32,7 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 
 ## Projekt
 
-**App:** M24 PDF-Scanner („PDF Scan") | **Paket:** `info.meuse24.pdf_scanner` | **Min SDK:** 29 | **Target SDK:** 36 | **Version:** 2.4 (Code 12)
+**App:** M24 PDF-Scanner („PDF Scan") | **Paket:** `info.meuse24.pdf_scanner` | **Min SDK:** 29 | **Target SDK:** 36 | **Version:** 2.5 (Code 13)
 
 ### Schichtübersicht
 

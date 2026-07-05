@@ -26,3 +26,11 @@
 -keep class info.meuse24.pdf_scanner.Hilt_PdfScannerApp { *; }
 -keep class info.meuse24.pdf_scanner.*_GeneratedInjector { *; }
 -keep class dagger.hilt.internal.** { *; }
+
+# ── Ktor (local PC-Sync server) ──────────────────────────────────────────────
+# Ktor's IntelliJ-debugger detection references java.lang.management, which is
+# part of the JVM's java.management module and does not exist on Android. Ktor
+# only uses it opportunistically at runtime (guarded by its own try/catch), so
+# the missing class is harmless - R8 just needs to be told not to warn about it.
+-dontwarn java.lang.management.ManagementFactory
+-dontwarn java.lang.management.RuntimeMXBean

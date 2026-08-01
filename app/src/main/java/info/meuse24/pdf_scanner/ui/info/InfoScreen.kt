@@ -80,7 +80,7 @@ fun InfoScreen() {
         }
         item {
             SectionCard(Icons.Default.Code, stringResource(R.string.info_section_techstack)) {
-                InfoRow(stringResource(R.string.info_label_language),     "Kotlin 2.2.10")
+                InfoRow(stringResource(R.string.info_label_language),     "Kotlin 2.3.10")
                 InfoRow(stringResource(R.string.info_label_ui),           "Jetpack Compose + Material Design 3")
                 InfoRow(stringResource(R.string.info_label_architecture), "MVVM + Clean Architecture")
                 InfoRow(stringResource(R.string.info_label_async),        "Kotlin Coroutines & Flow")
@@ -179,28 +179,34 @@ fun InfoScreen() {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.info_feature_viewer_search),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
         item {
             SectionCard(Icons.AutoMirrored.Filled.LibraryBooks, stringResource(R.string.info_section_libraries)) {
-                InfoRow("Compose BOM",                      "2026.03.00")
-                InfoRow("Navigation Compose",               "2.9.7")
+                InfoRow("Compose BOM",                      "2026.06.00")
+                InfoRow("Navigation Compose",               "2.9.8")
                 InfoRow("Hilt (Dagger)",                    "2.59.2")
                 InfoRow("Hilt Navigation Compose",          "1.3.0")
                 InfoRow("Jetpack Room",                     "2.8.4")
                 InfoRow("AndroidX Biometric",               "1.4.0-alpha04")
-                InfoRow("Kotlinx Serialization",            "1.8.1")
+                InfoRow("Kotlinx Serialization",            "1.11.0")
                 InfoRow("Google ML Kit Document Scanner",   "16.0.0")
                 InfoRow("Google ML Kit Barcode Scanning",   "18.3.1 (GMS)")
                 InfoRow("Google ML Kit Text Recognition (Latin)", "19.0.1 (GMS)")
                 InfoRow("Google ML Kit Text Recognition (HI/ZH/JA/KO)", "16.0.1 (GMS)")
                 InfoRow("Google ML Kit Translate",          "17.0.3")
-                InfoRow("Ktor Server (CIO)",                "3.4.2")
+                InfoRow("Ktor Server (CIO)",                "3.5.1")
                 InfoRow("PdfBox Android",                   "2.0.27.0")
                 InfoRow("Reorderable",                      "2.4.3")
                 InfoRow("Google Tink",                      "1.19.0")
                 InfoRow("Argon2kt",                         "1.6.0")
-                InfoRow("KSP",                              "2.3.2")
+                InfoRow("KSP",                              "2.3.10")
                 InfoRow("Android Gradle Plugin",            "9.2.1")
             }
         }

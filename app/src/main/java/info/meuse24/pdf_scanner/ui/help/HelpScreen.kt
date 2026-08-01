@@ -128,6 +128,7 @@ fun HelpScreen() {
                 titleRes = R.string.help_section_archive_search,
                 actions = listOf(
                     HelpAction(Icons.Default.PictureAsPdf, R.string.action_open_document, R.string.help_item_open),
+                    HelpAction(Icons.Default.FindInPage, R.string.pdf_viewer_search, R.string.help_item_viewer_search),
                     HelpAction(Icons.Default.CheckBox, R.string.action_select_documents, R.string.help_item_select),
                     HelpAction(Icons.Default.Search, R.string.help_section_search, R.string.help_item_search),
                     HelpAction(Icons.Default.FolderOpen, R.string.folder_manage, R.string.help_item_folders)

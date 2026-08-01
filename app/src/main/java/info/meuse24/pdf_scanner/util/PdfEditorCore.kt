@@ -20,6 +20,42 @@ internal fun mapDisplayToPdfCoord(
     else -> nx * pageWidth to (1f - ny) * pageHeight
 }
 
+/**
+ * Maps a CropBox-relative rectangle from PDF coordinates to the displayed page.
+ * TextPosition coordinates are already relative to the unrotated CropBox, while
+ * PdfRenderer displays the page rotation; transform all corners to preserve bounds.
+ */
+internal fun mapPdfBoxToDisplay(
+    left: Float,
+    top: Float,
+    right: Float,
+    bottom: Float,
+    rotation: Int
+): FloatArray? {
+    val corners = arrayOf(
+        left to top,
+        right to top,
+        left to bottom,
+        right to bottom
+    ).map { (x, y) ->
+        when (normalizeRotation(rotation)) {
+            90 -> 1f - y to x
+            180 -> 1f - x to 1f - y
+            270 -> y to 1f - x
+            else -> x to y
+        }
+    }
+    val displayLeft = corners.minOf { it.first }.coerceIn(0f, 1f)
+    val displayTop = corners.minOf { it.second }.coerceIn(0f, 1f)
+    val displayRight = corners.maxOf { it.first }.coerceIn(0f, 1f)
+    val displayBottom = corners.maxOf { it.second }.coerceIn(0f, 1f)
+    return if (displayRight > displayLeft && displayBottom > displayTop) {
+        floatArrayOf(displayLeft, displayTop, displayRight, displayBottom)
+    } else {
+        null
+    }
+}
+
 internal inline fun PdfEditor.editPdf(
     input: File,
     saveAsCopy: Boolean,

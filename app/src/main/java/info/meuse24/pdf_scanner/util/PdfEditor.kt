@@ -67,6 +67,7 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.Calendar
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.abs
@@ -774,18 +775,16 @@ open class PdfEditor @Inject constructor() :
 
             val page = document.getPage(pageIndex)
             val rotation = normalizeRotation(page.rotation)
-            val displayedWidth =
-                if (rotation == 90 || rotation == 270) page.mediaBox.height else page.mediaBox.width
-            val displayedHeight =
-                if (rotation == 90 || rotation == 270) page.mediaBox.width else page.mediaBox.height
+            val cropBox = page.cropBox
             val positions = mutableListOf<NormalizedTextBox>()
 
             val stripper = object : PDFTextStripper() {
                 override fun writeString(text: String?, textPositions: MutableList<TextPosition>?) {
                     textPositions.orEmpty().forEach { position ->
                         position.toNormalizedTextBox(
-                            displayedWidth = displayedWidth,
-                            displayedHeight = displayedHeight
+                            pageWidth = cropBox.width,
+                            pageHeight = cropBox.height,
+                            rotation = rotation
                         )?.let(positions::add)
                     }
                 }
@@ -798,6 +797,15 @@ open class PdfEditor @Inject constructor() :
             return mergeTextBoxesToLines(positions, pageIndex)
         }
     }
+
+    override open fun extractSearchText(file: File): Flow<info.meuse24.pdf_scanner.domain.pdf.PdfPageTextContent> =
+        extractSearchTextFromPdf(file)
+
+    override open fun extractPageGlyphBoxes(
+        file: File,
+        pageIndex: Int
+    ): List<info.meuse24.pdf_scanner.domain.pdf.NormalizedBox?> =
+        extractPageGlyphBoxesFromPdf(file, pageIndex)
 
     override open fun applySignatureStamp(
         input: File,

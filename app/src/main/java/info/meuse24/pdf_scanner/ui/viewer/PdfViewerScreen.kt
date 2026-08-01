@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
@@ -88,6 +89,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -119,6 +122,9 @@ import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+
+private val PdfViewerSearchActiveHighlight = Color(0x99FF9800)
+private val PdfViewerSearchPassiveHighlight = Color(0x4DFFD54F)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -336,6 +342,7 @@ fun PdfViewerScreen(
                             PdfPageCard(
                                 pageIndex = pageIndex,
                                 pageState = state.pages[pageIndex],
+                                highlights = state.searchHighlights?.takeIf { it.pageIndex == pageIndex },
                                 thumbnail = if (pageIndex == 0) recordThumbnail else null,
                                 onDoubleClick = { tapOffset ->
                                     if (inlineScale > 1f) {
@@ -424,7 +431,7 @@ fun PdfViewerScreen(
                             } else {
                                 null
                             },
-                            onSearch = if (state.pageSearchAvailable && !state.searchActive) {
+                            onSearch = if (!state.searchActive) {
                                 {
                                     resetInlineZoom()
                                     viewModel.openSearch()
@@ -594,6 +601,7 @@ private val intSizeSaver = listSaver<IntSize, Int>(
 private fun PdfPageCard(
     pageIndex: Int,
     pageState: PdfViewerPageState?,
+    highlights: PdfSearchHighlights?,
     thumbnail: ImageBitmap?,
     onDoubleClick: (Offset) -> Unit = {}
 ) {
@@ -622,6 +630,13 @@ private fun PdfPageCard(
                         contentScale = ContentScale.Fit,
                         modifier = Modifier.fillMaxSize()
                     )
+                    if (
+                        highlights != null &&
+                        pageState.widthPt != null &&
+                        pageState.heightPt != null
+                    ) {
+                        SearchHighlightOverlay(highlights = highlights)
+                    }
                 }
                 pageState?.errorMessage != null -> {
                     Text(
@@ -644,6 +659,32 @@ private fun PdfPageCard(
                     CircularProgressIndicator()
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SearchHighlightOverlay(highlights: PdfSearchHighlights) {
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        highlights.others.forEach { box ->
+            drawRect(
+                color = PdfViewerSearchPassiveHighlight,
+                topLeft = Offset(box.left * size.width, box.top * size.height),
+                size = androidx.compose.ui.geometry.Size(
+                    (box.right - box.left) * size.width,
+                    (box.bottom - box.top) * size.height
+                )
+            )
+        }
+        highlights.active.forEach { box ->
+            drawRect(
+                color = PdfViewerSearchActiveHighlight,
+                topLeft = Offset(box.left * size.width, box.top * size.height),
+                size = androidx.compose.ui.geometry.Size(
+                    (box.right - box.left) * size.width,
+                    (box.bottom - box.top) * size.height
+                )
+            )
         }
     }
 }
@@ -729,7 +770,9 @@ private fun ViewerSearchToolbar(
                         matchCount
                     ),
                     style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(horizontal = 6.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp)
+                        .semantics { liveRegion = LiveRegionMode.Polite }
                 )
             }
             IconButton(onClick = onPrevious, enabled = hasMatches && !searching) {

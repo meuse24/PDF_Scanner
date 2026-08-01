@@ -111,6 +111,7 @@
     <string name="help_step3">Tras el escaneo aparece un diálogo. Introduce un nombre de archivo y toca Guardar. El PDF se almacena localmente en tu dispositivo.</string>
     <string name="help_section_archive">Gestionar archivo</string>
     <string name="help_item_open">Toca un elemento de la lista para abrir el PDF en el visor integrado. Pellizca con dos dedos para hacer zoom, o toca dos veces una página para alternar entre ajuste de ancho y zoom ×2. Con zoom activo, desliza para navegar entre páginas. Abrir externamente sigue disponible desde el visor.</string>
+    <string name="help_item_viewer_search">Usa Buscar en el documento en el visor para buscar texto PDF nativo o texto OCR guardado. Las flechas cambian entre coincidencias individuales. Si no hay texto, ejecuta primero OCR desde las acciones del documento.</string>
     <string name="help_item_select">Toca la casilla para seleccionar una o varias entradas. La barra de título muestra la cantidad y permite seleccionar todo.</string>
     <string name="help_item_add_document_scan">Toca + y elige Escanear documento para capturar páginas nuevas con el escáner del sistema. Después de guardar, el PDF aparece en el archivo como cualquier otro documento.</string>
     <string name="help_item_add_document_import">Toca + y elige Importar PDF para abrir el selector de archivos del sistema. Elige un PDF existente de tu dispositivo; al guardarlo, se copiará al archivo.</string>
@@ -162,6 +163,7 @@
     <string name="info_section_features">Funciones</string>
     <string name="info_features_body">La app escanea, importa, crea, anexa y muestra PDFs dentro de la app con zoom por pellizco y doble toque, mantiene los documentos eliminados en la papelera durante 30 días, realiza OCR en el dispositivo, guarda localmente el texto OCR y los metadatos de calidad para la búsqueda del archivo, revisión OCR, etiquetas automáticas opcionales, filtros por etiqueta y exportación TXT, y ofrece edición de páginas, anotaciones, firmas, edición de metadatos, escala de grises, protección y redacción segura con reconstrucción OCR opcional para copias redactadas. Las imágenes pueden convertirse a PDF en modo foto (a página completa) o en modo documento con formatos de página estándar (A4, Letter, A5 y otros). Una copia de seguridad cifrada permite exportar y restaurar la configuración de la app.</string>
     <string name="info_feature_print_share">La impresión, el uso compartido y Abrir con de Android utilizan diálogos del sistema. Imprimir envía el PDF seleccionado a Android Print; se muestra una advertencia si el tamaño de página del PDF no coincide con el formato de impresión seleccionado. Los PDFs e imágenes entrantes compartidos con esta app o abiertos en ella se copian al archivo de la app solo tras confirmación.</string>
+    <string name="info_feature_viewer_search">El visor integrado busca localmente texto PDF nativo y texto OCR guardado. Navega entre coincidencias individuales y resalta las que tienen posiciones de texto PDF disponibles.</string>
     <string name="info_privacy_body">Sin anuncios, sin cuenta y sin backend propio. Los PDF, miniaturas, copias generadas, elementos de la papelera, texto OCR y metadatos de calidad OCR permanecen en el almacenamiento de la app en tu dispositivo hasta que los exportas, compartes o eliminas definitivamente. El escaneo, el OCR y las descargas de modelos o fuentes dependen de Google Play Services; esta app no sube el contenido de tus documentos.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Local</string>
@@ -537,6 +539,7 @@
     <string name="pdf_viewer_search_previous">Resultado anterior</string>
     <string name="pdf_viewer_search_next">Resultado siguiente</string>
     <string name="pdf_viewer_search_close">Cerrar búsqueda</string>
+    <string name="pdf_viewer_search_needs_ocr">Este documento no contiene texto que se pueda buscar. Ejecuta primero el OCR.</string>
     <string name="pdf_viewer_copy_iban">Copiar IBAN %1$s</string>
     <string name="pdf_viewer_copy_iban_success">IBAN copiado</string>
     <string name="pdf_viewer_copy_amount">Copiar importe %1$s</string>

@@ -9,7 +9,7 @@ Privacy-focused Android app for scanning, viewing, creating, editing, and protec
 - Start scans from app shortcuts, a Quick Settings tile, or a home-screen widget
 - Accept PDFs and images from other Android apps via Share or Open with
 - View PDFs directly in the app with PdfRenderer, page scrolling, inline pinch-to-zoom, double-tap zoom toggle, cross-page scroll while zoomed, print, share, export, and external-open fallback
-- Search stored OCR text inside the PDF viewer, jump between matching pages, and use locally detected IBAN, amount, and date actions
+- Search native PDF text or stored OCR text inside the PDF viewer, jump between individual matches with on-page highlighting, and use locally detected IBAN, amount, and date actions
 - Detect tables on a scanned page with on-device OCR, review and correct cells in an editable grid, and export them as CSV or TSV files for spreadsheet apps
 - Fill out PDF form fields (text, checkboxes, radio buttons, dropdowns, list boxes) directly on the device, with script-specific fallback fonts (Latin/Cyrillic, Devanagari, Arabic, CJK) for non-Latin form text
 - Calculate a document's SHA-256 file hash locally for integrity checks, without opening it in the viewer

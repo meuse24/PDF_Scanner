@@ -29,4 +29,30 @@ class PdfTextSearchTest {
         assertEquals(emptyList<Int>(), findMatchingPages(listOf("text"), " "))
         assertEquals(emptyList<Int>(), findMatchingPages(emptyList(), "text"))
     }
+
+    @Test
+    fun `finds individual matches after normalizing hyphenated line breaks`() {
+        assertEquals(
+            listOf(PdfSearchMatch(pageIndex = 0, rawRange = 0..16)),
+            findMatches(listOf("Rechnungs-\nnummer"), "rechnungsnummer")
+        )
+    }
+
+    @Test
+    fun `normalization retains a source index for each search character`() {
+        val normalized = normalizeForSearch("A\u00A0\u00ADB  C")
+
+        assertEquals("A B C", normalized.text)
+        assertEquals(normalized.text.length, normalized.sourceIndex.size)
+        assertEquals(0, normalized.sourceIndex.first())
+        assertEquals(6, normalized.sourceIndex.last())
+    }
+
+    @Test
+    fun `overlapping search text yields non-overlapping matches`() {
+        assertEquals(
+            listOf(PdfSearchMatch(pageIndex = 0, rawRange = 0..2)),
+            findMatches(listOf("aaaaa"), "aaa")
+        )
+    }
 }

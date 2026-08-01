@@ -255,6 +255,12 @@ Tippen Sie auf ein beliebiges Dokument im Archiv, um es im integrierten Viewer z
 | Zurück-Pfeil | Viewer schließen, zurück zum Archiv |
 | Drei Punkte (···) | Weitere Aktionen (Teilen, Drucken, In externem Viewer öffnen, …) |
 
+### Text im geöffneten PDF suchen
+
+Tippen Sie in der Aktionsleiste auf die **Lupe im Dokument**. Geben Sie den Suchbegriff ein und wechseln Sie mit den Pfeilen nach oben bzw. unten zur vorherigen oder nächsten Fundstelle. Der Zähler zeigt die aktuelle Fundstelle und die Gesamtzahl an. Treffer aus einer vorhandenen PDF-Textschicht werden auf der Seite hervorgehoben.
+
+Die Suche verwendet zuerst die vorhandene Textschicht des PDFs und ergänzt diese bei gescannten Seiten durch gespeicherten OCR-Text. Enthält das Dokument keinen durchsuchbaren Text, erklärt die Lupe, dass zuerst über die Dokumentaktionen eine Texterkennung (OCR) ausgeführt werden muss.
+
 ## Dokument-Aktionen aus dem Viewer
 
 Über die **Drei-Punkte-Schaltfläche** im Viewer oder durch Öffnen des Aktions-Sheets sind alle Bearbeitungsfunktionen erreichbar, die auch aus dem Archiv heraus verfügbar sind (OCR, Übersetzen, Seiten bearbeiten, Sicherheit usw.).

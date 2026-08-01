@@ -33,8 +33,8 @@ android {
         applicationId = "info.meuse24.pdf_scanner"
         minSdk = 29
         targetSdk = 36
-        versionCode = 13
-        versionName = "2.5"
+        versionCode = 14
+        versionName = "2.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -139,10 +139,10 @@ ksp {
 
 configurations.matching { it.name.contains("AndroidTest", ignoreCase = true) }.configureEach {
     resolutionStrategy.force(
-        "org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.1",
-        "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.1",
-        "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1",
-        "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1"
+        "org.jetbrains.kotlinx:kotlinx-serialization-core:1.11.0",
+        "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.11.0",
+        "org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0",
+        "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.11.0"
     )
 }
 

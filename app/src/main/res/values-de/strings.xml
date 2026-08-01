@@ -113,6 +113,7 @@
     <string name="help_step3">Nach dem Scan öffnet sich ein Dialog. Gib einen Dateinamen ein und tippe Speichern. Das PDF wird lokal auf deinem Gerät gespeichert.</string>
     <string name="help_section_archive">Ablage verwalten</string>
     <string name="help_item_open">Tippe auf einen Eintrag in der Liste, um das PDF im integrierten Viewer zu öffnen. Zoome mit zwei Fingern oder tippe zweimal auf eine Seite, um zwischen Breite anpassen und 2×-Zoom umzuschalten. Im Zoom-Modus lässt sich durch Wischen über Seitengrenzen hinweg scrollen. Extern öffnen bleibt im Viewer als eigene Aktion verfügbar.</string>
+    <string name="help_item_viewer_search">Nutze im Viewer Dokument durchsuchen, um die PDF-Textschicht oder gespeicherten OCR-Text zu finden. Die Pfeile wechseln zwischen einzelnen Fundstellen. Falls kein Text vorliegt, führe zuerst über die Dokumentaktionen eine OCR aus.</string>
     <string name="help_item_select">Checkbox eines Eintrags antippen, um ihn auszuwählen. Die Titelleiste zeigt die Anzahl und ermöglicht das Auswählen aller Einträge.</string>
     <string name="help_item_add_document_scan">Tippe auf + und wähle Dokument scannen, um neue Seiten mit dem Systemscanner zu erfassen. Nach dem Speichern erscheint das PDF wie jedes andere Dokument in der Ablage.</string>
     <string name="help_item_add_document_import">Tippe auf + und wähle PDF importieren, um den System-Dateipicker zu öffnen. Wähle eine vorhandene PDF auf deinem Gerät; nach dem Speichern wird sie in die Ablage kopiert.</string>
@@ -164,6 +165,7 @@
     <string name="info_section_features">Funktionen</string>
     <string name="info_features_body">Die App scannt, importiert, erstellt, ergänzt und betrachtet PDFs mit Pinch-to-Zoom und Doppeltipp-Zoom direkt in der App, hält gelöschte Dokumente 30 Tage im Papierkorb, führt OCR auf dem Gerät aus, speichert OCR-Text und Qualitätsmetadaten lokal für Ablagesuche, OCR-Prüfung, optionale automatische Tags, Tag-Filter und TXT-Export und bietet Seitenbearbeitung, Beschriftung, Signaturen, Metadatenbearbeitung, Graustufen, Schutz sowie sichere Schwärzung mit optionaler OCR-Rekonstruktion für geschwärzte Kopien. Bilder lassen sich im Foto-Modus (randlos) oder im Dokumentmodus mit Standardseitenformaten (A4, Letter, A5 u. a.) in PDFs umwandeln. Eine verschlüsselte Sicherung ermöglicht den Export und die Wiederherstellung der App-Einstellungen.</string>
     <string name="info_feature_print_share">Android-Drucken, Teilen und Öffnen mit nutzen Systemdialoge. Beim Drucken wird das ausgewählte PDF an Android Print übergeben; eine Warnung erscheint, wenn das PDF-Seitenformat nicht mit dem gewählten Druckformat übereinstimmt. Eingehende PDFs und Bilder, die geteilt oder mit dieser App geöffnet werden, werden erst nach Bestätigung in das App-Archiv kopiert.</string>
+    <string name="info_feature_viewer_search">Der integrierte Viewer durchsucht lokale PDF-Textschichten und gespeicherten OCR-Text. Er wechselt zwischen einzelnen Fundstellen und hebt Treffer mit vorhandenen PDF-Positionen hervor.</string>
     <string name="info_privacy_body">Keine Werbung, kein Konto und kein eigenes Backend. PDFs, Vorschaubilder, erzeugte Kopien, Einträge im Papierkorb, OCR-Text und OCR-Qualitätsmetadaten bleiben lokal im App-Speicher auf Ihrem Gerät, bis Sie sie exportieren, teilen oder endgültig löschen. Scan, OCR sowie herunterladbare Modelle und Schriftarten nutzen Google Play Services; Dokumentinhalte werden von der App selbst nicht hochgeladen.</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">Lokal</string>
@@ -474,6 +476,7 @@
     <string name="pdf_viewer_search_previous">Vorheriger Treffer</string>
     <string name="pdf_viewer_search_next">Nächster Treffer</string>
     <string name="pdf_viewer_search_close">Suche schließen</string>
+    <string name="pdf_viewer_search_needs_ocr">Dieses Dokument enthält keinen durchsuchbaren Text. Führe zuerst eine OCR-Texterkennung aus.</string>
     <string name="pdf_viewer_copy_iban">IBAN %1$s kopieren</string>
     <string name="pdf_viewer_copy_iban_success">IBAN kopiert</string>
     <string name="pdf_viewer_copy_amount">Betrag %1$s kopieren</string>

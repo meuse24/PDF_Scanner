@@ -2,6 +2,8 @@ package info.meuse24.pdf_scanner.ui.viewer
 
 import android.graphics.Bitmap
 import info.meuse24.pdf_scanner.domain.common.DetectedEntities
+import info.meuse24.pdf_scanner.domain.common.PdfSearchMatch
+import info.meuse24.pdf_scanner.domain.pdf.NormalizedBox
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.model.AcroFormCapability
 
@@ -16,12 +18,20 @@ data class PdfViewerUiState(
     val pages: Map<Int, PdfViewerPageState> = emptyMap(),
     val detectedEntities: DetectedEntities = DetectedEntities(),
     val pageSearchAvailable: Boolean = false,
+    val searchExtractionRunning: Boolean = false,
     val searchActive: Boolean = false,
     val searchQuery: String = "",
-    val searchMatches: List<Int> = emptyList(),
+    val searchMatches: List<PdfSearchMatch> = emptyList(),
     val searchCurrentIndex: Int = -1,
     val searching: Boolean = false,
+    val searchHighlights: PdfSearchHighlights? = null,
     val formCapability: AcroFormCapability = AcroFormCapability.NONE
+)
+
+data class PdfSearchHighlights(
+    val pageIndex: Int,
+    val active: List<NormalizedBox>,
+    val others: List<NormalizedBox>
 )
 
 data class PdfViewerPageState(

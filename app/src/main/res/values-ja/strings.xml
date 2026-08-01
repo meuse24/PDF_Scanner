@@ -109,6 +109,7 @@
     <string name="help_step3">スキャン後にダイアログが表示されます。ファイル名を入力して「保存」をタップしてください。PDF はデバイスにローカル保存されます。</string>
     <string name="help_section_archive">アーカイブの管理</string>
     <string name="help_item_open">リストの項目をタップすると、アプリ内ビューアで PDF を開けます。ピンチでズーム操作が可能で、ページをダブルタップするとフィット幅と 2× ズームを切り替えられます。ズーム中は引き続きスワイプしてページをまたいで移動できます。外部アプリで開く操作はビューアから利用できます。</string>
+    <string name="help_item_viewer_search">ビューアの文書内を検索で、PDF のネイティブテキストまたは保存済み OCR テキストを検索できます。矢印で個々の一致を移動します。テキストがない場合は、文書アクションから先に OCR を実行してください。</string>
     <string name="help_item_select">チェックボックスをタップして1件以上の項目を選択します。タイトルバーに件数が表示され、すべて選択もできます。</string>
     <string name="help_item_add_document_scan">＋をタップして「ドキュメントをスキャン」を選ぶと、システムスキャナで新しいページを取り込めます。保存すると、PDF は他の文書と同じようにアーカイブへ追加されます。</string>
     <string name="help_item_add_document_import">＋をタップして「PDF をインポート」を選ぶと、システムのファイルピッカーが開きます。端末内の既存 PDF を選ぶと、保存後にアーカイブへコピーされます。</string>
@@ -160,6 +161,7 @@
     <string name="info_section_features">機能</string>
     <string name="info_features_body">このアプリは PDF のスキャン、インポート、作成、追記、ピンチズームとダブルタップズームによるアプリ内表示に対応し、削除したドキュメントをゴミ箱に 30 日間保持し、端末上で OCR を実行して、アーカイブ検索、OCR レビュー、任意の自動タグ、タグフィルター、TXT エクスポートのために OCR テキストと品質メタデータをローカル保存します。さらに、ページ編集、注釈、署名、メタデータ編集、グレースケール化、保護、安全な黒塗り、黒塗りコピー向けの任意の OCR 再構築も利用できます。画像はフォトモード（全面印刷）または標準ページサイズ（A4、Letter、A5 など）を指定したドキュメントモードで PDF に変換できます。暗号化バックアップによりアプリ設定のエクスポートと復元が可能です。</string>
     <string name="info_feature_print_share">Android の印刷、共有、Open with 連携はシステムダイアログを使用します。印刷は選択した PDF を Android Print に送信し、PDF のページサイズが選択した印刷フォーマットと一致しない場合は警告が表示されます。このアプリに共有された、またはこのアプリで開かれた受信 PDF と画像は、ユーザー確認後にのみアプリのアーカイブへコピーされます。</string>
+    <string name="info_feature_viewer_search">内蔵ビューアはネイティブ PDF テキストと保存済み OCR テキストを端末内で検索します。個々の一致間を移動し、PDF テキスト位置を取得できる一致を強調表示します。</string>
     <string name="info_privacy_body">広告なし、アカウント不要、独自バックエンドなし。PDF、サムネイル、生成されたコピー、ゴミ箱内の項目、OCR テキスト、OCR 品質メタデータは、エクスポート、共有、または完全削除するまで端末内のアプリ保存領域に残ります。スキャン、OCR、モデルやフォントの取得には Google Play Services を利用しますが、このアプリが文書内容をアップロードすることはありません。</string>
     <!-- Privacy screen -->
     <string name="privacy_keyword_1">ローカル</string>
@@ -535,6 +537,7 @@
     <string name="pdf_viewer_search_previous">前の一致</string>
     <string name="pdf_viewer_search_next">次の一致</string>
     <string name="pdf_viewer_search_close">検索を閉じる</string>
+    <string name="pdf_viewer_search_needs_ocr">この文書には検索可能なテキストがありません。先に OCR を実行してください。</string>
     <string name="pdf_viewer_copy_iban">IBAN %1$s をコピー</string>
     <string name="pdf_viewer_copy_iban_success">IBANをコピーしました</string>
     <string name="pdf_viewer_copy_amount">金額 %1$s をコピー</string>

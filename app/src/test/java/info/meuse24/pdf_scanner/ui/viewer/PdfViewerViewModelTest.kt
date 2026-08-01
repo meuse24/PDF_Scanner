@@ -8,6 +8,9 @@ import info.meuse24.pdf_scanner.domain.model.AcroFormCapability
 import info.meuse24.pdf_scanner.domain.model.PdfMetadata
 import info.meuse24.pdf_scanner.domain.model.PdfPageSizeCategory
 import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfTextOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfPageTextContent
+import info.meuse24.pdf_scanner.domain.pdf.NormalizedBox
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
@@ -23,15 +26,18 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -69,6 +75,7 @@ class PdfViewerViewModelTest {
                 R.string.pdf_viewer_copy_iban_success to "IBAN copied",
                 R.string.pdf_viewer_copy_amount_success to "Amount copied",
                 R.string.pdf_viewer_no_calendar_app to "No calendar app",
+                R.string.pdf_viewer_search_needs_ocr to "Run OCR first",
                 R.string.export_success to "Exported %s",
                 R.string.error_export_failed to "Export failed"
             )
@@ -327,7 +334,7 @@ class PdfViewerViewModelTest {
         viewModel.updateSearchQuery("beta")
         advanceUntilIdle()
 
-        assertEquals(listOf(1, 2), viewModel.uiState.value.searchMatches)
+        assertEquals(listOf(1, 2), viewModel.uiState.value.searchMatches.map { it.pageIndex })
         assertEquals(0, viewModel.uiState.value.searchCurrentIndex)
         assertEquals(1, firstRequest.await())
 
@@ -348,7 +355,7 @@ class PdfViewerViewModelTest {
         viewModel.closeSearch()
         assertFalse(viewModel.uiState.value.searchActive)
         assertEquals("", viewModel.uiState.value.searchQuery)
-        assertEquals(emptyList<Int>(), viewModel.uiState.value.searchMatches)
+        assertEquals(emptyList<info.meuse24.pdf_scanner.domain.common.PdfSearchMatch>(), viewModel.uiState.value.searchMatches)
     }
 
     @Test
@@ -367,9 +374,109 @@ class PdfViewerViewModelTest {
 
         advanceUntilIdle()
         viewModel.openSearch()
+        advanceUntilIdle()
 
         assertFalse(viewModel.uiState.value.pageSearchAvailable)
         assertFalse(viewModel.uiState.value.searchActive)
+    }
+
+    @Test
+    fun `native PDF text takes precedence and preserves individual matches`() = runTest(testDispatcher) {
+        val pdf = tmpFolder.newFile("native-search.pdf").apply { writeText("pdf") }
+        val viewModel = buildViewModel(
+            records = listOf(
+                scanRecord(
+                    filepath = pdf.absolutePath,
+                    pageCount = 2,
+                    pageTexts = listOf("OCR fallback", "OCR fallback")
+                )
+            ),
+            renderer = FakePdfPageBitmapRenderer(FakePdfDocumentBitmapHandle(pageCount = 2)),
+            pdfTextOps = FakePdfTextOps(
+                listOf(
+                    PdfPageTextContent(0, "Native needle and needle"),
+                    PdfPageTextContent(1, "")
+                )
+            )
+        )
+
+        advanceUntilIdle()
+        viewModel.openSearch()
+        viewModel.updateSearchQuery("needle")
+        advanceUntilIdle()
+
+        assertEquals(listOf(0, 0), viewModel.uiState.value.searchMatches.map { it.pageIndex })
+        assertTrue(viewModel.uiState.value.pageSearchAvailable)
+    }
+
+    @Test
+    fun `database updates without content changes keep native text search available`() = runTest(testDispatcher) {
+        val pdf = tmpFolder.newFile("native-update.pdf").apply { writeText("pdf") }
+        val records = MutableStateFlow(listOf(scanRecord(filepath = pdf.absolutePath, pageCount = 1)))
+        val viewModel = buildViewModel(
+            recordsFlow = records,
+            renderer = FakePdfPageBitmapRenderer(FakePdfDocumentBitmapHandle(pageCount = 1)),
+            pdfTextOps = FakePdfTextOps(listOf(PdfPageTextContent(0, "Native text")))
+        )
+
+        advanceUntilIdle()
+        viewModel.openSearch()
+        advanceUntilIdle()
+        assertTrue(viewModel.uiState.value.pageSearchAvailable)
+
+        records.value = listOf(scanRecord(filepath = pdf.absolutePath, pageCount = 1, isFavorite = true))
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.pageSearchAvailable)
+        viewModel.openSearch()
+        assertTrue(viewModel.uiState.value.searchActive)
+    }
+
+    @Test
+    fun `cancelled extraction cannot clear replacement extraction state`() = runTest(testDispatcher) {
+        val pdf = tmpFolder.newFile("replacement-extraction.pdf").apply { writeText("pdf") }
+        val records = MutableStateFlow(listOf(scanRecord(filepath = pdf.absolutePath, pageCount = 1)))
+        val viewModel = buildViewModel(
+            recordsFlow = records,
+            renderer = FakePdfPageBitmapRenderer(FakePdfDocumentBitmapHandle(pageCount = 1)),
+            pdfTextOps = HangingPdfTextOps()
+        )
+
+        advanceUntilIdle()
+        viewModel.openSearch()
+        advanceUntilIdle()
+        assertTrue(viewModel.uiState.value.searchExtractionRunning)
+
+        records.value = listOf(
+            scanRecord(filepath = pdf.absolutePath, pageCount = 1, pageTexts = listOf("OCR fallback"))
+        )
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.searchExtractionRunning)
+        assertTrue(viewModel.uiState.value.pageSearchAvailable)
+    }
+
+    @Test
+    fun `moving between matches on the same page emits no scroll request`() = runTest(testDispatcher) {
+        val pdf = tmpFolder.newFile("same-page.pdf").apply { writeText("pdf") }
+        val viewModel = buildViewModel(
+            records = listOf(scanRecord(filepath = pdf.absolutePath, pageTexts = listOf("needle needle"))),
+            renderer = FakePdfPageBitmapRenderer(FakePdfDocumentBitmapHandle(pageCount = 1))
+        )
+
+        advanceUntilIdle()
+        viewModel.openSearch()
+        viewModel.updateSearchQuery("needle")
+        advanceUntilIdle()
+        val request = async(start = CoroutineStart.UNDISPATCHED) {
+            withTimeoutOrNull(1) { viewModel.scrollToPageRequests.first() }
+        }
+
+        viewModel.goToNextMatch()
+        advanceUntilIdle()
+
+        assertEquals(null, request.await())
+        assertEquals(1, viewModel.uiState.value.searchCurrentIndex)
     }
 
     @Test
@@ -451,13 +558,15 @@ class PdfViewerViewModelTest {
         scanId: Long = 1L,
         savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("scanId" to scanId)),
         pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD },
-        formCapability: AcroFormCapability = AcroFormCapability.NONE
+        formCapability: AcroFormCapability = AcroFormCapability.NONE,
+        pdfTextOps: PdfTextOps = FakePdfTextOps()
     ): PdfViewerViewModel = buildViewModel(
         recordsFlow = flowOf(records),
         renderer = renderer,
         savedStateHandle = savedStateHandle,
         pdfMetadataOps = pdfMetadataOps,
-        formCapability = formCapability
+        formCapability = formCapability,
+        pdfTextOps = pdfTextOps
     )
 
     private fun buildViewModel(
@@ -466,7 +575,8 @@ class PdfViewerViewModelTest {
         scanId: Long = 1L,
         savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("scanId" to scanId)),
         pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD },
-        formCapability: AcroFormCapability = AcroFormCapability.NONE
+        formCapability: AcroFormCapability = AcroFormCapability.NONE,
+        pdfTextOps: PdfTextOps = FakePdfTextOps()
     ): PdfViewerViewModel {
         val repository = mock(ScanRepository::class.java)
         `when`(repository.getAllScans()).thenReturn(recordsFlow)
@@ -495,6 +605,7 @@ class PdfViewerViewModelTest {
                     flatten: Boolean
                 ): File = input
             },
+            pdfTextOps = pdfTextOps,
             savedStateHandle = savedStateHandle
         )
     }
@@ -525,7 +636,8 @@ class PdfViewerViewModelTest {
         pageCount: Int = 1,
         isEncrypted: Boolean = false,
         extractedText: String? = null,
-        pageTexts: List<String> = emptyList()
+        pageTexts: List<String> = emptyList(),
+        isFavorite: Boolean = false
     ): Document = Document(
         id = 1L,
         filename = "scan",
@@ -536,6 +648,7 @@ class PdfViewerViewModelTest {
         isEncrypted = isEncrypted,
         extractedText = extractedText,
         pageTexts = pageTexts,
+        isFavorite = isFavorite,
         hasStoredOcrText = !extractedText.isNullOrBlank() || pageTexts.any { it.isNotBlank() }
     )
 }
@@ -559,6 +672,22 @@ private class FakePdfPageBitmapRenderer : PdfPageBitmapRenderer {
         openedFiles += file
         return handles.removeFirst()
     }
+}
+
+private class FakePdfTextOps(
+    private val pages: List<PdfPageTextContent> = emptyList()
+) : PdfTextOps {
+    override fun removeTextLayer(input: File, outputDir: File): File = input
+    override fun extractTextLines(file: File, pageIndex: Int) = emptyList<info.meuse24.pdf_scanner.domain.usecase.TextLine>()
+    override fun extractSearchText(file: File): Flow<PdfPageTextContent> = flowOf(*pages.toTypedArray())
+    override fun extractPageGlyphBoxes(file: File, pageIndex: Int): List<NormalizedBox?> = emptyList()
+}
+
+private class HangingPdfTextOps : PdfTextOps {
+    override fun removeTextLayer(input: File, outputDir: File): File = input
+    override fun extractTextLines(file: File, pageIndex: Int) = emptyList<info.meuse24.pdf_scanner.domain.usecase.TextLine>()
+    override fun extractSearchText(file: File): Flow<PdfPageTextContent> = flow { awaitCancellation() }
+    override fun extractPageGlyphBoxes(file: File, pageIndex: Int): List<NormalizedBox?> = emptyList()
 }
 
 private class CancellingPdfPageBitmapRenderer : PdfPageBitmapRenderer {
@@ -614,4 +743,3 @@ private fun PdfViewerViewModel.invokeOnClearedForTest() {
     method.isAccessible = true
     method.invoke(this)
 }
-

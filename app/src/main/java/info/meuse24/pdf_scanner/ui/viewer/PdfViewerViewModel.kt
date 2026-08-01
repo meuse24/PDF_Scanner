@@ -7,11 +7,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.common.DetectedEntities
 import info.meuse24.pdf_scanner.domain.common.detectDocumentEntities
-import info.meuse24.pdf_scanner.domain.common.findMatchingPages
+import info.meuse24.pdf_scanner.domain.common.PdfSearchMatch
+import info.meuse24.pdf_scanner.domain.common.findMatches
 import info.meuse24.pdf_scanner.domain.model.Document
 import info.meuse24.pdf_scanner.domain.model.AcroFormCapability
 import info.meuse24.pdf_scanner.domain.pdf.PdfFormOps
-import info.meuse24.pdf_scanner.domain.model.hasAlignedOcrPageTexts
+import info.meuse24.pdf_scanner.domain.pdf.PdfTextOps
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
@@ -40,6 +41,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -59,6 +61,7 @@ class PdfViewerViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val dispatcherProvider: DispatcherProvider,
     private val pdfFormOps: PdfFormOps,
+    private val pdfTextOps: PdfTextOps,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -75,16 +78,24 @@ class PdfViewerViewModel @Inject constructor(
     private val renderJobs = ConcurrentHashMap<Int, RenderJob>()
     private val documentHandleRef = AtomicReference<PdfDocumentBitmapHandle?>(null)
     private val isCleared = AtomicBoolean(false)
+    private val searchExtractionGeneration = AtomicLong(0)
 
     @Volatile
     private var documentKey: String? = null
     private var openDocumentJob: Job? = null
     private var visibleZoomRenderJob: Job? = null
+    @Volatile
     private var searchJob: Job? = null
+    private var searchTextExtractionJob: Job? = null
+    private var highlightJob: Job? = null
     private var entityDetectionJob: Job? = null
     private var entitySourceKey: EntitySourceKey? = null
     private var visiblePageIndexes: Set<Int> = setOf(savedStateHandle[SAVED_CURRENT_PAGE] ?: 0)
     private var targetWidthPx: Int = 0
+    private val searchCacheLock = Any()
+    private var searchPageTexts: MutableList<PageSearchText> = mutableListOf()
+    private val searchBoxCache = LinkedHashMap<Int, List<info.meuse24.pdf_scanner.domain.pdf.NormalizedBox?>>(3, 0.75f, true)
+    private var searchTextExtractionStarted = false
 
     private val _uiState = MutableStateFlow(
         PdfViewerUiState(
@@ -128,11 +139,13 @@ class PdfViewerViewModel @Inject constructor(
                             pages = emptyMap(),
                             detectedEntities = DetectedEntities(),
                             pageSearchAvailable = false,
+                            searchExtractionRunning = false,
                             searchActive = false,
                             searchQuery = "",
                             searchMatches = emptyList(),
                             searchCurrentIndex = -1,
                             searching = false,
+                            searchHighlights = null,
                             formCapability = AcroFormCapability.NONE
                         )
                     }
@@ -217,7 +230,20 @@ class PdfViewerViewModel @Inject constructor(
     }
 
     fun openSearch() {
-        if (!_uiState.value.pageSearchAvailable) return
+        val record = _uiState.value.record ?: return
+        if (!searchTextExtractionStarted) {
+            searchTextExtractionStarted = startSearchTextExtraction(
+                file = File(record.filepath),
+                pageCount = _uiState.value.pageCount,
+                expectedDocumentKey = documentKey ?: return
+            )
+        }
+        if (!_uiState.value.pageSearchAvailable && !_uiState.value.searchExtractionRunning) {
+            _uiState.update {
+                it.copy(transientMessage = resourceProvider.getString(R.string.pdf_viewer_search_needs_ocr))
+            }
+            return
+        }
         _uiState.update { it.copy(searchActive = true) }
     }
 
@@ -230,32 +256,14 @@ class PdfViewerViewModel @Inject constructor(
                 searchQuery = query,
                 searchMatches = emptyList(),
                 searchCurrentIndex = -1,
-                searching = trimmed.isNotEmpty()
+                searching = trimmed.isNotEmpty(),
+                searchHighlights = null
             )
         }
         if (trimmed.isEmpty()) return
-
-        val expectedRecord = _uiState.value.record ?: return
-        val pageTexts = expectedRecord.pageTexts
         searchJob = viewModelScope.launch {
             delay(PDF_VIEWER_SEARCH_DEBOUNCE_MS)
-            val matches = withContext(dispatcherProvider.default) {
-                findMatchingPages(pageTexts, trimmed)
-            }
-            if (
-                _uiState.value.record?.id != expectedRecord.id ||
-                _uiState.value.searchQuery.trim() != trimmed
-            ) {
-                return@launch
-            }
-            _uiState.update {
-                it.copy(
-                    searchMatches = matches,
-                    searchCurrentIndex = if (matches.isEmpty()) -1 else 0,
-                    searching = false
-                )
-            }
-            matches.firstOrNull()?.let(_scrollToPageRequests::tryEmit)
+            refreshSearchResults(trimmed)
         }
     }
 
@@ -270,13 +278,16 @@ class PdfViewerViewModel @Inject constructor(
     fun closeSearch() {
         searchJob?.cancel()
         searchJob = null
+        highlightJob?.cancel()
+        highlightJob = null
         _uiState.update {
             it.copy(
                 searchActive = false,
                 searchQuery = "",
                 searchMatches = emptyList(),
                 searchCurrentIndex = -1,
-                searching = false
+                searching = false,
+                searchHighlights = null
             )
         }
     }
@@ -304,6 +315,9 @@ class PdfViewerViewModel @Inject constructor(
         isCleared.set(true)
         cancelRenderJobs()
         searchJob?.cancel()
+        searchTextExtractionJob?.cancel()
+        searchExtractionGeneration.incrementAndGet()
+        highlightJob?.cancel()
         entityDetectionJob?.cancel()
         openDocumentJob?.cancel()
         closeDocument()
@@ -312,27 +326,48 @@ class PdfViewerViewModel @Inject constructor(
 
     private fun onRecordChanged(record: Document) {
         val previousRecord = _uiState.value.record
+        val shouldRestartSearchText = searchTextExtractionStarted
         val searchContentChanged = previousRecord == null ||
             previousRecord.id != record.id ||
             previousRecord.filepath != record.filepath ||
             previousRecord.fileSize != record.fileSize ||
             previousRecord.pageTexts != record.pageTexts
-        val pageSearchAvailable = record.hasAlignedOcrPageTexts(record.pageCount)
         _uiState.update { state ->
             state.copy(
                 record = record,
-                pageSearchAvailable = pageSearchAvailable,
-                searchActive = if (searchContentChanged || !pageSearchAvailable) false else state.searchActive,
-                searchQuery = if (searchContentChanged || !pageSearchAvailable) "" else state.searchQuery,
-                searchMatches = if (searchContentChanged || !pageSearchAvailable) emptyList() else state.searchMatches,
-                searchCurrentIndex = if (searchContentChanged || !pageSearchAvailable) -1 else state.searchCurrentIndex,
-                searching = if (searchContentChanged || !pageSearchAvailable) false else state.searching
+                pageSearchAvailable = if (searchContentChanged) false else state.pageSearchAvailable,
+                searchExtractionRunning = if (searchContentChanged) false else state.searchExtractionRunning,
+                searchActive = if (searchContentChanged) false else state.searchActive,
+                searchQuery = if (searchContentChanged) "" else state.searchQuery,
+                searchMatches = if (searchContentChanged) emptyList() else state.searchMatches,
+                searchCurrentIndex = if (searchContentChanged) -1 else state.searchCurrentIndex,
+                searching = if (searchContentChanged) false else state.searching,
+                searchHighlights = if (searchContentChanged) null else state.searchHighlights
             )
         }
-        if (searchContentChanged) searchJob?.cancel()
+        if (searchContentChanged) {
+            searchJob?.cancel()
+            searchTextExtractionJob?.cancel()
+            searchExtractionGeneration.incrementAndGet()
+            highlightJob?.cancel()
+            synchronized(searchCacheLock) {
+                searchPageTexts.clear()
+                searchBoxCache.clear()
+            }
+            searchTextExtractionStarted = false
+        }
         detectEntities(record)
         val nextKey = "${record.filepath}:${record.fileSize}"
-        if (nextKey == documentKey && documentHandleRef.get() != null) return
+        if (nextKey == documentKey && documentHandleRef.get() != null) {
+            if (searchContentChanged) {
+                val pageCount = _uiState.value.pageCount
+                prepareSearchText(record, pageCount)
+                if (shouldRestartSearchText) {
+                    searchTextExtractionStarted = startSearchTextExtraction(File(record.filepath), pageCount, nextKey)
+                }
+            }
+            return
+        }
 
         documentKey = nextKey
         cancelRenderJobs()
@@ -346,7 +381,9 @@ class PdfViewerViewModel @Inject constructor(
                     loading = false,
                     errorMessage = resourceProvider.getString(R.string.pdf_viewer_file_encrypted),
                     pageCount = 0,
-                    pages = emptyMap()
+                    pages = emptyMap(),
+                    pageSearchAvailable = false,
+                    searchExtractionRunning = false
                 )
             }
             return
@@ -359,7 +396,9 @@ class PdfViewerViewModel @Inject constructor(
                     loading = false,
                     errorMessage = resourceProvider.getString(R.string.pdf_viewer_file_missing),
                     pageCount = 0,
-                    pages = emptyMap()
+                    pages = emptyMap(),
+                    pageSearchAvailable = false,
+                    searchExtractionRunning = false
                 )
             }
             return
@@ -400,22 +439,24 @@ class PdfViewerViewModel @Inject constructor(
                 val actualPageCount = handle.pageCount
                 if (!setDocumentHandle(handle, nextKey)) return@launch
                 val current = _uiState.value.currentPageIndex.coerceIn(0, actualPageCount - 1)
-                val pageSearchAvailable = record.hasAlignedOcrPageTexts(actualPageCount)
                 _uiState.update {
                     it.copy(
                         loading = false,
                         errorMessage = null,
                         pageCount = actualPageCount,
                         currentPageIndex = current,
-                        pageSearchAvailable = pageSearchAvailable,
-                        searchActive = if (pageSearchAvailable) it.searchActive else false,
-                        searchQuery = if (pageSearchAvailable) it.searchQuery else "",
-                        searchMatches = if (pageSearchAvailable) it.searchMatches else emptyList(),
-                        searchCurrentIndex = if (pageSearchAvailable) it.searchCurrentIndex else -1,
-                        searching = if (pageSearchAvailable) it.searching else false,
+                        pageSearchAvailable = false,
+                        searchExtractionRunning = false,
+                        searchActive = false,
+                        searchQuery = "",
+                        searchMatches = emptyList(),
+                        searchCurrentIndex = -1,
+                        searching = false,
+                        searchHighlights = null,
                         formCapability = formCapability
                     )
                 }
+                prepareSearchText(record, actualPageCount)
                 renderVisiblePages()
             } catch (exception: PdfPageBitmapRenderException) {
                 _uiState.update {
@@ -465,13 +506,148 @@ class PdfViewerViewModel @Inject constructor(
         }
     }
 
+    private fun prepareSearchText(record: Document, pageCount: Int) {
+        val ocrPages = record.pageTexts.takeIf { it.size == pageCount }.orEmpty()
+        synchronized(searchCacheLock) {
+            searchPageTexts = MutableList(pageCount) { pageIndex ->
+                ocrPages.getOrNull(pageIndex)
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { PageSearchText(it, SearchTextSource.OCR_FALLBACK) }
+                    ?: PageSearchText("", SearchTextSource.NONE)
+            }
+        }
+        _uiState.update {
+            it.copy(pageSearchAvailable = synchronized(searchCacheLock) { searchPageTexts.any { page -> page.text.isNotBlank() } })
+        }
+    }
+
+    private fun startSearchTextExtraction(
+        file: File,
+        pageCount: Int,
+        expectedDocumentKey: String
+    ): Boolean {
+        if (pageCount <= 0 || expectedDocumentKey != documentKey) return false
+        val generation = searchExtractionGeneration.incrementAndGet()
+        _uiState.update { it.copy(searchExtractionRunning = true) }
+        searchTextExtractionJob?.cancel()
+        searchTextExtractionJob = viewModelScope.launch(dispatcherProvider.io) {
+            try {
+                pdfTextOps.extractSearchText(file).collect { page ->
+                    if (documentKey != expectedDocumentKey) return@collect
+                    if (page.text.isNotBlank()) {
+                        synchronized(searchCacheLock) {
+                            if (page.pageIndex !in searchPageTexts.indices) return@collect
+                            searchPageTexts[page.pageIndex] = PageSearchText(page.text, SearchTextSource.NATIVE)
+                        }
+                        _uiState.update { it.copy(pageSearchAvailable = true) }
+                    }
+                }
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (_: Exception) {
+                // OCR fallback, if present, remains usable. The PDF viewer itself stays unaffected.
+            } finally {
+                if (documentKey == expectedDocumentKey && searchExtractionGeneration.get() == generation) {
+                    viewModelScope.launch(dispatcherProvider.main) {
+                        if (documentKey == expectedDocumentKey && searchExtractionGeneration.get() == generation) {
+                            _uiState.update { it.copy(searchExtractionRunning = false) }
+                            val state = _uiState.value
+                            if (!state.pageSearchAvailable && state.searchActive) {
+                                _uiState.update {
+                                    it.copy(
+                                        searchActive = false,
+                                        searchMatches = emptyList(),
+                                        searchCurrentIndex = -1,
+                                        searching = false,
+                                        transientMessage = resourceProvider.getString(R.string.pdf_viewer_search_needs_ocr)
+                                    )
+                                }
+                            } else {
+                                state.searchQuery.trim().takeIf { it.isNotEmpty() }?.let { query ->
+                                    searchJob?.cancel()
+                                    searchJob = viewModelScope.launch { refreshSearchResults(query) }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true
+    }
+
+    private suspend fun refreshSearchResults(query: String) {
+        val expectedDocumentKey = documentKey ?: return
+        val pageTexts = synchronized(searchCacheLock) { searchPageTexts.map { it.text } }
+        val matches = withContext(dispatcherProvider.default) { findMatches(pageTexts, query) }
+        if (documentKey != expectedDocumentKey || _uiState.value.searchQuery.trim() != query) return
+        _uiState.update {
+            it.copy(
+                searchMatches = matches,
+                searchCurrentIndex = if (matches.isEmpty()) -1 else 0,
+                searching = it.searchExtractionRunning,
+                searchHighlights = null
+            )
+        }
+        matches.firstOrNull()?.let { match ->
+            _scrollToPageRequests.tryEmit(match.pageIndex)
+            updateHighlights(match.pageIndex, matches, 0, expectedDocumentKey)
+        }
+    }
+
+    private fun updateHighlights(
+        pageIndex: Int,
+        matches: List<PdfSearchMatch>,
+        currentIndex: Int,
+        expectedDocumentKey: String
+    ) {
+        val page = synchronized(searchCacheLock) { searchPageTexts.getOrNull(pageIndex) } ?: return
+        if (page.source != SearchTextSource.NATIVE) {
+            _uiState.update { it.copy(searchHighlights = null) }
+            return
+        }
+        highlightJob?.cancel()
+        highlightJob = viewModelScope.launch(dispatcherProvider.io) {
+            try {
+                val file = _uiState.value.record?.filepath?.let(::File) ?: return@launch
+                val boxes = synchronized(searchCacheLock) { searchBoxCache[pageIndex] }
+                    ?: pdfTextOps.extractPageGlyphBoxes(file, pageIndex).also { loaded ->
+                        synchronized(searchCacheLock) {
+                            searchBoxCache[pageIndex] = loaded
+                            while (searchBoxCache.size > 3) searchBoxCache.remove(searchBoxCache.entries.first().key)
+                        }
+                    }
+                val pageMatches = matches.withIndex().filter { it.value.pageIndex == pageIndex }
+                val highlights = withContext(dispatcherProvider.default) {
+                    PdfSearchHighlights(
+                        pageIndex = pageIndex,
+                        active = boxesForRange(boxes, matches[currentIndex].rawRange),
+                        others = pageMatches
+                            .filter { it.index != currentIndex }
+                            .flatMap { boxesForRange(boxes, it.value.rawRange) }
+                    )
+                }
+                if (documentKey == expectedDocumentKey && _uiState.value.searchCurrentIndex == currentIndex) {
+                    _uiState.update { it.copy(searchHighlights = highlights) }
+                }
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (_: Exception) {
+                if (documentKey == expectedDocumentKey) _uiState.update { it.copy(searchHighlights = null) }
+            }
+        }
+    }
+
     private fun moveToMatch(step: Int) {
         val state = _uiState.value
         if (state.searchMatches.isEmpty()) return
         val current = state.searchCurrentIndex.coerceAtLeast(0)
         val nextIndex = (current + step + state.searchMatches.size) % state.searchMatches.size
         _uiState.update { it.copy(searchCurrentIndex = nextIndex) }
-        _scrollToPageRequests.tryEmit(state.searchMatches[nextIndex])
+        val previous = state.searchMatches[current]
+        val next = state.searchMatches[nextIndex]
+        if (previous.pageIndex != next.pageIndex) _scrollToPageRequests.tryEmit(next.pageIndex)
+        documentKey?.let { updateHighlights(next.pageIndex, state.searchMatches, nextIndex, it) }
     }
 
     private fun detectEntities(record: Document) {
@@ -658,3 +834,21 @@ private data class EntitySourceKey(
     val extractedText: String?,
     val fallbackPageTexts: List<String>
 )
+
+private enum class SearchTextSource { NATIVE, OCR_FALLBACK, NONE }
+
+private data class PageSearchText(
+    val text: String,
+    val source: SearchTextSource
+)
+
+private fun boxesForRange(
+    boxes: List<info.meuse24.pdf_scanner.domain.pdf.NormalizedBox?>,
+    range: IntRange
+): List<info.meuse24.pdf_scanner.domain.pdf.NormalizedBox> {
+    if (boxes.isEmpty()) return emptyList()
+    return boxes.subList(
+        range.first.coerceIn(0, boxes.lastIndex),
+        (range.last + 1).coerceIn(0, boxes.size)
+    ).filterNotNull().distinct()
+}

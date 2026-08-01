@@ -135,19 +135,20 @@ internal fun mergeTextBoxesToLines(
 }
 
 internal fun TextPosition.toNormalizedTextBox(
-    displayedWidth: Float,
-    displayedHeight: Float
+    pageWidth: Float,
+    pageHeight: Float,
+    rotation: Int
 ): NormalizedTextBox? {
-    if (displayedWidth <= 0f || displayedHeight <= 0f) return null
+    if (pageWidth <= 0f || pageHeight <= 0f) return null
     if (fontSizeInPt < MIN_TEXT_FONT_SIZE_PT) return null
 
-    val left = (xDirAdj / displayedWidth).coerceIn(0f, 1f)
-    val top = ((yDirAdj - heightDir) / displayedHeight).coerceIn(0f, 1f)
-    val right = ((xDirAdj + widthDirAdj) / displayedWidth).coerceIn(0f, 1f)
-    val bottom = (yDirAdj / displayedHeight).coerceIn(0f, 1f)
-    if (right <= left || bottom <= top) return null
-
-    return NormalizedTextBox(left, top, right, bottom)
+    return mapPdfBoxToDisplay(
+        left = (xDirAdj / pageWidth).coerceIn(0f, 1f),
+        top = ((yDirAdj - heightDir) / pageHeight).coerceIn(0f, 1f),
+        right = ((xDirAdj + widthDirAdj) / pageWidth).coerceIn(0f, 1f),
+        bottom = (yDirAdj / pageHeight).coerceIn(0f, 1f),
+        rotation = rotation
+    )?.let { (left, top, right, bottom) -> NormalizedTextBox(left, top, right, bottom) }
 }
 
 internal fun PdfEditor.appendAnnotationStroke(

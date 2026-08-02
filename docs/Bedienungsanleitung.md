@@ -248,12 +248,16 @@ Tippen Sie auf ein beliebiges Dokument im Archiv, um es im integrierten Viewer z
 - **Pinch-Zoom** – zwei Finger zum Hineinzoomen, auseinanderziehen zum Herauszoomen
 - Beim Zoomen rendert die App die aktuelle Seite in höherer Auflösung
 
-**Viewer-Aktionsleiste** (oben):
+**Viewer-Aktionsleiste** (unten):
 
 | Symbol | Aktion |
 |---|---|
-| Zurück-Pfeil | Viewer schließen, zurück zum Archiv |
-| Drei Punkte (···) | Weitere Aktionen (Teilen, Drucken, In externem Viewer öffnen, …) |
+| Stift | Dokumentaktionen öffnen (Seiten, Bearbeiten, Analyse, Export, Schutz) |
+| Lupe im Dokument | Text im geöffneten PDF suchen |
+| Teilen | Dokument an eine andere App weitergeben |
+| Drei Punkte (⋮) | Exportieren, PDF drucken, extern öffnen – bei Formular-PDFs zusätzlich „Formular ausfüllen" |
+
+Der Zurück-Pfeil in der oberen Leiste schließt den Viewer und führt zurück ins Archiv.
 
 ### Text im geöffneten PDF suchen
 
@@ -263,7 +267,7 @@ Die Suche verwendet zuerst die vorhandene Textschicht des PDFs und ergänzt dies
 
 ## Dokument-Aktionen aus dem Viewer
 
-Über die **Drei-Punkte-Schaltfläche** im Viewer oder durch Öffnen des Aktions-Sheets sind alle Bearbeitungsfunktionen erreichbar, die auch aus dem Archiv heraus verfügbar sind (OCR, Übersetzen, Seiten bearbeiten, Sicherheit usw.).
+Über die **Stift-Schaltfläche** in der unteren Aktionsleiste öffnen Sie dieselben Bearbeitungsfunktionen, die auch aus dem Archiv heraus verfügbar sind (OCR, Übersetzen, Seiten bearbeiten, Export, Sicherheit usw.). Umbenennen, SHA-256 und Drucken sind dort ausgeblendet: Drucken liegt im Drei-Punkte-Menü, die beiden anderen erreichen Sie über das Aktions-Menü des Dokuments im Archiv.
 
 ## In externem Viewer öffnen
 
@@ -799,8 +803,10 @@ Ein Backup enthält:
 5. Im Browser sehen Sie Ihr Archiv, können Dokumente herunterladen und per Formular neue PDFs hochladen (maximal 25 MB pro Datei)
 6. Tippen Sie auf **Trennen**, um die Verbindung zu beenden, oder verwenden Sie die Stopp-Aktion in der Benachrichtigung
 
+Wie lange die Verbindung ohne Zugriff offen bleibt, legen Sie unter **Einstellungen → Sicherheit → Abschaltzeit der PC-Verbindung** fest (5, 10, 20, 30 oder 60 Minuten; Standard 20 Minuten). Eine Änderung wirkt sofort, auch auf eine bereits laufende Verbindung. Unabhängig von dieser Auswahl endet jede Verbindung spätestens nach 2 Stunden – eine Option „nie" gibt es bewusst nicht.
+
 \begin{hinweis}
-\textbf{Hinweis:} Die Verbindung funktioniert ausschließlich im lokalen WLAN – es werden keine Daten ins Internet übertragen. Da für eine geräteinterne IP-Adresse kein gültiges TLS-Zertifikat ausgestellt werden kann, ist die Verbindung unverschlüsselt; nutzen Sie das Feature daher nur in vertrauenswürdigen Netzwerken. Die Verbindung stoppt automatisch, wenn die App-Sperre aktiviert wird oder 20 Minuten lang keine Anfrage eingeht, und lässt sich jederzeit manuell beenden.
+\textbf{Hinweis:} Die Verbindung funktioniert ausschließlich im lokalen WLAN – es werden keine Daten ins Internet übertragen. Da für eine geräteinterne IP-Adresse kein gültiges TLS-Zertifikat ausgestellt werden kann, ist die Verbindung unverschlüsselt; nutzen Sie das Feature daher nur in vertrauenswürdigen Netzwerken. Die Verbindung stoppt automatisch, wenn die App-Sperre aktiviert wird oder für die eingestellte Dauer (Standard 20 Minuten) keine Anfrage eines angemeldeten Browsers eingeht, spätestens jedoch nach 2 Stunden. Sie lässt sich jederzeit manuell beenden.
 \end{hinweis}
 
 ## Backup erstellen

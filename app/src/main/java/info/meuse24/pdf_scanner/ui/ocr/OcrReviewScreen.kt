@@ -68,7 +68,7 @@ fun OcrReviewScreen(
     val coroutineScope = rememberCoroutineScope()
     val copiedMessage = stringResource(R.string.ocr_copied)
     val shareTextLabel = stringResource(R.string.action_share_text)
-    val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
+    val displayLocale = resources.configuration.locales[0]
     val ocrLanguages = remember(displayLocale) {
         buildOcrLanguageOptions(
             autoLabel = resources.getString(R.string.ocr_language_auto),

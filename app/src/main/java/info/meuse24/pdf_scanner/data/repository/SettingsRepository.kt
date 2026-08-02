@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.data.repository
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import info.meuse24.pdf_scanner.domain.model.LocalSyncTimeout
 import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
 import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
@@ -99,6 +100,15 @@ class SettingsRepository @Inject constructor(
         val current = _settings.value
         if (current.appLockTimeoutSeconds == seconds) return
         val updated = current.copy(appLockTimeoutSeconds = seconds.coerceAtLeast(0))
+        AppSettingsPreferences.save(context, updated)
+        _settings.value = updated
+    }
+
+    override fun updateLocalSyncIdleTimeoutMinutes(minutes: Int) {
+        val normalized = LocalSyncTimeout.normalize(minutes)
+        val current = _settings.value
+        if (current.localSyncIdleTimeoutMinutes == normalized) return
+        val updated = current.copy(localSyncIdleTimeoutMinutes = normalized)
         AppSettingsPreferences.save(context, updated)
         _settings.value = updated
     }

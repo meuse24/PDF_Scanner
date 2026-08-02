@@ -530,6 +530,7 @@
     <string name="pdf_viewer_invalid_page">无法打开此页面。</string>
     <string name="pdf_viewer_out_of_memory">此页面过大，无法在本设备上渲染。</string>
     <string name="pdf_viewer_renderer_failed">PDF 查看器无法渲染此文档。</string>
+    <string name="pdf_viewer_more_actions">更多操作</string>
     <string name="pdf_viewer_search">搜索文档</string>
     <string name="pdf_viewer_search_hint">在文档中搜索</string>
     <string name="pdf_viewer_search_no_matches">无匹配项</string>

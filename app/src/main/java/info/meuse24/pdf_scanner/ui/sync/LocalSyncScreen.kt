@@ -100,6 +100,7 @@ fun LocalSyncScreen(viewModel: LocalSyncViewModel = hiltViewModel()) {
 
     LocalSyncContent(
         state = state.state,
+        idleTimeoutMinutes = state.idleTimeoutMinutes,
         onConnect = {
             requestNotificationPermissionIfNeeded()
             viewModel.onConnectClicked()
@@ -111,6 +112,7 @@ fun LocalSyncScreen(viewModel: LocalSyncViewModel = hiltViewModel()) {
 @Composable
 private fun LocalSyncContent(
     state: LocalSyncState,
+    idleTimeoutMinutes: Int,
     onConnect: () -> Unit,
     onDisconnect: () -> Unit
 ) {
@@ -134,14 +136,22 @@ private fun LocalSyncContent(
                 }
             }
             is LocalSyncState.Running -> {
-                RunningContent(session = state.session, onDisconnect = onDisconnect)
+                RunningContent(
+                    session = state.session,
+                    idleTimeoutMinutes = idleTimeoutMinutes,
+                    onDisconnect = onDisconnect
+                )
             }
         }
     }
 }
 
 @Composable
-private fun RunningContent(session: LocalSyncSession, onDisconnect: () -> Unit) {
+private fun RunningContent(
+    session: LocalSyncSession,
+    idleTimeoutMinutes: Int,
+    onDisconnect: () -> Unit
+) {
     val context = LocalContext.current
     val shareTitle = stringResource(R.string.cd_share)
     val shareSubject = stringResource(R.string.local_sync_title)
@@ -215,6 +225,11 @@ private fun RunningContent(session: LocalSyncSession, onDisconnect: () -> Unit) 
             text = "${stringResource(R.string.local_sync_pin_label)}: ${session.pin}",
             style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = stringResource(R.string.local_sync_running_timeout_hint, idleTimeoutMinutes),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.height(12.dp))
         OutlinedButton(onClick = onDisconnect) {

@@ -508,6 +508,7 @@
     <string name="pdf_viewer_invalid_page">This page could not be opened.</string>
     <string name="pdf_viewer_out_of_memory">This page is too large to render on this device.</string>
     <string name="pdf_viewer_renderer_failed">The PDF viewer could not render this document.</string>
+    <string name="pdf_viewer_more_actions">More actions</string>
     <string name="pdf_viewer_search">Search document</string>
     <string name="pdf_viewer_search_hint">Search in document</string>
     <string name="pdf_viewer_search_no_matches">No matches</string>

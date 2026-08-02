@@ -2,7 +2,11 @@
 <resources>
     <string name="local_sync_notification_channel">电脑连接</string>
     <string name="local_sync_notification_title">M24 电脑连接已启用</string>
-    <string name="local_sync_notification_text">%1$s（PIN 码：%2$s）</string>
+    <string name="local_sync_notification_text_timeout">%1$s（PIN 码：%2$s）· 无活动 %3$d 分钟后停止</string>
+    <string name="local_sync_running_timeout_hint">无活动 %1$d 分钟后自动停止。</string>
+    <string name="settings_local_sync_timeout_label">电脑连接超时</string>
+    <string name="settings_local_sync_timeout_minutes">%1$d 分钟</string>
+    <string name="settings_local_sync_timeout_hint">无论此设置如何，电脑连接最多在 2 小时后结束。</string>
     <string name="local_sync_notification_stop">停止</string>
     <string name="local_sync_drawer_label">电脑连接</string>
     <string name="local_sync_title">电脑连接</string>
@@ -46,7 +50,7 @@
     <string name="local_sync_web_upload_not_pdf">该文件不是有效的 PDF。</string>
     <string name="local_sync_web_upload_too_large">文件大小超过 25 MB。</string>
     <string name="local_sync_web_upload_failed">上传失败。</string>
-    <string name="help_item_local_sync">从侧边菜单打开“电脑连接”，即可与同一局域网中的浏览器交换 PDF。启动连接后，在电脑上输入显示的地址和 PIN，然后下载文件库文档或上传最大 25 MB 的 PDF。此功能不使用云端，会在无操作、网络断开或应用锁定时停止，并且只应在受信任的局域网中使用。</string>
+    <string name="help_item_local_sync">从侧边菜单打开“电脑连接”，即可与同一局域网中的浏览器交换 PDF。启动连接后，在电脑上输入显示的地址和 PIN，然后下载文件库文档或上传最大 25 MB 的 PDF。此功能不使用云端，会在无操作、网络断开或应用锁定时停止，并且只应在受信任的局域网中使用。 无操作后的关闭时间可在设置中更改（默认 20 分钟）；连接最多在 2 小时后结束。</string>
     <string name="info_feature_local_sync">本地 Wi-Fi 电脑连接可在应用和同一网络中的浏览器之间直接传输 PDF。临时 PIN 和会话用于保护访问；无操作、网络断开、应用锁定或连续登录失败时会自动停止。</string>
     <string name="privacy_keyword_10">本地 Wi-Fi 传输</string>
     <string name="privacy_point_10">只有在您启动电脑连接后，应用才会通过绑定到所选私有网络地址的临时本地网页服务器提供文件库中的有效文档。传输仅在局域网内进行，并受 PIN 和会话保护，但 HTTP 未使用 TLS 加密；请仅在受信任的网络中使用。服务器会在无操作、网络断开、应用锁定或 PIN 错误次数过多时自动停止。</string>

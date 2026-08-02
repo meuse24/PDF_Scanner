@@ -100,7 +100,7 @@ fun TableExportScreen(
     val context = LocalContext.current
     val snackbarHostState = LocalAppSnackbarHostState.current
     val resources = LocalResources.current
-    val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
+    val displayLocale = resources.configuration.locales[0]
     val ocrLanguages = remember(displayLocale) {
         buildOcrLanguageOptions(
             autoLabel = resources.getString(R.string.ocr_language_auto),

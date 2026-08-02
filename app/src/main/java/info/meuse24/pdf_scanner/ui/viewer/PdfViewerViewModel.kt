@@ -15,6 +15,9 @@ import info.meuse24.pdf_scanner.domain.pdf.PdfFormOps
 import info.meuse24.pdf_scanner.domain.pdf.PdfTextOps
 import info.meuse24.pdf_scanner.domain.repository.DocumentRepository
 import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportDocxUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.domain.gateway.DispatcherProvider
 import info.meuse24.pdf_scanner.ui.print.PrintRequestCoordinator
@@ -57,6 +60,9 @@ class PdfViewerViewModel @Inject constructor(
     private val repository: DocumentRepository,
     private val pageBitmapRenderer: PdfPageBitmapRenderer,
     private val exportScanUseCase: ExportScanUseCase,
+    private val exportAsJpgUseCase: ExportAsJpgUseCase,
+    private val exportDocxUseCase: ExportDocxUseCase,
+    private val exportOcrTextUseCase: ExportOcrTextUseCase,
     checkPrintPageSizeWarningUseCase: CheckPrintPageSizeWarningUseCase,
     private val resourceProvider: ResourceProvider,
     private val dispatcherProvider: DispatcherProvider,
@@ -223,6 +229,84 @@ class PdfViewerViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun exportCurrentAsJpg() {
+        val record = _uiState.value.record ?: return
+        viewModelScope.launch(dispatcherProvider.io) {
+            try {
+                val result = exportAsJpgUseCase(record)
+                showTransientMessage(
+                    if (result.pageCount == 1) {
+                        resourceProvider.getString(
+                            R.string.export_pages_folder_success_single,
+                            result.folderName
+                        )
+                    } else {
+                        resourceProvider.getString(
+                            R.string.export_pages_folder_success_multi,
+                            result.pageCount,
+                            result.folderName
+                        )
+                    }
+                )
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (_: Exception) {
+                showTransientMessage(resourceProvider.getString(R.string.error_export_failed))
+            }
+        }
+    }
+
+    fun exportCurrentAsDocx() {
+        exportWithStoredText(
+            emptyTextMessageRes = R.string.docx_export_nothing_to_export,
+            errorMessageRes = R.string.docx_export_error,
+            successMessageRes = R.string.docx_export_success,
+            export = { exportDocxUseCase(listOf(it)) }
+        )
+    }
+
+    fun exportCurrentOcrText() {
+        exportWithStoredText(
+            emptyTextMessageRes = R.string.ocr_export_nothing_to_export,
+            errorMessageRes = R.string.ocr_export_error,
+            successMessageRes = R.string.ocr_export_success,
+            export = { exportOcrTextUseCase(listOf(it)) }
+        )
+    }
+
+    /**
+     * Both DOCX and OCR-text export write already stored OCR text and never re-run
+     * recognition, so the record has to be reloaded in full first: the one held in the UI
+     * state may come from a list query that omits `extracted_text`.
+     */
+    private fun exportWithStoredText(
+        emptyTextMessageRes: Int,
+        errorMessageRes: Int,
+        successMessageRes: Int,
+        export: suspend (Document) -> String
+    ) {
+        val record = _uiState.value.record ?: return
+        viewModelScope.launch(dispatcherProvider.io) {
+            try {
+                val fullRecord = repository.getScansByIds(listOf(record.id)).firstOrNull() ?: record
+                if (fullRecord.extractedText.isNullOrBlank()) {
+                    showTransientMessage(resourceProvider.getString(emptyTextMessageRes))
+                    return@launch
+                }
+                val displayName = export(fullRecord)
+                showTransientMessage(resourceProvider.getString(successMessageRes, displayName))
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (_: Exception) {
+                showTransientMessage(resourceProvider.getString(errorMessageRes))
+            }
+        }
+    }
+
+    private fun showTransientMessage(message: String) {
+        _uiState.update { it.copy(transientMessage = message) }
     }
 
     fun clearTransientMessage() {

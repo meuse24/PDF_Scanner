@@ -532,6 +532,7 @@
     <string name="pdf_viewer_invalid_page">यह पेज खोला नहीं जा सका।</string>
     <string name="pdf_viewer_out_of_memory">यह पेज इस डिवाइस पर रेंडर करने के लिए बहुत बड़ा है।</string>
     <string name="pdf_viewer_renderer_failed">PDF व्यूअर इस दस्तावेज़ को रेंडर नहीं कर सका।</string>
+    <string name="pdf_viewer_more_actions">और कार्रवाइयाँ</string>
     <string name="pdf_viewer_search">दस्तावेज़ में खोजें</string>
     <string name="pdf_viewer_search_hint">दस्तावेज़ में खोजें</string>
     <string name="pdf_viewer_search_no_matches">कोई परिणाम नहीं</string>

@@ -65,7 +65,7 @@ fun TranslationReviewScreen(
     val resources = LocalResources.current
     val snackbarHostState = LocalAppSnackbarHostState.current
     val coroutineScope = rememberCoroutineScope()
-    val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
+    val displayLocale = resources.configuration.locales[0]
 
     val copiedMessage = stringResource(R.string.translate_copied_message)
     val shareLabel = stringResource(R.string.action_share_text)

@@ -34,11 +34,15 @@ internal fun Route.localSyncRouting(
     resourceProvider: ResourceProvider,
     sessionStore: LocalSyncSessionStore,
     rateLimiter: LoginRateLimiter,
-    onHardStop: suspend () -> Unit = {}
+    onHardStop: suspend () -> Unit = {},
+    activityTracker: LocalSyncActivityTracker = LocalSyncActivityTracker.NoOp
 ) {
     fun ApplicationCall.isAuthorized(): Boolean {
         val sessionId = request.cookies[LOCAL_SYNC_SESSION_COOKIE_NAME] ?: return false
-        return sessionStore.touch(sessionId, System.currentTimeMillis())
+        val authorized = sessionStore.touch(sessionId, System.currentTimeMillis())
+        // Only an authenticated caller may refresh the inactivity timeout.
+        if (authorized) activityTracker.recordActivity()
+        return authorized
     }
 
     get("/") {
@@ -69,6 +73,7 @@ internal fun Route.localSyncRouting(
         val submittedPin = call.receiveParameters()["pin"].orEmpty()
         if (submittedPin == pin) {
             rateLimiter.recordSuccess(clientId)
+            activityTracker.recordActivity()
             val sessionId = sessionStore.createSession(now)
             call.response.cookies.append(
                 Cookie(
@@ -143,7 +148,9 @@ internal fun Route.localSyncRouting(
             HttpHeaders.ContentDisposition,
             "attachment; filename=\"$asciiFallback\"; filename*=UTF-8''$encodedName"
         )
-        call.respondFile(file)
+        // Counted as an in-flight transfer so a large download cannot hit the idle
+        // timeout just because no further request arrives while it streams.
+        activityTracker.withTransfer { call.respondFile(file) }
     }
 
     post("/documents/upload") {
@@ -153,32 +160,36 @@ internal fun Route.localSyncRouting(
         }
 
         var feedback: UploadFeedback? = null
-        val multipart = call.receiveMultipart()
-        multipart.forEachPart { part ->
-            if (part is PartData.FileItem && feedback == null) {
-                val originalName = part.originalFileName
-                    ?.substringAfterLast('/')
-                    ?.takeIf(String::isNotBlank)
-                    ?: "Upload"
-                val tempFile = File.createTempFile("m24_sync_upload_", ".pdf", storageProvider.tempDir())
-                feedback = try {
-                    part.provider().copyToPdfFile(tempFile)
-                    val imported = importFileUseCase(
-                        Uri.fromFile(tempFile),
-                        File(originalName).nameWithoutExtension.ifBlank { "Upload" }
-                    )
-                    UploadFeedback.Success(resourceProvider.getString(R.string.local_sync_web_upload_success, imported.filename))
-                } catch (_: UploadNotAPdfException) {
-                    UploadFeedback.Error(resourceProvider.getString(R.string.local_sync_web_upload_not_pdf))
-                } catch (_: UploadTooLargeException) {
-                    UploadFeedback.Error(resourceProvider.getString(R.string.local_sync_web_upload_too_large))
-                } catch (_: Exception) {
-                    UploadFeedback.Error(resourceProvider.getString(R.string.local_sync_web_upload_failed))
-                } finally {
-                    tempFile.delete()
+        // Counted as an in-flight transfer for the whole multipart read, so a slow
+        // upload cannot be cut short by the inactivity watchdog.
+        activityTracker.withTransfer {
+            val multipart = call.receiveMultipart()
+            multipart.forEachPart { part ->
+                if (part is PartData.FileItem && feedback == null) {
+                    val originalName = part.originalFileName
+                        ?.substringAfterLast('/')
+                        ?.takeIf(String::isNotBlank)
+                        ?: "Upload"
+                    val tempFile = File.createTempFile("m24_sync_upload_", ".pdf", storageProvider.tempDir())
+                    feedback = try {
+                        part.provider().copyToPdfFile(tempFile)
+                        val imported = importFileUseCase(
+                            Uri.fromFile(tempFile),
+                            File(originalName).nameWithoutExtension.ifBlank { "Upload" }
+                        )
+                        UploadFeedback.Success(resourceProvider.getString(R.string.local_sync_web_upload_success, imported.filename))
+                    } catch (_: UploadNotAPdfException) {
+                        UploadFeedback.Error(resourceProvider.getString(R.string.local_sync_web_upload_not_pdf))
+                    } catch (_: UploadTooLargeException) {
+                        UploadFeedback.Error(resourceProvider.getString(R.string.local_sync_web_upload_too_large))
+                    } catch (_: Exception) {
+                        UploadFeedback.Error(resourceProvider.getString(R.string.local_sync_web_upload_failed))
+                    } finally {
+                        tempFile.delete()
+                    }
                 }
+                part.dispose()
             }
-            part.dispose()
         }
 
         val documents = documentRepository.getAllScans().first()

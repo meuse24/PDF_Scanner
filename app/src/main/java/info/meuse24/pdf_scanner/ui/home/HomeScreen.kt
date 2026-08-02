@@ -88,7 +88,7 @@ fun HomeScreen(
     val undoLabel = stringResource(R.string.action_undo)
     val errorDeviceUnsupported = stringResource(R.string.error_device_unsupported)
     val errorScannerUnavailable = stringResource(R.string.error_scanner_unavailable)
-    val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
+    val displayLocale = resources.configuration.locales[0]
     val ocrAutoLabel = stringResource(R.string.ocr_language_auto)
     val ocrLanguages = remember(displayLocale, ocrAutoLabel) {
         buildOcrLanguageOptions(ocrAutoLabel, displayLocale)
@@ -157,13 +157,13 @@ fun HomeScreen(
             ?: uri.lastPathSegment
             ?: resources.getString(
                 R.string.import_filename_default,
-                SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                SimpleDateFormat("yyyyMMdd_HHmmss", displayLocale).format(Date())
             )
         pendingImport = PendingImport.File(uri, displayName)
         filenameInput = suggestedFilenameFromDisplayName(displayName).ifBlank {
             resources.getString(
                 R.string.import_filename_default,
-                SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                SimpleDateFormat("yyyyMMdd_HHmmss", displayLocale).format(Date())
             )
         }
         makeSearchable = archiveUiState.settings.defaultMakeSearchable
@@ -180,7 +180,7 @@ fun HomeScreen(
             pendingImport = PendingImport.Scan(result)
             filenameInput = resources.getString(
                 R.string.scan_filename_default,
-                SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                SimpleDateFormat("yyyyMMdd_HHmmss", displayLocale).format(Date())
             )
             makeSearchable = archiveUiState.settings.defaultMakeSearchable
             selectedLang = searchablePdfLanguageOrAuto(archiveUiState.settings.defaultOcrLanguage)
@@ -339,7 +339,7 @@ fun HomeScreen(
                     onMerge = {
                         mergeFilenameInput = resources.getString(
                             R.string.merge_filename_default,
-                            SimpleDateFormat("ddMMyyyy", Locale.getDefault()).format(Date())
+                            SimpleDateFormat("ddMMyyyy", displayLocale).format(Date())
                         )
                         showMergeDialog = true
                     },
@@ -423,7 +423,7 @@ fun HomeScreen(
                 onMerge = {
                     mergeFilenameInput = resources.getString(
                         R.string.merge_filename_default,
-                        SimpleDateFormat("ddMMyyyy", Locale.getDefault()).format(Date())
+                        SimpleDateFormat("ddMMyyyy", displayLocale).format(Date())
                     )
                     showMergeDialog = true
                 },

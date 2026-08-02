@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.core.content.edit
 import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.model.AppSortOrder
+import info.meuse24.pdf_scanner.domain.model.LocalSyncTimeout
 import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
 import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
 import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
@@ -27,6 +28,7 @@ object AppSettingsPreferences {
     private const val KEY_TRASH_UNDO_SNACKBAR_SECONDS = "trash_undo_snackbar_seconds"
     private const val KEY_APP_LOCK_ENABLED = "app_lock_enabled"
     private const val KEY_APP_LOCK_TIMEOUT_SECONDS = "app_lock_timeout_seconds"
+    private const val KEY_LOCAL_SYNC_IDLE_TIMEOUT_MINUTES = "local_sync_idle_timeout_minutes"
     private const val KEY_IMG_PDF_SIZE_PRESET = "img_pdf_size_preset"
     private const val KEY_IMG_PDF_ORIENTATION = "img_pdf_orientation"
     private const val KEY_IMG_PDF_MARGIN_PRESET = "img_pdf_margin_preset"
@@ -57,6 +59,12 @@ object AppSettingsPreferences {
             ).coerceAtLeast(1),
             appLockEnabled = prefs.getBoolean(KEY_APP_LOCK_ENABLED, false),
             appLockTimeoutSeconds = prefs.getInt(KEY_APP_LOCK_TIMEOUT_SECONDS, 30),
+            localSyncIdleTimeoutMinutes = LocalSyncTimeout.normalize(
+                prefs.getInt(
+                    KEY_LOCAL_SYNC_IDLE_TIMEOUT_MINUTES,
+                    LocalSyncTimeout.DEFAULT_MINUTES
+                )
+            ),
             defaultImagePdfPageSetup = PdfPageSetup(
                 sizePreset = enumPreference(
                     prefs.getString(KEY_IMG_PDF_SIZE_PRESET, null),
@@ -102,6 +110,10 @@ object AppSettingsPreferences {
             putInt(KEY_TRASH_UNDO_SNACKBAR_SECONDS, settings.trashUndoSnackbarSeconds.coerceAtLeast(1))
             putBoolean(KEY_APP_LOCK_ENABLED, settings.appLockEnabled)
             putInt(KEY_APP_LOCK_TIMEOUT_SECONDS, settings.appLockTimeoutSeconds)
+            putInt(
+                KEY_LOCAL_SYNC_IDLE_TIMEOUT_MINUTES,
+                LocalSyncTimeout.normalize(settings.localSyncIdleTimeoutMinutes)
+            )
             putString(KEY_IMG_PDF_SIZE_PRESET, settings.defaultImagePdfPageSetup.sizePreset.name)
             putString(KEY_IMG_PDF_ORIENTATION, settings.defaultImagePdfPageSetup.orientation.name)
             putString(KEY_IMG_PDF_MARGIN_PRESET, settings.defaultImagePdfPageSetup.marginPreset.name)

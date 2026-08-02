@@ -220,6 +220,7 @@ private fun NavGraphBuilder.infoNavGraph(
                 }
             },
             onAppLockTimeoutSecondsChange = settingsViewModel::setAppLockTimeoutSeconds,
+            onLocalSyncIdleTimeoutMinutesChange = settingsViewModel::setLocalSyncIdleTimeoutMinutes,
             onPageNumberSettingsChange = settingsViewModel::setPageNumberSettings,
             transientSuccess = successMessage,
             transientError = errorMessage,

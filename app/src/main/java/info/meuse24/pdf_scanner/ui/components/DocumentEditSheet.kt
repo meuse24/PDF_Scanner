@@ -61,6 +61,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -494,8 +495,11 @@ private fun SheetHeader(
 
 @Composable
 private fun SheetSection(titleRes: Int) {
+    // Read through LocalResources so a locale change recomposes this label; the
+    // process-wide Locale.getDefault() is not an observable Compose input.
+    val locale = LocalResources.current.configuration.locales[0]
     Text(
-        text = stringResource(titleRes).uppercase(Locale.getDefault()),
+        text = stringResource(titleRes).uppercase(locale),
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier

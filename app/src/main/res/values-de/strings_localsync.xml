@@ -2,7 +2,11 @@
 <resources>
     <string name="local_sync_notification_channel">PC-Verbindung</string>
     <string name="local_sync_notification_title">M24 PC-Verbindung aktiv</string>
-    <string name="local_sync_notification_text">%1$s (PIN: %2$s)</string>
+    <string name="local_sync_notification_text_timeout">%1$s (PIN: %2$s) · endet nach %3$d Min. ohne Aktivität</string>
+    <string name="local_sync_running_timeout_hint">Endet automatisch nach %1$d Minuten ohne Aktivität.</string>
+    <string name="settings_local_sync_timeout_label">Abschaltzeit der PC-Verbindung</string>
+    <string name="settings_local_sync_timeout_minutes">%1$d Minuten</string>
+    <string name="settings_local_sync_timeout_hint">Die PC-Verbindung endet unabhängig von dieser Einstellung spätestens nach 2 Stunden.</string>
     <string name="local_sync_notification_stop">Beenden</string>
     <string name="local_sync_drawer_label">PC-Verbindung</string>
     <string name="local_sync_title">PC-Verbindung</string>
@@ -46,7 +50,7 @@
     <string name="local_sync_web_upload_not_pdf">Die Datei ist keine gültige PDF-Datei.</string>
     <string name="local_sync_web_upload_too_large">Die Datei ist größer als 25 MB.</string>
     <string name="local_sync_web_upload_failed">Der Upload ist fehlgeschlagen.</string>
-    <string name="help_item_local_sync">Öffnen Sie „PC-Verbindung“ im Seitenmenü, um PDFs mit einem Browser im selben lokalen Netzwerk auszutauschen. Starten Sie die Verbindung, geben Sie am PC die angezeigte Adresse und PIN ein und laden Sie Archivdokumente herunter oder PDFs bis 25 MB hoch. Die Verbindung nutzt keine Cloud, stoppt bei Inaktivität, Netzwerkverlust oder App-Sperre und sollte nur in einem vertrauenswürdigen lokalen Netzwerk verwendet werden.</string>
+    <string name="help_item_local_sync">Öffnen Sie „PC-Verbindung“ im Seitenmenü, um PDFs mit einem Browser im selben lokalen Netzwerk auszutauschen. Starten Sie die Verbindung, geben Sie am PC die angezeigte Adresse und PIN ein und laden Sie Archivdokumente herunter oder PDFs bis 25 MB hoch. Die Verbindung nutzt keine Cloud, stoppt bei Inaktivität, Netzwerkverlust oder App-Sperre und sollte nur in einem vertrauenswürdigen lokalen Netzwerk verwendet werden. Die Abschaltzeit bei Inaktivität lässt sich in den Einstellungen ändern (Standard 20 Minuten); spätestens nach 2 Stunden endet eine Verbindung in jedem Fall.</string>
     <string name="info_feature_local_sync">Die lokale WLAN-PC-Verbindung überträgt PDFs direkt zwischen der App und einem Browser im selben Netzwerk. Eine temporäre PIN und Sitzung schützen den Zugriff; bei Inaktivität, Netzwerkverlust, App-Sperre oder wiederholten Fehlversuchen wird automatisch gestoppt.</string>
     <string name="privacy_keyword_10">Lokaler WLAN-Transfer</string>
     <string name="privacy_point_10">Nur wenn Sie die PC-Verbindung starten, stellt die App aktive Archivdokumente über einen temporären lokalen Webserver an der ausgewählten privaten Netzwerkadresse bereit. Die Übertragung bleibt im lokalen Netzwerk und ist durch PIN und Sitzung geschützt, aber HTTP ist nicht TLS-verschlüsselt; verwenden Sie die Funktion nur in einem vertrauenswürdigen Netzwerk. Der Server stoppt automatisch bei Inaktivität, Netzwerkverlust, App-Sperre oder zu vielen falschen PIN-Eingaben.</string>

@@ -13,6 +13,9 @@ import info.meuse24.pdf_scanner.domain.pdf.PdfPageTextContent
 import info.meuse24.pdf_scanner.domain.pdf.NormalizedBox
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.CheckPrintPageSizeWarningUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportAsJpgUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportDocxUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExportScanUseCase
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
@@ -585,6 +588,9 @@ class PdfViewerViewModelTest {
             repository = repository,
             pageBitmapRenderer = renderer,
             exportScanUseCase = mock(ExportScanUseCase::class.java),
+            exportAsJpgUseCase = mock(ExportAsJpgUseCase::class.java),
+            exportDocxUseCase = mock(ExportDocxUseCase::class.java),
+            exportOcrTextUseCase = mock(ExportOcrTextUseCase::class.java),
             checkPrintPageSizeWarningUseCase = CheckPrintPageSizeWarningUseCase(
                 pdfMetadataOps = pdfMetadataOps,
                 dispatcherProvider = TestDispatcherProvider(testDispatcher)

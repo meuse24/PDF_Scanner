@@ -59,6 +59,7 @@ import info.meuse24.pdf_scanner.ui.ocr.buildOcrLanguageOptions
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.model.AppSortOrder
+import info.meuse24.pdf_scanner.domain.model.LocalSyncTimeout
 import info.meuse24.pdf_scanner.domain.model.PageNumberHorizontalPosition
 import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import info.meuse24.pdf_scanner.domain.model.PageNumberVerticalPosition
@@ -79,6 +80,7 @@ fun SettingsScreen(
     onTrashUndoSnackbarSecondsChange: (Int) -> Unit,
     onAppLockEnabledChange: (Boolean) -> Unit,
     onAppLockTimeoutSecondsChange: (Int) -> Unit,
+    onLocalSyncIdleTimeoutMinutesChange: (Int) -> Unit,
     onPageNumberSettingsChange: (PageNumberSettings) -> Unit,
     transientSuccess: String?,
     transientError: String?,
@@ -88,7 +90,7 @@ fun SettingsScreen(
 ) {
     val snackbarHostState = LocalAppSnackbarHostState.current
     val resources = LocalResources.current
-    val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
+    val displayLocale = resources.configuration.locales[0]
     val ocrAutoLabel = stringResource(R.string.ocr_language_auto)
     val ocrLanguages = remember(displayLocale, ocrAutoLabel) {
         buildOcrLanguageOptions(ocrAutoLabel, displayLocale)
@@ -96,6 +98,7 @@ fun SettingsScreen(
     var languageMenuExpanded by remember { mutableStateOf(false) }
     var trashUndoSnackbarExpanded by remember { mutableStateOf(false) }
     var appLockTimeoutExpanded by remember { mutableStateOf(false) }
+    var localSyncTimeoutExpanded by remember { mutableStateOf(false) }
     val trashUndoSnackbarOptions = remember { listOf(5, 10, 15, 30, 60) }
     val timeoutOptions = remember { listOf(0, 15, 30, 60, 300) }
 
@@ -255,6 +258,24 @@ fun SettingsScreen(
                         }
                     )
                 }
+
+                SettingsDivider()
+                // Always visible: PC-Sync can be started any time from the drawer, so its
+                // shutdown time must be reachable regardless of the App-Lock switch.
+                DropdownPreference(
+                    title = stringResource(R.string.settings_local_sync_timeout_label),
+                    value = formatLocalSyncTimeoutLabel(settings.localSyncIdleTimeoutMinutes),
+                    expanded = localSyncTimeoutExpanded,
+                    onExpandedChange = { localSyncTimeoutExpanded = it },
+                    options = LocalSyncTimeout.SELECTABLE_MINUTES.map {
+                        it to formatLocalSyncTimeoutLabel(it)
+                    },
+                    onOptionSelected = { minutes ->
+                        onLocalSyncIdleTimeoutMinutesChange(minutes)
+                        localSyncTimeoutExpanded = false
+                    },
+                    supportingText = stringResource(R.string.settings_local_sync_timeout_hint)
+                )
             }
         }
 
@@ -353,6 +374,10 @@ private fun formatTimeoutLabel(seconds: Int): String = when (seconds) {
 @Composable
 private fun formatTrashUndoDurationLabel(seconds: Int): String =
     stringResource(R.string.settings_trash_undo_duration_seconds, seconds)
+
+@Composable
+private fun formatLocalSyncTimeoutLabel(minutes: Int): String =
+    stringResource(R.string.settings_local_sync_timeout_minutes, minutes)
 
 @Composable
 private fun SettingsGroup(
@@ -463,7 +488,8 @@ private fun <T> DropdownPreference(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     options: List<Pair<T, String>>,
-    onOptionSelected: (T) -> Unit
+    onOptionSelected: (T) -> Unit,
+    supportingText: String? = null
 ) {
     Column(
         modifier = Modifier
@@ -499,6 +525,14 @@ private fun <T> DropdownPreference(
                     )
                 }
             }
+        }
+        if (supportingText != null) {
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = supportingText,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

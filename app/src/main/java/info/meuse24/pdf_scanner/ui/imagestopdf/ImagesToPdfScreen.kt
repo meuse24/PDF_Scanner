@@ -25,7 +25,7 @@ import info.meuse24.pdf_scanner.domain.usecase.ImagePageLayout
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
+import androidx.compose.ui.platform.LocalResources
 import kotlinx.coroutines.launch
 
 @Composable
@@ -42,7 +42,8 @@ fun ImagesToPdfScreen(
     val skippedCount by viewModel.skippedCount.collectAsStateWithLifecycle()
     val pageSetup by viewModel.pageSetup.collectAsStateWithLifecycle()
 
-    val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    val displayLocale = LocalResources.current.configuration.locales[0]
+    val today = SimpleDateFormat("yyyy-MM-dd", displayLocale).format(Date())
     val defaultFilename = stringResource(R.string.images_to_pdf_filename_default, today)
     val skippedMessage = if (skippedCount > 0) {
         stringResource(R.string.images_to_pdf_unreadable_skipped, skippedCount)

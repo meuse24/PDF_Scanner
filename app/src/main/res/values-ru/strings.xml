@@ -536,6 +536,7 @@
     <string name="pdf_viewer_invalid_page">Не удалось открыть эту страницу.</string>
     <string name="pdf_viewer_out_of_memory">Эта страница слишком велика для отрисовки на этом устройстве.</string>
     <string name="pdf_viewer_renderer_failed">PDF-просмотрщик не смог отрисовать этот документ.</string>
+    <string name="pdf_viewer_more_actions">Другие действия</string>
     <string name="pdf_viewer_search">Поиск в документе</string>
     <string name="pdf_viewer_search_hint">Поиск в документе</string>
     <string name="pdf_viewer_search_no_matches">Совпадений нет</string>

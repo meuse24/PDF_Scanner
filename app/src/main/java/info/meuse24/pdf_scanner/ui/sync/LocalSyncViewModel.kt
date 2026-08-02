@@ -11,6 +11,7 @@ import info.meuse24.pdf_scanner.domain.gateway.LocalSyncServer
 import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import info.meuse24.pdf_scanner.domain.model.LocalSyncError
 import info.meuse24.pdf_scanner.domain.model.LocalSyncState
+import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.util.sync.LocalSyncFirstUseStore
 import info.meuse24.pdf_scanner.util.sync.LocalSyncService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class LocalSyncViewModel @Inject constructor(
     private val localSyncServer: LocalSyncServer,
     private val resourceProvider: ResourceProvider,
+    private val appSettingsRepository: AppSettingsRepository,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -34,12 +36,14 @@ class LocalSyncViewModel @Inject constructor(
     val uiState: StateFlow<LocalSyncUiState> = combine(
         localSyncServer.state,
         _showFirstUseNotice,
-        _errorMessage
-    ) { state, showNotice, errorMessage ->
+        _errorMessage,
+        appSettingsRepository.settings
+    ) { state, showNotice, errorMessage, settings ->
         LocalSyncUiState(
             state = state,
             showFirstUseNotice = showNotice,
-            errorMessage = errorMessage ?: (state as? LocalSyncState.Error)?.let { mapErrorMessage(it.reason) }
+            errorMessage = errorMessage ?: (state as? LocalSyncState.Error)?.let { mapErrorMessage(it.reason) },
+            idleTimeoutMinutes = settings.localSyncIdleTimeoutMinutes
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LocalSyncUiState())
 

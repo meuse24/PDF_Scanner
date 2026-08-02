@@ -87,6 +87,25 @@ class LocalSyncRoutingTest {
         )
     )
 
+    /** Records what the routes report, so the tests can assert on activity, not just HTTP. */
+    private class RecordingActivityTracker : LocalSyncActivityTracker {
+        var activityCount = 0
+        var transfersStarted = 0
+        var transfersEnded = 0
+
+        override fun recordActivity() {
+            activityCount++
+        }
+
+        override fun beginTransfer() {
+            transfersStarted++
+        }
+
+        override fun endTransfer() {
+            transfersEnded++
+        }
+    }
+
     private fun sampleDocument(name: String = "<Rechnung> & \"Q1\"", id: Long = 1, filepath: String? = null) =
         Document(
             id = id,
@@ -355,6 +374,149 @@ class LocalSyncRoutingTest {
             assertTrue(body.contains("not a valid PDF"))
             assertTrue("rejected uploads must announce via role=\"alert\", not a status region", body.contains("role=\"alert\""))
             verifyNoInteractions(importFileUseCase)
+        }
+    }
+
+    // --- Inactivity accounting (see docs/pcsync.md, D2) ---------------------------------
+
+    /**
+     * Regression for D2: activity used to be recorded by an interceptor sitting in front of
+     * the authorization check, so any stray LAN traffic on the port refreshed the idle
+     * timer and could keep the server alive for hours.
+     */
+    @Test
+    fun `unauthenticated traffic does not refresh the inactivity timer`() = runTest {
+        testApplication {
+            val repository = repositoryWithDocuments()
+            val tracker = RecordingActivityTracker()
+            application {
+                routing {
+                    localSyncRouting(
+                        PIN, repository, noOpImportFileUseCase(), testStorageProvider(),
+                        testResourceProvider(), LocalSyncSessionStore(), LoginRateLimiter(),
+                        activityTracker = tracker
+                    )
+                }
+            }
+            val noRedirectClient = createClient { followRedirects = false }
+
+            noRedirectClient.get("/")
+            noRedirectClient.get("/documents")
+            noRedirectClient.get("/documents/1/download")
+            noRedirectClient.get("/favicon.ico")
+
+            assertEquals(0, tracker.activityCount)
+            assertEquals(0, tracker.transfersStarted)
+        }
+    }
+
+    @Test
+    fun `a rejected login does not refresh the inactivity timer`() = runTest {
+        testApplication {
+            val repository = repositoryWithDocuments()
+            val tracker = RecordingActivityTracker()
+            application {
+                routing {
+                    localSyncRouting(
+                        PIN, repository, noOpImportFileUseCase(), testStorageProvider(),
+                        testResourceProvider(), LocalSyncSessionStore(), LoginRateLimiter(),
+                        activityTracker = tracker
+                    )
+                }
+            }
+
+            client.submitForm("/login", parameters { append("pin", "0000") })
+
+            assertEquals(0, tracker.activityCount)
+        }
+    }
+
+    @Test
+    fun `successful login and authorized requests refresh the inactivity timer`() = runTest {
+        testApplication {
+            val repository = repositoryWithDocuments(sampleDocument())
+            val tracker = RecordingActivityTracker()
+            application {
+                routing {
+                    localSyncRouting(
+                        PIN, repository, noOpImportFileUseCase(), testStorageProvider(),
+                        testResourceProvider(), LocalSyncSessionStore(), LoginRateLimiter(),
+                        activityTracker = tracker
+                    )
+                }
+            }
+
+            val loginResponse = client.submitForm("/login", parameters { append("pin", PIN) })
+            assertEquals(1, tracker.activityCount)
+
+            val sessionCookie = loginResponse.headers[HttpHeaders.SetCookie]!!.substringBefore(';')
+            client.get("/documents") { header(HttpHeaders.Cookie, sessionCookie) }
+
+            assertEquals(2, tracker.activityCount)
+        }
+    }
+
+    @Test
+    fun `an authorized download is counted as an in-flight transfer and released again`() = runTest {
+        testApplication {
+            val repository = repositoryWithDocuments(sampleDocument())
+            val sessionStore = LocalSyncSessionStore()
+            val tracker = RecordingActivityTracker()
+            application {
+                routing {
+                    localSyncRouting(
+                        PIN, repository, noOpImportFileUseCase(), testStorageProvider(),
+                        testResourceProvider(), sessionStore, LoginRateLimiter(),
+                        activityTracker = tracker
+                    )
+                }
+            }
+            val sessionId = sessionStore.createSession(System.currentTimeMillis())
+
+            val response = client.get("/documents/1/download") {
+                header(HttpHeaders.Cookie, "$LOCAL_SYNC_SESSION_COOKIE_NAME=$sessionId")
+            }
+
+            assertEquals(HttpStatusCode.OK, response.status)
+            assertEquals(1, tracker.transfersStarted)
+            assertEquals(1, tracker.transfersEnded)
+        }
+    }
+
+    @Test
+    fun `a failed upload still releases its in-flight transfer count`() = runTest {
+        testApplication {
+            val repository = repositoryWithDocuments()
+            val sessionStore = LocalSyncSessionStore()
+            val tracker = RecordingActivityTracker()
+            application {
+                routing {
+                    localSyncRouting(
+                        PIN, repository, mock(ImportFileUseCase::class.java), testStorageProvider(),
+                        testResourceProvider(), sessionStore, LoginRateLimiter(),
+                        activityTracker = tracker
+                    )
+                }
+            }
+            val sessionId = sessionStore.createSession(System.currentTimeMillis())
+
+            client.submitFormWithBinaryData(
+                url = "/documents/upload",
+                formData = formData {
+                    append(
+                        "file",
+                        "this is definitely not a pdf".toByteArray(),
+                        Headers.build {
+                            append(HttpHeaders.ContentDisposition, "filename=\"fake.pdf\"")
+                        }
+                    )
+                }
+            ) {
+                header(HttpHeaders.Cookie, "$LOCAL_SYNC_SESSION_COOKIE_NAME=$sessionId")
+            }
+
+            assertEquals(1, tracker.transfersStarted)
+            assertEquals(1, tracker.transfersEnded)
         }
     }
 

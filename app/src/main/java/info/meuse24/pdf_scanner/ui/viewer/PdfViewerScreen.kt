@@ -39,11 +39,14 @@ import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -468,9 +471,10 @@ fun PdfViewerScreen(
                 DocumentEditSheet(
                     record = record,
                     showRenameAction = false,
+                    // Printing lives in the action bar's overflow menu, so it would be
+                    // duplicated here. The export formats are not: the bar's export action
+                    // writes the PDF itself, not JPG/DOCX/OCR text.
                     showPrintAction = false,
-                    showExportAsJpgAction = false,
-                    showTextExportActions = false,
                     showHashAction = false,
                     onAction = { action ->
                         editSheetVisible = false
@@ -499,9 +503,10 @@ fun PdfViewerScreen(
                             ScanAction.ScanBusinessCard -> onNavigateToBusinessCard(record.id)
                             ScanAction.TranslateText -> onNavigateToTranslation(record.id)
                             ScanAction.ExportTableCsv -> onNavigateToTableExport(record.id)
-                            ScanAction.ExportAsJpg,
-                            ScanAction.ExportDocx,
-                            ScanAction.ExportOcrText,
+                            ScanAction.ExportAsJpg -> viewModel.exportCurrentAsJpg()
+                            ScanAction.ExportDocx -> viewModel.exportCurrentAsDocx()
+                            ScanAction.ExportOcrText -> viewModel.exportCurrentOcrText()
+                            // Not offered by this sheet (see the flags above).
                             ScanAction.Print,
                             ScanAction.Rename,
                             ScanAction.CalculateSha256 -> Unit
@@ -861,6 +866,11 @@ private fun ViewerActionBar(
     onOpenExternal: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Only the three most frequent actions stay visible; the rest moves into an overflow
+    // menu. Seven tonal icon buttons no longer fit a phone width since the M3 button size
+    // grew, and a horizontally scrolling action bar hides its own contents.
+    var overflowExpanded by remember { mutableStateOf(false) }
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -871,22 +881,74 @@ private fun ViewerActionBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
                 .padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             ViewerActionButton(Icons.Default.Edit, R.string.action_edit_pdf, onEdit)
-            onFillForm?.let {
-                ViewerActionButton(Icons.Default.EditNote, R.string.form_fill_action, it)
-            }
             onSearch?.let { ViewerActionButton(Icons.Default.FindInPage, R.string.pdf_viewer_search, it) }
             ViewerActionButton(Icons.Default.Share, R.string.cd_share, onShare)
-            ViewerActionButton(Icons.Default.Download, R.string.action_export, onExport)
-            ViewerActionButton(Icons.Default.Print, R.string.action_print_pdf, onPrint, enabled = !record.isEncrypted)
-            ViewerActionButton(Icons.AutoMirrored.Filled.OpenInNew, R.string.action_open_external, onOpenExternal)
+
+            Box {
+                ViewerActionButton(
+                    icon = Icons.Default.MoreVert,
+                    labelRes = R.string.pdf_viewer_more_actions,
+                    onClick = { overflowExpanded = true }
+                )
+                DropdownMenu(
+                    expanded = overflowExpanded,
+                    onDismissRequest = { overflowExpanded = false }
+                ) {
+                    onFillForm?.let { fillForm ->
+                        ViewerOverflowItem(
+                            icon = Icons.Default.EditNote,
+                            labelRes = R.string.form_fill_action
+                        ) {
+                            overflowExpanded = false
+                            fillForm()
+                        }
+                    }
+                    ViewerOverflowItem(
+                        icon = Icons.Default.Download,
+                        labelRes = R.string.action_export
+                    ) {
+                        overflowExpanded = false
+                        onExport()
+                    }
+                    ViewerOverflowItem(
+                        icon = Icons.Default.Print,
+                        labelRes = R.string.action_print_pdf,
+                        enabled = !record.isEncrypted
+                    ) {
+                        overflowExpanded = false
+                        onPrint()
+                    }
+                    ViewerOverflowItem(
+                        icon = Icons.AutoMirrored.Filled.OpenInNew,
+                        labelRes = R.string.action_open_external
+                    ) {
+                        overflowExpanded = false
+                        onOpenExternal()
+                    }
+                }
+            }
         }
     }
+}
+
+@Composable
+private fun ViewerOverflowItem(
+    icon: ImageVector,
+    labelRes: Int,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    DropdownMenuItem(
+        text = { Text(stringResource(labelRes)) },
+        leadingIcon = { Icon(icon, contentDescription = null) },
+        enabled = enabled,
+        onClick = onClick
+    )
 }
 
 @Composable

@@ -81,6 +81,10 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.updateAppLockTimeoutSeconds(seconds)
     }
 
+    fun setLocalSyncIdleTimeoutMinutes(minutes: Int) {
+        settingsRepository.updateLocalSyncIdleTimeoutMinutes(minutes)
+    }
+
     fun setPageNumberSettings(settings: PageNumberSettings) {
         settingsRepository.updatePageNumberSettings(settings)
     }

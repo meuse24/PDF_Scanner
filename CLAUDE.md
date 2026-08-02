@@ -40,7 +40,7 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 
 **`domain/gateway/`** — frameworkfreie Ports für externe Dienste und Plattformzugriff: Dispatcher, Resources, Storage, Downloads, Dokumentdateien, Searchable-PDF, OCR-Text-Extraktion, QR-Scanning und Review-Prompt-Policy. Implementierungen liegen außerhalb der Domain.
 
-**`domain/common/`** — pure Kotlin-Helper wie Page-Range-Normalisierung und eindeutige Dateinamen.
+**`domain/common/`** — pure Kotlin-Helper wie Page-Range-Normalisierung, eindeutige Dateinamen, lokale IPv4-Auswahl (`LocalNetworkAddress`) und die PC-Sync-Abschaltentscheidung (`LocalSyncShutdownPolicy`).
 
 **`domain/usecase/`** — alle fachlichen Operationen (Import/Export, OCR-TXT-Export, Trash/Restore/Purge, OCR/Searchable, AutoTags/RetroTag, Merge/Split/Reorder/Rotate/Delete/Duplicate, Redact/Highlight/Annotate, Grayscale, Folders, Favorites, BusinessCard/vCard, ImagesToPdf, Append).
 `AutoTagUseCase` ist aktiv und über `AppSettings.autoTaggingEnabled` abschaltbar: `MakeSearchableUseCase` und der stille OCR-Backfill speichern Tags nur bei aktivierter Option; `RetroTagUseCase` ergänzt Tags für vorhandene OCR-Dokumente.
@@ -73,6 +73,7 @@ Hilt-Cache-Workaround (fehlende generierte Klassen): `./gradlew installDebug --n
 - **ML Kit:** Interfaces mit ML-Kit-Signaturen bleiben außerhalb von `domain` in `util`; Domain sieht nur frameworkfreie OCR-Ports und Modelle.
 - **Externe Einstiegspunkte** (Shortcuts, QS-Tile, Widget, `ACTION_SEND`, `ACTION_SEND_MULTIPLE`, `ACTION_VIEW`) ausschließlich über `AppEntryActionViewModel`.
 - **App-Lock** = UI-Gate (puffert Actions, umgeht sie nicht). Nicht als DB-/PDF-Verschlüsselung darstellen.
+- **PC-Sync** (`util/sync/`, Ktor CIO + `LocalSyncService` als `dataSync`-Foreground-Service): Ob ein Lauf endet, entscheidet ausschließlich `evaluateLocalSyncShutdown` in `domain/common/` — keine zweite Zeitlogik im Service. Nur autorisierte Requests halten den Lauf über `LocalSyncActivityTracker` am Leben; Idle-Dauer kommt aus `AppSettings.localSyncIdleTimeoutMinutes` (5/10/20/30/60, Standard 20, keine Option „nie"), darüber die feste Obergrenze `LocalSyncTimeout.MAX_SESSION_RUNTIME_MINUTES`. Details und Fehleranalyse: `docs/pcsync.md`.
 - **Keine Literal-Strings** in Kotlin — nur `context.getString(R.string.*)` / `stringResource()`.
 - **Neue Strings** in alle 10 Locales: `values/`, `-de`, `-es`, `-fr`, `-pt`, `-zh-rCN`, `-ar`, `-ja`, `-ru`, `-hi`. Feature-Strings in `strings_<feature>.xml`.
 - **Privacy-/Help-/Info-Texte** gegen `docs/privacy-policy.html` und reale Datenflüsse prüfen.

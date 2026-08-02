@@ -20,6 +20,7 @@ interface AppSettingsRepository {
     fun updateTrashUndoSnackbarSeconds(seconds: Int)
     fun updateAppLockEnabled(enabled: Boolean)
     fun updateAppLockTimeoutSeconds(seconds: Int)
+    fun updateLocalSyncIdleTimeoutMinutes(minutes: Int)
     fun updateDefaultImagePdfPageSetup(setup: PdfPageSetup)
     fun updatePageNumberSettings(settings: PageNumberSettings)
 }

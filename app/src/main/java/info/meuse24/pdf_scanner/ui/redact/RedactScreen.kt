@@ -100,7 +100,7 @@ fun RedactScreen(
     val success = uiState.success
     val pageBitmap = pagePreviewUiState.pageBitmap
     val resources = LocalResources.current
-    val displayLocale = resources.configuration.locales[0] ?: Locale.getDefault()
+    val displayLocale = resources.configuration.locales[0]
     val ocrAutoLabel = stringResource(R.string.ocr_language_auto)
     val ocrLanguages = remember(displayLocale, ocrAutoLabel) {
         buildSearchablePdfLanguageOptions(ocrAutoLabel, displayLocale)

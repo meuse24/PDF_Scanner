@@ -530,6 +530,7 @@
     <string name="pdf_viewer_invalid_page">このページを開けませんでした。</string>
     <string name="pdf_viewer_out_of_memory">このページは大きすぎるため、この端末で表示できません。</string>
     <string name="pdf_viewer_renderer_failed">PDFビューアでこの文書を表示できませんでした。</string>
+    <string name="pdf_viewer_more_actions">その他の操作</string>
     <string name="pdf_viewer_search">文書内を検索</string>
     <string name="pdf_viewer_search_hint">文書内を検索</string>
     <string name="pdf_viewer_search_no_matches">一致する結果はありません</string>

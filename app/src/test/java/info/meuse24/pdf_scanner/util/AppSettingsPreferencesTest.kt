@@ -3,6 +3,7 @@ package info.meuse24.pdf_scanner.util
 import android.content.Context
 import android.content.SharedPreferences
 import info.meuse24.pdf_scanner.domain.model.AppSettings
+import info.meuse24.pdf_scanner.domain.model.LocalSyncTimeout
 import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
 import info.meuse24.pdf_scanner.domain.model.PdfPageOrientation
 import info.meuse24.pdf_scanner.domain.model.PdfPageSizePreset
@@ -86,6 +87,40 @@ class AppSettingsPreferencesTest {
         assertEquals(PageNumberVerticalPosition.TOP, settings.verticalPosition)
         assertEquals("Seite", settings.prefix)
         assertTrue(settings.includeTotalPageCount)
+    }
+
+    @Test
+    fun `load restores a valid stored pc sync timeout`() {
+        val context = mock(Context::class.java)
+        val prefs = mock(SharedPreferences::class.java)
+        `when`(context.applicationContext).thenReturn(context)
+        `when`(context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)).thenReturn(prefs)
+        `when`(
+            prefs.getInt("local_sync_idle_timeout_minutes", LocalSyncTimeout.DEFAULT_MINUTES)
+        ).thenReturn(5)
+
+        val settings = AppSettingsPreferences.load(context)
+
+        assertEquals(5, settings.localSyncIdleTimeoutMinutes)
+    }
+
+    /**
+     * A value outside the offered set — stale, hand-edited or corrupted — must never
+     * translate into an arbitrary or effectively unbounded PC-Sync timeout.
+     */
+    @Test
+    fun `load normalizes an out-of-range pc sync timeout back to the default`() {
+        val context = mock(Context::class.java)
+        val prefs = mock(SharedPreferences::class.java)
+        `when`(context.applicationContext).thenReturn(context)
+        `when`(context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)).thenReturn(prefs)
+        `when`(
+            prefs.getInt("local_sync_idle_timeout_minutes", LocalSyncTimeout.DEFAULT_MINUTES)
+        ).thenReturn(Int.MAX_VALUE)
+
+        val settings = AppSettingsPreferences.load(context)
+
+        assertEquals(LocalSyncTimeout.DEFAULT_MINUTES, settings.localSyncIdleTimeoutMinutes)
     }
 
     @Test

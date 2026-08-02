@@ -540,6 +540,7 @@
     <string name="pdf_viewer_invalid_page">تعذر فتح هذه الصفحة.</string>
     <string name="pdf_viewer_out_of_memory">هذه الصفحة كبيرة جدًا لعرضها على هذا الجهاز.</string>
     <string name="pdf_viewer_renderer_failed">تعذر على عارض PDF عرض هذا المستند.</string>
+    <string name="pdf_viewer_more_actions">إجراءات إضافية</string>
     <string name="pdf_viewer_search">البحث في المستند</string>
     <string name="pdf_viewer_search_hint">البحث في المستند</string>
     <string name="pdf_viewer_search_no_matches">لا توجد نتائج</string>

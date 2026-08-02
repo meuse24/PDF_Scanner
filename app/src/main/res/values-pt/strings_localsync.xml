@@ -2,7 +2,11 @@
 <resources>
     <string name="local_sync_notification_channel">Conexão com o PC</string>
     <string name="local_sync_notification_title">Conexão com o PC M24 ativa</string>
-    <string name="local_sync_notification_text">%1$s (PIN: %2$s)</string>
+    <string name="local_sync_notification_text_timeout">%1$s (PIN: %2$s) · termina após %3$d min sem atividade</string>
+    <string name="local_sync_running_timeout_hint">Termina automaticamente após %1$d minutos sem atividade.</string>
+    <string name="settings_local_sync_timeout_label">Tempo limite da ligação ao PC</string>
+    <string name="settings_local_sync_timeout_minutes">%1$d minutos</string>
+    <string name="settings_local_sync_timeout_hint">A ligação ao PC termina, no máximo, ao fim de 2 horas, independentemente desta definição.</string>
     <string name="local_sync_notification_stop">Parar</string>
     <string name="local_sync_drawer_label">Conexão com o PC</string>
     <string name="local_sync_title">Conexão com o PC</string>
@@ -46,7 +50,7 @@
     <string name="local_sync_web_upload_not_pdf">O arquivo não é um PDF válido.</string>
     <string name="local_sync_web_upload_too_large">O arquivo é maior que 25 MB.</string>
     <string name="local_sync_web_upload_failed">Falha no envio.</string>
-    <string name="help_item_local_sync">Abra «Ligação ao PC» no menu lateral para trocar PDFs com um navegador na mesma rede local. Inicie a ligação, introduza no PC o endereço e o PIN apresentados e transfira documentos do arquivo ou envie PDFs até 25 MB. Não utiliza a nuvem, para por inatividade, perda de rede ou bloqueio da app e só deve ser usada numa rede local de confiança.</string>
+    <string name="help_item_local_sync">Abra «Ligação ao PC» no menu lateral para trocar PDFs com um navegador na mesma rede local. Inicie a ligação, introduza no PC o endereço e o PIN apresentados e transfira documentos do arquivo ou envie PDFs até 25 MB. Não utiliza a nuvem, para por inatividade, perda de rede ou bloqueio da app e só deve ser usada numa rede local de confiança. O tempo de encerramento por inatividade pode ser alterado nas Definições (20 minutos por predefinição); uma ligação termina, no máximo, ao fim de 2 horas.</string>
     <string name="info_feature_local_sync">A ligação Wi-Fi local ao PC transfere PDFs diretamente entre a app e um navegador na mesma rede. Um PIN e uma sessão temporários protegem o acesso, com paragem automática por inatividade, perda de rede, bloqueio da app ou tentativas falhadas repetidas.</string>
     <string name="privacy_keyword_10">Transferência Wi-Fi local</string>
     <string name="privacy_point_10">Apenas quando inicia a ligação ao PC, a app disponibiliza os documentos ativos do arquivo através de um servidor web local temporário associado ao endereço de rede privada selecionado. A transferência permanece na rede local e é protegida por PIN e sessão, mas o HTTP não é encriptado por TLS; use apenas numa rede de confiança. O servidor para automaticamente por inatividade, perda de rede, bloqueio da app ou demasiadas tentativas de PIN falhadas.</string>

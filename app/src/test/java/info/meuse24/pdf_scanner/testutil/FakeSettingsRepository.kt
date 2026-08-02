@@ -1,5 +1,6 @@
 package info.meuse24.pdf_scanner.testutil
 
+import info.meuse24.pdf_scanner.domain.model.LocalSyncTimeout
 import info.meuse24.pdf_scanner.domain.model.PdfPageSetup
 import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
@@ -54,6 +55,12 @@ class FakeSettingsRepository(
 
     override fun updateAppLockTimeoutSeconds(seconds: Int) {
         _settings.value = _settings.value.copy(appLockTimeoutSeconds = seconds)
+    }
+
+    override fun updateLocalSyncIdleTimeoutMinutes(minutes: Int) {
+        _settings.value = _settings.value.copy(
+            localSyncIdleTimeoutMinutes = LocalSyncTimeout.normalize(minutes)
+        )
     }
 
     override fun updateDefaultImagePdfPageSetup(setup: PdfPageSetup) {

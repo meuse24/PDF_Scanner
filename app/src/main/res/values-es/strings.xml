@@ -532,6 +532,7 @@
     <string name="pdf_viewer_invalid_page">No se pudo abrir esta página.</string>
     <string name="pdf_viewer_out_of_memory">Esta página es demasiado grande para renderizarla en este dispositivo.</string>
     <string name="pdf_viewer_renderer_failed">El visor PDF no pudo renderizar este documento.</string>
+    <string name="pdf_viewer_more_actions">Más acciones</string>
     <string name="pdf_viewer_search">Buscar en el documento</string>
     <string name="pdf_viewer_search_hint">Buscar en el documento</string>
     <string name="pdf_viewer_search_no_matches">Sin resultados</string>

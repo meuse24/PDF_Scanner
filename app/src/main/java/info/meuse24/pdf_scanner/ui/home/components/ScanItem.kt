@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -72,7 +73,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.DateFormat
 import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -91,11 +91,12 @@ internal fun ScanItem(
     val context = LocalContext.current
     var sheetVisible by remember { mutableStateOf(false) }
 
-    val dateStr = remember(record.timestamp) {
+    val displayLocale = LocalResources.current.configuration.locales[0]
+    val dateStr = remember(record.timestamp, displayLocale) {
         DateFormat.getDateTimeInstance(
             DateFormat.SHORT,
             DateFormat.SHORT,
-            Locale.getDefault()
+            displayLocale
         ).format(Date(record.timestamp))
     }
     val sizeStr = remember(record.fileSize, context) {

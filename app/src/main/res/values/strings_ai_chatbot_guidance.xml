@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="help_item_ai_chatbot">AI correction and summary prompts copy document text locally to the clipboard. Choose a chatbot in the selection, then the app opens only its website in the default browser; the prompt is not sent to the browser. Only pasting it into the chatbot can transfer text. Manage all chatbot destinations under Settings → Scan &amp; OCR → Chatbot destinations.</string>
+    <string name="privacy_point_ai_chatbot">Copying an AI correction or summary prompt creates clipboard content locally only after your action. M24 PDF-Scanner does not transmit document text to an AI provider. The selected chatbot website opens in the default browser without the prompt; opening it can connect to that provider. Only pasting the prompt into the chatbot can transfer document text under that provider’s privacy policy. Chatbot destinations are stored locally in the app settings.</string>
+</resources>

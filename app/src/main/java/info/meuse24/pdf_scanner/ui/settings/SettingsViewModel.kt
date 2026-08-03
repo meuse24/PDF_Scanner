@@ -10,6 +10,7 @@ import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.domain.model.AppSortOrder
 import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
+import info.meuse24.pdf_scanner.domain.model.AiChatbotTarget
 import info.meuse24.pdf_scanner.domain.gateway.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -84,6 +85,13 @@ class SettingsViewModel @Inject constructor(
     fun setLocalSyncIdleTimeoutMinutes(minutes: Int) {
         settingsRepository.updateLocalSyncIdleTimeoutMinutes(minutes)
     }
+
+    fun resetAiPromptNotice() {
+        settingsRepository.updateAiPromptNoticeAccepted(false)
+        _success.value = resourceProvider.getString(R.string.settings_ai_prompt_notice_reset_done)
+    }
+    fun setCustomAiChatbotTargets(targets: List<AiChatbotTarget>) =
+        settingsRepository.updateCustomAiChatbotTargets(targets)
 
     fun setPageNumberSettings(settings: PageNumberSettings) {
         settingsRepository.updatePageNumberSettings(settings)

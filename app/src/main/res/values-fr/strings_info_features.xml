@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info_features_compact">• Numérisation PDF
+• Import et archive
+• Édition de pages
+• OCR
+• Révision OCR
+• Recherche
+• Tags
+• Dossiers et favoris
+• Scan QR
+• Cartes de visite
+• Traduction
+• Export Word
+• Export de tableaux
+• Export JPEG
+• Impression et partage
+• Verrouillage de l’app
+• Formulaires PDF
+• SHA-256
+• Synchronisation PC
+• Invites IA</string>
+</resources>

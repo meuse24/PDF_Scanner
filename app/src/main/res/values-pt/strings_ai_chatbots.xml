@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_ai_chatbots">Destinos de chatbot</string>
+    <string name="settings_ai_chatbot">Destino de chatbot</string>
+    <string name="settings_ai_chatbots_defaults">Destinos padrão</string>
+    <string name="settings_ai_chatbots_custom">Seus destinos</string>
+    <string name="settings_ai_chatbot_name">Nome</string>
+    <string name="settings_ai_chatbot_url">URL HTTPS</string>
+    <string name="settings_ai_chatbot_invalid">Insira um nome e um URL HTTPS válido.</string>
+    <string name="settings_ai_chatbot_name_required">Insira um nome.</string>
+    <string name="action_delete">Excluir</string>
+    <string name="action_add">Adicionar</string>
+    <string name="action_done">Concluído</string>
+    <string name="action_edit">Editar</string>
+</resources>

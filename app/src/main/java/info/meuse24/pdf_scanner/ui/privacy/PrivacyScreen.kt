@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PhoneAndroid
@@ -52,6 +53,7 @@ fun PrivacyScreen() {
         Triple(Icons.Default.Lock,         stringResource(R.string.privacy_keyword_8), stringResource(R.string.privacy_point_8)),
         Triple(Icons.Default.Translate,    stringResource(R.string.privacy_keyword_9), stringResource(R.string.privacy_point_9)),
         Triple(Icons.Default.Wifi,         stringResource(R.string.privacy_keyword_10), stringResource(R.string.privacy_point_10)),
+        Triple(Icons.Default.ContentCopy, stringResource(R.string.privacy_keyword_11), stringResource(R.string.privacy_point_ai_chatbot)),
     )
 
     LazyColumn(

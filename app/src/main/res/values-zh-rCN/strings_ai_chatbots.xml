@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_ai_chatbots">聊天机器人目标</string>
+    <string name="settings_ai_chatbot">聊天机器人目标</string>
+    <string name="settings_ai_chatbots_defaults">默认目标</string>
+    <string name="settings_ai_chatbots_custom">您的目标</string>
+    <string name="settings_ai_chatbot_name">名称</string>
+    <string name="settings_ai_chatbot_url">HTTPS 网址</string>
+    <string name="settings_ai_chatbot_invalid">请输入名称和有效的 HTTPS 网址。</string>
+    <string name="settings_ai_chatbot_name_required">请输入名称。</string>
+    <string name="action_delete">删除</string>
+    <string name="action_add">添加</string>
+    <string name="action_done">完成</string>
+    <string name="action_edit">编辑</string>
+</resources>

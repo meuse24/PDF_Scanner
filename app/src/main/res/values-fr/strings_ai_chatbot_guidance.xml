@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="help_item_ai_chatbot">Les invites IA de correction et de résumé copient le texte du document localement dans le presse-papiers. Choisissez un chatbot ; l’application ouvre uniquement son site dans le navigateur par défaut, sans lui transmettre l’invite. Seul le collage dans le chatbot peut transférer le texte. Gérez les destinations dans Paramètres → Numérisation et OCR → Destinations de chatbot.</string>
+    <string name="privacy_point_ai_chatbot">Copier une invite IA de correction ou de résumé crée du contenu local dans le presse-papiers seulement après votre action. M24 PDF-Scanner ne transmet aucun texte de document à un fournisseur IA. Le site du chatbot choisi s’ouvre dans le navigateur par défaut sans l’invite ; son ouverture peut établir une connexion avec le fournisseur. Seul le collage de l’invite dans le chatbot peut transférer le texte. Les destinations sont enregistrées localement dans les paramètres.</string>
+</resources>

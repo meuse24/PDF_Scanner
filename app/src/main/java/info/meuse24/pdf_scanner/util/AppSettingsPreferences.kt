@@ -13,6 +13,10 @@ import info.meuse24.pdf_scanner.domain.model.PageNumberHorizontalPosition
 import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import info.meuse24.pdf_scanner.domain.model.PageNumberVerticalPosition
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
+import info.meuse24.pdf_scanner.domain.model.AiChatbotTarget
+import info.meuse24.pdf_scanner.domain.model.defaultAiChatbotTargets
+import org.json.JSONArray
+import org.json.JSONObject
 
 object AppSettingsPreferences {
     private const val PREFS_NAME = "app_settings"
@@ -29,6 +33,9 @@ object AppSettingsPreferences {
     private const val KEY_APP_LOCK_ENABLED = "app_lock_enabled"
     private const val KEY_APP_LOCK_TIMEOUT_SECONDS = "app_lock_timeout_seconds"
     private const val KEY_LOCAL_SYNC_IDLE_TIMEOUT_MINUTES = "local_sync_idle_timeout_minutes"
+    private const val KEY_AI_PROMPT_NOTICE_ACCEPTED = "ai_prompt_notice_accepted"
+    private const val KEY_CUSTOM_AI_CHATBOT_TARGETS = "custom_ai_chatbot_targets"
+    private const val KEY_AI_CHATBOT_TARGETS_VERSION = "ai_chatbot_targets_version"
     private const val KEY_IMG_PDF_SIZE_PRESET = "img_pdf_size_preset"
     private const val KEY_IMG_PDF_ORIENTATION = "img_pdf_orientation"
     private const val KEY_IMG_PDF_MARGIN_PRESET = "img_pdf_margin_preset"
@@ -65,6 +72,8 @@ object AppSettingsPreferences {
                     LocalSyncTimeout.DEFAULT_MINUTES
                 )
             ),
+            aiPromptNoticeAccepted = prefs.getBoolean(KEY_AI_PROMPT_NOTICE_ACCEPTED, false),
+            customAiChatbotTargets = loadAiChatbotTargets(prefs),
             defaultImagePdfPageSetup = PdfPageSetup(
                 sizePreset = enumPreference(
                     prefs.getString(KEY_IMG_PDF_SIZE_PRESET, null),
@@ -114,6 +123,9 @@ object AppSettingsPreferences {
                 KEY_LOCAL_SYNC_IDLE_TIMEOUT_MINUTES,
                 LocalSyncTimeout.normalize(settings.localSyncIdleTimeoutMinutes)
             )
+            putBoolean(KEY_AI_PROMPT_NOTICE_ACCEPTED, settings.aiPromptNoticeAccepted)
+            putString(KEY_CUSTOM_AI_CHATBOT_TARGETS, serializeAiChatbotTargets(settings.customAiChatbotTargets))
+            putInt(KEY_AI_CHATBOT_TARGETS_VERSION, 1)
             putString(KEY_IMG_PDF_SIZE_PRESET, settings.defaultImagePdfPageSetup.sizePreset.name)
             putString(KEY_IMG_PDF_ORIENTATION, settings.defaultImagePdfPageSetup.orientation.name)
             putString(KEY_IMG_PDF_MARGIN_PRESET, settings.defaultImagePdfPageSetup.marginPreset.name)
@@ -149,5 +161,28 @@ object AppSettingsPreferences {
     ): T {
         val storedValue = value ?: return default
         return runCatching { enumValueOf<T>(storedValue) }.getOrDefault(default)
+    }
+
+    internal fun parseAiChatbotTargets(value: String?): List<AiChatbotTarget> = runCatching {
+        val array = JSONArray(value.orEmpty())
+        List(array.length()) { index ->
+            array.getJSONObject(index).let { AiChatbotTarget(it.getString("name"), it.getString("url")) }
+        }
+    }.getOrDefault(emptyList())
+
+    internal fun serializeAiChatbotTargets(targets: List<AiChatbotTarget>): String = JSONArray().apply {
+        targets.forEach { put(JSONObject().put("name", it.name).put("url", it.url)) }
+    }.toString()
+
+    private fun loadAiChatbotTargets(prefs: android.content.SharedPreferences): List<AiChatbotTarget> {
+        val storedTargets = prefs.getString(KEY_CUSTOM_AI_CHATBOT_TARGETS, null)
+            ?.let(::parseAiChatbotTargets)
+            .orEmpty()
+        return when {
+            storedTargets.isEmpty() -> defaultAiChatbotTargets
+            prefs.getInt(KEY_AI_CHATBOT_TARGETS_VERSION, 0) < 1 ->
+                (defaultAiChatbotTargets + storedTargets).distinct()
+            else -> storedTargets
+        }
     }
 }

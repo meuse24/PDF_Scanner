@@ -5,6 +5,7 @@ sealed class Screen(val route: String) {
     data object Trash : Screen("trash")
     data object FolderManagement : Screen("folder-management")
     data object Settings : Screen("settings")
+    data object AiChatbotTargets : Screen("ai-chatbot-targets")
     data object Help    : Screen("help")
     data object Info    : Screen("info")
     data object Privacy : Screen("privacy")

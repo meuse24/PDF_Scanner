@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info_features_compact">• PDF 扫描
+• 导入和归档
+• 页面编辑
+• OCR
+• OCR 审核
+• 搜索
+• 标签
+• 文件夹和收藏
+• 二维码扫描
+• 名片
+• 翻译
+• Word 导出
+• 表格导出
+• JPEG 导出
+• 打印和分享
+• 应用锁
+• PDF 表单
+• SHA-256
+• 电脑同步
+• AI 提示词</string>
+</resources>

@@ -476,6 +476,7 @@ fun PdfViewerScreen(
                     // writes the PDF itself, not JPG/DOCX/OCR text.
                     showPrintAction = false,
                     showHashAction = false,
+                    showAiPromptActions = false,
                     onAction = { action ->
                         editSheetVisible = false
                         when (action) {
@@ -507,6 +508,8 @@ fun PdfViewerScreen(
                             ScanAction.ExportDocx -> viewModel.exportCurrentAsDocx()
                             ScanAction.ExportOcrText -> viewModel.exportCurrentOcrText()
                             // Not offered by this sheet (see the flags above).
+                            ScanAction.CopyAiCorrectionPrompt,
+                            ScanAction.CopyAiSummaryPrompt,
                             ScanAction.Print,
                             ScanAction.Rename,
                             ScanAction.CalculateSha256 -> Unit

@@ -5,10 +5,15 @@ import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.data.local.ScanRecord
 import info.meuse24.pdf_scanner.data.mapper.toEntity
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.AiChatbotTarget
+import info.meuse24.pdf_scanner.domain.common.OcrAiPromptPurpose
+import info.meuse24.pdf_scanner.domain.common.OcrAiPromptBuilder
 import info.meuse24.pdf_scanner.domain.model.Folder
 import info.meuse24.pdf_scanner.domain.model.PdfMetadata
 import info.meuse24.pdf_scanner.domain.model.PdfPageSizeCategory
 import info.meuse24.pdf_scanner.domain.pdf.PdfMetadataOps
+import info.meuse24.pdf_scanner.domain.pdf.PdfPageTextContent
+import info.meuse24.pdf_scanner.domain.pdf.PdfTextOps
 import info.meuse24.pdf_scanner.data.local.TrashDao
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.data.repository.TrashRepository
@@ -36,6 +41,7 @@ import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
 import info.meuse24.pdf_scanner.domain.usecase.RecordReviewPromptActionUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RenameDocumentUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RestoreScansUseCase
+import info.meuse24.pdf_scanner.domain.usecase.ResolveAiPromptTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ToggleFavoriteUseCase
 import info.meuse24.pdf_scanner.domain.usecase.TrashScansUseCase
 import info.meuse24.pdf_scanner.ui.ocr.OCR_LANGUAGE_AUTO
@@ -52,15 +58,18 @@ import info.meuse24.pdf_scanner.domain.gateway.DownloadsStorage
 import info.meuse24.pdf_scanner.util.PlayReviewPromptManager
 import kotlinx.coroutines.async
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -160,6 +169,12 @@ class HomeViewModelTest {
                 R.string.error_export_pages_folder_failed to "JPG folder export failed",
                 R.string.hash_error_file_not_found to "Hash file not found",
                 R.string.hash_error_file_unreadable to "Hash file unreadable"
+                , R.string.ocr_ai_prompt_instruction to "Correction instruction"
+                , R.string.ocr_ai_prompt_summary_instruction to "Summary instruction"
+                , R.string.ocr_ai_prompt_output_language_rule to "Keep source language"
+                , R.string.ocr_export_nothing_to_export to "No OCR text"
+                , R.string.ocr_ai_prompt_no_local_text to "No local document text"
+                , R.string.ocr_ai_prompt_too_long to "Prompt too long"
             ),
             plurals = mapOf(
                 R.plurals.trash_moved to "%d moved to trash",
@@ -804,6 +819,229 @@ class HomeViewModelTest {
         assertNull(viewModel.pendingPrintDocument.value)
     }
 
+    @Test
+    fun `AI correction loads the full OCR record before requesting consent`() = runTest(testDispatcher) {
+        val listRecord = Document(
+            id = 41L,
+            filename = "invoice.pdf",
+            filepath = "/scans/invoice.pdf",
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = 42L,
+            hasStoredOcrText = true
+        )
+        val fullRecord = listRecord.copy(extractedText = "Invoice text")
+        `when`(repository.getScansByIds(listOf(listRecord.id))).thenReturn(listOf(fullRecord))
+        val viewModel = buildViewModel()
+
+        viewModel.requestAiPrompt(listRecord, OcrAiPromptPurpose.CORRECTION)
+        advanceUntilIdle()
+
+        assertTrue(requireNotNull(viewModel.pendingAiPrompt.value).startsWith("Correction instruction"))
+        assertNull(viewModel.aiPromptToCopy.value)
+        viewModel.confirmAiPrompt(
+            target = AiChatbotTarget("Test chatbot", "https://example.com/"),
+            consentAccepted = true
+        )
+        verify(settingsRepository).updateAiPromptNoticeAccepted(true)
+        assertTrue(viewModel.aiPromptToCopy.value != null)
+        assertEquals("https://example.com/", viewModel.aiPromptToCopy.value?.chatbotUrl)
+    }
+
+    @Test
+    fun `AI summary uses the full OCR record and skips accepted consent`() = runTest(testDispatcher) {
+        val acceptedSettings = MutableStateFlow(AppSettings(aiPromptNoticeAccepted = true))
+        `when`(settingsRepository.settings).thenReturn(acceptedSettings)
+        val listRecord = Document(
+            id = 42L,
+            filename = "report.pdf",
+            filepath = "/scans/report.pdf",
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = 42L,
+            hasStoredOcrText = true
+        )
+        `when`(repository.getScansByIds(listOf(listRecord.id))).thenReturn(
+            listOf(listRecord.copy(extractedText = "Report text"))
+        )
+        val viewModel = buildViewModel()
+
+        viewModel.requestAiPrompt(listRecord, OcrAiPromptPurpose.SUMMARY)
+        advanceUntilIdle()
+
+        assertTrue(requireNotNull(viewModel.pendingAiPrompt.value).startsWith("Summary instruction"))
+        assertNull(viewModel.aiPromptToCopy.value)
+    }
+
+    @Test
+    fun `AI prompt reports empty and oversized full OCR records`() = runTest(testDispatcher) {
+        val listRecord = Document(
+            id = 43L,
+            filename = "empty.pdf",
+            filepath = "/scans/empty.pdf",
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = 42L,
+            hasStoredOcrText = true
+        )
+        `when`(repository.getScansByIds(listOf(listRecord.id))).thenReturn(
+            listOf(listRecord.copy(extractedText = " "))
+        )
+        val viewModel = buildViewModel()
+
+        viewModel.requestAiPrompt(listRecord, OcrAiPromptPurpose.CORRECTION)
+        advanceUntilIdle()
+
+        assertEquals("No local document text", viewModel.messageUiState.value.error)
+        assertNull(viewModel.pendingAiPrompt.value)
+
+        val oversizedRecord = listRecord.copy(id = 44L, filename = "large.pdf")
+        `when`(repository.getScansByIds(listOf(oversizedRecord.id))).thenReturn(
+            listOf(oversizedRecord.copy(extractedText = "x".repeat(OcrAiPromptBuilder.MAX_PROMPT_CHARS)))
+        )
+        viewModel.clearError()
+        viewModel.requestAiPrompt(oversizedRecord, OcrAiPromptPurpose.SUMMARY)
+        advanceUntilIdle()
+
+        assertEquals("Prompt too long", viewModel.messageUiState.value.error)
+        assertNull(viewModel.aiPromptToCopy.value)
+    }
+
+    @Test
+    fun `AI prompt falls back to stored page texts when full text is absent`() = runTest(testDispatcher) {
+        `when`(settingsRepository.settings).thenReturn(
+            MutableStateFlow(AppSettings(aiPromptNoticeAccepted = true))
+        )
+        val listRecord = Document(
+            id = 45L,
+            filename = "pages.pdf",
+            filepath = "/scans/pages.pdf",
+            timestamp = 0L,
+            pageCount = 2,
+            fileSize = 42L,
+            hasStoredOcrText = true
+        )
+        `when`(repository.getScansByIds(listOf(listRecord.id))).thenReturn(
+            listOf(listRecord.copy(pageTexts = listOf("First page", "Second page")))
+        )
+        val viewModel = buildViewModel()
+
+        viewModel.requestAiPrompt(listRecord, OcrAiPromptPurpose.CORRECTION)
+        advanceUntilIdle()
+
+        val prompt = requireNotNull(viewModel.pendingAiPrompt.value)
+        assertTrue(prompt.contains("First page\n\nSecond page"))
+    }
+
+    @Test
+    fun `AI prompt locally extracts the PDF text layer when OCR text is absent`() = runTest(testDispatcher) {
+        `when`(settingsRepository.settings).thenReturn(
+            MutableStateFlow(AppSettings(aiPromptNoticeAccepted = true))
+        )
+        val pdf = File(tmpFolder.root, "text-layer.pdf").apply { writeText("pdf") }
+        val record = Document(
+            id = 46L,
+            filename = "text-layer.pdf",
+            filepath = pdf.absolutePath,
+            timestamp = 0L,
+            pageCount = 2,
+            fileSize = pdf.length()
+        )
+        `when`(repository.getScansByIds(listOf(record.id))).thenReturn(listOf(record))
+        val viewModel = buildViewModel(
+            pdfTextOps = fakePdfTextOps("Imported page one", "Imported page two")
+        )
+
+        viewModel.requestAiPrompt(record, OcrAiPromptPurpose.SUMMARY)
+        advanceUntilIdle()
+
+        assertTrue(
+            requireNotNull(viewModel.pendingAiPrompt.value)
+                .contains("Imported page one\n\nImported page two")
+        )
+    }
+
+    @Test
+    fun `AI prompt reports no local text for a PDF without OCR or text layer`() = runTest(testDispatcher) {
+        val pdf = File(tmpFolder.root, "image-only.pdf").apply { writeText("pdf") }
+        val record = Document(
+            id = 47L,
+            filename = "image-only.pdf",
+            filepath = pdf.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = pdf.length()
+        )
+        `when`(repository.getScansByIds(listOf(record.id))).thenReturn(listOf(record))
+        val viewModel = buildViewModel(pdfTextOps = fakePdfTextOps())
+
+        viewModel.requestAiPrompt(record, OcrAiPromptPurpose.CORRECTION)
+        advanceUntilIdle()
+
+        assertEquals("No local document text", viewModel.messageUiState.value.error)
+        assertFalse(viewModel.operationUiState.value.aiPromptLoading)
+    }
+
+    @Test
+    fun `AI prompt reports too long when the PDF text layer exceeds the limit`() = runTest(testDispatcher) {
+        val pdf = File(tmpFolder.root, "large-text-layer.pdf").apply { writeText("pdf") }
+        val record = Document(
+            id = 48L,
+            filename = "large-text-layer.pdf",
+            filepath = pdf.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = pdf.length()
+        )
+        `when`(repository.getScansByIds(listOf(record.id))).thenReturn(listOf(record))
+        val viewModel = buildViewModel(
+            pdfTextOps = fakePdfTextOps("x".repeat(OcrAiPromptBuilder.MAX_PROMPT_CHARS))
+        )
+
+        viewModel.requestAiPrompt(record, OcrAiPromptPurpose.SUMMARY)
+        advanceUntilIdle()
+
+        assertEquals("Prompt too long", viewModel.messageUiState.value.error)
+        assertNull(viewModel.aiPromptToCopy.value)
+    }
+
+    @Test
+    fun `AI prompt shows loading while the PDF text layer is being read`() = runTest(testDispatcher) {
+        val gate = CompletableDeferred<Unit>()
+        val pdf = File(tmpFolder.root, "slow-text-layer.pdf").apply { writeText("pdf") }
+        val record = Document(
+            id = 49L,
+            filename = "slow-text-layer.pdf",
+            filepath = pdf.absolutePath,
+            timestamp = 0L,
+            pageCount = 1,
+            fileSize = pdf.length()
+        )
+        `when`(repository.getScansByIds(listOf(record.id))).thenReturn(listOf(record))
+        val slowPdfTextOps = object : PdfTextOps {
+            override fun removeTextLayer(input: File, outputDir: File): File = input
+            override fun extractTextLines(file: File, pageIndex: Int) =
+                emptyList<info.meuse24.pdf_scanner.domain.usecase.TextLine>()
+            override fun extractSearchText(file: File): Flow<PdfPageTextContent> = flow {
+                gate.await()
+                emit(PdfPageTextContent(0, "PDF text"))
+            }
+            override fun extractPageGlyphBoxes(
+                file: File,
+                pageIndex: Int
+            ): List<info.meuse24.pdf_scanner.domain.pdf.NormalizedBox?> = emptyList()
+        }
+        val viewModel = buildViewModel(pdfTextOps = slowPdfTextOps)
+
+        viewModel.requestAiPrompt(record, OcrAiPromptPurpose.CORRECTION)
+        runCurrent()
+        assertTrue(viewModel.operationUiState.value.aiPromptLoading)
+
+        gate.complete(Unit)
+        advanceUntilIdle()
+        assertFalse(viewModel.operationUiState.value.aiPromptLoading)
+    }
+
     private fun buildViewModel(
         extractTextUseCase: ExtractTextUseCase = this.extractTextUseCase,
         exportDocxUseCase: ExportDocxUseCase = testExportDocxUseCase(),
@@ -811,6 +1049,7 @@ class HomeViewModelTest {
         restoreScansUseCase: RestoreScansUseCase = this.restoreScansUseCase,
         archiveFilterStore: ArchiveFilterStore = ArchiveFilterStore(),
         pdfMetadataOps: PdfMetadataOps = testPdfMetadataOps { PdfPageSizeCategory.UNIFORM_STANDARD },
+        pdfTextOps: PdfTextOps = fakePdfTextOps(),
         calculateSha256UseCase: CalculateSha256UseCase = CalculateSha256UseCase(
             TestDispatcherProvider(testDispatcher)
         )
@@ -875,9 +1114,22 @@ class HomeViewModelTest {
             archiveCoordinator = archiveCoordinator,
             workflowErrorMapper = WorkflowErrorMapper(resourceProvider),
             resourceProvider = resourceProvider,
+            settingsRepository = settingsRepository,
             dispatcherProvider = TestDispatcherProvider(testDispatcher),
-            calculateSha256UseCase = calculateSha256UseCase
+            calculateSha256UseCase = calculateSha256UseCase,
+            resolveAiPromptTextUseCase = ResolveAiPromptTextUseCase(pdfTextOps)
         )
+    }
+
+    private fun fakePdfTextOps(vararg pageTexts: String): PdfTextOps = object : PdfTextOps {
+        override fun removeTextLayer(input: File, outputDir: File): File = input
+        override fun extractTextLines(file: File, pageIndex: Int): List<info.meuse24.pdf_scanner.domain.usecase.TextLine> = emptyList()
+        override fun extractSearchText(file: File): Flow<PdfPageTextContent> =
+            flowOf(*pageTexts.mapIndexed(::PdfPageTextContent).toTypedArray())
+        override fun extractPageGlyphBoxes(
+            file: File,
+            pageIndex: Int
+        ): List<info.meuse24.pdf_scanner.domain.pdf.NormalizedBox?> = emptyList()
     }
 
     private fun testExportOcrTextUseCase() = ExportOcrTextUseCase(

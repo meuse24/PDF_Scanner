@@ -42,6 +42,7 @@ import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Print
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Star
@@ -71,6 +72,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Velocity
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.hasDocxExportText
 import java.util.Locale
 
 sealed interface ScanAction {
@@ -93,6 +95,8 @@ sealed interface ScanAction {
     data object ExportAsJpg : ScanAction
     data object ExportDocx : ScanAction
     data object ExportOcrText : ScanAction
+    data object CopyAiCorrectionPrompt : ScanAction
+    data object CopyAiSummaryPrompt : ScanAction
     data object Annotate : ScanAction
     data object Redact : ScanAction
     data object Rename : ScanAction
@@ -115,6 +119,7 @@ fun DocumentEditSheet(
     showPrintAction: Boolean = true,
     showExportAsJpgAction: Boolean = true,
     showTextExportActions: Boolean = true,
+    showAiPromptActions: Boolean = true,
     showHashAction: Boolean = true,
     onToggleFavorite: (() -> Unit)? = null
 ) {
@@ -147,7 +152,9 @@ fun DocumentEditSheet(
     val showPrint = showPrintAction && notEncrypted
     val showExportAsJpg = showExportAsJpgAction && notEncrypted
     val showExportDocx = showTextExportActions
-    val showExportOcrText = showTextExportActions && !record.extractedText.isNullOrBlank()
+    val showExportOcrText = showTextExportActions && record.hasDocxExportText()
+    val canShowAiPromptActions = showAiPromptActions && showTextExportActions &&
+        (record.hasDocxExportText() || !record.isEncrypted)
     val showExportTableCsv = notEncrypted && record.pageCount >= 1
     val showReorder = notEncrypted && multiPage
     val showRotate = notEncrypted
@@ -178,7 +185,7 @@ fun DocumentEditSheet(
     val showEditSection = showAnnotate || showSignature || showPageNumbers || showTextWatermark || showRedact
     val showAnalyseSection = showQrScan || showBusinessCard || showTranslateText || showRemoveTextLayer
     val showExportSection = showExportAsJpg || showGrayscale || showCompress || showExportDocx ||
-        showExportOcrText || showExportTableCsv
+        showExportOcrText || canShowAiPromptActions || showExportTableCsv
     val showSecuritySection = showProtect || showRestrictUsage || showUnlock || showRemovePassword
 
     LazyColumn(
@@ -395,6 +402,18 @@ fun DocumentEditSheet(
             item {
                 SheetItem(Icons.Default.Download, R.string.ocr_export_as_file, true) {
                     onAction(ScanAction.ExportOcrText)
+                }
+            }
+        }
+        if (canShowAiPromptActions) {
+            item {
+                SheetItem(Icons.Default.Psychology, R.string.ocr_ai_prompt_copy, true) {
+                    onAction(ScanAction.CopyAiCorrectionPrompt)
+                }
+            }
+            item {
+                SheetItem(Icons.Default.Psychology, R.string.ocr_ai_prompt_summary_copy, true) {
+                    onAction(ScanAction.CopyAiSummaryPrompt)
                 }
             }
         }

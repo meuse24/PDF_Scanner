@@ -2,6 +2,7 @@ package info.meuse24.pdf_scanner.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import info.meuse24.pdf_scanner.domain.model.AiChatbotTarget
 import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.model.LocalSyncTimeout
 import info.meuse24.pdf_scanner.domain.model.PdfMarginPreset
@@ -104,10 +105,6 @@ class AppSettingsPreferencesTest {
         assertEquals(5, settings.localSyncIdleTimeoutMinutes)
     }
 
-    /**
-     * A value outside the offered set — stale, hand-edited or corrupted — must never
-     * translate into an arbitrary or effectively unbounded PC-Sync timeout.
-     */
     @Test
     fun `load normalizes an out-of-range pc sync timeout back to the default`() {
         val context = mock(Context::class.java)
@@ -136,5 +133,24 @@ class AppSettingsPreferencesTest {
         val prefix = AppSettingsPreferences.load(context).pageNumberSettings.prefix
 
         assertEquals(PageNumberSettings.MAX_PREFIX_LENGTH, prefix.length)
+    }
+
+    @Test
+    fun `custom chatbot targets survive JSON round trip`() {
+        val targets = listOf(
+            AiChatbotTarget("Private assistant", "https://assistant.example/"),
+            AiChatbotTarget("Team bot", "https://chat.example/path")
+        )
+
+        val result = AppSettingsPreferences.parseAiChatbotTargets(
+            AppSettingsPreferences.serializeAiChatbotTargets(targets)
+        )
+
+        assertEquals(targets, result)
+    }
+
+    @Test
+    fun `invalid chatbot target JSON results in an empty list`() {
+        assertTrue(AppSettingsPreferences.parseAiChatbotTargets("not-json").isEmpty())
     }
 }

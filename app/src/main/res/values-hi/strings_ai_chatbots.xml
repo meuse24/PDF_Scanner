@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_ai_chatbots">चैटबॉट गंतव्य</string>
+    <string name="settings_ai_chatbot">चैटबॉट गंतव्य</string>
+    <string name="settings_ai_chatbots_defaults">डिफ़ॉल्ट गंतव्य</string>
+    <string name="settings_ai_chatbots_custom">आपके गंतव्य</string>
+    <string name="settings_ai_chatbot_name">नाम</string>
+    <string name="settings_ai_chatbot_url">HTTPS URL</string>
+    <string name="settings_ai_chatbot_invalid">नाम और मान्य HTTPS URL दर्ज करें।</string>
+    <string name="settings_ai_chatbot_name_required">नाम दर्ज करें।</string>
+    <string name="action_delete">हटाएं</string>
+    <string name="action_add">जोड़ें</string>
+    <string name="action_done">हो गया</string>
+    <string name="action_edit">संपादित करें</string>
+</resources>

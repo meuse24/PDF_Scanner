@@ -5,6 +5,7 @@ import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.model.AppSortOrder
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
+import info.meuse24.pdf_scanner.domain.model.AiChatbotTarget
 import kotlinx.coroutines.flow.StateFlow
 
 interface AppSettingsRepository {
@@ -21,6 +22,8 @@ interface AppSettingsRepository {
     fun updateAppLockEnabled(enabled: Boolean)
     fun updateAppLockTimeoutSeconds(seconds: Int)
     fun updateLocalSyncIdleTimeoutMinutes(minutes: Int)
+    fun updateAiPromptNoticeAccepted(accepted: Boolean)
+    fun updateCustomAiChatbotTargets(targets: List<AiChatbotTarget>)
     fun updateDefaultImagePdfPageSetup(setup: PdfPageSetup)
     fun updatePageNumberSettings(settings: PageNumberSettings)
 }

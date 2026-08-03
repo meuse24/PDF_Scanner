@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info_features_compact">• PDF-Scan
+• Import &amp; Archiv
+• Seitenbearbeitung
+• OCR
+• OCR-Prüfung
+• Volltextsuche
+• Tags
+• Ordner &amp; Favoriten
+• QR-Code-Scan
+• Visitenkarten
+• Übersetzung
+• Word-Export
+• Tabellenexport
+• JPEG-Export
+• Drucken &amp; Teilen
+• App-Sperre
+• PDF-Formulare
+• SHA-256
+• PC-Sync
+• KI-Prompts</string>
+</resources>

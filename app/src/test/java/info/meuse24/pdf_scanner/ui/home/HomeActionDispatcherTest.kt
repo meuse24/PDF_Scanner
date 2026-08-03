@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.ui.home
 
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.common.OcrAiPromptPurpose
 import info.meuse24.pdf_scanner.ui.components.ScanAction
 import org.junit.Assert.assertSame
 import org.junit.Test
@@ -54,9 +55,46 @@ class HomeActionDispatcherTest {
         assertSame(document.id, receivedScanId)
     }
 
+    @Test
+    fun `AI summary forwards document and summary purpose`() {
+        val document = Document(31L, "invoice", "/scans/invoice.pdf", 0L, 1, 42L)
+        var received: Pair<Document, OcrAiPromptPurpose>? = null
+
+        dispatchHomeScanAction(
+            record = document,
+            action = ScanAction.CopyAiSummaryPrompt,
+            navigator = navigator(
+                onCalculateSha256 = {},
+                onCopyAiPrompt = { record, purpose -> received = record to purpose }
+            )
+        )
+
+        assertSame(document, received?.first)
+        assertSame(OcrAiPromptPurpose.SUMMARY, received?.second)
+    }
+
+    @Test
+    fun `AI correction forwards document and correction purpose`() {
+        val document = Document(32L, "invoice", "/scans/invoice.pdf", 0L, 1, 42L)
+        var received: Pair<Document, OcrAiPromptPurpose>? = null
+
+        dispatchHomeScanAction(
+            record = document,
+            action = ScanAction.CopyAiCorrectionPrompt,
+            navigator = navigator(
+                onCalculateSha256 = {},
+                onCopyAiPrompt = { record, purpose -> received = record to purpose }
+            )
+        )
+
+        assertSame(document, received?.first)
+        assertSame(OcrAiPromptPurpose.CORRECTION, received?.second)
+    }
+
     private fun navigator(
         onCalculateSha256: (Document) -> Unit,
-        onExportTableCsv: (Long) -> Unit = {}
+        onExportTableCsv: (Long) -> Unit = {},
+        onCopyAiPrompt: (Document, OcrAiPromptPurpose) -> Unit = { _, _ -> }
     ) = HomeScanActionNavigator(
         onSplit = {},
         onReorder = {},
@@ -85,6 +123,7 @@ class HomeActionDispatcherTest {
         onExportAsJpg = {},
         onExportDocx = {},
         onExportOcrText = {},
+        onCopyAiPrompt = onCopyAiPrompt,
         onPrint = {},
         onRename = {},
         onCalculateSha256 = onCalculateSha256

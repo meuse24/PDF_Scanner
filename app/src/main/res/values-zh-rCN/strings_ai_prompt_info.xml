@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info_feature_ai_prompt_compact">AI 提示词：校正或摘要 · 本地剪贴板 · 可选外部聊天机器人</string>
+</resources>

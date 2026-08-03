@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_ai_chatbots">وجهات برامج الدردشة</string>
+    <string name="settings_ai_chatbot">وجهة برنامج الدردشة</string>
+    <string name="settings_ai_chatbots_defaults">الوجهات الافتراضية</string>
+    <string name="settings_ai_chatbots_custom">وجهاتك</string>
+    <string name="settings_ai_chatbot_name">الاسم</string>
+    <string name="settings_ai_chatbot_url">عنوان HTTPS</string>
+    <string name="settings_ai_chatbot_invalid">أدخل اسماً وعنوان HTTPS صالحاً.</string>
+    <string name="settings_ai_chatbot_name_required">أدخل اسماً.</string>
+    <string name="action_delete">حذف</string>
+    <string name="action_add">إضافة</string>
+    <string name="action_done">تم</string>
+    <string name="action_edit">تعديل</string>
+</resources>

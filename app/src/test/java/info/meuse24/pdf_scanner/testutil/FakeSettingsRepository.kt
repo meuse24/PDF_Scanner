@@ -7,6 +7,7 @@ import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.domain.model.AppSettings
 import info.meuse24.pdf_scanner.domain.model.AppSortOrder
+import info.meuse24.pdf_scanner.domain.model.AiChatbotTarget
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -61,6 +62,13 @@ class FakeSettingsRepository(
         _settings.value = _settings.value.copy(
             localSyncIdleTimeoutMinutes = LocalSyncTimeout.normalize(minutes)
         )
+    }
+
+    override fun updateAiPromptNoticeAccepted(accepted: Boolean) {
+        _settings.value = _settings.value.copy(aiPromptNoticeAccepted = accepted)
+    }
+    override fun updateCustomAiChatbotTargets(targets: List<AiChatbotTarget>) {
+        _settings.value = _settings.value.copy(customAiChatbotTargets = targets)
     }
 
     override fun updateDefaultImagePdfPageSetup(setup: PdfPageSetup) {

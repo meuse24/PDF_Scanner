@@ -1,6 +1,7 @@
 package info.meuse24.pdf_scanner.ui.home
 
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.common.OcrAiPromptPurpose
 import info.meuse24.pdf_scanner.ui.components.ScanAction
 
 internal data class HomeScanActionNavigator(
@@ -31,6 +32,7 @@ internal data class HomeScanActionNavigator(
     val onExportAsJpg: (Document) -> Unit,
     val onExportDocx: (Document) -> Unit,
     val onExportOcrText: (Document) -> Unit,
+    val onCopyAiPrompt: (Document, OcrAiPromptPurpose) -> Unit,
     val onPrint: (Document) -> Unit,
     val onRename: (Document) -> Unit,
     val onCalculateSha256: (Document) -> Unit
@@ -61,6 +63,8 @@ internal fun dispatchHomeScanAction(
         ScanAction.ExportAsJpg -> navigator.onExportAsJpg(record)
         ScanAction.ExportDocx -> navigator.onExportDocx(record)
         ScanAction.ExportOcrText -> navigator.onExportOcrText(record)
+        ScanAction.CopyAiCorrectionPrompt -> navigator.onCopyAiPrompt(record, OcrAiPromptPurpose.CORRECTION)
+        ScanAction.CopyAiSummaryPrompt -> navigator.onCopyAiPrompt(record, OcrAiPromptPurpose.SUMMARY)
         ScanAction.Annotate -> navigator.onAnnotate(record.id)
         ScanAction.Redact -> navigator.onRedact(record.id)
         ScanAction.Grayscale -> navigator.onGrayscale(record.id)

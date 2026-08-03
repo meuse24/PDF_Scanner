@@ -9,6 +9,7 @@ import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.model.ThemeMode
 import info.meuse24.pdf_scanner.domain.model.AppSortOrder
 import info.meuse24.pdf_scanner.domain.model.AppSettings
+import info.meuse24.pdf_scanner.domain.model.AiChatbotTarget
 import info.meuse24.pdf_scanner.util.AppSettingsPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -109,6 +110,20 @@ class SettingsRepository @Inject constructor(
         val current = _settings.value
         if (current.localSyncIdleTimeoutMinutes == normalized) return
         val updated = current.copy(localSyncIdleTimeoutMinutes = normalized)
+        AppSettingsPreferences.save(context, updated)
+        _settings.value = updated
+    }
+
+    override fun updateAiPromptNoticeAccepted(accepted: Boolean) {
+        val current = _settings.value
+        if (current.aiPromptNoticeAccepted == accepted) return
+        val updated = current.copy(aiPromptNoticeAccepted = accepted)
+        AppSettingsPreferences.save(context, updated)
+        _settings.value = updated
+    }
+
+    override fun updateCustomAiChatbotTargets(targets: List<AiChatbotTarget>) {
+        val updated = _settings.value.copy(customAiChatbotTargets = targets)
         AppSettingsPreferences.save(context, updated)
         _settings.value = updated
     }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_ai_chatbots">Адреса чат-ботов</string>
+    <string name="settings_ai_chatbot">Адрес чат-бота</string>
+    <string name="settings_ai_chatbots_defaults">Стандартные адреса</string>
+    <string name="settings_ai_chatbots_custom">Ваши адреса</string>
+    <string name="settings_ai_chatbot_name">Название</string>
+    <string name="settings_ai_chatbot_url">HTTPS-адрес</string>
+    <string name="settings_ai_chatbot_invalid">Введите название и корректный HTTPS-адрес.</string>
+    <string name="settings_ai_chatbot_name_required">Введите название.</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_add">Добавить</string>
+    <string name="action_done">Готово</string>
+    <string name="action_edit">Изменить</string>
+</resources>

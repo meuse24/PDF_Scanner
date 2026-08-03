@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ocr_ai_prompt_no_local_text">没有可用的已保存 OCR 文本或 PDF 文本层。</string>
+    <string name="ocr_ai_prompt_preparing">正在准备文档文本…</string>
+</resources>

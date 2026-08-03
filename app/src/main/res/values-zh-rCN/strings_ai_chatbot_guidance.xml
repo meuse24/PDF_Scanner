@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="help_item_ai_chatbot">AI 校正和摘要提示词仅在本地将文档文本复制到剪贴板。请选择聊天机器人；应用只会在默认浏览器中打开其网站，不会将提示词传给浏览器。只有粘贴到聊天机器人时才可能传输文本。可在设置 → 扫描和 OCR → 聊天机器人目标中管理目标。</string>
+    <string name="privacy_point_ai_chatbot">复制 AI 校正或摘要提示词仅会在您操作后创建本地剪贴板内容。M24 PDF-Scanner 不会将文档文本传输给 AI 提供商。所选聊天机器人网站会在默认浏览器中打开，且不包含提示词；打开网站可能与该提供商建立连接。只有将提示词粘贴到聊天机器人时才可能传输文档文本。目标仅保存在应用设置中。</string>
+</resources>

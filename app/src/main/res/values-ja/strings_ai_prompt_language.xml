@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ocr_ai_prompt_output_language_rule">文書テキストの言語を判定し、結果も同じ言語で返してください。</string>
+</resources>

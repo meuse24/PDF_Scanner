@@ -54,6 +54,7 @@ import info.meuse24.pdf_scanner.ui.qrscan.QrScanScreen
 import info.meuse24.pdf_scanner.ui.redact.RedactScreen
 import info.meuse24.pdf_scanner.ui.reorder.ReorderScreen
 import info.meuse24.pdf_scanner.ui.settings.SettingsScreen
+import info.meuse24.pdf_scanner.ui.settings.AiChatbotTargetsScreen
 import info.meuse24.pdf_scanner.ui.settings.SettingsViewModel
 import info.meuse24.pdf_scanner.ui.signature.SignatureScreen
 import info.meuse24.pdf_scanner.ui.split.SplitScreen
@@ -185,6 +186,9 @@ private fun NavGraphBuilder.infoNavGraph(
             onDefaultMakeSearchableChange = settingsViewModel::setDefaultMakeSearchable,
             onAutoTaggingEnabledChange = settingsViewModel::setAutoTaggingEnabled,
             onDefaultOcrLanguageChange = settingsViewModel::setDefaultOcrLanguage,
+            onNavigateToAiChatbotTargets = {
+                navController.navigate(Screen.AiChatbotTargets.route)
+            },
             onRetroTagDocuments = settingsViewModel::retroTagDocuments,
             onDefaultSortOrderChange = settingsViewModel::setDefaultSortOrder,
             onTrashUndoSnackbarSecondsChange = settingsViewModel::setTrashUndoSnackbarSeconds,
@@ -221,12 +225,21 @@ private fun NavGraphBuilder.infoNavGraph(
             },
             onAppLockTimeoutSecondsChange = settingsViewModel::setAppLockTimeoutSeconds,
             onLocalSyncIdleTimeoutMinutesChange = settingsViewModel::setLocalSyncIdleTimeoutMinutes,
+            onResetAiPromptNotice = settingsViewModel::resetAiPromptNotice,
             onPageNumberSettingsChange = settingsViewModel::setPageNumberSettings,
             transientSuccess = successMessage,
             transientError = errorMessage,
             onTransientSuccessConsumed = settingsViewModel::clearSuccess,
             onTransientErrorConsumed = settingsViewModel::clearError,
             backupSection = { BackupSettingsSection() }
+        )
+    }
+    composable(Screen.AiChatbotTargets.route) {
+        val settingsViewModel: SettingsViewModel = hiltViewModel()
+        val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
+        AiChatbotTargetsScreen(
+            targets = settings.customAiChatbotTargets,
+            onTargetsChange = settingsViewModel::setCustomAiChatbotTargets
         )
     }
     composable(Screen.Info.route) { InfoScreen() }

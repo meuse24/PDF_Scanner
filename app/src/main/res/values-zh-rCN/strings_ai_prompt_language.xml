@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ocr_ai_prompt_output_language_rule">识别文档文本的语言，并以完全相同的语言返回结果。</string>
+</resources>

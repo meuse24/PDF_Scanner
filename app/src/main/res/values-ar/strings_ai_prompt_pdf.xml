@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ocr_ai_prompt_no_local_text">لا يتوفر نص OCR محفوظ أو طبقة نص PDF.</string>
+    <string name="ocr_ai_prompt_preparing">جارٍ إعداد نص المستند…</string>
+</resources>

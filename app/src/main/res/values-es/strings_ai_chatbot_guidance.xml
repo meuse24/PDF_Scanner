@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="help_item_ai_chatbot">Las instrucciones de corrección y resumen con IA copian el texto del documento localmente al portapapeles. Elija un chatbot; la aplicación abre solo su sitio web en el navegador predeterminado, sin pasar la instrucción al navegador. Solo pegarla en el chatbot puede transferir texto. Gestione los destinos en Ajustes → Escaneo y OCR → Destinos de chatbot.</string>
+    <string name="privacy_point_ai_chatbot">Copiar una instrucción de corrección o resumen con IA crea contenido local del portapapeles solo tras su acción. M24 PDF-Scanner no transmite texto del documento a un proveedor de IA. El sitio web del chatbot elegido se abre en el navegador predeterminado sin la instrucción; abrirlo puede conectar con el proveedor. Solo pegar la instrucción en el chatbot puede transferir texto. Los destinos se guardan localmente en los ajustes.</string>
+</resources>

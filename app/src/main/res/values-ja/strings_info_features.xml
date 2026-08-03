@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info_features_compact">• PDF スキャン
+• インポートとアーカイブ
+• ページ編集
+• OCR
+• OCR 確認
+• 検索
+• タグ
+• フォルダとお気に入り
+• QR スキャン
+• 名刺
+• 翻訳
+• Word エクスポート
+• 表のエクスポート
+• JPEG エクスポート
+• 印刷と共有
+• アプリロック
+• PDF フォーム
+• SHA-256
+• PC 同期
+• AI プロンプト</string>
+</resources>

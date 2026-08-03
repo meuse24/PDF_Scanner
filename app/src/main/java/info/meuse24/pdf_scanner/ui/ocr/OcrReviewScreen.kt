@@ -2,10 +2,12 @@ package info.meuse24.pdf_scanner.ui.ocr
 
 import android.content.ClipData
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,9 +16,12 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.Button
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -31,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -49,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.meuse24.pdf_scanner.R
+import info.meuse24.pdf_scanner.domain.common.OcrAiPromptPurpose
 import info.meuse24.pdf_scanner.ui.components.LocalAppSnackbarHostState
 import info.meuse24.pdf_scanner.domain.model.OcrQuality
 import info.meuse24.pdf_scanner.domain.model.toQualityPercent
@@ -61,12 +68,17 @@ fun OcrReviewScreen(
     viewModel: OcrReviewViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val pendingAiPrompt by viewModel.pendingAiPrompt.collectAsStateWithLifecycle()
+    val aiPromptToCopy by viewModel.aiPromptToCopy.collectAsStateWithLifecycle()
+    val aiChatbotTargets by viewModel.aiChatbotTargets.collectAsStateWithLifecycle()
+    val aiPromptNoticeAccepted by viewModel.aiPromptNoticeAccepted.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val resources = LocalResources.current
     val snackbarHostState = LocalAppSnackbarHostState.current
     val coroutineScope = rememberCoroutineScope()
     val copiedMessage = stringResource(R.string.ocr_copied)
+    val aiPromptCopiedMessage = stringResource(R.string.ocr_ai_prompt_copied)
     val shareTextLabel = stringResource(R.string.action_share_text)
     val displayLocale = resources.configuration.locales[0]
     val ocrLanguages = remember(displayLocale) {
@@ -87,6 +99,15 @@ fun OcrReviewScreen(
         state.success?.let { message ->
             snackbarHostState?.showSnackbar(message)
             viewModel.clearSuccess()
+        }
+    }
+
+    LaunchedEffect(aiPromptToCopy) {
+        aiPromptToCopy?.let { request ->
+            clipboard.setClipEntry(ClipData.newPlainText("", request.prompt).toClipEntry())
+            viewModel.onAiPromptCopied()
+            runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(request.chatbotUrl))) }
+            snackbarHostState?.showSnackbar(aiPromptCopiedMessage)
         }
     }
 
@@ -247,6 +268,28 @@ fun OcrReviewScreen(
                             )
                         }
                         OutlinedButton(
+                            onClick = { viewModel.requestAiPrompt() },
+                            enabled = state.canCopyAiPrompt
+                        ) {
+                            Icon(Icons.Default.Psychology, contentDescription = null)
+                            Text(
+                                text = stringResource(R.string.ocr_ai_prompt_copy),
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                        OutlinedButton(
+                            onClick = {
+                                viewModel.requestAiPrompt(purpose = OcrAiPromptPurpose.SUMMARY)
+                            },
+                            enabled = state.canCopyAiSummaryPrompt
+                        ) {
+                            Icon(Icons.Default.Psychology, contentDescription = null)
+                            Text(
+                                text = stringResource(R.string.ocr_ai_prompt_summary_copy),
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                        OutlinedButton(
                             onClick = {
                                 context.startActivity(
                                     Intent.createChooser(
@@ -277,6 +320,18 @@ fun OcrReviewScreen(
                             )
                         }
                     }
+                    Text(
+                        text = stringResource(R.string.ocr_ai_prompt_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    if (state.isAiPromptTooLong) {
+                        Text(
+                            text = stringResource(R.string.ocr_ai_prompt_too_long),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
         }
@@ -303,23 +358,38 @@ fun OcrReviewScreen(
                             )
                         }
                         else -> {
-                            SelectionContainer {
-                                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    state.displayPages.forEach { page ->
-                                        if (state.displayPages.size > 1) {
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                SelectionContainer {
+                                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                        state.displayPages.forEach { page ->
+                                            if (state.displayPages.size > 1) {
+                                                FlowRow(
+                                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                                ) {
+                                                    Text(
+                                                        text = stringResource(R.string.ocr_review_page_header, page.pageIndex + 1),
+                                                        style = MaterialTheme.typography.labelLarge,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                    )
+                                                    TextButton(
+                                                        onClick = { viewModel.requestAiPrompt(page.pageIndex) },
+                                                        enabled = page.canCopyAiPrompt
+                                                    ) { Text(stringResource(R.string.ocr_ai_prompt_copy_page)) }
+                                                }
+                                                if (!page.canCopyAiPrompt) {
+                                                    Text(
+                                                        text = stringResource(R.string.ocr_ai_prompt_too_long),
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        color = MaterialTheme.colorScheme.error
+                                                    )
+                                                }
+                                            }
                                             Text(
-                                                text = stringResource(
-                                                    R.string.ocr_review_page_header,
-                                                    page.pageIndex + 1
-                                                ),
-                                                style = MaterialTheme.typography.labelLarge,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                text = page.text,
+                                                style = MaterialTheme.typography.bodyMedium
                                             )
                                         }
-                                        Text(
-                                            text = page.text,
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
                                     }
                                 }
                             }
@@ -328,6 +398,71 @@ fun OcrReviewScreen(
                 }
             }
         }
+    }
+
+    if (pendingAiPrompt != null) {
+        var selectedTarget by remember(aiChatbotTargets) { mutableStateOf(aiChatbotTargets.first()) }
+        var consentAccepted by remember(aiPromptNoticeAccepted) { mutableStateOf(aiPromptNoticeAccepted) }
+        var chatbotMenuExpanded by remember { mutableStateOf(false) }
+        AlertDialog(
+            onDismissRequest = viewModel::dismissAiPrompt,
+            title = { Text(stringResource(R.string.ocr_ai_prompt_dialog_title)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(stringResource(R.string.ocr_ai_prompt_dialog_message))
+                ExposedDropdownMenuBox(
+                    expanded = chatbotMenuExpanded,
+                    onExpandedChange = { chatbotMenuExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = selectedTarget.name,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.settings_ai_chatbots)) },
+                        modifier = Modifier
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth(),
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(chatbotMenuExpanded)
+                        }
+                    )
+                    ExposedDropdownMenu(
+                        expanded = chatbotMenuExpanded,
+                        onDismissRequest = { chatbotMenuExpanded = false }
+                    ) {
+                        aiChatbotTargets.forEach { target ->
+                            DropdownMenuItem(
+                                text = { Text(target.name) },
+                                onClick = {
+                                    selectedTarget = target
+                                    chatbotMenuExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+                if (!aiPromptNoticeAccepted) {
+                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = consentAccepted,
+                            onCheckedChange = { consentAccepted = it }
+                        )
+                        Text(stringResource(R.string.ocr_ai_prompt_hint))
+                    }
+                }
+            }
+            },
+            confirmButton = {
+                TextButton(onClick = { viewModel.confirmAiPrompt(selectedTarget, consentAccepted) }) {
+                    Text(stringResource(R.string.ocr_ai_prompt_copy_and_open))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::dismissAiPrompt) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        )
     }
 }
 

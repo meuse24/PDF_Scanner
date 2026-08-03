@@ -334,7 +334,7 @@ Nach der Texterkennung zeigt der Review-Screen für jede Seite:
 
 - **Erkannter Text** (kopierbar)
 - **Erkannte Sprache** mit Qualitäts-Badge (Gut / Mittel / Schwach)
-- **Seiten-Tabs** zum Wechseln zwischen den Seiten
+- **Seitenblöcke** in der richtigen Dokumentreihenfolge
 
 Verfügbare Aktionen im Review:
 
@@ -343,6 +343,16 @@ Verfügbare Aktionen im Review:
 | Kopieren | Gesamten Text in die Zwischenablage |
 | Teilen | Text über andere Apps teilen |
 | TXT exportieren | Text als `.txt`-Datei in Downloads speichern |
+| KI-Korrekturprompt kopieren | Wählt einen Chatbot, kopiert eine Korrekturanweisung plus Dokumenttext und öffnet dessen Website |
+| KI-Zusammenfassungsprompt kopieren | Wählt einen Chatbot, kopiert eine Zusammenfassungsanweisung plus Dokumenttext und öffnet dessen Website |
+
+### KI-Prompts
+
+Die App führt dabei keine KI-Anfrage aus und überträgt keinen Dokumenttext. Korrekturprompts erhalten Sprache, Aufbau und Inhalt des Dokumenttexts und korrigieren nur eindeutige Fehler. Zusammenfassungsprompts fassen die wesentlichen Aussagen als Stichpunkte zusammen. Beide Prompts verlangen, das Ergebnis in der Sprache des Dokumenttexts auszugeben – unabhängig von der eingestellten App-Sprache.
+
+Beide Funktionen stehen im **Drei-Punkte-Menü → Export & Umwandeln** jedes nicht verschlüsselten Dokuments bereit. Gespeicherter OCR-Text wird bevorzugt verwendet. Fehlt er, liest die App bei dieser Aktion die vorhandene PDF-Textschicht lokal aus – ohne OCR zu starten oder Text zu speichern. Reine Bild-PDFs ohne Textschicht zeigen einen Hinweis. Wählen Sie anschließend in der Auswahlseite einen Chatbot. Die App kopiert den Prompt lokal und öffnet nur dessen Website im Standardbrowser; der Prompt wird nicht an den Browser übergeben. Erst wenn Sie ihn dort einfügen, gelten die Bedingungen des gewählten Dienstes. **Einstellungen → Scan & OCR → Chatbot-Ziele** öffnet eine eigene Verwaltungsseite, auf der Sie alle HTTPS-Ziele anlegen, bearbeiten oder löschen können. Prüfen Sie sensible Daten vorher.
+
+Bei mehrseitigen Ergebnissen steht die Aktion auch an jedem Seitenblock zur Verfügung. Sehr lange Gesamttexte werden aus Stabilitätsgründen nicht in die Zwischenablage kopiert; verwenden Sie dann die einzelne Seite. Unter **Einstellungen → Scan & OCR** können Sie den Datenschutzhinweis erneut anzeigen lassen.
 
 ## Durchsuchbare PDF erstellen
 

@@ -33,8 +33,8 @@ android {
         applicationId = "info.meuse24.pdf_scanner"
         minSdk = 29
         targetSdk = 36
-        versionCode = 14
-        versionName = "2.6"
+        versionCode = 15
+        versionName = "2.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -213,6 +213,7 @@ dependencies {
     implementation(libs.ktor.server.sessions)
 
     testImplementation(libs.junit)
+    testImplementation("org.json:json:20240303")
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockito.inline)
     testImplementation(libs.ktor.server.test.host)

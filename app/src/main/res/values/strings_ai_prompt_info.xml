@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info_feature_ai_prompt_compact">AI prompts: correction or summary · local clipboard · external chatbot optional</string>
+</resources>

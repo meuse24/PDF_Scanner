@@ -6,12 +6,22 @@ import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -74,6 +84,8 @@ fun HomeScreen(
         viewModel.addedDocumentScrollRequest.collectAsStateWithLifecycle()
     val selectedIds by viewModel.selectedIds.collectAsStateWithLifecycle()
     val pendingPrintDocument by viewModel.pendingPrintDocument.collectAsStateWithLifecycle()
+    val pendingAiPrompt by viewModel.pendingAiPrompt.collectAsStateWithLifecycle()
+    val aiPromptToCopy by viewModel.aiPromptToCopy.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -85,6 +97,7 @@ fun HomeScreen(
 
     val sharePdfTitle = stringResource(R.string.share_pdf_title)
     val hashCopiedMessage = stringResource(R.string.hash_copied)
+    val aiPromptCopiedMessage = stringResource(R.string.ocr_ai_prompt_copied)
     val undoLabel = stringResource(R.string.action_undo)
     val errorDeviceUnsupported = stringResource(R.string.error_device_unsupported)
     val errorScannerUnavailable = stringResource(R.string.error_scanner_unavailable)
@@ -108,6 +121,17 @@ fun HomeScreen(
 
     LaunchedEffect(viewModel) {
         viewModel.printRequests.collect(::printRecord)
+    }
+
+    LaunchedEffect(aiPromptToCopy) {
+        aiPromptToCopy?.let { request ->
+            clipboard.setClipEntry(ClipData.newPlainText("", request.prompt).toClipEntry())
+            viewModel.onAiPromptCopied()
+            runCatching {
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(request.chatbotUrl)))
+            }
+            snackbarHostState.showSnackbar(aiPromptCopiedMessage)
+        }
     }
 
     if (pendingPrintDocument != null) {
@@ -218,6 +242,7 @@ fun HomeScreen(
         onExportAsJpg = viewModel::exportAsJpg,
         onExportDocx = viewModel::exportDocx,
         onExportOcrText = viewModel::exportOcrText,
+        onCopyAiPrompt = viewModel::requestAiPrompt,
         onPrint = viewModel::requestPrint,
         onRename = { record ->
             renameInput = record.filename
@@ -520,7 +545,9 @@ fun HomeScreen(
         )
     }
 
-    if (operationUiState.editLoading) {
+    if (operationUiState.aiPromptLoading) {
+        HomeLoadingDialog(statusText = stringResource(R.string.ocr_ai_prompt_preparing))
+    } else if (operationUiState.editLoading) {
         HomeLoadingDialog()
     }
 
@@ -557,6 +584,64 @@ fun HomeScreen(
             }
         }
     )
+
+    pendingAiPrompt?.let {
+        val targets = archiveUiState.settings.customAiChatbotTargets
+        var selectedTarget by remember { mutableStateOf(targets.first()) }
+        var consentAccepted by remember { mutableStateOf(archiveUiState.settings.aiPromptNoticeAccepted) }
+        var chatbotMenuExpanded by remember { mutableStateOf(false) }
+        AlertDialog(
+            onDismissRequest = viewModel::dismissAiPrompt,
+            title = { Text(stringResource(R.string.ocr_ai_prompt_dialog_title)) },
+            text = {
+                Column {
+                    Text(stringResource(R.string.ocr_ai_prompt_dialog_message))
+                    ExposedDropdownMenuBox(
+                        expanded = chatbotMenuExpanded,
+                        onExpandedChange = { chatbotMenuExpanded = it }
+                    ) {
+                        OutlinedTextField(
+                            value = selectedTarget.name,
+                            onValueChange = {},
+                            readOnly = true,
+                            modifier = Modifier.menuAnchor().fillMaxWidth(),
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(chatbotMenuExpanded) }
+                        )
+                        ExposedDropdownMenu(
+                            expanded = chatbotMenuExpanded,
+                            onDismissRequest = { chatbotMenuExpanded = false }
+                        ) {
+                            targets.forEach { target ->
+                                DropdownMenuItem(
+                                    text = { Text(target.name) },
+                                    onClick = {
+                                        selectedTarget = target
+                                        chatbotMenuExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    if (!archiveUiState.settings.aiPromptNoticeAccepted) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(checked = consentAccepted, onCheckedChange = { consentAccepted = it })
+                            Text(stringResource(R.string.ocr_ai_prompt_hint))
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { viewModel.confirmAiPrompt(selectedTarget, consentAccepted) }) {
+                    Text(stringResource(R.string.ocr_ai_prompt_copy_and_open))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::dismissAiPrompt) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        )
+    }
 
     messageUiState.error?.let { message ->
         HomeErrorDialog(message = message, onDismiss = viewModel::clearError)

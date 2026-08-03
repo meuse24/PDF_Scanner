@@ -45,6 +45,7 @@ internal fun AppBarTitle(
         currentRoute == Screen.Trash.route -> stringResource(R.string.nav_trash)
         currentRoute == Screen.FolderManagement.route -> stringResource(R.string.folder_management_title)
         currentRoute == Screen.Settings.route -> stringResource(R.string.nav_settings)
+        currentRoute == Screen.AiChatbotTargets.route -> stringResource(R.string.settings_ai_chatbots)
         currentRoute == Screen.Info.route -> stringResource(R.string.nav_info)
         currentRoute == Screen.Privacy.route -> stringResource(R.string.nav_privacy)
         currentRoute == Screen.LocalSync.route -> stringResource(R.string.local_sync_title)

@@ -3,12 +3,16 @@ package info.meuse24.pdf_scanner.ui.ocr
 import androidx.lifecycle.SavedStateHandle
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.AppSettings
+import info.meuse24.pdf_scanner.domain.common.OcrAiPromptBuilder
+import info.meuse24.pdf_scanner.domain.common.OcrAiPromptPurpose
 import info.meuse24.pdf_scanner.data.repository.ScanRepository
 import info.meuse24.pdf_scanner.domain.usecase.ExportOcrTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.ExtractTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
 import info.meuse24.pdf_scanner.testutil.FakeResourceProvider
+import info.meuse24.pdf_scanner.testutil.FakeSettingsRepository
 import info.meuse24.pdf_scanner.testutil.TestDispatcherProvider
 import info.meuse24.pdf_scanner.util.OcrInputImageLoader
 import info.meuse24.pdf_scanner.util.OcrPipeline
@@ -30,6 +34,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -56,7 +61,13 @@ class OcrReviewViewModelTest {
                 R.string.ocr_review_no_text to "No text recognized",
                 R.string.ocr_review_load_failed to "Load failed",
                 R.string.ocr_review_reextract_failed to "Update failed",
-                R.string.ocr_model_download_failed to "Model download failed"
+                R.string.ocr_model_download_failed to "Model download failed",
+                R.string.ocr_ai_prompt_instruction to "Instruction",
+                R.string.ocr_ai_prompt_summary_instruction to "Summary instruction",
+                R.string.ocr_ai_prompt_output_language_rule to "Keep source language",
+                R.string.ocr_ai_prompt_page_hint to "Page %1${'$'}d of %2${'$'}d",
+                R.string.ocr_ai_prompt_page_hint_short to "Page %1${'$'}d",
+                R.string.ocr_ai_prompt_too_long to "Too long"
             )
         )
     }
@@ -121,8 +132,8 @@ class OcrReviewViewModelTest {
 
         assertEquals(
             listOf(
-                OcrReviewPage(pageIndex = 0, text = "First page"),
-                OcrReviewPage(pageIndex = 2, text = "Third page")
+                OcrReviewPage(pageIndex = 0, text = "First page", canCopyAiPrompt = true),
+                OcrReviewPage(pageIndex = 2, text = "Third page", canCopyAiPrompt = true)
             ),
             viewModel.uiState.value.displayPages
         )
@@ -229,14 +240,108 @@ class OcrReviewViewModelTest {
         collection.cancel()
     }
 
+    @Test
+    fun `AI prompt requires consent then releases exactly once`() = runTest(dispatcher) {
+        val record = scanRecord(extractedText = "Receipt", pageTexts = listOf("Receipt"))
+        recordsFlow.value = listOf(record)
+        val settings = FakeSettingsRepository()
+        val viewModel = buildViewModel(RecordingExtractTextUseCase(), record.id, settings)
+        val collection = backgroundScope.launch { viewModel.uiState.collect() }
+        advanceUntilIdle()
+
+        viewModel.requestAiPrompt()
+        assertNotNull(viewModel.pendingAiPrompt.value)
+        assertNull(viewModel.aiPromptToCopy.value)
+
+        viewModel.confirmAiPrompt(
+            target = info.meuse24.pdf_scanner.domain.model.AiChatbotTarget("Test", "https://example.com/"),
+            consentAccepted = true
+        )
+        assertNull(viewModel.pendingAiPrompt.value)
+        assertNotNull(viewModel.aiPromptToCopy.value)
+        assertTrue(settings.settings.value.aiPromptNoticeAccepted)
+
+        viewModel.onAiPromptCopied()
+        assertNull(viewModel.aiPromptToCopy.value)
+        collection.cancel()
+    }
+
+    @Test
+    fun `dismissing AI prompt keeps consent false and does not copy`() = runTest(dispatcher) {
+        val record = scanRecord(extractedText = "Receipt")
+        recordsFlow.value = listOf(record)
+        val settings = FakeSettingsRepository()
+        val viewModel = buildViewModel(RecordingExtractTextUseCase(), record.id, settings)
+        val collection = backgroundScope.launch { viewModel.uiState.collect() }
+        advanceUntilIdle()
+
+        viewModel.requestAiPrompt()
+        viewModel.dismissAiPrompt()
+
+        assertNull(viewModel.pendingAiPrompt.value)
+        assertNull(viewModel.aiPromptToCopy.value)
+        assertTrue(!settings.settings.value.aiPromptNoticeAccepted)
+        collection.cancel()
+    }
+
+    @Test
+    fun `accepted consent skips dialog and page fallback uses short hint`() = runTest(dispatcher) {
+        val record = scanRecord(extractedText = "First", pageTexts = listOf("First"))
+        recordsFlow.value = listOf(record)
+        val settings = FakeSettingsRepository(AppSettings(aiPromptNoticeAccepted = true))
+        val viewModel = buildViewModel(RecordingExtractTextUseCase(), record.id, settings)
+        val collection = backgroundScope.launch { viewModel.uiState.collect() }
+        advanceUntilIdle()
+
+        viewModel.requestAiPrompt(pageIndex = 0)
+
+        assertTrue(requireNotNull(viewModel.pendingAiPrompt.value).contains("Page 1"))
+        assertTrue(!requireNotNull(viewModel.pendingAiPrompt.value).contains("of 2"))
+        collection.cancel()
+    }
+
+    @Test
+    fun `summary prompt uses the summary instruction and accepted consent`() = runTest(dispatcher) {
+        val record = scanRecord(extractedText = "Receipt", pageTexts = listOf("Receipt"))
+        recordsFlow.value = listOf(record)
+        val settings = FakeSettingsRepository(AppSettings(aiPromptNoticeAccepted = true))
+        val viewModel = buildViewModel(RecordingExtractTextUseCase(), record.id, settings)
+        val collection = backgroundScope.launch { viewModel.uiState.collect() }
+        advanceUntilIdle()
+
+        viewModel.requestAiPrompt(purpose = OcrAiPromptPurpose.SUMMARY)
+
+        assertTrue(requireNotNull(viewModel.pendingAiPrompt.value).startsWith("Summary instruction"))
+        collection.cancel()
+    }
+
+    @Test
+    fun `oversized AI prompt is disabled without general error`() = runTest(dispatcher) {
+        val text = "x".repeat(OcrAiPromptBuilder.MAX_PROMPT_CHARS)
+        val record = scanRecord(extractedText = text, pageTexts = listOf(text))
+        recordsFlow.value = listOf(record)
+        val viewModel = buildViewModel(RecordingExtractTextUseCase(), record.id)
+        val collection = backgroundScope.launch { viewModel.uiState.collect() }
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.isAiPromptTooLong)
+        assertTrue(!viewModel.uiState.value.canCopyAiPrompt)
+        viewModel.requestAiPrompt()
+        assertNull(viewModel.uiState.value.error)
+        assertNull(viewModel.aiPromptToCopy.value)
+        collection.cancel()
+    }
+
     private fun buildViewModel(
         extractTextUseCase: ExtractTextUseCase,
-        scanId: Long
+        scanId: Long,
+        settingsRepository: FakeSettingsRepository = FakeSettingsRepository()
     ): OcrReviewViewModel {
         return OcrReviewViewModel(
             repository = repository,
             extractTextUseCase = extractTextUseCase,
             exportOcrTextUseCase = testExportOcrTextUseCase(),
+            settingsRepository = settingsRepository,
             resourceProvider = resourceProvider,
             dispatcherProvider = TestDispatcherProvider(dispatcher),
             savedStateHandle = SavedStateHandle(mapOf("scanId" to scanId))

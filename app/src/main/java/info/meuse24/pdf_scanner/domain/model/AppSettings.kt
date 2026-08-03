@@ -17,6 +17,8 @@ data class AppSettings(
     val appLockEnabled: Boolean = false,
     val appLockTimeoutSeconds: Int = 30,
     val localSyncIdleTimeoutMinutes: Int = LocalSyncTimeout.DEFAULT_MINUTES,
+    val aiPromptNoticeAccepted: Boolean = false,
+    val customAiChatbotTargets: List<AiChatbotTarget> = defaultAiChatbotTargets,
     val defaultImagePdfPageSetup: PdfPageSetup = PdfPageSetup(),
     val pageNumberSettings: PageNumberSettings = PageNumberSettings()
 ) {

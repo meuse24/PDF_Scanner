@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="help_item_ai_chatbot">KI-Korrektur- und Zusammenfassungsprompts kopieren Dokumenttext nur lokal in die Zwischenablage. Wählen Sie einen Chatbot; die App öffnet anschließend nur dessen Website im Standardbrowser, ohne den Prompt an den Browser zu übergeben. Erst das Einfügen im Chatbot kann Text übertragen. Alle Chatbot-Ziele verwalten Sie unter Einstellungen → Scan &amp; OCR → Chatbot-Ziele.</string>
+    <string name="privacy_point_ai_chatbot">KI-Korrektur- oder Zusammenfassungsprompt kopieren erstellt erst nach Ihrer Aktion lokalen Zwischenablageinhalt. M24 PDF-Scanner überträgt keinen Dokumenttext an einen KI-Anbieter. Die gewählte Chatbot-Website öffnet im Standardbrowser ohne den Prompt; das Öffnen kann eine Verbindung zum Anbieter herstellen. Erst das Einfügen des Prompts in den Chatbot kann Dokumenttext nach dessen Datenschutzbestimmungen übertragen. Chatbot-Ziele werden lokal in den App-Einstellungen gespeichert.</string>
+</resources>

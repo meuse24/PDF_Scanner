@@ -53,6 +53,7 @@ import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.NoEncryption
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Share
@@ -191,7 +192,8 @@ fun HelpScreen() {
                     HelpAction(Icons.Default.PictureAsPdf,  R.string.action_scan_business_card, R.string.help_item_business_card),
                     HelpAction(Icons.Default.FindInPage,    R.string.action_remove_text_layer, R.string.help_item_remove_text_layer),
                     HelpAction(Icons.Default.Language,      R.string.dialog_ocr_language,      R.string.help_item_ocr_language),
-                    HelpAction(Icons.Default.Translate,     R.string.translate_action_label,   R.string.help_item_translate)
+                    HelpAction(Icons.Default.Translate,     R.string.translate_action_label,   R.string.help_item_translate),
+                    HelpAction(Icons.Default.Psychology,    R.string.ocr_ai_prompt_copy,       R.string.help_item_ai_chatbot)
                 )
             ),
             HelpSection(

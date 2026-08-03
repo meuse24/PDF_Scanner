@@ -41,6 +41,7 @@ data class HomeOperationUiState(
     val ocrLoading: Boolean = false,
     val ocrProgress: HomeOcrProgress? = null,
     val ocrStatusText: String? = null,
+    val aiPromptLoading: Boolean = false,
     val editLoading: Boolean = false,
     val docxOcrPrompt: HomeDocxOcrPrompt? = null
 )

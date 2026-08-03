@@ -10,12 +10,17 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import info.meuse24.pdf_scanner.R
 import info.meuse24.pdf_scanner.domain.model.Document
+import info.meuse24.pdf_scanner.domain.model.AiChatbotTarget
+import info.meuse24.pdf_scanner.domain.common.OcrAiPromptBuilder
+import info.meuse24.pdf_scanner.domain.common.OcrAiPromptPurpose
+import info.meuse24.pdf_scanner.domain.repository.AppSettingsRepository
 import info.meuse24.pdf_scanner.domain.usecase.CalculateSha256UseCase
 import info.meuse24.pdf_scanner.domain.usecase.FileHashUnreadableException
 import info.meuse24.pdf_scanner.domain.usecase.OcrDocumentResult
 import info.meuse24.pdf_scanner.domain.usecase.OcrNoTextException
 import info.meuse24.pdf_scanner.domain.usecase.NoExportableTextException
 import info.meuse24.pdf_scanner.domain.usecase.RenameDocumentResult
+import info.meuse24.pdf_scanner.domain.usecase.ResolveAiPromptTextUseCase
 import info.meuse24.pdf_scanner.domain.usecase.RestoreMissingFileException
 import info.meuse24.pdf_scanner.domain.workflow.ScanWorkflowError
 import info.meuse24.pdf_scanner.domain.workflow.WorkflowErrorMapper
@@ -53,8 +58,10 @@ class HomeViewModel @Inject constructor(
     private val archiveCoordinator: HomeArchiveCoordinator,
     private val workflowErrorMapper: WorkflowErrorMapper,
     private val resourceProvider: ResourceProvider,
+    private val settingsRepository: AppSettingsRepository,
     private val dispatcherProvider: DispatcherProvider,
-    private val calculateSha256UseCase: CalculateSha256UseCase
+    private val calculateSha256UseCase: CalculateSha256UseCase,
+    private val resolveAiPromptTextUseCase: ResolveAiPromptTextUseCase
 ) : ViewModel() {
 
     private val archiveFilterFlow = archiveCoordinator.filter
@@ -112,6 +119,11 @@ class HomeViewModel @Inject constructor(
     private val _ocrProgress = MutableStateFlow<HomeOcrProgress?>(null)
     private val _ocrStatusText = MutableStateFlow<String?>(null)
     private val _docxOcrPrompt = MutableStateFlow<HomeDocxOcrPrompt?>(null)
+    private val _pendingAiPrompt = MutableStateFlow<String?>(null)
+    val pendingAiPrompt: StateFlow<String?> = _pendingAiPrompt.asStateFlow()
+    private val _aiPromptToCopy = MutableStateFlow<AiPromptCopyRequest?>(null)
+    val aiPromptToCopy: StateFlow<AiPromptCopyRequest?> = _aiPromptToCopy.asStateFlow()
+    private val _aiPromptLoading = MutableStateFlow(false)
     private val _editLoading = MutableStateFlow(false)
     private var pendingDocxExportIds: List<Long> = emptyList()
 
@@ -179,12 +191,14 @@ class HomeViewModel @Inject constructor(
         },
         _playReviewRequestId,
         _editLoading,
-        _docxOcrPrompt
-    ) { state, playReviewRequestId, editLoading, docxOcrPrompt ->
+        _docxOcrPrompt,
+        _aiPromptLoading
+    ) { state, playReviewRequestId, editLoading, docxOcrPrompt, aiPromptLoading ->
         state.copy(
             playReviewRequestId = playReviewRequestId,
             editLoading = editLoading,
-            docxOcrPrompt = docxOcrPrompt
+            docxOcrPrompt = docxOcrPrompt,
+            aiPromptLoading = aiPromptLoading
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeOperationUiState())
 
@@ -721,6 +735,53 @@ class HomeViewModel @Inject constructor(
         exportOcrTexts(listOf(record))
     }
 
+    fun requestAiPrompt(record: Document, purpose: OcrAiPromptPurpose) {
+        if (_aiPromptLoading.value) return
+        _aiPromptLoading.value = true
+        viewModelScope.launch(dispatcherProvider.io) {
+            try {
+                val fullRecord = archiveCoordinator.getDocuments(listOf(record.id)).firstOrNull()
+                if (fullRecord == null) {
+                    _error.value = resourceProvider.getString(R.string.ocr_export_nothing_to_export)
+                    return@launch
+                }
+                val instructionRes = when (purpose) {
+                    OcrAiPromptPurpose.CORRECTION -> R.string.ocr_ai_prompt_instruction
+                    OcrAiPromptPurpose.SUMMARY -> R.string.ocr_ai_prompt_summary_instruction
+                }
+                val result = OcrAiPromptBuilder.build(
+                    instruction = resourceProvider.getString(instructionRes),
+                    pageHint = null,
+                    ocrText = resolveAiPromptTextUseCase(fullRecord),
+                    languageRule = resourceProvider.getString(R.string.ocr_ai_prompt_output_language_rule)
+                )
+                when {
+                    result.empty -> _error.value = resourceProvider.getString(R.string.ocr_ai_prompt_no_local_text)
+                    result.tooLong -> _error.value = resourceProvider.getString(R.string.ocr_ai_prompt_too_long)
+                    else -> _pendingAiPrompt.value = result.prompt
+                }
+            } finally {
+                _aiPromptLoading.value = false
+            }
+        }
+    }
+
+    fun confirmAiPrompt(target: AiChatbotTarget, consentAccepted: Boolean) {
+        val prompt = _pendingAiPrompt.value ?: return
+        if (!settingsRepository.settings.value.aiPromptNoticeAccepted && !consentAccepted) return
+        settingsRepository.updateAiPromptNoticeAccepted(true)
+        _pendingAiPrompt.value = null
+        _aiPromptToCopy.value = AiPromptCopyRequest(prompt, target.url)
+    }
+
+    fun dismissAiPrompt() {
+        _pendingAiPrompt.value = null
+    }
+
+    fun onAiPromptCopied() {
+        _aiPromptToCopy.value = null
+    }
+
     fun exportDocx(record: Document) {
         exportDocxs(listOf(record))
     }
@@ -828,6 +889,8 @@ class HomeViewModel @Inject constructor(
     private fun searchScansFor(filter: ArchiveFilter, ftsQuery: String) =
         archiveCoordinator.searchScans(filter, ftsQuery)
 }
+
+data class AiPromptCopyRequest(val prompt: String, val chatbotUrl: String)
 
 private val TAG_ORDER = listOf("invoice", "contract", "insurance", "certificate", "bank", "delivery")
 

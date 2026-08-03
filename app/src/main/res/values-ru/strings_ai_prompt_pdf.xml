@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ocr_ai_prompt_no_local_text">Нет сохранённого OCR-текста или текстового слоя PDF.</string>
+    <string name="ocr_ai_prompt_preparing">Подготовка текста документа…</string>
+</resources>

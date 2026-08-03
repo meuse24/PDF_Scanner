@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ocr_ai_prompt_no_local_text">Não há texto OCR salvo nem camada de texto PDF disponível.</string>
+    <string name="ocr_ai_prompt_preparing">Preparando o texto do documento…</string>
+</resources>

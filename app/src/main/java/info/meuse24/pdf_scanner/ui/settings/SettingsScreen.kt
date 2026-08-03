@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Search
@@ -29,6 +31,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -38,6 +41,8 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -63,7 +68,9 @@ import info.meuse24.pdf_scanner.domain.model.LocalSyncTimeout
 import info.meuse24.pdf_scanner.domain.model.PageNumberHorizontalPosition
 import info.meuse24.pdf_scanner.domain.model.PageNumberSettings
 import info.meuse24.pdf_scanner.domain.model.PageNumberVerticalPosition
+import info.meuse24.pdf_scanner.domain.model.AiChatbotTarget
 import java.util.Locale
+import java.net.URI
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,6 +88,8 @@ fun SettingsScreen(
     onAppLockEnabledChange: (Boolean) -> Unit,
     onAppLockTimeoutSecondsChange: (Int) -> Unit,
     onLocalSyncIdleTimeoutMinutesChange: (Int) -> Unit,
+    onResetAiPromptNotice: () -> Unit,
+    onNavigateToAiChatbotTargets: () -> Unit = {},
     onPageNumberSettingsChange: (PageNumberSettings) -> Unit,
     transientSuccess: String?,
     transientError: String?,
@@ -179,6 +188,28 @@ fun SettingsScreen(
                         languageMenuExpanded = false
                     }
                 )
+                SettingsDivider()
+                PreferenceActionRow {
+                    FilledTonalButton(
+                        onClick = onResetAiPromptNotice,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.settings_ai_prompt_notice_reset),
+                            maxLines = 2,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                SettingsDivider()
+                PreferenceActionRow {
+                    FilledTonalButton(
+                        onClick = onNavigateToAiChatbotTargets,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.settings_ai_chatbots))
+                    }
+                }
             }
         }
 
@@ -283,6 +314,69 @@ fun SettingsScreen(
             backupSection()
         }
     }
+}
+
+@Composable
+internal fun AiChatbotTargetDialog(
+    target: AiChatbotTarget?,
+    onSave: (AiChatbotTarget) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var name by remember(target) { mutableStateOf(target?.name.orEmpty()) }
+    var url by remember(target) { mutableStateOf(target?.url.orEmpty()) }
+    var showValidationError by remember { mutableStateOf(false) }
+    val validUrl = runCatching {
+        URI(url.trim()).let { it.scheme == "https" && !it.host.isNullOrBlank() }
+    }.getOrDefault(false)
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_ai_chatbot)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it; showValidationError = false },
+                label = { Text(stringResource(R.string.settings_ai_chatbot_name)) },
+                isError = showValidationError && name.isBlank(),
+                supportingText = if (showValidationError && name.isBlank()) {
+                    { Text(stringResource(R.string.settings_ai_chatbot_name_required)) }
+                } else {
+                    null
+                }
+            )
+            OutlinedTextField(
+                value = url,
+                onValueChange = { url = it; showValidationError = false },
+                label = { Text(stringResource(R.string.settings_ai_chatbot_url)) },
+                isError = showValidationError && !validUrl,
+                supportingText = if (showValidationError && !validUrl) {
+                    { Text(stringResource(R.string.settings_ai_chatbot_invalid)) }
+                } else {
+                    null
+                }
+            )
+        }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (name.isNotBlank() && validUrl) {
+                        onSave(AiChatbotTarget(name.trim(), url.trim()))
+                    } else {
+                        showValidationError = true
+                    }
+                }
+            ) {
+                Text(stringResource(if (target == null) R.string.action_add else R.string.action_save))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_cancel))
+            }
+        }
+    )
 }
 
 @Composable

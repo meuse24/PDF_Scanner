@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ocr_ai_prompt_output_language_rule">Detecte o idioma do texto do documento e retorne o resultado nesse mesmo idioma.</string>
+</resources>

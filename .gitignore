@@ -21,6 +21,9 @@ plan-*.txt
 # Local UIAutomator window dumps
 /window*.xml
 
+# Generated repo dumps (repomix)
+repomix-output.xml
+
 .kotlin/
 .claude/
 .gradle-user/
